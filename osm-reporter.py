@@ -29,9 +29,7 @@ def hello_world():
     myDom = parse(myFile)
     myFile.close()
 
-    myUserDict = {'Jacoline': 0,
-                  'NicoKriek': 0,
-                  'timlinux': 0}
+    myUserDict = {}
     myWays = myDom.getElementsByTagName('way')
     for myWay in myWays:
         if myWay.hasAttribute('user'):
@@ -39,6 +37,8 @@ def hello_world():
             if myUser in myUserDict:
                 myValue = myUserDict[myUser]
                 myUserDict[myUser] = myValue + 1
+            else:
+                myUserDict[myUser] = 1
 
     myReport = ''
     for myUserName, myUserScore in myUserDict.iteritems():
