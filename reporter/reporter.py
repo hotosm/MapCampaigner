@@ -32,33 +32,56 @@ def hello_world():
     myDom = parse(myFile)
     myFile.close()
 
-    myUserDict = {}
+    myWayCountDict = {}
+    myNodeCountDict = {}
     myWays = myDom.getElementsByTagName('way')
     for myWay in myWays:
         if myWay.hasAttribute('user'):
             myUser = myWay.attributes['user'].value
-            if myUser in myUserDict:
-                myValue = myUserDict[myUser]
-                myUserDict[myUser] = myValue + 1
+            myNodes = myWay.getElementsByTagName('nd')
+
+            # See if we have a building way
+            myBuildingFlag = False
+            myTags = myWay.getElementsByTagName('tag')
+            for myTag in myTags:
+                for myValue in myTag.attributes.values():
+                    if 'building' == myValue.value:
+                        myBuildingFlag = True
+            if not myBuildingFlag:
+                continue
+
+            # Its a building so update our building and node counts
+            if myUser in myWayCountDict:
+                myValue = myWayCountDict[myUser]
+                myWayCountDict[myUser] = myValue + 1
+                myValue = myNodeCountDict[myUser]
+                if myNodes:
+                    myNodeCountDict[myUser] = myValue + len(myNodes)
             else:
-                myUserDict[myUser] = 1
+                myWayCountDict[myUser] = 1
+                if myNodes:
+                    myNodeCountDict[myUser] = len(myNodes)
 
     # Optional list of team members
     myCrewList = ['Jacoline', 'NicoKriek', 'Babsie']
 
     # Convert to a list of dicts so we can sort it.
     myUserList = []
-    for myKey, myValue in myUserDict.iteritems():
+    for myKey, myValue in myWayCountDict.iteritems():
         myCrewFlag = False
         if myKey in myCrewList:
             myCrewFlag = True
         myUserList.append({'name': myKey,
-                           'score': myValue,
+                           'ways': myValue,
+                           'nodes': myNodeCountDict[myKey],
                            'crew': myCrewFlag})
 
     # Sort it
     mySortedUserList = sorted(
-        myUserList, key=lambda d: (-d['score'], d['name'], d['crew']))
+        myUserList, key=lambda d: (-d['ways'],
+                                   d['nodes'],
+                                   d['name'],
+                                   d['crew']))
 
     return render_template('base.html', mySortedUserList=mySortedUserList)
 

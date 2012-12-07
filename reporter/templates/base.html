@@ -48,14 +48,15 @@
                 </p>
             </div>
             <div class="span8">
-                <h2>Contributors</h2>
+                <h2>Building Contributors</h2>
                 <p>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Count</th>
+                                <th>Way Count</th>
+                                <th>Node Count</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,7 +74,8 @@
                                         Guru!</span>
                                 {% endif %}
                                 </td>
-                                <td>{{ myEntry.score }}</td>
+                                <td>{{ myEntry.ways }}</td>
+                                <td>{{ myEntry.nodes }}</td>
                             </tr>
                             {% endfor %}
 
@@ -88,7 +90,7 @@
             var myData = [
                 {%  for myEntry in mySortedUserList %}
                 [{{ loop.index }},
-                    {{ myEntry.score }},
+                    {{ myEntry.ways }},
                     {%  if myEntry.crew %}
                         "{{ myEntry.name }}"
                     {% endif %}
