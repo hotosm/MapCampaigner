@@ -4,6 +4,10 @@
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
     <link rel="stylesheet" href="/static/css/bootstrap.css"
           type="text/css" static="screen, projection"/>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery.flot.js"></script>
     <style type="text/css">
         body {
             padding-top: 60px;
@@ -27,7 +31,11 @@
                 </p>
             </div>
         </div>
-
+        <div class="row">
+            <div class="span12">
+                <div id="chart" style="height:300px;"></div>
+            </div>
+        </div>
         <div class="row">
             <div class="span4">
                 <h2>About</h2>
@@ -45,16 +53,27 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Name</th>
                                 <th>Count</th>
                             </tr>
                         </thead>
                         <tbody>
 
-                            {%  for myName, myScore in myUserDict.iteritems() %}
+                            {% for myEntry in mySortedUserList %}
                             <tr>
-                                <td>{{ myName }}</td>
-                                <td>{{ myScore }}</td>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ myEntry.name }}
+                                {%  if myEntry.crew %}
+                                    <span class="label label-success">
+                                        Crew</span>
+                                {% endif %}
+                                {%  if loop.first %}
+                                    <span class="label label-important">
+                                        Guru!</span>
+                                {% endif %}
+                                </td>
+                                <td>{{ myEntry.score }}</td>
                             </tr>
                             {% endfor %}
 
@@ -64,4 +83,29 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        $(function () {
+            var myData = [
+                {%  for myEntry in mySortedUserList %}
+                [{{ loop.index }},
+                    {{ myEntry.score }},
+                    {%  if myEntry.crew %}
+                        "{{ myEntry.name }}"
+                    {% endif %}
+                ],
+                {%  endfor %}]
+            var myPlot = $.plot($("#chart"), [ myData ]);
+
+            $.each(myPlot.getData()[0].data, function(i, el){
+                var o = myPlot.pointOffset({x: el[0], y: el[1]});
+                $('<span class="badge badge-info">' + el[1] + '</span>').css( {
+                    position: 'absolute',
+                    left: o.left + 4,
+                    top: o.top - 20,
+                    display: 'none'
+                }).appendTo(myPlot.getPlaceholder()).fadeIn('slow');
+            });
+
+        });
+    </script>
 </body>

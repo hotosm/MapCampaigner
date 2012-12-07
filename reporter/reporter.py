@@ -43,11 +43,24 @@ def hello_world():
             else:
                 myUserDict[myUser] = 1
 
-    myReport = ''
-    for myUserName, myUserScore in myUserDict.iteritems():
-        myReport += '%s : %i<br/>' % (myUserName, myUserScore)
+    # Optional list of team members
+    myCrewList = ['Jacoline', 'NicoKriek', 'Babsie']
 
-    return render_template('base.html', myUserDict=myUserDict)
+    # Convert to a list of dicts so we can sort it.
+    myUserList = []
+    for myKey, myValue in myUserDict.iteritems():
+        myCrewFlag = False
+        if myKey in myCrewList:
+            myCrewFlag = True
+        myUserList.append({'name': myKey,
+                           'score': myValue,
+                           'crew': myCrewFlag})
+
+    # Sort it
+    mySortedUserList = sorted(
+        myUserList, key=lambda d: (-d['score'], d['name'], d['crew']))
+
+    return render_template('base.html', mySortedUserList=mySortedUserList)
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
