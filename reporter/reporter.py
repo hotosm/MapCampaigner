@@ -2,11 +2,14 @@ import logging
 import urllib2
 import os
 import time
-from flask import Flask
+import optparse
+from flask import Flask, url_for, render_template, abort, Response
 from xml.dom.minidom import parse
 
 LOGGER = logging.getLogger('osm-reporter')
 app = Flask(__name__)
+
+
 
 @app.route('/')
 def hello_world():
@@ -44,7 +47,7 @@ def hello_world():
     for myUserName, myUserScore in myUserDict.iteritems():
         myReport += '%s : %i<br/>' % (myUserName, myUserScore)
 
-    return myReport
+    return render_template('base.html', myUserDict=myUserDict)
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
@@ -71,5 +74,41 @@ def fetch_osm(theUrlPath, theFilePath):
         LOGGER.exception('Bad Url or Timeout')
         raise
 
+
+#
+# These are only used to serve static files when testing
+#
+file_suffix_to_mimetype = {
+    '.css': 'text/css',
+    '.jpg': 'image/jpeg',
+    '.html': 'text/html',
+    '.ico': 'image/x-icon',
+    '.png': 'image/png',
+    '.js': 'application/javascript'
+}
+
+
+def static_file(path):
+    try:
+        f = open(path)
+    except IOError, e:
+        abort(404)
+        return
+    root, ext = os.path.splitext(path)
+    if ext in file_suffix_to_mimetype:
+        return Response(f.read(), mimetype=file_suffix_to_mimetype[ext])
+    return f.read()
+
+
 if __name__ == '__main__':
+    parser = optparse.OptionParser()
+    parser.add_option('-d', '--debug', dest='debug', default=False,
+                      help='turn on Flask debugging', action='store_true')
+
+    options, args = parser.parse_args()
+
+    if options.debug:
+        app.debug = True
+        # set up flask to serve static content
+        app.add_url_rule('/<path:path>', 'static_file', static_file)
     app.run()

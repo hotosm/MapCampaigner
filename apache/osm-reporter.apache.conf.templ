@@ -2,7 +2,6 @@
   ServerName osm-reporter.localhost
   ServerAdmin webmaster@localhost
 
-  Alias /osm-reporter /home/web/osm-reporter/reporter
   WSGIDaemonProcess osm-reporter user=www-data group=www-data threads=5 processes=2 python-path=/home/web/osm-reporter/python/lib/python2.7/site-packages
   WSGIScriptAlias / /home/web/osm-reporter/apache/osm-reporter.wsgi
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"
+          type="text/css" static="screen, projection"/>
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="hero-unit">
+            <h1>Open Street Map Reporter</h1>
+            <p>This page lists people who have contributed data to a map.</p>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <p style="text-align: center;">
+                    <iframe width="940" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox=20.4257,-34.0492,20.468,-34.0082&amp;layer=mapnik" style="border: 0px solid black"></iframe><br /><small><a href="http://www.openstreetmap.org/?lat=-34.0287&amp;lon=20.446849999999984&amp;zoom=14&amp;layers=M">View Larger Map</a></small>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span4">
+                <h2>About</h2>
+                <p><img src="/static/img/linfiniti-logo-300.png"/></p>
+                <p>This application was created by
+                    <a href="http://linfiniti.com">Linfiniti</a>. The source
+                    code for this app is
+                    <a href="https://github.com/timlinux/osm-reporter">
+                        available on GitHub</a>.
+                </p>
+            </div>
+            <div class="span8">
+                <h2>Contributors</h2>
+                <p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {%  for myName, myScore in myUserDict.iteritems() %}
+                            <tr>
+                                <td>{{ myName }}</td>
+                                <td>{{ myScore }}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
