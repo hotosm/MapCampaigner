@@ -7,6 +7,8 @@ from xml.dom.minidom import parse
 
 from flask import Flask, url_for, render_template, abort, Response
 
+from reporter import config
+
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     os.path.pardir,
@@ -22,10 +24,11 @@ CREW_PATH = os.path.join(
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def current_status():
     myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
-                 'map?bbox=20.411482,-34.053726,20.467358,-34.009483')
+                 'map?bbox=%s' % config.BBOX)
     myFilePath = '/tmp/swellendam.osm'
     myDom = load_osm_dom(myFilePath, myUrlPath)
     mySortedUserList = osm_building_contributions(myDom)
@@ -137,7 +140,7 @@ def osm_building_contributions(theDom):
                     myNodeCountDict[myUser] = len(myNodes)
 
     # Convert to a list of dicts so we can sort it.
-    myCrewList = crew_list()
+    myCrewList = config.CREW
     myUserList = []
 
     for myKey, myValue in myWayCountDict.iteritems():
