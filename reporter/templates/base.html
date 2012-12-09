@@ -15,6 +15,8 @@
     <script language="javascript"
             type="text/javascript" src="/static/js/jquery.flot.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/reporter.js"></script>
      <style type="text/css">
         body {
             padding-top: 60px;
@@ -91,7 +93,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-            var map = L.map('map').setView([51.505, -0.09], 13)
+            var map = L.map('map', {updateStatsControl: true});
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 18

@@ -1,4 +1,24 @@
+/* ******************** */
+/*         Map          */
+/* ******************** */
 #map {
     height: 350px;
     margin-bottom: 40px;
+}
+
+/* ******************** */
+/*       Controls       */
+/* ******************** */
+.leaflet-control-stats {
+    background: none repeat scroll 0 0 #F8F8F9;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 0 1px 7px #999999;
+}
+.leaflet-control-stats a {
+    background-image: url("../img/update_stats.png");
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    height: 46px;
+    width: 46px;
+    display: block;
 }
