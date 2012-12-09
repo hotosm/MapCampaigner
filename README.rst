@@ -55,4 +55,10 @@ valid OSM user name. e.g.::
   NicoKriek
 
 
+OSM File Path
+=============
+
+You can optionally set REPORTER_OSM environment var to defined where cached
+OSM file should be written.
+
 Tim Sutton
