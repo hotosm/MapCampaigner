@@ -16,7 +16,7 @@ Then setup a venv::
     cd osm-reporter
     virtualenv python
     source python/bin/activate
-    pip install flask
+    pip install -r REQUIREMENTS.txt
 
 Then deploy under apache mod_wsgi::
 
@@ -41,6 +41,18 @@ Next restart apache::
 Now test - open chrome and visit: http://osm-reporter.localhost
 
 
+Crew
+====
+
+You can optionally define a 'crew' file which contains a list of people
+actively working on your data gathering project. Place the file in
+the top level checkout dir as :file:`crew.txt` containing one line per
+valid OSM user name. e.g.::
+
+  timlinux
+  Jacoline
+  Babsie
+  NicoKriek
 
 
 Tim Sutton

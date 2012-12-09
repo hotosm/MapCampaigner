@@ -3,8 +3,9 @@ import urllib2
 import os
 import time
 import optparse
-from flask import Flask, url_for, render_template, abort, Response
 from xml.dom.minidom import parse
+
+from flask import Flask, url_for, render_template, abort, Response
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -13,7 +14,12 @@ DB_PATH = os.path.join(
 )
 LOGGER = logging.getLogger('osm-reporter')
 # Optional list of team members
-CREW_LIST = ['Jacoline', 'NicoKriek', 'Babsie']
+CREW_PATH = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    os.path.pardir,
+    'crew.txt'
+)
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -24,6 +30,32 @@ def current_status():
     myDom = load_osm_dom(myFilePath, myUrlPath)
     mySortedUserList = osm_building_contributions(myDom)
     return render_template('base.html', mySortedUserList=mySortedUserList)
+
+def crew_list():
+    """Get a list of 'crew' - people involved in your project.
+
+    Args:
+        None
+
+    Returns:
+        list: list of str where each is a crew member name. If not crew
+            file exists or members are defined, an empty list is returned.
+
+    Raises:
+        None
+
+    Example::
+
+        myList = crew_list()
+        print str(myList)
+        ['timlinux', 'foo', 'bar']
+    """
+    if os.path.exists(CREW_PATH):
+        with open(CREW_PATH, 'r') as myFile:
+            myLines = myFile.read().splitlines()
+        return myLines
+    else:
+        return []
 
 
 def load_osm_dom(theFilePath, theUrlPath):
@@ -105,10 +137,12 @@ def osm_building_contributions(theDom):
                     myNodeCountDict[myUser] = len(myNodes)
 
     # Convert to a list of dicts so we can sort it.
+    myCrewList = crew_list()
     myUserList = []
+
     for myKey, myValue in myWayCountDict.iteritems():
         myCrewFlag = False
-        if myKey in CREW_LIST:
+        if myKey in myCrewList:
             myCrewFlag = True
         myRecord = {'name': myKey,
                     'ways': myValue,
