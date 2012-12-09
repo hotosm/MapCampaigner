@@ -4,11 +4,18 @@
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
     <link rel="stylesheet" href="/static/css/bootstrap.css"
           type="text/css" static="screen, projection"/>
-    <script language="javascript"
-            type="text/javascript" src="/static/js/jquery.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
+     <!--[if lte IE 8]>
+         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+     <![endif]-->
+    <link rel="stylesheet" href="/static/css/reporter.css"
+          type="text/css" static="screen, projection"/>
+     <script language="javascript"
+                type="text/javascript" src="/static/js/jquery.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/jquery.flot.js"></script>
-    <style type="text/css">
+    <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+     <style type="text/css">
         body {
             padding-top: 60px;
             padding-bottom: 40px;
@@ -25,10 +32,7 @@
         </div>
 
         <div class="row">
-            <div class="span12">
-                <p style="text-align: center;">
-                    <iframe width="940" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox=20.4257,-34.0492,20.468,-34.0082&amp;layer=mapnik" style="border: 0px solid black"></iframe><br /><small><a href="http://www.openstreetmap.org/?lat=-34.0287&amp;lon=20.446849999999984&amp;zoom=14&amp;layers=M">View Larger Map</a></small>
-                </p>
+            <div class="span12" id="map">
             </div>
         </div>
         <div class="row">
@@ -86,6 +90,17 @@
         </div>
     </div>
     <script type="text/javascript">
+        $(document).ready(function(){
+            var map = L.map('map').setView([51.505, -0.09], 13)
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 18
+            }).addTo(map);
+            map.fitBounds([
+                [-34.053726, 20.411482],
+                [-34.009483, 20.467358]
+            ]);;
+        });
         $(function () {
             var myData = [
                 {%  for myEntry in mySortedUserList %}
