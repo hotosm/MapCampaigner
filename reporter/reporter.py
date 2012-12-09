@@ -257,7 +257,7 @@ def write_record(theRecord):
         myCursor.execute(mySQL)
         SQLITE_CONNECTION.commit()
     except sqlite.Error, e:
-        LOGGER.exception('SQLITE Error %s:' % e.args[0]
+        LOGGER.exception('SQLITE Error %s:' % e.args[0])
         SQLITE_CONNECTION.rollback()
     except Exception, e:
         LOGGER.exception("Error %s:" % e.args[0])
