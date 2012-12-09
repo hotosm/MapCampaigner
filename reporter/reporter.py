@@ -8,7 +8,11 @@ from xml.dom.minidom import parse
 import sqlite3 as sqlite
 
 SQLITE_CONNECTION = None
-DB_PATH = os.path.join(os.path.pardir(__file__), '..', 'reporter.db')
+DB_PATH = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    os.path.pardir,
+    'reporter.db'
+)
 LOGGER = logging.getLogger('osm-reporter')
 # Optional list of team members
 CREW_LIST = ['Jacoline', 'NicoKriek', 'Babsie']
@@ -257,7 +261,7 @@ def write_record(theRecord):
         myCursor.execute(mySQL)
         SQLITE_CONNECTION.commit()
     except sqlite.Error, e:
-        LOGGER.exception('SQLITE Error %s:' % e.args[0]
+        LOGGER.exception('SQLITE Error %s:' % e.args[0])
         SQLITE_CONNECTION.rollback()
     except Exception, e:
         LOGGER.exception("Error %s:" % e.args[0])
