@@ -9,7 +9,7 @@ Install
 First clone::
 
     cd /home/web
-    git clone git@github.com:timlinux/osm-reporter.git
+    git clone git://github.com/timlinux/osm-reporter.git
 
 Then setup a venv::
 
