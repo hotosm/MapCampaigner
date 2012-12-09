@@ -8,7 +8,11 @@ from xml.dom.minidom import parse
 import sqlite3 as sqlite
 
 SQLITE_CONNECTION = None
-DB_PATH = os.path.join(os.path.pardir(__file__), '..', 'reporter.db')
+DB_PATH = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    os.path.pardir,
+    'reporter.db'
+)
 LOGGER = logging.getLogger('osm-reporter')
 # Optional list of team members
 CREW_LIST = ['Jacoline', 'NicoKriek', 'Babsie']
