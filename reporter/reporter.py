@@ -26,7 +26,10 @@ app = Flask(__name__)
 def current_status():
     myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
                  'map?bbox=20.411482,-34.053726,20.467358,-34.009483')
-    myFilePath = '/tmp/swellendam.osm'
+    if 'REPORTER_OSM' in os.environ:
+        myFilePath = os.environ['REPORTER_OSM']
+    else:
+        myFilePath = '/tmp/reporter.osm'
     myDom = load_osm_dom(myFilePath, myUrlPath)
     mySortedUserList = osm_building_contributions(myDom)
     return render_template('base.html', mySortedUserList=mySortedUserList)
