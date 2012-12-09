@@ -5,9 +5,7 @@ import time
 import optparse
 from flask import Flask, url_for, render_template, abort, Response
 from xml.dom.minidom import parse
-import sqlite3 as sqlite
 
-SQLITE_CONNECTION = None
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     os.path.pardir,
@@ -112,10 +110,11 @@ def osm_building_contributions(theDom):
         myCrewFlag = False
         if myKey in CREW_LIST:
             myCrewFlag = True
-        myUserList.append({'name': myKey,
-                           'ways': myValue,
-                           'nodes': myNodeCountDict[myKey],
-                           'crew': myCrewFlag})
+        myRecord = {'name': myKey,
+                    'ways': myValue,
+                    'nodes': myNodeCountDict[myKey],
+                    'crew': myCrewFlag}
+        myUserList.append(myRecord)
 
     # Sort it
     mySortedUserList = sorted(
@@ -153,170 +152,6 @@ def fetch_osm(theUrlPath, theFilePath):
         raise
 
 
-def close_connection():
-    """Given an sqlite3 connection, close it.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Raises:
-        None
-    """
-    if SQLITE_CONNECTION is not None:
-        SQLITE_CONNECTION.close()
-        SQLITE_CONNECTION = None
-
-
-def open_connection():
-    """Open an sqlite connection to the database.
-
-    Args:
-        thePath - path to the desired sqlite db to use.
-    Returns:
-        None
-    Raises:
-        An sqlite.Error is raised if anything goes wrong
-    """
-    SQLITE_CONNECTION = None
-    try:
-        SQLITE_CONNECTION = sqlite.connect(DB_PATH)
-    except sqlite.Error, e:
-        LOGGER.exception("Error opening SQLITE db : %s:" % e.args[0])
-        raise
-
-
-def get_cursor():
-    """Get a cursor for the active SQLITE_CONNECTION. The cursor can be used to
-    execute arbitrary queries against the database. This method also checks
-    that the keywords table exists in the schema, and if not, it creates
-    it.
-
-    Args:
-        None
-
-    Returns:
-        a valid cursor opened against the SQLITE_CONNECTION.
-
-    Raises:
-        An sqlite.Error will be raised if anything goes wrong
-    """
-    if SQLITE_CONNECTION is None:
-        open_connection()
-    try:
-        myCursor = SQLITE_CONNECTION.cursor()
-        myCursor.execute('SELECT SQLITE_VERSION()')
-        myData = myCursor.fetchone()
-        #print "SQLite version: %s" % myData
-        # Check if we have some tables, if not create them
-        mySQL = 'select sql from sqlite_master where type = \'table\';'
-        myCursor.execute(mySQL)
-        myData = myCursor.fetchone()
-        #print "Tables: %s" % myData
-        if myData is None:
-            #print 'No tables found'
-            mySQL = ('create table record (id serial not null primary key, '
-                     'user varchar(255) not null,'
-                     'log_date date not null,'
-                     'ways int not null default 0,'
-                     'nodes int not null default 0,'
-                     ');')
-            print mySQL
-            myCursor.execute(mySQL)
-            myData = myCursor.fetchone()
-        else:
-            #print 'Keywords table already exists'
-            pass
-        return myCursor
-    except sqlite.Error, e:
-        print "Error %s:" % e.args[0]
-        raise
-
-
-def write_record(theRecord):
-    """Write a record to the database.
-
-    Args:
-
-       * theRecord: dict in the form of  { 'user': <user>, 'ways':
-            <way count>, 'nodes': <node count>, 'crew': <bool> }
-
-    Returns:
-       None
-
-    Raises:
-       None
-    """
-    try:
-        myCursor = get_cursor()
-        mySQL = ('insert into record (user, log_date, ways, nodes) values ('
-                 '\'%s\',\'%s\',\'%s\',\'%s\',' % (
-            theRecord['user'],
-            theRecord['log_date'],
-            theRecord['ways'],
-            theRecord['nodes']
-        ))
-        myCursor.execute(mySQL)
-        SQLITE_CONNECTION.commit()
-    except sqlite.Error, e:
-        LOGGER.exception('SQLITE Error %s:' % e.args[0])
-        SQLITE_CONNECTION.rollback()
-    except Exception, e:
-        LOGGER.exception("Error %s:" % e.args[0])
-        SQLITE_CONNECTION.rollback()
-        raise
-    finally:
-        close_connection()
-
-
-def read_records(self, the_date):
-    """Read all records for users given a date.
-
-    Note that a record contains the cumulative total of data captured as
-    at the query date.
-
-    Args:
-       * theDate: date for which records should be read.
-
-    Returns:
-       A list of dicts.
-
-    Raises:
-       None
-    """
-    open_connection()
-    myList = []
-    try:
-        myCursor = self.getCursor()
-        #now see if we have any data for our hash
-        mySQL = 'select * from record where date = %s' % the_date
-        myCursor.execute(mySQL)
-        myRows = myCursor.fetchall()
-        if len(myRows) is None:
-            LOGGER.exception('No records found for %s' % the_date)
-        else:
-            for myRow in myRows:
-                myUser = myRow[0]  # first field
-                myDate = myRow[1]
-                myWays = myRow[2]
-                myNodes = myRow[3]
-                myDict = {'user': myUser,
-                          'date': myDate,
-                          'ways': myWays,
-                          'nodes': myNodes}
-                myList.append(myDict)
-
-    except sqlite.Error, e:
-        print "Error %s:" % e.args[0]
-    except Exception, e:
-        print "Error %s:" % e.args[0]
-        raise
-    finally:
-        close_connection()
-    return myList
-
 #
 # These are only used to serve static files when testing
 #
@@ -350,7 +185,10 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     if options.debug:
+        LOGGER.info('Running in debug mode')
         app.debug = True
         # set up flask to serve static content
         app.add_url_rule('/<path:path>', 'static_file', static_file)
+    else:
+        LOGGER.info('Running in production mode')
     app.run()
