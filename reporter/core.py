@@ -1,14 +1,17 @@
-import logging
-import urllib2
 import os
+import urllib2
 import time
 import optparse
 from xml.dom.minidom import parse
 import hashlib
 
+import logging
+import logging.handlers
+
 from flask import Flask, request, render_template, abort, Response
 
 from reporter import config
+
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -16,6 +19,7 @@ DB_PATH = os.path.join(
     'reporter.db'
 )
 LOGGER = logging.getLogger('osm-reporter')
+
 # Optional list of team members
 CREW_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -37,8 +41,15 @@ def current_status():
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
     else:
-        myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
-                     'map?bbox=%s' % bbox)
+        # Old way using osm directly with size limited api
+        #myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
+        #             'map?bbox=20.411482,-34.053726,20.467358,-34.009483')
+        # New way with http://wiki.openstreetmap.org/wiki/Overpass_API
+        # Get all ways newer than
+        # Date for newer in ymd format
+        # Note bbox is min lat, min lon, max lat, max lon
+        myUrlPath = ('http://overpass-api.de/api/interpreter?data='
+        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(**coordinates))
         safe_name = hashlib.md5(bbox).hexdigest()
         myFilePath = os.path.join(
             '/tmp',
@@ -230,6 +241,76 @@ def fetch_osm(theUrlPath, theFilePath):
         raise
 
 
+def addLoggingHanderOnce(theLogger, theHandler):
+    """A helper to add a handler to a logger, ensuring there are no duplicates.
+
+    Args:
+        * theLogger: logging.logger instance
+        * theHandler: logging.Handler instance to be added. It will not be
+            added if an instance of that Handler subclass already exists.
+
+    Returns:
+        bool: True if the logging handler was added
+
+    Raises:
+        None
+    """
+    myClassName = theHandler.__class__.__name__
+    for myHandler in theLogger.handlers:
+        if myHandler.__class__.__name__ == myClassName:
+            return False
+
+    theLogger.addHandler(theHandler)
+    return True
+
+
+def setupLogger():
+    """Set up our logger.
+
+    Args: None
+
+    Returns: None
+
+    Raises: None
+    """
+    myLogger = logging.getLogger('osm-reporter')
+    myLogger.setLevel(logging.DEBUG)
+    myDefaultHanderLevel = logging.DEBUG
+    # create formatter that will be added to the handlers
+    myFormatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    myTempDir = ('/tmp')
+    myFilename = os.path.join(myTempDir, 'reporter.log')
+    myFileHandler = logging.FileHandler(myFilename)
+    myFileHandler.setLevel(myDefaultHanderLevel)
+    # create console handler with a higher log level
+    myConsoleHandler = logging.StreamHandler()
+    myConsoleHandler.setLevel(logging.ERROR)
+
+    try:
+        #pylint: disable=F0401
+        from raven.handlers.logging import SentryHandler
+        from raven import Client
+        #pylint: enable=F0401
+        myClient = Client('http://12ef42a1d4394255a2041ac0428e8ef7:'
+            '755880e336f54892bc2a65d308019997@sentry.linfiniti.com/6')
+        mySentryHandler = SentryHandler(myClient)
+        mySentryHandler.setFormatter(myFormatter)
+        mySentryHandler.setLevel(logging.ERROR)
+    except:
+        myLogger.debug('Sentry logging disabled. Try pip install raven')
+
+    if addLoggingHanderOnce(myLogger, mySentryHandler):
+        myLogger.debug('Sentry logging enabled')
+
+    #Set formatters
+    myFileHandler.setFormatter(myFormatter)
+    myConsoleHandler.setFormatter(myFormatter)
+
+    # add the handlers to the logger
+    addLoggingHanderOnce(myLogger, myFileHandler)
+    addLoggingHanderOnce(myLogger, myConsoleHandler)
+
 #
 # These are only used to serve static files when testing
 #
@@ -256,6 +337,7 @@ def static_file(path):
 
 
 if __name__ == '__main__':
+    setupLogger()
     parser = optparse.OptionParser()
     parser.add_option('-d', '--debug', dest='debug', default=False,
                       help='turn on Flask debugging', action='store_true')
