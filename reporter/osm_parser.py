@@ -6,32 +6,57 @@ class OsmParser(xml.sax.ContentHandler):
         self.wayCount = 0
         self.nodeCount = 0
         self.inWay = False
+        self.user = None
+        self.building = False
+        self.wayCountDict = {}
+        self.nodeCountDict = {}
+
     def startElement(self, name, attrs):
         if name == 'way':
             self.inWay = True
             self.wayCount += 1
+            self.user = attrs.getValue('user')
         elif name == 'nd' and self.inWay:
-            #print("\tattribute type='" + attrs.getValue("type") + "'")
             self.nodeCount += 1
-        elif name = 'tag' and self.inWay:
-            pass
+        elif name == 'tag' and self.inWay:
+            if (attrs.getValue('k') == 'building' and
+                attrs.getValue('v') == 'yes'):
+                self.building = True
         else:
-            print 'Node not known %s' % name
+            pass
+            #print 'Node not known %s' % name
 
     def endElement(self, name):
         if name == 'way':
+            if self.building:
+                # Its a building so update our building and node counts
+                if self.user in self.wayCountDict:
+                    myValue = self.wayCountDict[self.user]
+                    self.wayCountDict[self.user] = myValue + 1
+                    myValue = self.nodeCountDict[self.user]
+                    self.nodeCountDict[self.user] = myValue + self.nodeCount
+                else:
+                    self.wayCountDict[self.user] = 1
+                    self.nodeCountDict[self.user] = self.nodeCount
+
             self.inWay = False
+            self.user = None
+            self.building = False
+            self.nodeCount = 0
+            self.wayCount = 0
 
 
     def characters(self, content):
         pass
 
 def main(sourceFileName):
+    # TODO: get rid of this after making a unit test
     myParser = OsmParser()
     source = open(sourceFileName)
     xml.sax.parse(source, myParser)
-    print 'Way count %s' % myParser.wayCount
-    print 'Node count %s' % myParser.nodeCount
+    print 'Way count %s' % str(myParser.wayCountDict)
+    print 'Node count %s' % str(myParser.nodeCountDict)
 
 if __name__ == "__main__":
+    # TODO: get rid of this after making a unit test
     main("/tmp/reporter.osm")

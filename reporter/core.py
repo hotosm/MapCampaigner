@@ -2,8 +2,8 @@ import os
 import urllib2
 import time
 import optparse
-from xml.dom.minidom import parse
 import hashlib
+import xml.sax
 
 import logging
 import logging.handlers
@@ -11,7 +11,7 @@ import logging.handlers
 from flask import Flask, request, render_template, abort, Response
 
 from reporter import config
-
+from reporter.osm_parser import OsmParser
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -57,11 +57,11 @@ def current_status():
             safe_name
         )
         try:
-            myDom = load_osm_dom(myFilePath, myUrlPath)
+            myFile = load_osm_document(myFilePath, myUrlPath)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            mySortedUserList = osm_building_contributions(myDom)
+            mySortedUserList = osm_building_contributions(myFile)
             error = None
     context = dict(
         mySortedUserList=mySortedUserList,
@@ -113,7 +113,7 @@ def crew_list():
         return []
 
 
-def load_osm_dom(theFilePath, theUrlPath):
+def load_osm_document(theFilePath, theUrlPath):
     """Load an osm document, refreshing it if the cached copy is stale.
 
     To save bandwidth the file is not downloaded if it is less than 1 hour old.
@@ -124,7 +124,7 @@ def load_osm_dom(theFilePath, theUrlPath):
         * theFilePath - (Mandatory). The path on the filesystem to which
           the file should be saved.
      Returns:
-         The path to the downloaded file.
+         file object for the the downloaded file.
 
      Raises:
          None
@@ -140,16 +140,14 @@ def load_osm_dom(theFilePath, theUrlPath):
         fetch_osm(theUrlPath, theFilePath)
         LOGGER.info('fetched %s' % theFilePath)
     myFile = open(theFilePath, 'rt')
-    myDom = parse(myFile)
-    myFile.close()
-    return myDom
+    return myFile
 
 
-def osm_building_contributions(theDom):
+def osm_building_contributions(theFile):
     """Compile a summary of user contributions for buildings.
 
     Args:
-        theDom: a minidom document as read from a .osm file.
+        theFile: a file object reading from a .osm file.
 
     Returns:
         list: a list of dicts where items in the list are sorted from highest
@@ -161,35 +159,10 @@ def osm_building_contributions(theDom):
     Raises:
         None
     """
-    myWayCountDict = {}
-    myNodeCountDict = {}
-    myWays = theDom.getElementsByTagName('way')
-    for myWay in myWays:
-        if myWay.hasAttribute('user'):
-            myUser = myWay.attributes['user'].value
-            myNodes = myWay.getElementsByTagName('nd')
-
-            # See if we have a building way
-            myBuildingFlag = False
-            myTags = myWay.getElementsByTagName('tag')
-            for myTag in myTags:
-                for myValue in myTag.attributes.values():
-                    if 'building' == myValue.value:
-                        myBuildingFlag = True
-            if not myBuildingFlag:
-                continue
-
-            # Its a building so update our building and node counts
-            if myUser in myWayCountDict:
-                myValue = myWayCountDict[myUser]
-                myWayCountDict[myUser] = myValue + 1
-                myValue = myNodeCountDict[myUser]
-                if myNodes:
-                    myNodeCountDict[myUser] = myValue + len(myNodes)
-            else:
-                myWayCountDict[myUser] = 1
-                if myNodes:
-                    myNodeCountDict[myUser] = len(myNodes)
+    myParser = OsmParser()
+    xml.sax.parse(theFile, myParser)
+    myWayCountDict = myParser.wayCountDict
+    myNodeCountDict = myParser.nodeCountDict
 
     # Convert to a list of dicts so we can sort it.
     myCrewList = config.CREW
