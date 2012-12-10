@@ -4,8 +4,9 @@ import os
 import time
 import optparse
 from xml.dom.minidom import parse
+import hashlib
 
-from flask import Flask, url_for, render_template, abort, Response
+from flask import Flask, request, render_template, abort, Response
 
 from reporter import config
 
@@ -27,12 +28,52 @@ app = Flask(__name__)
 
 @app.route('/')
 def current_status():
-    myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
-                 'map?bbox=%s' % config.BBOX)
-    myFilePath = '/tmp/swellendam.osm'
-    myDom = load_osm_dom(myFilePath, myUrlPath)
-    mySortedUserList = osm_building_contributions(myDom)
-    return render_template('base.html', mySortedUserList=mySortedUserList)
+    error = None
+    mySortedUserList = []
+    bbox = request.args.get('bbox', config.BBOX)
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        error = "Invalid bbox"
+        coordinates = split_bbox(config.BBOX)
+    else:
+        myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
+                     'map?bbox=%s' % bbox)
+        safe_name = hashlib.md5(bbox).hexdigest()
+        myFilePath = os.path.join(
+            '/tmp',
+            'reporter',
+            safe_name
+        )
+        try:
+            myDom = load_osm_dom(myFilePath, myUrlPath)
+        except urllib2.URLError:
+            error = "Bad request. Maybe the bbox is too big!"
+        else:
+            mySortedUserList = osm_building_contributions(myDom)
+            error = None
+    context = dict(
+        mySortedUserList=mySortedUserList,
+        bbox=bbox,
+        error=error,
+        coordinates=coordinates
+    )
+    return render_template('base.html', **context)
+
+
+def split_bbox(bbox):
+    """
+    Return a dict with 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
+    keys from a bbox string.
+    """
+    values = bbox.split(',')
+    if not len(values) == 4:
+        raise ValueError('Invalid bbox')
+    values = map(float, values)
+    names = ['SW_lng', 'SW_lat', 'NE_lng', 'NE_lat']
+    coordinates = dict(zip(names, values))
+    return coordinates
+
 
 def crew_list():
     """Get a list of 'crew' - people involved in your project.
