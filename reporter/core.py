@@ -45,8 +45,7 @@ def current_status():
         '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(**coordinates))
         safe_name = hashlib.md5(bbox).hexdigest()
         myFilePath = os.path.join(
-            '/tmp',
-            'reporter',
+            config.CACHE_DIR,
             safe_name
         )
         try:

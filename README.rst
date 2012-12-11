@@ -71,11 +71,9 @@ DISPLAY_UPDATE_CONTROL :
 
     (bool) either to display or not the "update stats" button on the map
 
+CACHE_DIR :
 
-OSM File Path
-=============
+    (str) path to a dir where to cache the OSM files used by the backend
 
-You can optionally set REPORTER_OSM environment var to defined where cached
-OSM file should be written.
 
 Tim Sutton
