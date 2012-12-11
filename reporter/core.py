@@ -25,7 +25,6 @@ app = Flask(__name__)
 
 @app.route('/')
 def current_status():
-    error = None
     mySortedUserList = []
     bbox = request.args.get('bbox', config.BBOX)
     try:
@@ -34,12 +33,6 @@ def current_status():
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
     else:
-        # Old way using osm directly with size limited api
-        #myUrlPath = ('http://www.openstreetmap.org/api/0.6/'
-        #             'map?bbox=20.411482,-34.053726,20.467358,-34.009483')
-        # New way with http://wiki.openstreetmap.org/wiki/Overpass_API
-        # Get all ways newer than
-        # Date for newer in ymd format
         # Note bbox is min lat, min lon, max lat, max lon
         myUrlPath = ('http://overpass-api.de/api/interpreter?data='
         '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(
@@ -56,8 +49,18 @@ def current_status():
         else:
             mySortedUserList = osm_building_contributions(myFile)
             error = None
+
+    myWayCount = 0
+    myNodeCount = 0
+    for myUser in mySortedUserList:
+        myWayCount += myUser['ways']
+        myNodeCount += myUser['nodes']
+
     context = dict(
         mySortedUserList=mySortedUserList,
+        myWayCount=myWayCount,
+        myNodeCount=myNodeCount,
+        myUserCount=len(mySortedUserList),
         bbox=bbox,
         error=error,
         coordinates=coordinates,
