@@ -20,13 +20,6 @@ DB_PATH = os.path.join(
 )
 LOGGER = logging.getLogger('osm-reporter')
 
-# Optional list of team members
-CREW_PATH = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    os.path.pardir,
-    'crew.txt'
-)
-
 app = Flask(__name__)
 
 
@@ -84,33 +77,6 @@ def split_bbox(bbox):
     names = ['SW_lng', 'SW_lat', 'NE_lng', 'NE_lat']
     coordinates = dict(zip(names, values))
     return coordinates
-
-
-def crew_list():
-    """Get a list of 'crew' - people involved in your project.
-
-    Args:
-        None
-
-    Returns:
-        list: list of str where each is a crew member name. If not crew
-            file exists or members are defined, an empty list is returned.
-
-    Raises:
-        None
-
-    Example::
-
-        myList = crew_list()
-        print str(myList)
-        ['timlinux', 'foo', 'bar']
-    """
-    if os.path.exists(CREW_PATH):
-        with open(CREW_PATH, 'r') as myFile:
-            myLines = myFile.read().splitlines()
-        return myLines
-    else:
-        return []
 
 
 def load_osm_document(theFilePath, theUrlPath):

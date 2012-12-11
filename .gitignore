@@ -2,5 +2,4 @@
 python
 .idea/workspace.xml
 apache/osm-reporter.apache.conf
-crew.txt
 reporter/config/local.py
