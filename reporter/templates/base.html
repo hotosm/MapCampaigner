@@ -99,7 +99,9 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-            var map = L.map('map', {updateStatsControl: true});
+            var map = L.map('map', {
+                updateStatsControl: {{ display_update_control }}
+            });
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 18

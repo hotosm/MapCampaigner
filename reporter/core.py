@@ -60,7 +60,8 @@ def current_status():
         mySortedUserList=mySortedUserList,
         bbox=bbox,
         error=error,
-        coordinates=coordinates
+        coordinates=coordinates,
+        display_update_control=1 if config.DISPLAY_UPDATE_CONTROL else 0,
     )
     return render_template('base.html', **context)
 
