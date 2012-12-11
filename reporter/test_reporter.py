@@ -7,17 +7,16 @@
     :copyright: (c) 2010 by Tim Sutton
     :license: GPLv3, see LICENSE for more details.
 """
-import reporter
 import unittest
 
-from reporter.core import split_bbox
+from reporter.core import split_bbox, app
 
 
 class ReporterTestCase(unittest.TestCase):
 
     def setUp(self):
-        reporter.core.app.config['TESTING'] = True
-        self.app = reporter.core.app.test_client()
+        app.config['TESTING'] = True
+        self.app = app.test_client()
 
     def tearDown(self):
         pass
