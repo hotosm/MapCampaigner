@@ -106,10 +106,17 @@
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 18
             }).addTo(map);
-            map.fitBounds([
+            var bounds = [
                 [{{ coordinates.SW_lat }}, {{ coordinates.SW_lng }}],
                 [{{ coordinates.NE_lat }}, {{ coordinates.NE_lng }}],
-            ]);;
+            ]
+            map.fitBounds(bounds);
+            L.rectangle(bounds, {
+                color: "#ff7800",
+                weight: 2,
+                fill: false,
+                clickable: false
+            }).addTo(map);
         });
         $(function () {
             var myData = [
