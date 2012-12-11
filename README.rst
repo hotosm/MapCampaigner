@@ -41,18 +41,35 @@ Next restart apache::
 Now test - open chrome and visit: http://osm-reporter.localhost
 
 
-Crew
-====
+Config
+======
 
-You can optionally define a 'crew' file which contains a list of people
-actively working on your data gathering project. Place the file in
-the top level checkout dir as :file:`crew.txt` containing one line per
-valid OSM user name. e.g.::
+You can optionally define a 'config' python module to override the default behaviour of *OSM-Reporter*.
 
-  timlinux
-  Jacoline
-  Babsie
-  NicoKriek
+You can create the python wherever you want, and then you will need to add
+the environnement var `REPORTER_CONFIG_MODULE` to make `reporter` aware of 
+it. For example::
+
+    export REPORTER_CONFIG_MODULE="path.to.the.module"
+
+Then you can override the config properties to fit your need. Note that you
+can override only the properties you need to, the other will fallback to 
+default values. For inspiration, you can have a look at :file:`reporter/config/default.py`
+
+*Available config*
+
+CREW :
+
+    (list) valid OSM users names of people actively working on your data gathering project
+
+BBOX :
+
+    (str) default bbox to use for the map and the stats;
+    format is: "{SW_lng},{SW_lat},{NE_lng},{NE_lat}
+
+DISPLAY_UPDATE_CONTROL :
+
+    (bool) either to display or not the "update stats" button on the map
 
 
 OSM File Path
