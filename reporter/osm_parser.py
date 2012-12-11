@@ -49,14 +49,3 @@ class OsmParser(xml.sax.ContentHandler):
     def characters(self, content):
         pass
 
-def main(sourceFileName):
-    # TODO: get rid of this after making a unit test
-    myParser = OsmParser()
-    source = open(sourceFileName)
-    xml.sax.parse(source, myParser)
-    print 'Way count %s' % str(myParser.wayCountDict)
-    print 'Node count %s' % str(myParser.nodeCountDict)
-
-if __name__ == "__main__":
-    # TODO: get rid of this after making a unit test
-    main("/tmp/reporter.osm")

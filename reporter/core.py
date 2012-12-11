@@ -37,7 +37,7 @@ def current_status():
         myUrlPath = ('http://overpass-api.de/api/interpreter?data='
         '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(
             **coordinates))
-        safe_name = hashlib.md5(bbox).hexdigest()
+        safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
         myFilePath = os.path.join(
             config.CACHE_DIR,
             safe_name
@@ -50,11 +50,7 @@ def current_status():
             mySortedUserList = osm_building_contributions(myFile)
             error = None
 
-    myWayCount = 0
-    myNodeCount = 0
-    for myUser in mySortedUserList:
-        myWayCount += myUser['ways']
-        myNodeCount += myUser['nodes']
+    myNodeCount, myWayCount = get_totals(mySortedUserList)
 
     context = dict(
         mySortedUserList=mySortedUserList,
@@ -69,10 +65,36 @@ def current_status():
     return render_template('base.html', **context)
 
 
-def split_bbox(bbox):
+def get_totals(theSortedUserList):
+    """Given a sorted user list, get the totals for ways and nodes.
+
+    Args:
+        theSortedUserList: list - of user dicts sorted by number of ways.
+
+    Returns:
+        (int, int): two-tuple containing waycount, node count.
     """
-    Return a dict with 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
-    keys from a bbox string.
+    myWayCount = 0
+    myNodeCount = 0
+    for myUser in theSortedUserList:
+        myWayCount += myUser['ways']
+        myNodeCount += myUser['nodes']
+    return myNodeCount, myWayCount
+
+
+def split_bbox(bbox):
+    """Split a bounding box into its parts.
+
+    Args:
+        bbox: str - a string describing a bbox e.g. '106.78674459457397,
+            -6.141301491467023,106.80691480636597,-6.133834354201348'
+
+    Returns:
+        dict: with keys: 'southwest_lng, southwest_lat, northeast_lng,
+            northeast_lat'
+
+    Raises:
+        None
     """
     values = bbox.split(',')
     if not len(values) == 4:
