@@ -44,17 +44,19 @@ Now test - open chrome and visit: http://osm-reporter.localhost
 Config
 ======
 
-You can optionally define a 'config' python module to override the default behaviour of *OSM-Reporter*.
+You can optionally define a 'config' python module to override the default
+behaviour of *OSM-Reporter*.
 
 You can create the python wherever you want, and then you will need to add
-the environnement var `REPORTER_CONFIG_MODULE` to make `reporter` aware of 
+the environnement var `REPORTER_CONFIG_MODULE` to make `reporter` aware of
 it. For example::
 
     export REPORTER_CONFIG_MODULE="path.to.the.module"
 
 Then you can override the config properties to fit your need. Note that you
-can override only the properties you need to, the other will fallback to 
-default values. For inspiration, you can have a look at :file:`reporter/config/default.py`
+can override only the properties you need to, the other will fallback to
+default values. For inspiration, you can have a look at
+:file:`reporter/config/default.py`
 
 *Available config*
 

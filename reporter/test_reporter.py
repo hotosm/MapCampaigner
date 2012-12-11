@@ -2,7 +2,7 @@
 """
     Reporter Tests
 
-    Tests the Flaskr application.
+    Tests the osm-reporter application.
 
     :copyright: (c) 2010 by Tim Sutton
     :license: GPLv3, see LICENSE for more details.
@@ -12,7 +12,7 @@ import unittest
 from reporter.core import split_bbox, app
 
 
-class ReporterTestCase(unittest.TestCase):
+class CoreTestCase(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
@@ -29,7 +29,8 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_split_bbox(self):
         self.assertEqual(
-            split_bbox("106.78674459457397,-6.141301491467023,106.80691480636597,-6.133834354201348"),
+            split_bbox('106.78674459457397,-6.141301491467023,'
+                       '106.80691480636597,-6.133834354201348'),
             {
                 'SW_lng': 106.78674459457397,
                 'SW_lat': -6.141301491467023,

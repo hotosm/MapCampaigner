@@ -10,8 +10,8 @@ import logging.handlers
 
 from flask import Flask, request, render_template, abort, Response
 
-from reporter import config
-from reporter.osm_parser import OsmParser
+import config
+from osm_parser import OsmParser
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -42,7 +42,8 @@ def current_status():
         # Date for newer in ymd format
         # Note bbox is min lat, min lon, max lat, max lon
         myUrlPath = ('http://overpass-api.de/api/interpreter?data='
-        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(**coordinates))
+        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(
+            **coordinates))
         safe_name = hashlib.md5(bbox).hexdigest()
         myFilePath = os.path.join(
             config.CACHE_DIR,

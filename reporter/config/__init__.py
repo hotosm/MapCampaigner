@@ -4,7 +4,7 @@ import os
 import re
 
 # import default
-from reporter.config.default import *
+from config.default import *
 
 try:
     user_settings = __import__(
