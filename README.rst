@@ -103,6 +103,9 @@ configuration options::
     python/bin/pip install -r REQUIREMENTS.txt
     export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/python/lib/python2.7/site-packages/
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+    rm -f pylint.log
+    pylint --output-format=parseable --reports=y --rcfile=pylintrc_jenkins -i y reporter > pylint.log
+    pep8 --repeat --ignore=E203 --exclude none.py . > pep8.log
 
 
 Sentry
