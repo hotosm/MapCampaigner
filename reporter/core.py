@@ -262,11 +262,13 @@ def setupLogger():
         mySentryHandler = SentryHandler(myClient)
         mySentryHandler.setFormatter(myFormatter)
         mySentryHandler.setLevel(logging.ERROR)
+        addLoggingHanderOnce(myLogger, mySentryHandler)
+        myLogger.debug('Sentry logging enabled')
+
     except:
         myLogger.debug('Sentry logging disabled. Try pip install raven')
 
-    if addLoggingHanderOnce(myLogger, mySentryHandler):
-        myLogger.debug('Sentry logging enabled')
+
 
     #Set formatters
     myFileHandler.setFormatter(myFormatter)

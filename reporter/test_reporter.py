@@ -13,13 +13,13 @@ import xml.sax
 import logging
 import logging.handlers
 
-from reporter.core import (split_bbox,
+from core import (split_bbox,
                            app,
                            setupLogger,
                            get_totals,
                            osm_building_contributions,
                            load_osm_document)
-from reporter.osm_parser import OsmParser
+from osm_parser import OsmParser
 
 
 setupLogger()

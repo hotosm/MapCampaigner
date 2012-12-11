@@ -4,7 +4,7 @@ import os
 import re
 
 # import default
-from config.default import *
+from default import *
 
 try:
     user_settings = __import__(

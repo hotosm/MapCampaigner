@@ -78,4 +78,38 @@ CACHE_DIR :
     (str) path to a dir where to cache the OSM files used by the backend
 
 
-Tim Sutton
+Tests and QA
+------------
+
+There is a test suite available, you can run it using nose e.g.::
+
+    PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
+    --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+
+
+Jenkins
+-------
+
+We have Continuous Integration support via our Jenkins server at
+
+http://jenkins.linfiniti.com
+
+At the above site you can see the test results for each commit that is made
+to the repository. The following jenkins shell commands were used in the
+configuration options::
+
+    rm -rf python
+    virtualenv python
+    python/bin/pip install -r REQUIREMENTS.txt
+    export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/python/lib/python2.7/site-packages/
+    nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+
+
+Sentry
+------
+
+Sentry is a service that collects exceptions and displays aggregate reports
+for them. You can view the sentry project we have running for osm-reporter
+here: http://sentry.linfiniti.com/osm-reporter/
+
+Tim Sutton & Yohan Boniface
