@@ -65,7 +65,7 @@ def current_status():
         bbox=bbox,
         error=error,
         coordinates=coordinates,
-        display_update_control=1 if config.DISPLAY_UPDATE_CONTROL else 0,
+        display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
     )
     return render_template('base.html', **context)
 
