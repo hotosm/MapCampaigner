@@ -52,6 +52,11 @@ def current_status():
 
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
+    # We need to manually cast float in string, otherwise floats are
+    # truncated, and then rounds in Leaflet result in a wrong bbox
+    # Note: slit_bbox should better keep returning real floats
+    coordinates = dict((k, repr(v)) for k, v in coordinates.iteritems())
+
     context = dict(
         mySortedUserList=mySortedUserList,
         myWayCount=myWayCount,
