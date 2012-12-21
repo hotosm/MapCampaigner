@@ -31,7 +31,13 @@ FIXTURE_PATH = os.path.join(
     'swellendam.osm'
 )
 
-class CoreTestCase(unittest.TestCase):
+class TestCaseLogger(unittest.TestCase):
+
+    def failureException(self, msg):
+        LOGGER.exception(msg)
+        return self.super(TestCaseLogger, self).failureException(msg)
+
+class CoreTestCase(TestCaseLogger):
 
     def setUp(self):
         app.config['TESTING'] = True
@@ -69,12 +75,9 @@ class CoreTestCase(unittest.TestCase):
                              % myUrl)
             raise
         myString = myFile.read()
-        try:
-            assert 'Jacoline' in myString
-        except Exception, e:
-            LOGGER.exception(
-                'load_osm_document from overpass content check failed.')
-            raise e
+        myMessage = 'load_osm_document from overpass content check failed.'
+        assert 'Jacoline' in myString, myMessage
+
         myFile = load_osm_document(myFilePath, myUrl)
         myFileTime = os.path.getmtime(myFilePath)
         myString = myFile.read()
@@ -83,11 +86,9 @@ class CoreTestCase(unittest.TestCase):
         #
         load_osm_document(myFilePath, myUrl)
         myFileTime2 = os.path.getmtime(myFilePath)
-        try:
-            self.assertEqual(myFileTime, myFileTime2)
-        except Exception, e:
-            LOGGER.exception('load_osm_document cache test failed.')
-            raise e
+        myMessage = 'load_osm_document cache test failed.'
+        self.assertEqual(myFileTime, myFileTime2, myMessage)
+
 
     def test_osm_building_contributions(self):
         """Test that we can obtain correct contribution counts for a file."""
@@ -97,24 +98,18 @@ class CoreTestCase(unittest.TestCase):
             {'crew': False, 'name': u'Babsie', 'nodes': 306, 'ways': 37},
             {'crew': False, 'name': u'Firefishy', 'nodes': 104, 'ways': 12},
             {'crew': False, 'name': u'Jacoline', 'nodes': 17, 'ways': 3}]
-        try:
-            self.assertListEqual(myList, myExpectedList)
-        except AssertionError, e:
-            LOGGER.exception('osm_building_contributions test failed.')
-            raise e
+        myMessage = 'osm_building_contributions test failed.'
+        self.assertListEqual(myList, myExpectedList, myMessage)
 
     def test_get_totals(self):
         """Test we get the proper totals from a sorted user list."""
         mySortedUserList = osm_building_contributions(open(FIXTURE_PATH))
         myWays, myNodes = get_totals(mySortedUserList)
-        try:
-            self.assertEquals((myWays, myNodes), (427, 52))
-        except AssertionError, e:
-            LOGGER.exception('get_totals test failed.')
-            raise e
+        myMessage = 'get_totals test failed.'
+        self.assertEquals((myWays, myNodes), (427, 52), myMessage)
 
 
-class OsmParserTestCase(unittest.TestCase):
+class OsmParserTestCase(TestCaseLogger):
     """Test the sax parser for OSM data."""
     def test_parse(self):
         myParser = OsmParser()
@@ -126,43 +121,38 @@ class OsmParserTestCase(unittest.TestCase):
         myExpectedNodeDict = {u'Babsie': 306,
                               u'Firefishy': 104,
                               u'Jacoline': 17}
-        try:
-            self.assertDictEqual(myExpectedWayDict, myParser.wayCountDict)
-        except AssertionError, e:
-            LOGGER.exception('OsmParser way count test failed.')
-            raise e
-        try:
-            self.assertDictEqual(myExpectedNodeDict, myParser.nodeCountDict)
-        except AssertionError, e:
-            LOGGER.exception('OsmParser node count test failed.')
-            raise e
 
-class UtilsTestCase(unittest.TestCase):
+        myMessage = 'OsmParser way count test failed.'
+        self.assertDictEqual(myExpectedWayDict,
+                             myParser.wayCountDict,
+                             myMessage)
+
+        myMessage = 'OsmParser node count test failed.'
+        self.assertDictEqual(myExpectedNodeDict,
+                             myParser.nodeCountDict,
+                             myMessage)
+
+
+class UtilsTestCase(TestCaseLogger):
 
     def test_split_bbox(self):
-        try:
-            self.assertEqual(
-                split_bbox('106.78674459457397,-6.141301491467023,'
-                           '106.80691480636597,-6.133834354201348'),
-                {
-                    'SW_lng': 106.78674459457397,
-                    'SW_lat': -6.141301491467023,
-                    'NE_lng': 106.80691480636597,
-                    'NE_lat': -6.133834354201348
-                }
-            )
-        except AssertionError, e:
-            LOGGER.exception('test_split_box failed.')
-            raise e
+        myMessage = 'test_split_box failed.'
+        self.assertEqual(
+            split_bbox('106.78674459457397,-6.141301491467023,'
+                       '106.80691480636597,-6.133834354201348'),
+            {
+                'SW_lng': 106.78674459457397,
+                'SW_lat': -6.141301491467023,
+                'NE_lng': 106.80691480636597,
+                'NE_lat': -6.133834354201348
+            },
+            myMessage
+        )
+
 
     def test_split_bad_bbox(self):
-        try:
-            with self.assertRaises(ValueError):
-                split_bbox('invalid bbox string')
-        except AssertionError, e:
-            LOGGER.exception('test_split_bad_box failure expected but passed.')
-            raise e
-
+        with self.assertRaises(ValueError):
+            split_bbox('invalid bbox string')
 
 
 if __name__ == '__main__':
