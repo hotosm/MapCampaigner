@@ -1,14 +1,16 @@
 import xml.sax
 
+
 class OsmParser(xml.sax.ContentHandler):
-    def __init__(self, tag_filter):
+
+    def __init__(self, tagName):
         xml.sax.ContentHandler.__init__(self)
         self.wayCount = 0
         self.nodeCount = 0
         self.inWay = False
         self.user = None
-        self.found = False ## mark when object found
-        self.tag_filter = tag_filter
+        self.found = False  # mark when object found
+        self.tagName = tagName
         self.wayCountDict = {}
         self.nodeCountDict = {}
 
@@ -20,7 +22,7 @@ class OsmParser(xml.sax.ContentHandler):
         elif name == 'nd' and self.inWay:
             self.nodeCount += 1
         elif name == 'tag' and self.inWay:
-            if self.tag_filter(attrs):
+            if (attrs.getValue('k') == self.tagName):
                 self.found = True
         else:
             pass
@@ -45,7 +47,5 @@ class OsmParser(xml.sax.ContentHandler):
             self.nodeCount = 0
             self.wayCount = 0
 
-
     def characters(self, content):
         pass
-

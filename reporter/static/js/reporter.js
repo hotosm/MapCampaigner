@@ -1,5 +1,5 @@
-var getObjectType = function(){
-    return $($("#object_type option")[$("#object_type")
+var getTagName = function(){
+    return $($("#tag_name option")[$("#tag_name")
                                       .attr("selectedIndex")]).text().trim();
 };
 
@@ -16,7 +16,7 @@ L.Control.UpdateStats = L.Control.extend({
         var fn = function (e) {
             var bounds = map.getBounds(),
                 bbox = bounds.toBBoxString();
-            window.location = "?bbox=" + bbox + "&obj=" + getObjectType();
+            window.location = "?bbox=" + bbox + "&obj=" + getTagName();
         };
 
         L.DomEvent
