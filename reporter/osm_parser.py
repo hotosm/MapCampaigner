@@ -19,8 +19,7 @@ class OsmParser(xml.sax.ContentHandler):
         elif name == 'nd' and self.inWay:
             self.nodeCount += 1
         elif name == 'tag' and self.inWay:
-            if (attrs.getValue('k') == 'building' and
-                attrs.getValue('v') == 'yes'):
+            if attrs.getValue('k') == 'building':
                 self.building = True
         else:
             pass
