@@ -19,6 +19,8 @@
     <script language="javascript"
             type="text/javascript" src="/static/js/jquery.flot.pie.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+    <script src="/static/js/heatcanvas.js"></script>
+    <script src="/static/js/heatcanvas-leaflet.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/reporter.js"></script>
      <style type="text/css">
@@ -75,10 +77,10 @@
                                 <th>Name</th>
                                 <th>Way Count</th>
                                 <th>Node Count</th>
+                                <th>HeatMap View<th>
                             </tr>
                         </thead>
                         <tbody>
-
                             {% for myEntry in mySortedUserList %}
                             <tr>
                                 <td>{{ loop.index }}</td>
@@ -94,12 +96,17 @@
                                 </td>
                                 <td>{{ myEntry.ways }}</td>
                                 <td>{{ myEntry.nodes }}</td>
+                                <td><a href="#" class="view-hm"
+                                       data-user="{{ myEntry.name }}">
+                                    View</a></td>
                             </tr>
                             {% endfor %}
-                            <th>Totals</th>
-                            <th>{{ myUserCount }}</th>
-                            <th>{{ myWayCount }}</th>
-                            <th>{{ myNodeCount }}</th>
+                            <tr>
+                              <td>Totals</td>
+                              <td>{{ myUserCount }}</td>
+                              <td>{{ myWayCount }}</td>
+                              <td>{{ myNodeCount }}</td>
+                              <td> </td>
                             </tr>
                         </tbody>
                     </table>
@@ -109,7 +116,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-            var map = L.map('map', {
+            map = L.map('map', {
                 updateStatsControl: {{ display_update_control }}
             });
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -127,6 +134,7 @@
                 fill: false,
                 clickable: false
             }).addTo(map);
+            window.bbox = map.getBounds().toBBoxString();
         });
         $(function () {
             var myData = [
@@ -146,5 +154,6 @@
                 legend: {show: false}
             });
         });
+        
     </script>
 </body>
