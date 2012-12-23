@@ -22,11 +22,11 @@ LOGGER = logging.getLogger('osm-reporter')
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def current_status():
     mySortedUserList = []
     bbox = request.args.get('bbox', config.BBOX)
+    object_type = request.args.get('obj', config.OBJECT_TYPE);
     try:
         coordinates = split_bbox(bbox)
     except ValueError:
@@ -47,8 +47,15 @@ def current_status():
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            mySortedUserList = osm_building_contributions(myFile)
-            error = None
+            if object_type == 'building':
+                mySortedUserList = osm_building_contributions(myFile)
+                error = None
+            elif object_type == 'highway':
+                mySortedUserList = osm_highway_contributions(myFile)
+                error = None
+            else:
+                error = "Unknown object type"
+
 
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
@@ -187,6 +194,9 @@ def osm_building_contributions(theFile):
     return osm_object_contributions(theFile, 
                                     lambda a: a.getValue('k') == 'building')
 
+def osm_highway_contributions(theFile):
+    return osm_object_contributions(theFile,
+                                    lambda a: a.getValue('k') == 'highway')
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
