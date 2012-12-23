@@ -49,3 +49,15 @@ class OsmParser(xml.sax.ContentHandler):
 
     def characters(self, content):
         pass
+
+
+class OsmNodeParser(xml.sax.ContentHandler):
+    def __init__(self, username):
+        self.username = username
+        self.nodes = []
+
+    def startElement(self, name, attrs):
+        if name == 'node':
+            if attrs.getValue('user') == self.username:
+                self.nodes.append((float(attrs.getValue('lat')),
+                                   float(attrs.getValue('lon'))))

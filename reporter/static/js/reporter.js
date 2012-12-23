@@ -37,3 +37,24 @@ L.Map.addInitHook(function () {
     }
 });
 
+$(function(){
+  $('.view-hm').click(function(e){
+    var username = $(this).attr("data-user");
+    $.ajax("/user", {
+      data: {username: username,
+             bbox: window.bbox},
+      success: function(data){
+        if (window.hmlayer) {
+          window.map.removeLayer(window.hmlayer);
+        }
+        var heatmap = new L.TileLayer.HeatCanvas({},{'step':0.07, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
+        $.each(data.d, function(i,e){
+          heatmap.pushData(e[0], e[1], 1);
+        })
+        window.map.addLayer(heatmap);
+        window.hmlayer = heatmap;
+      }     
+    });
+  })
+});
+

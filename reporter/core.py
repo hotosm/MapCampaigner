@@ -8,10 +8,10 @@ import xml.sax
 import logging
 import logging.handlers
 
-from flask import Flask, request, render_template, abort, Response
+from flask import Flask, request, render_template, abort, Response, jsonify
 
 import config
-from osm_parser import OsmParser
+from osm_parser import OsmParser, OsmNodeParser
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -19,6 +19,18 @@ DB_PATH = os.path.join(
     'reporter.db'
 )
 LOGGER = logging.getLogger('osm-reporter')
+
+def get_osm_file(bbox, coordinates):
+    # Note bbox is min lat, min lon, max lat, max lon
+    myUrlPath = ('http://overpass-api.de/api/interpreter?data='
+                 '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+                 .format(**coordinates))
+    safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
+    myFilePath = os.path.join(
+        config.CACHE_DIR,
+        safe_name)
+    return load_osm_document(myFilePath, myUrlPath)
+    
 
 app = Flask(__name__)
 
@@ -35,17 +47,8 @@ def current_status():
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
     else:
-        # Note bbox is min lat, min lon, max lat, max lon
-        myUrlPath = ('http://overpass-api.de/api/interpreter?data='
-        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(
-            **coordinates))
-        safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
-        myFilePath = os.path.join(
-            config.CACHE_DIR,
-            safe_name
-        )
         try:
-            myFile = load_osm_document(myFilePath, myUrlPath)
+            myFile = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
@@ -74,6 +77,25 @@ def current_status():
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
     )
     return render_template('base.html', **context)
+
+@app.route('/user')
+def user_status():
+    username = request.args.get('username')
+    bbox = request.args.get('bbox')
+
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        error = "Invalid bbox"
+        coordinates = split_bbox(config.BBOX)
+    else:
+        try:
+            myFile = get_osm_file(bbox, coordinates)
+        except urllib2.URLError:
+            error = "Bad request. Maybe the bbox is too big!"
+        else:
+            node_data = osm_nodes_by_user(myFile, username)
+            return jsonify(d=node_data)
 
 
 def get_totals(theSortedUserList):
@@ -217,6 +239,10 @@ def fetch_osm(theUrlPath, theFilePath):
         LOGGER.exception('Bad Url or Timeout')
         raise
 
+def osm_nodes_by_user(theFile, username):
+    myParser = OsmNodeParser(username)
+    xml.sax.parse(theFile, myParser)
+    return myParser.nodes
 
 def addLoggingHanderOnce(theLogger, theHandler):
     """A helper to add a handler to a logger, ensuring there are no duplicates.
