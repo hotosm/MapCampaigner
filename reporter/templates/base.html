@@ -40,7 +40,13 @@
         {% endif %}
         <div class="hero-unit">
             <h1>Open Street Map Reporter</h1>
-            <p>This page lists people who have contributed building data to a map.</p>
+            <p>This page lists people who have contributed 
+              <select id="object_type" class="span2">
+                <option{% if object_type == 'building' %} selected{% endif %}>
+                  building</option>
+                <option{% if object_type == 'highway' %} selected{% endif %}>highway</option>
+              </select>
+              data to a map.</p>
         </div>
 
         <div class="row">
@@ -60,7 +66,7 @@
                 </p>
             </div>
             <div class="span8">
-                <h2>Building Contributors</h2>
+                <h2>{{object_type|capitalize}} Contributors</h2>
                 <p>
                     <table class="table">
                         <thead>

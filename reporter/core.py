@@ -70,6 +70,7 @@ def current_status():
         myNodeCount=myNodeCount,
         myUserCount=len(mySortedUserList),
         bbox=bbox,
+        object_type=object_type,
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),

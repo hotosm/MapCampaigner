@@ -1,3 +1,8 @@
+var getObjectType = function(){
+    return $($("#object_type option")[$("#object_type")
+                                      .attr("selectedIndex")]).text().trim();
+};
+
 /* Update stats */
 L.Control.UpdateStats = L.Control.extend({
 
@@ -11,7 +16,7 @@ L.Control.UpdateStats = L.Control.extend({
         var fn = function (e) {
             var bounds = map.getBounds(),
                 bbox = bounds.toBBoxString();
-            window.location = "?bbox=" + bbox;
+            window.location = "?bbox=" + bbox + "&obj=" + getObjectType();
         };
 
         L.DomEvent
@@ -31,3 +36,4 @@ L.Map.addInitHook(function () {
         this.addControl(this.updateStatsControl);
     }
 });
+
