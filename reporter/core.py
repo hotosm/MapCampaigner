@@ -140,7 +140,7 @@ def load_osm_document(theFilePath, theUrlPath):
     return myFile
 
 
-def osm_building_contributions(theFile):
+def osm_object_contributions(theFile, object_filter):
     """Compile a summary of user contributions for buildings.
 
     Args:
@@ -156,7 +156,7 @@ def osm_building_contributions(theFile):
     Raises:
         None
     """
-    myParser = OsmParser()
+    myParser = OsmParser(object_filter)
     xml.sax.parse(theFile, myParser)
     myWayCountDict = myParser.wayCountDict
     myNodeCountDict = myParser.nodeCountDict
@@ -182,6 +182,10 @@ def osm_building_contributions(theFile):
                                    d['name'],
                                    d['crew']))
     return mySortedUserList
+
+def osm_building_contributions(theFile):
+    return osm_object_contributions(theFile, 
+                                    lambda a: a.getValue('k') == 'building')
 
 
 def fetch_osm(theUrlPath, theFilePath):
