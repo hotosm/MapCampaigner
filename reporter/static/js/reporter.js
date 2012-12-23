@@ -39,7 +39,6 @@ L.Map.addInitHook(function () {
 
 $(function(){
   $('.view-hm').click(function(e){
-    e.preventDefault();
     var username = $(this).attr("data-user");
     $.ajax("/user", {
       data: {username: username,
