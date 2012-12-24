@@ -55,6 +55,13 @@ $(function(){
         window.hmlayer = heatmap;
       }     
     });
-  })
+  });
+
+  $('.clear-hm').click(function(e){
+    if (window.hmlayer) {
+      window.map.removeLayer(window.hmlayer);
+      delete window.hmlayer;
+    }
+  });
 });
 
