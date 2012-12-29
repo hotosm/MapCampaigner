@@ -8,10 +8,10 @@ import xml.sax
 import logging
 import logging.handlers
 
-from flask import Flask, request, render_template, abort, Response
+from flask import Flask, request, render_template, abort, Response, jsonify
 
 import config
-from osm_parser import OsmParser
+from osm_parser import OsmParser, OsmNodeParser
 
 DB_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -20,35 +20,45 @@ DB_PATH = os.path.join(
 )
 LOGGER = logging.getLogger('osm-reporter')
 
-app = Flask(__name__)
+def get_osm_file(bbox, coordinates):
+    # Note bbox is min lat, min lon, max lat, max lon
+    myUrlPath = ('http://overpass-api.de/api/interpreter?data='
+                 '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+                 .format(**coordinates))
+    safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
+    myFilePath = os.path.join(
+        config.CACHE_DIR,
+        safe_name)
+    return load_osm_document(myFilePath, myUrlPath)
+    
 
+app = Flask(__name__)
 
 @app.route('/')
 def current_status():
     mySortedUserList = []
     bbox = request.args.get('bbox', config.BBOX)
+    object_type = request.args.get('obj', config.OBJECT_TYPE);
     try:
         coordinates = split_bbox(bbox)
     except ValueError:
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
     else:
-        # Note bbox is min lat, min lon, max lat, max lon
-        myUrlPath = ('http://overpass-api.de/api/interpreter?data='
-        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'.format(
-            **coordinates))
-        safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
-        myFilePath = os.path.join(
-            config.CACHE_DIR,
-            safe_name
-        )
         try:
-            myFile = load_osm_document(myFilePath, myUrlPath)
+            myFile = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            mySortedUserList = osm_building_contributions(myFile)
-            error = None
+            if object_type == 'building':
+                mySortedUserList = osm_building_contributions(myFile)
+                error = None
+            elif object_type == 'highway':
+                mySortedUserList = osm_highway_contributions(myFile)
+                error = None
+            else:
+                error = "Unknown object type"
+
 
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
@@ -63,11 +73,31 @@ def current_status():
         myNodeCount=myNodeCount,
         myUserCount=len(mySortedUserList),
         bbox=bbox,
+        object_type=object_type,
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
     )
     return render_template('base.html', **context)
+
+@app.route('/user')
+def user_status():
+    username = request.args.get('username')
+    bbox = request.args.get('bbox')
+
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        error = "Invalid bbox"
+        coordinates = split_bbox(config.BBOX)
+    else:
+        try:
+            myFile = get_osm_file(bbox, coordinates)
+        except urllib2.URLError:
+            error = "Bad request. Maybe the bbox is too big!"
+        else:
+            node_data = osm_nodes_by_user(myFile, username)
+            return jsonify(d=node_data)
 
 
 def get_totals(theSortedUserList):
@@ -140,7 +170,7 @@ def load_osm_document(theFilePath, theUrlPath):
     return myFile
 
 
-def osm_building_contributions(theFile):
+def osm_object_contributions(theFile, object_filter):
     """Compile a summary of user contributions for buildings.
 
     Args:
@@ -156,7 +186,7 @@ def osm_building_contributions(theFile):
     Raises:
         None
     """
-    myParser = OsmParser()
+    myParser = OsmParser(object_filter)
     xml.sax.parse(theFile, myParser)
     myWayCountDict = myParser.wayCountDict
     myNodeCountDict = myParser.nodeCountDict
@@ -183,6 +213,13 @@ def osm_building_contributions(theFile):
                                    d['crew']))
     return mySortedUserList
 
+def osm_building_contributions(theFile):
+    return osm_object_contributions(theFile, 
+                                    lambda a: a.getValue('k') == 'building')
+
+def osm_highway_contributions(theFile):
+    return osm_object_contributions(theFile,
+                                    lambda a: a.getValue('k') == 'highway')
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
@@ -210,6 +247,10 @@ def fetch_osm(theUrlPath, theFilePath):
         LOGGER.exception('Bad Url or Timeout')
         raise
 
+def osm_nodes_by_user(theFile, username):
+    myParser = OsmNodeParser(username)
+    xml.sax.parse(theFile, myParser)
+    return myParser.nodes
 
 def addLoggingHanderOnce(theLogger, theHandler):
     """A helper to add a handler to a logger, ensuring there are no duplicates.

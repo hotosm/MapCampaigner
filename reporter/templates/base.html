@@ -14,8 +14,13 @@
      <script language="javascript"
                 type="text/javascript" src="/static/js/jquery.js"></script>
     <script language="javascript"
-            type="text/javascript" src="/static/js/jquery.flot.js"></script>
+            type="text/javascript"
+            src="/static/js/jquery.flot.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery.flot.pie.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+    <script src="/static/js/heatcanvas.js"></script>
+    <script src="/static/js/heatcanvas-leaflet.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/reporter.js"></script>
      <style type="text/css">
@@ -37,7 +42,13 @@
         {% endif %}
         <div class="hero-unit">
             <h1>Open Street Map Reporter</h1>
-            <p>This page lists people who have contributed building data to a map.</p>
+            <p>This page lists people who have contributed 
+              <select id="object_type" class="span2">
+                <option{% if object_type == 'building' %} selected{% endif %}>
+                  building</option>
+                <option{% if object_type == 'highway' %} selected{% endif %}>highway</option>
+              </select>
+              data to a map.</p>
         </div>
 
         <div class="row">
@@ -45,12 +56,8 @@
             </div>
         </div>
         <div class="row">
-            <div class="span12">
-                <div id="chart" style="height:300px;"></div>
-            </div>
-        </div>
-        <div class="row">
             <div class="span4">
+                <div id="chart" style="height:300px;"></div>
                 <h2>About</h2>
                 <p><img src="/static/img/linfiniti-logo-300.png"/></p>
                 <p>This application was created by
@@ -61,7 +68,7 @@
                 </p>
             </div>
             <div class="span8">
-                <h2>Building Contributors</h2>
+                <h2>{{object_type|capitalize}} Contributors</h2>
                 <p>
                     <table class="table">
                         <thead>
@@ -70,10 +77,10 @@
                                 <th>Name</th>
                                 <th>Way Count</th>
                                 <th>Node Count</th>
+                                <th>HeatMap View<th>
                             </tr>
                         </thead>
                         <tbody>
-
                             {% for myEntry in mySortedUserList %}
                             <tr>
                                 <td>{{ loop.index }}</td>
@@ -89,12 +96,18 @@
                                 </td>
                                 <td>{{ myEntry.ways }}</td>
                                 <td>{{ myEntry.nodes }}</td>
+                                <td><input type="radio" name="view-hm" 
+                                           class="view-hm"
+                                       data-user="{{ myEntry.name }}">
+                                </td>
                             </tr>
                             {% endfor %}
-                            <th>Totals</th>
-                            <th>{{ myUserCount }}</th>
-                            <th>{{ myWayCount }}</th>
-                            <th>{{ myNodeCount }}</th>
+                            <tr>
+                              <td>Totals</td>
+                              <td>{{ myUserCount }}</td>
+                              <td>{{ myWayCount }}</td>
+                              <td>{{ myNodeCount }}</td>
+                              <td><button class="clear-hm btn">Clear HeatMap</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -104,7 +117,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-            var map = L.map('map', {
+            map = L.map('map', {
                 updateStatsControl: {{ display_update_control }}
             });
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -122,29 +135,26 @@
                 fill: false,
                 clickable: false
             }).addTo(map);
+            window.bbox = map.getBounds().toBBoxString();
         });
         $(function () {
             var myData = [
                 {%  for myEntry in mySortedUserList %}
-                [{{ loop.index }},
-                    {{ myEntry.ways }},
-                    {%  if myEntry.crew %}
-                        "{{ myEntry.name }}"
-                    {% endif %}
-                ],
+                {
+                    label: "{{myEntry.name}}",
+                    data: {{ myEntry.ways }},
+                    crew: {{ myEntry.crew|lower }}
+                },
                 {%  endfor %}]
-            var myPlot = $.plot($("#chart"), [ myData ]);
-
-            $.each(myPlot.getData()[0].data, function(i, el){
-                var o = myPlot.pointOffset({x: el[0], y: el[1]});
-                $('<span class="badge badge-info">' + el[1] + '</span>').css( {
-                    position: 'absolute',
-                    left: o.left + 4,
-                    top: o.top - 20,
-                    display: 'none'
-                }).appendTo(myPlot.getPlaceholder()).fadeIn('slow');
+            var myPlot = $.plot($("#chart"), myData, {
+                series: { 
+                    pie: {show: true,
+                          tilt: 0.5,
+                          label: {show:true, threshold: 0.05}}
+                },
+                legend: {show: false}
             });
-
         });
+        
     </script>
 </body>

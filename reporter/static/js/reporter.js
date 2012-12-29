@@ -1,3 +1,8 @@
+var getObjectType = function(){
+    return $($("#object_type option")[$("#object_type")
+                                      .attr("selectedIndex")]).text().trim();
+};
+
 /* Update stats */
 L.Control.UpdateStats = L.Control.extend({
 
@@ -11,7 +16,7 @@ L.Control.UpdateStats = L.Control.extend({
         var fn = function (e) {
             var bounds = map.getBounds(),
                 bbox = bounds.toBBoxString();
-            window.location = "?bbox=" + bbox;
+            window.location = "?bbox=" + bbox + "&obj=" + getObjectType();
         };
 
         L.DomEvent
@@ -31,3 +36,32 @@ L.Map.addInitHook(function () {
         this.addControl(this.updateStatsControl);
     }
 });
+
+$(function(){
+  $('.view-hm').click(function(e){
+    var username = $(this).attr("data-user");
+    $.ajax("/user", {
+      data: {username: username,
+             bbox: window.bbox},
+      success: function(data){
+        if (window.hmlayer) {
+          window.map.removeLayer(window.hmlayer);
+        }
+        var heatmap = new L.TileLayer.HeatCanvas({},{'step':0.07, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
+        $.each(data.d, function(i,e){
+          heatmap.pushData(e[0], e[1], 1);
+        })
+        window.map.addLayer(heatmap);
+        window.hmlayer = heatmap;
+      }     
+    });
+  });
+
+  $('.clear-hm').click(function(e){
+    if (window.hmlayer) {
+      window.map.removeLayer(window.hmlayer);
+      delete window.hmlayer;
+    }
+  });
+});
+
