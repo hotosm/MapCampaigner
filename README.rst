@@ -77,6 +77,10 @@ CACHE_DIR :
 
     (str) path to a dir where to cache the OSM files used by the backend
 
+TAG_NAMES :
+
+    (list) tag names available for stats (default: ['building', 'highway'])
+
 
 Tests and QA
 ------------
