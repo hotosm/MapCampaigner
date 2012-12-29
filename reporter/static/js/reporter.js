@@ -1,22 +1,33 @@
-var getTagName = function(){
-    return $($("#tag_name option")[$("#tag_name")
-                                      .attr("selectedIndex")]).text().trim();
-};
 
 /* Update stats */
 L.Control.UpdateStats = L.Control.extend({
 
     onAdd: function (map) {
         var className = 'leaflet-control-stats',
-            container = L.DomUtil.create('div', className);
+            container = L.DomUtil.create('div', className),
+            option,
+            choice;
+
+        L.DomEvent.disableClickPropagation(container);
+        var div = L.DomUtil.create('div', "", container);
+        var select = L.DomUtil.create('select', "", div);
+        for (var i = 0, l = this.options.choices.length; i<l; i++) {
+            option = L.DomUtil.create('option', "", select);
+            choice = this.options.choices[i];
+            option.value = option.innerHTML = choice;
+            if (choice == this.options.selected) {
+                option.selected = "selected";
+            }
+        }
 
         var link = L.DomUtil.create('a', "", container);
         link.href = '#';
+        link.innerHTML = "&nbsp;";
         link.title = "Get stats for this view";
         var fn = function (e) {
             var bounds = map.getBounds(),
                 bbox = bounds.toBBoxString();
-            window.location = "?bbox=" + bbox + "&obj=" + getTagName();
+            window.location = "?bbox=" + bbox + "&obj=" + select.value;
         };
 
         L.DomEvent
@@ -32,7 +43,7 @@ L.Control.UpdateStats = L.Control.extend({
 L.Map.addInitHook(function () {
     if (this.options.updateStatsControl) {
         var options = this.options.statsControlOptions ? this.options.statsControlOptions : {};
-        this.updateStatsControl = new L.Control.UpdateStats(this, options);
+        this.updateStatsControl = new L.Control.UpdateStats(options);
         this.addControl(this.updateStatsControl);
     }
 });
