@@ -7,4 +7,7 @@ DISPLAY_UPDATE_CONTROL = True
 # Where to store OSM files
 CACHE_DIR = "/tmp"
 # Default object type
-OBJECT_TYPE = "building"
+TAG_NAMES = [
+    "building",  # first is default
+    "highway",
+]

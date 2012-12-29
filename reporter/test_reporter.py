@@ -17,7 +17,7 @@ from core import (split_bbox,
                            app,
                            setupLogger,
                            get_totals,
-                           osm_building_contributions,
+                           osm_object_contributions,
                            load_osm_document)
 from osm_parser import OsmParser
 
@@ -31,11 +31,13 @@ FIXTURE_PATH = os.path.join(
     'swellendam.osm'
 )
 
+
 class TestCaseLogger(unittest.TestCase):
 
     def failureException(self, msg):
         LOGGER.exception(msg)
         return self.super(TestCaseLogger, self).failureException(msg)
+
 
 class CoreTestCase(TestCaseLogger):
 
@@ -89,11 +91,10 @@ class CoreTestCase(TestCaseLogger):
         myMessage = 'load_osm_document cache test failed.'
         self.assertEqual(myFileTime, myFileTime2, myMessage)
 
-
     def test_osm_building_contributions(self):
         """Test that we can obtain correct contribution counts for a file."""
         myFile = open(FIXTURE_PATH)
-        myList = osm_building_contributions(myFile)
+        myList = osm_object_contributions(myFile, tagName="building")
         myExpectedList = [
             {'crew': False, 'name': u'Babsie', 'nodes': 306, 'ways': 37},
             {'crew': False, 'name': u'Firefishy', 'nodes': 104, 'ways': 12},
@@ -103,7 +104,7 @@ class CoreTestCase(TestCaseLogger):
 
     def test_get_totals(self):
         """Test we get the proper totals from a sorted user list."""
-        mySortedUserList = osm_building_contributions(open(FIXTURE_PATH))
+        mySortedUserList = osm_object_contributions(open(FIXTURE_PATH), tagName="building")
         myWays, myNodes = get_totals(mySortedUserList)
         myMessage = 'get_totals test failed.'
         self.assertEquals((myWays, myNodes), (427, 52), myMessage)
@@ -112,7 +113,7 @@ class CoreTestCase(TestCaseLogger):
 class OsmParserTestCase(TestCaseLogger):
     """Test the sax parser for OSM data."""
     def test_parse(self):
-        myParser = OsmParser()
+        myParser = OsmParser(tagName="building")
         source = open(FIXTURE_PATH)
         xml.sax.parse(source, myParser)
         myExpectedWayDict = {u'Babsie': 37,
@@ -148,7 +149,6 @@ class UtilsTestCase(TestCaseLogger):
             },
             myMessage
         )
-
 
     def test_split_bad_bbox(self):
         with self.assertRaises(ValueError):

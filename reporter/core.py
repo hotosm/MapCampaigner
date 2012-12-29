@@ -34,11 +34,13 @@ def get_osm_file(bbox, coordinates):
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def current_status():
     mySortedUserList = []
     bbox = request.args.get('bbox', config.BBOX)
-    object_type = request.args.get('obj', config.OBJECT_TYPE);
+    tag_name = request.args.get('obj', config.TAG_NAMES[0])
+    error = None
     try:
         coordinates = split_bbox(bbox)
     except ValueError:
@@ -50,15 +52,10 @@ def current_status():
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            if object_type == 'building':
-                mySortedUserList = osm_building_contributions(myFile)
-                error = None
-            elif object_type == 'highway':
-                mySortedUserList = osm_highway_contributions(myFile)
-                error = None
+            if not tag_name in config.TAG_NAMES:
+                error = "Unsupported object type"
             else:
-                error = "Unknown object type"
-
+                mySortedUserList = osm_object_contributions(myFile, tag_name)
 
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
@@ -73,7 +70,8 @@ def current_status():
         myNodeCount=myNodeCount,
         myUserCount=len(mySortedUserList),
         bbox=bbox,
-        object_type=object_type,
+        current_tag_name=tag_name,
+        available_tag_names=config.TAG_NAMES,
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
@@ -170,11 +168,12 @@ def load_osm_document(theFilePath, theUrlPath):
     return myFile
 
 
-def osm_object_contributions(theFile, object_filter):
+def osm_object_contributions(theFile, tagName):
     """Compile a summary of user contributions for buildings.
 
     Args:
         theFile: a file object reading from a .osm file.
+        tagName: the tag name we want to filter on.
 
     Returns:
         list: a list of dicts where items in the list are sorted from highest
@@ -186,7 +185,7 @@ def osm_object_contributions(theFile, object_filter):
     Raises:
         None
     """
-    myParser = OsmParser(object_filter)
+    myParser = OsmParser(tagName=tagName)
     xml.sax.parse(theFile, myParser)
     myWayCountDict = myParser.wayCountDict
     myNodeCountDict = myParser.nodeCountDict
@@ -213,13 +212,6 @@ def osm_object_contributions(theFile, object_filter):
                                    d['crew']))
     return mySortedUserList
 
-def osm_building_contributions(theFile):
-    return osm_object_contributions(theFile, 
-                                    lambda a: a.getValue('k') == 'building')
-
-def osm_highway_contributions(theFile):
-    return osm_object_contributions(theFile,
-                                    lambda a: a.getValue('k') == 'highway')
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
