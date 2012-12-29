@@ -18,7 +18,14 @@
     background-image: url("../img/update_stats.png");
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    height: 46px;
+    display: inline-block;
     width: 46px;
-    display: block;
+}
+.leaflet-control-stats div, .leaflet-control-stats a {
+    height: 46px;
+    display: inline-block;
+    line-height: 46px;
+}
+.leaflet-control-stats div {
+    padding: 0 5px;
 }

@@ -42,13 +42,7 @@
         {% endif %}
         <div class="hero-unit">
             <h1>Open Street Map Reporter</h1>
-            <p>This page lists people who have contributed 
-                <select id="tag_name" class="span2">
-                {% for tag_name in available_tag_names %}
-                    <option{% if tag_name == current_tag_name %} selected{% endif %}>{{ tag_name }}</option>
-                {% endfor %}
-              </select>
-              data to a map.</p>
+            <p>This page lists people who have contributed <strong>{{ current_tag_name }}</strong> data to a map.</p>
         </div>
 
         <div class="row">
@@ -118,7 +112,11 @@
     <script type="text/javascript">
         $(document).ready(function(){
             map = L.map('map', {
-                updateStatsControl: {{ display_update_control }}
+                updateStatsControl: {{ display_update_control }},
+                statsControlOptions: {
+                    choices: {{ available_tag_names|safe }},
+                    selected: "{{ current_tag_name }}"
+                }
             });
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
