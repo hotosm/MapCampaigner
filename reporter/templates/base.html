@@ -71,7 +71,8 @@
                                 <th>Name</th>
                                 <th>Way Count</th>
                                 <th>Node Count</th>
-                                <th>HeatMap View<th>
+                                <th>Show HeatMap</th>
+                                <th>Show Details</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,9 +91,34 @@
                                 </td>
                                 <td>{{ myEntry.ways }}</td>
                                 <td>{{ myEntry.nodes }}</td>
-                                <td><input type="radio" name="view-hm" 
+                                <td><input type="radio" name="view-hm"
                                            class="view-hm"
                                        data-user="{{ myEntry.name }}">
+                                </td>
+                                <td><input type="checkbox"
+                                            value="details{{ loop.index }}"
+                                            class="details-toggle"
+                                            checked=""/>
+                                </td>
+                            </tr>
+                            <tr id="details{{ loop.index }}"
+                                class="details-row">
+                                <td colspan="6" >
+                                    <div style="height: 100px">
+                                        <div id="overview{{ loop.index }}"
+                                          style="margin-left:50px;
+                                                 margin-top:20px;
+                                                 width:500px;
+                                                 height:80px"></div>
+                                        <div class="centered">Active days:
+                                            {{ myEntry.activeDays }},
+                                            Start date:
+                                            {{ myEntry.start }},
+                                            End date:
+                                            {{ myEntry.end }}
+                                        </div>
+                                    {# <div>{{ myEntry.timeline|safe }}</div>  #}
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -101,7 +127,11 @@
                               <td>{{ myUserCount }}</td>
                               <td>{{ myWayCount }}</td>
                               <td>{{ myNodeCount }}</td>
-                              <td><button class="clear-hm btn">Clear HeatMap</button></td>
+                              <td><button class="clear-hm btn">Clear
+                                  HeatMap</button></td>
+                              <td><input type="checkbox" id="all-details"
+                                         checked />
+                                  Toggle all</td>
                             </tr>
                         </tbody>
                     </table>
@@ -136,6 +166,7 @@
             window.bbox = map.getBounds().toBBoxString();
         });
         $(function () {
+            {# Pie chart for all users #}
             var myData = [
                 {%  for myEntry in mySortedUserList %}
                 {
@@ -145,14 +176,43 @@
                 },
                 {%  endfor %}]
             var myPlot = $.plot($("#chart"), myData, {
-                series: { 
+                series: {
                     pie: {show: true,
                           tilt: 0.5,
                           label: {show:true, threshold: 0.05}}
                 },
                 legend: {show: false}
             });
+            {# User timeline charts #}
+            {% for myEntry in mySortedUserList %}
+                var d{{ loop.index }} = {{ myEntry.timeline|safe }};
+                for (i=0; i < d{{ loop.index }}.length; i++)
+                {
+                    var pair = d{{ loop.index }}[i];
+                    console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
+                    var dateString = pair[0];
+                    var splitString = dateString.split("-");
+                    var year = parseInt(splitString[0]);
+                    var month = parseInt(splitString[1]) - 1; //javascript stupidity - base 0 months
+                    var day = parseInt(splitString[2]);
+                    pair[0] = new Date(year, month, day).getTime();
+                    console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
+                    d{{ loop.index }}[i] = pair;
+                }
+
+                var overview{{ loop.index }} = $.plot($("#overview{{ loop.index }}"), [d{{ loop.index }}], {
+                    series: {
+                        lines: { show: true, lineWidth: 1 },
+                        shadowSize: 0
+                    },
+                    xaxis: { mode: "time", timeformat: "%d-%m-%y" },
+                    yaxis: { min: 0, autoscaleMargin: 0.1 }
+                });
+                {# Do this last to prevent flot rendering artifacts. #}
+                //$('.details-row').hide();
+
+            {% endfor %}
         });
-        
+
     </script>
 </body>

@@ -4,6 +4,8 @@ import time
 import optparse
 import hashlib
 import xml.sax
+from datetime import date, timedelta
+import time
 
 import logging
 import logging.handlers
@@ -18,7 +20,12 @@ DB_PATH = os.path.join(
     os.path.pardir,
     'reporter.db'
 )
+
 LOGGER = logging.getLogger('osm-reporter')
+
+app = Flask(__name__)
+# If you need to debug 500 errors, set debug to True in flask-config.py
+app.config.from_pyfile('flask-config.py')
 
 def get_osm_file(bbox, coordinates):
     # Note bbox is min lat, min lon, max lat, max lon
@@ -30,9 +37,6 @@ def get_osm_file(bbox, coordinates):
         config.CACHE_DIR,
         safe_name)
     return load_osm_document(myFilePath, myUrlPath)
-    
-
-app = Flask(__name__)
 
 
 @app.route('/')
@@ -57,6 +61,7 @@ def current_status():
             else:
                 mySortedUserList = osm_object_contributions(myFile, tag_name)
 
+
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
     # We need to manually cast float in string, otherwise floats are
@@ -80,6 +85,14 @@ def current_status():
 
 @app.route('/user')
 def user_status():
+    """Get nodes for user as a json doc.
+
+        TODO: What is this used for?
+
+        To use e.g.: http://localhost:5000/user?bbox=20.431909561157227,
+        -34.02849543118406,20.45207977294922,-34.02227106658948&
+        obj=building&username=timlinux
+    """
     username = request.args.get('username')
     bbox = request.args.get('bbox')
 
@@ -88,11 +101,13 @@ def user_status():
     except ValueError:
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
+        LOGGER.exception(error + coordinates)
     else:
         try:
             myFile = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
+            LOGGER.exception(error + coordinates)
         else:
             node_data = osm_nodes_by_user(myFile, username)
             return jsonify(d=node_data)
@@ -178,10 +193,20 @@ def osm_object_contributions(theFile, tagName):
     Returns:
         list: a list of dicts where items in the list are sorted from highest
             contributor (based on number of ways) down to lowest. Each element
-            in the list is a dict in the form: { 'user': <user>, 'ways':
-            <way count>, 'nodes': <node count>, 'crew': <bool> } where crew
-            is used to designate users who are part of an active data gathering
-            campaign.
+            in the list is a dict in the form: {
+            'user': <user>,
+            'ways': <way count>,
+            'nodes': <node count>,
+            'timeline': <timelinedict>,
+            'crew': <bool> }
+            where crew is used to designate users who are part of an active
+            data gathering campaign.
+            The timeline dict will contain a collection of dates and
+            the total number of ways created on that date e.g.
+            {
+                u'2010-12-09': 10,
+                u'2012-07-10': 14
+            }
     Raises:
         None
     """
@@ -189,6 +214,7 @@ def osm_object_contributions(theFile, tagName):
     xml.sax.parse(theFile, myParser)
     myWayCountDict = myParser.wayCountDict
     myNodeCountDict = myParser.nodeCountDict
+    myTimeLines = myParser.userDayCountDict
 
     # Convert to a list of dicts so we can sort it.
     myCrewList = config.CREW
@@ -198,9 +224,16 @@ def osm_object_contributions(theFile, tagName):
         myCrewFlag = False
         if myKey in myCrewList:
             myCrewFlag = True
+        myStartDate, myEndDate = date_range(myTimeLines[myKey])
+        myStartDate = time.strftime('%d-%m-%Y', myStartDate.timetuple())
+        myEndDate = time.strftime('%d-%m-%Y', myEndDate.timetuple())
         myRecord = {'name': myKey,
                     'ways': myValue,
                     'nodes': myNodeCountDict[myKey],
+                    'timeline': interpolated_timeline(myTimeLines[myKey]),
+                    'start': myStartDate,
+                    'end': myEndDate,
+                    'activeDays': len(myTimeLines[myKey]),
                     'crew': myCrewFlag}
         myUserList.append(myRecord)
 
@@ -209,9 +242,94 @@ def osm_object_contributions(theFile, tagName):
         myUserList, key=lambda d: (-d['ways'],
                                    d['nodes'],
                                    d['name'],
+                                   d['timeline'],
+                                   d['start'],
+                                   d['end'],
+                                   d['activeDays'],
                                    d['crew']))
     return mySortedUserList
 
+
+def date_range(theTimeline):
+    """Given a timeline, determine the start and end dates.
+
+    Args:
+        theTimeline: dict - a dictionary of non sequential dates (in
+            YYYY-MM-DD) as keys and values (representing ways collected on that
+            day).
+
+    Returns:
+        myStartDate - a date object representing the earliest date in the time
+            line.
+        myEndDate - a date object representing the newest date in the time
+            line.
+    """
+    myStartDate = None
+    myEndDate = None
+    for myDate in theTimeline.keys():
+        myYear, myMonth, myDay = myDate.split('-')
+        LOGGER.info('Date: %s' % myDate)
+        myTimelineDate = date(int(myYear), int(myMonth), int(myDay))
+        if myStartDate is None:
+            myStartDate = myTimelineDate
+        if myEndDate is None:
+            myEndDate = myTimelineDate
+        if myTimelineDate < myStartDate:
+            myStartDate = myTimelineDate
+        if myTimelineDate > myEndDate:
+            myEndDate = myTimelineDate
+    return myStartDate, myEndDate
+
+
+def interpolated_timeline(theTimeline):
+    """Interpolate a timeline given a sparse timeline.
+
+    Args:
+        theTimeline: dict - a dictionary of non sequential dates (in
+            YYYY-MM-DD) as keys and values (representing ways collected on that
+            day).
+
+    Returns:
+        dict: An interpolated list where each date in the original
+            input date is present, and all days where no total was provided
+            are added to include that day.
+
+    Given an input looking like this:
+            {
+                {u'2012-09-24': 1},
+                {u'2012-09-21': 10},
+                {u'2012-09-25': 5},
+            }
+
+    The returned list will be in the form:
+            [
+                [Date(2012,09,21), 10],
+                [Date(2012,09,22), 0],
+                [Date(2012,09,23), 0],
+                [Date(2012,09,24), 1],
+                [Date(2012,09,25), 5],
+            ]
+    """
+    # Work out the earliest and latest day
+    myStartDate, myEndDate = date_range(theTimeline)
+    # Loop through them, adding an entry for each day
+    myTimeline = '['
+    for myDate in date_range_iterator(myStartDate, myEndDate):
+        myDateString = time.strftime('%Y-%m-%d', myDate.timetuple())
+        if myDateString in theTimeline:
+            myValue = theTimeline[myDateString]
+        else:
+            myValue = 0
+        if myTimeline != '[':
+            myTimeline += ','
+        myTimeline += '["%s",%i]' % (myDateString, myValue)
+    myTimeline += ']'
+    return myTimeline
+
+def date_range_iterator(start_date, end_date):
+    """Given two dates return a collection of dates between start and end."""
+    for n in range(int ((end_date - start_date).days) + 1):
+        yield start_date + timedelta(n)
 
 def fetch_osm(theUrlPath, theFilePath):
     """Fetch an osm map and store locally.
@@ -344,6 +462,8 @@ def static_file(path):
 if __name__ == '__main__':
     setupLogger()
     parser = optparse.OptionParser()
+    # This doesnt seem to work, flask-config.py option described near the
+    # top of this file does.
     parser.add_option('-d', '--debug', dest='debug', default=False,
                       help='turn on Flask debugging', action='store_true')
 

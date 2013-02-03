@@ -11,14 +11,16 @@ import os
 import unittest
 import xml.sax
 import logging
+import ast
 import logging.handlers
 
 from core import (split_bbox,
-                           app,
-                           setupLogger,
-                           get_totals,
-                           osm_object_contributions,
-                           load_osm_document)
+                  app,
+                  setupLogger,
+                  get_totals,
+                  osm_object_contributions,
+                  load_osm_document,
+                  interpolated_timeline)
 from osm_parser import OsmParser
 
 
@@ -33,14 +35,12 @@ FIXTURE_PATH = os.path.join(
 
 
 class TestCaseLogger(unittest.TestCase):
-
     def failureException(self, msg):
         LOGGER.exception(msg)
-        return self.super(TestCaseLogger, self).failureException(msg)
+        return super(TestCaseLogger, self).failureException(msg)
 
 
 class CoreTestCase(TestCaseLogger):
-
     def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()
@@ -61,12 +61,12 @@ class CoreTestCase(TestCaseLogger):
         # NOTE - INTERNET CONNECTION NEEDED FOR THIS TEST
         #
         myUrl = ('http://overpass-api.de/api/interpreter?data='
-                     '(node(-34.03112731086964,20.44997155666351,'
-                     '-34.029571310785315,20.45501410961151);<;);out+meta;')
+                 '(node(-34.03112731086964,20.44997155666351,'
+                 '-34.029571310785315,20.45501410961151);<;);out+meta;')
         myFilePath = '/tmp/test_load_osm_document.osm'
         if os.path.exists(myFilePath):
             os.remove(myFilePath)
-        # We test twice - once to ensure it is fetched from the overpass api
+            # We test twice - once to ensure it is fetched from the overpass api
         # and once to ensure the cached file is used on second access
         # Note: There is a small chance the second test could fail if it
         # exactly straddles the cache expiry time.
@@ -95,23 +95,46 @@ class CoreTestCase(TestCaseLogger):
         """Test that we can obtain correct contribution counts for a file."""
         myFile = open(FIXTURE_PATH)
         myList = osm_object_contributions(myFile, tagName="building")
-        myExpectedList = [
-            {'crew': False, 'name': u'Babsie', 'nodes': 306, 'ways': 37},
-            {'crew': False, 'name': u'Firefishy', 'nodes': 104, 'ways': 12},
-            {'crew': False, 'name': u'Jacoline', 'nodes': 17, 'ways': 3}]
-        myMessage = 'osm_building_contributions test failed.'
-        self.assertListEqual(myList, myExpectedList, myMessage)
+        myExpectedList = ast.literal_eval(file(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'test_data',
+            'expected_osm_building_contributions.txt'
+        ),'rt').read())
+
+
+        self.maxDiff = None
+        print myList
+        self.assertListEqual(myList, myExpectedList)
 
     def test_get_totals(self):
         """Test we get the proper totals from a sorted user list."""
-        mySortedUserList = osm_object_contributions(open(FIXTURE_PATH), tagName="building")
+        mySortedUserList = osm_object_contributions(open(FIXTURE_PATH),
+                                                    tagName="building")
         myWays, myNodes = get_totals(mySortedUserList)
-        myMessage = 'get_totals test failed.'
-        self.assertEquals((myWays, myNodes), (427, 52), myMessage)
+        self.assertEquals((myWays, myNodes), (427, 52))
+
+    def test_interpolated_timeline(self):
+        """Check that we can get an interpolated timeline,"""
+        myTimeline = {u'2012-12-01': 10,
+                      u'2012-12-10': 1}
+        myExpectedResult = ('[["2012-12-01",10],'
+                            '["2012-12-02",0],'
+                            '["2012-12-03",0],'
+                            '["2012-12-04",0],'
+                            '["2012-12-05",0],'
+                            '["2012-12-06",0],'
+                            '["2012-12-07",0],'
+                            '["2012-12-08",0],'
+                            '["2012-12-09",0],'
+                            '["2012-12-10",1]]')
+        myResult = interpolated_timeline(myTimeline)
+        self.maxDiff = None
+        self.assertEqual(myExpectedResult, myResult)
 
 
 class OsmParserTestCase(TestCaseLogger):
     """Test the sax parser for OSM data."""
+
     def test_parse(self):
         myParser = OsmParser(tagName="building")
         source = open(FIXTURE_PATH)
@@ -122,20 +145,47 @@ class OsmParserTestCase(TestCaseLogger):
         myExpectedNodeDict = {u'Babsie': 306,
                               u'Firefishy': 104,
                               u'Jacoline': 17}
+        myExpectedTimelineDict = {
+            u'Babsie': {
+                u'2012-12-08': 15,
+                u'2012-12-10': 22
+            },
+            u'Burger': {
+                u'2010-05-16': 1
+            },
+            u'Firefishy': {
+                u'2012-09-26': 10,
+                u'2012-12-08': 15,
+                u'2012-12-09': 5,
+                u'2012-12-10': 1
+            },
+            u'Jacoline': {
+                u'2012-12-08': 1,
+                u'2012-12-10': 2
+            },
+            u'thomasF': {
+                u'2012-08-22': 5
+            },
+            u'timlinux': {
+                u'2010-12-09': 1,
+                u'2012-07-10': 1
+            }
+        }
 
-        myMessage = 'OsmParser way count test failed.'
+        #OsmParser way count test
         self.assertDictEqual(myExpectedWayDict,
-                             myParser.wayCountDict,
-                             myMessage)
+                             myParser.wayCountDict)
 
-        myMessage = 'OsmParser node count test failed.'
+        #OsmParser node count test
         self.assertDictEqual(myExpectedNodeDict,
-                             myParser.nodeCountDict,
-                             myMessage)
+                             myParser.nodeCountDict)
+
+        #OsmParser timeline test
+        self.assertDictEqual(myExpectedTimelineDict,
+                             myParser.userDayCountDict)
 
 
 class UtilsTestCase(TestCaseLogger):
-
     def test_split_bbox(self):
         myMessage = 'test_split_box failed.'
         self.assertEqual(

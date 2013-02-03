@@ -64,7 +64,7 @@ $(function(){
         })
         window.map.addLayer(heatmap);
         window.hmlayer = heatmap;
-      }     
+      }
     });
   });
 
@@ -73,6 +73,25 @@ $(function(){
       window.map.removeLayer(window.hmlayer);
       delete window.hmlayer;
     }
+  });
+
+  // Set up detail row hiding etc.
+
+  $('.details-toggle').click(function(e){
+        var rowId = $(this).attr("value");
+        $("#"+rowId).toggle();
+  });
+  $('#all-details').click(function(e){
+        var status = $(this).attr("checked");
+        if (status)
+        {
+            $(".details-row").show();
+        }
+        else
+        {
+            $(".details-row").hide();
+        }
+        $('.details-toggle').attr("checked", status);
   });
 });
 

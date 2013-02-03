@@ -13,12 +13,27 @@ class OsmParser(xml.sax.ContentHandler):
         self.tagName = tagName
         self.wayCountDict = {}
         self.nodeCountDict = {}
+        self.userDayCountDict = {}
 
     def startElement(self, name, attrs):
         if name == 'way':
             self.inWay = True
             self.wayCount += 1
             self.user = attrs.getValue('user')
+            timestamp = attrs.getValue('timestamp')
+            #2012-12-10T12:26:21Z
+            date_part = timestamp.split('T')[0]
+            if self.user not in self.userDayCountDict:
+                self.userDayCountDict[self.user] = dict()
+
+            if date_part not in self.userDayCountDict[self.user]:
+                self.userDayCountDict[self.user][date_part] = 0
+
+            value = self.userDayCountDict[self.user][date_part]
+            value += 1
+            self.userDayCountDict[self.user][date_part] = value
+
+
         elif name == 'nd' and self.inWay:
             self.nodeCount += 1
         elif name == 'tag' and self.inWay:
