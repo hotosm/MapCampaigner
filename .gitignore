@@ -1,5 +1,6 @@
 *.pyc
 python
+venv
 .idea/workspace.xml
 apache/osm-reporter.apache.conf
 reporter/config/local.py
