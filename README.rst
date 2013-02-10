@@ -110,7 +110,7 @@ configuration options::
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
     rm -f pylint.log
     pylint --output-format=parseable --reports=y --rcfile=pylintrc_jenkins -i y reporter > pylint.log
-    pep8 --repeat --ignore=E203 --exclude none.py . > pep8.log
+    pep8 --repeat --ignore=E203 --exclude venv,none.py . > pep8.log
 
 
 Sentry
