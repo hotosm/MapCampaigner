@@ -20,7 +20,7 @@ class OsmTestCase(LoggedTestCase):
         myFilePath = '/tmp/test_load_osm_document.osm'
         if os.path.exists(myFilePath):
             os.remove(myFilePath)
-            # We test twice - once to ensure it is fetched from the overpass api
+            # We test twice - once to ensure its fetched from the overpass api
         # and once to ensure the cached file is used on second access
         # Note: There is a small chance the second test could fail if it
         # exactly straddles the cache expiry time.
