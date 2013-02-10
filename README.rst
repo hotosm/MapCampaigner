@@ -102,9 +102,10 @@ At the above site you can see the test results for each commit that is made
 to the repository. The following jenkins shell commands were used in the
 configuration options::
 
-    rm -rf python
-    virtualenv python
-    python/bin/pip install -r REQUIREMENTS.txt
+    export OSM_REPORTER_LOGFILE='/tmp/osm-reporter-jenkins.log'
+    rm -rf venv
+    virtualenv venv
+    python/bin/pip install -r requirements.txt
     export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/python/lib/python2.7/site-packages/
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
     rm -f pylint.log

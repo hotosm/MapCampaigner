@@ -41,7 +41,11 @@ def setup_logger():
     myFormatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     myTempDir = ('/tmp')
-    myFilename = os.path.join(myTempDir, 'reporter.log')
+    # so e.g. jenkins can override log dir.
+    if 'OSM_REPORTER_LOGFILE' in os.environ:
+        myFilename = os.environ['OSM_REPORTER_LOGFILE']
+    else:
+        myFilename = os.path.join(myTempDir, 'reporter.log')
     myFileHandler = logging.FileHandler(myFilename)
     myFileHandler.setLevel(myDefaultHanderLevel)
     # create console handler with a higher log level
