@@ -12,6 +12,7 @@ from reporter.utilities import (
     get_totals, osm_nodes_by_user)
 from reporter.osm import get_osm_file
 from reporter.static import static_file
+from reporter import LOGGER
 
 
 @app.route('/')
@@ -95,7 +96,6 @@ def user_status():
 
 
 if __name__ == '__main__':
-    setup_logger()
     parser = optparse.OptionParser()
     parser.add_option('-d', '--debug', dest='debug', default=False,
                       help='turn on Flask debugging', action='store_true')

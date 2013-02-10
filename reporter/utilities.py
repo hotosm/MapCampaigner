@@ -47,7 +47,11 @@ def split_bbox(bbox):
     values = bbox.split(',')
     if not len(values) == 4:
         raise ValueError('Invalid bbox')
+    # pylint: disable=W0141
+    # next line should probably use list comprehension rather
+    # http://pylint-messages.wikidot.com/messages:w0141
     values = map(float, values)
+    # pylint: enable=W0141
     names = ['SW_lng', 'SW_lat', 'NE_lng', 'NE_lat']
     coordinates = dict(zip(names, values))
     return coordinates

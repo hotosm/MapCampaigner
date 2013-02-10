@@ -1,14 +1,6 @@
-import ast
-import os
-
 from reporter.views import app
-from reporter.utilities import (
-    osm_object_contributions,
-    get_totals,
-    interpolated_timeline)
 from reporter.test.logged_unittest import LoggedTestCase
-from reporter.osm import load_osm_document
-from reporter.test.helpers import LOGGER, FIXTURE_PATH
+from reporter.test.helpers import LOGGER
 
 
 class AppTestCase(LoggedTestCase):

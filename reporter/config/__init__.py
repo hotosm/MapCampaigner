@@ -4,7 +4,9 @@ import os
 import re
 
 # import default
+# pylint: disable=W0401
 from default import *
+# pylint: enable=W0401
 
 try:
     user_settings = __import__(

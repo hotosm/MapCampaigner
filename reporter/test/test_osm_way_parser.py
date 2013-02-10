@@ -1,4 +1,5 @@
 import xml
+import unittest
 
 from reporter.test.logged_unittest import LoggedTestCase
 from reporter.osm_way_parser import OsmParser
