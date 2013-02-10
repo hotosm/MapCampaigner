@@ -105,8 +105,8 @@ configuration options::
     export OSM_REPORTER_LOGFILE='/tmp/osm-reporter-jenkins.log'
     rm -rf venv
     virtualenv venv
-    python/bin/pip install -r requirements.txt
-    export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/python/lib/python2.7/site-packages/
+    venv/bin/pip install -r requirements.txt
+    export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/venv/lib/python2.7/site-packages/
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
     rm -f pylint.log
     pylint --output-format=parseable --reports=y --rcfile=pylintrc_jenkins -i y reporter > pylint.log
