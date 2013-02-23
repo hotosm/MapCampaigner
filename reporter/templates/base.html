@@ -104,12 +104,12 @@
                             <tr id="details{{ loop.index }}"
                                 class="details-row">
                                 <td colspan="6" >
-                                    <div style="height: 100px">
+                                    <div style="height: 120px">
                                         <div id="overview{{ loop.index }}"
                                           style="margin-left:50px;
                                                  margin-top:20px;
                                                  width:500px;
-                                                 height:100px"></div>
+                                                 height:80px"></div>
                                         <div class="centered">Active days:
                                             {{ myEntry.activeDays }},
                                             Start date:
@@ -118,7 +118,7 @@
                                             {{ myEntry.end }}
                                         </div>
                                         <div class="centered">Ways on active days:
-                                            Average {{ myEntry.average }}.
+                                            Average: {{ myEntry.average }}.
                                             Best:   {{ myEntry.best }}.
                                             Worst:  {{ myEntry.worst }}.
                                         </div>
