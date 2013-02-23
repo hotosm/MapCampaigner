@@ -1,7 +1,13 @@
-import xml
+# coding=utf-8
+"""Module for parsing nodes from OSM xml documents.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
+
+from xml import sax
 
 
-class OsmNodeParser(xml.sax.ContentHandler):
+class OsmNodeParser(sax.ContentHandler):
     """SAX Parser to retrieve nodes from an OSM XML document."""
 
     def __init__(self, username):

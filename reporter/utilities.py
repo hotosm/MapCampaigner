@@ -1,16 +1,16 @@
+# coding=utf-8
+"""Helper utilities module to compute various statistics for the current AOI.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import xml
-import xml.sax
-import logging
 import time
 from datetime import date, timedelta
 
 import config
 from reporter.osm_node_parser import OsmNodeParser
 from reporter.osm_way_parser import OsmParser
-from reporter.logger import setup_logger
-
-setup_logger()
-LOGGER = logging.getLogger('osm-reporter')
+from reporter import LOGGER
 
 
 def get_totals(sorted_user_list):
@@ -72,6 +72,9 @@ def osm_object_contributions(osm_file, tag_name):
             'ways': <way count>,
             'nodes': <node count>,
             'timeline': <timelinedict>,
+            'best': <most ways in a single day>,
+            'worst': <least ways in single day>,
+            'average': <average ways across active days>,
             'crew': <bool> }
             where crew is used to designate users who are part of an active
             data gathering campaign.
@@ -85,7 +88,12 @@ def osm_object_contributions(osm_file, tag_name):
         None
     """
     myParser = OsmParser(tagName=tag_name)
-    xml.sax.parse(osm_file, myParser)
+    try:
+        xml.sax.parse(osm_file, myParser)
+    except xml.sax.SAXParseException:
+        LOGGER.exception('Failed to parse OSM xml.')
+        raise
+
     myWayCountDict = myParser.wayCountDict
     myNodeCountDict = myParser.nodeCountDict
     myTimeLines = myParser.userDayCountDict
@@ -101,13 +109,17 @@ def osm_object_contributions(osm_file, tag_name):
         myStartDate, myEndDate = date_range(myTimeLines[myKey])
         myStartDate = time.strftime('%d-%m-%Y', myStartDate.timetuple())
         myEndDate = time.strftime('%d-%m-%Y', myEndDate.timetuple())
+        user_timeline = myTimeLines[myKey]
         myRecord = {'name': myKey,
                     'ways': myValue,
                     'nodes': myNodeCountDict[myKey],
-                    'timeline': interpolated_timeline(myTimeLines[myKey]),
+                    'timeline': interpolated_timeline(user_timeline),
                     'start': myStartDate,
                     'end': myEndDate,
-                    'activeDays': len(myTimeLines[myKey]),
+                    'activeDays': len(user_timeline),
+                    'best': best_active_day(user_timeline),
+                    'worst': worst_active_day(user_timeline),
+                    'average': average_for_active_days(user_timeline),
                     'crew': myCrewFlag}
         myUserList.append(myRecord)
 
@@ -120,6 +132,9 @@ def osm_object_contributions(osm_file, tag_name):
                                    d['start'],
                                    d['end'],
                                    d['activeDays'],
+                                   d['best'],
+                                   d['worst'],
+                                   d['average'],
                                    d['crew']))
     return mySortedUserList
 
@@ -160,6 +175,76 @@ def date_range(timeline):
         if myTimelineDate > myEndDate:
             myEndDate = myTimelineDate
     return myStartDate, myEndDate
+
+
+def average_for_active_days(timeline):
+    """Compute the average activity per active day in a sparse timeline.
+
+    Args:
+        timeline: dict - a dictionary of non-sequential dates (in
+            YYYY-MM-DD) as keys and values (representing ways collected on that
+            day).
+
+    Returns:
+        int: number of entities captured per day rounded to the nearest int.
+
+    Raises:
+        None
+    """
+    myCount = 0
+    mySum = 0
+    for myValue in timeline.values():
+        if myValue > 0:
+            myCount += 1
+            mySum += myValue
+    myAverage = mySum / myCount
+    return myAverage
+
+
+def best_active_day(timeline):
+    """Compute the best activity for a single active day in a sparse timeline.
+
+    Args:
+        timeline: dict - a dictionary of non-sequential dates (in
+            YYYY-MM-DD) as keys and values (representing ways collected on that
+            day).
+
+    Returns:
+        int: number of entities captured for the user's best day.
+
+    Raises:
+        None
+    """
+    myBest = 0
+    for myValue in timeline.values():
+        if myValue > myBest:
+            myBest = myValue
+    return myBest
+
+
+def worst_active_day(timeline):
+    """Compute the worst activity for a single active day in a sparse timeline.
+
+    Args:
+        timeline: dict - a dictionary of non-sequential dates (in
+            YYYY-MM-DD) as keys and values (representing ways collected on that
+            day).
+
+    Returns:
+        int: number of entities captured for the user's worst day.
+
+    Raises:
+        None
+    """
+    if len(timeline) < 1:
+        return 0
+    myWorst = timeline.values()[0]
+    for myValue in timeline.values():
+        if myValue == 0:  # should never be but just in case
+            continue
+        if myValue < myWorst:
+            myWorst = myValue
+    return myWorst
 
 
 def interpolated_timeline(timeline):

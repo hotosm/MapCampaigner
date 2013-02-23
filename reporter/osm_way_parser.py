@@ -1,5 +1,8 @@
-
-
+# coding=utf-8
+"""Module for parsing ways from OSM xml documents.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import xml.sax
 
 

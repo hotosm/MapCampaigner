@@ -1,10 +1,15 @@
+# coding=utf-8
+"""Module for low level OSM file retrieval.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import hashlib
 import urllib2
 import time
 import os
 
 from reporter import config
-from reporter.utilities import LOGGER
+from reporter import LOGGER
 
 
 def get_osm_file(bbox, coordinates):

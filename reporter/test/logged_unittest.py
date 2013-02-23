@@ -7,7 +7,7 @@
 """
 import unittest
 import logging
-from reporter.logger import setup_logger
+from reporter import setup_logger
 
 setup_logger()
 LOGGER = logging.getLogger('osm-reporter')

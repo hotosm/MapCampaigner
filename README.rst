@@ -14,8 +14,8 @@ First clone::
 Then setup a venv::
 
     cd osm-reporter
-    virtualenv python
-    source python/bin/activate
+    virtualenv venv
+    source venv/bin/activate
     pip install -r REQUIREMENTS.txt
 
 Then deploy under apache mod_wsgi::
