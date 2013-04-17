@@ -1,10 +1,16 @@
 # -*- coding:utf-8 -*-
-
+"""
+Package for configuration of the reporter app.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import os
 import re
 
 # import default
+# pylint: disable=W0401
 from default import *
+# pylint: enable=W0401
 
 try:
     user_settings = __import__(

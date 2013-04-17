@@ -104,18 +104,26 @@
                             <tr id="details{{ loop.index }}"
                                 class="details-row">
                                 <td colspan="6" >
-                                    <div style="height: 100px">
+                                    <div style="height: 120px">
                                         <div id="overview{{ loop.index }}"
                                           style="margin-left:50px;
                                                  margin-top:20px;
                                                  width:500px;
                                                  height:80px"></div>
-                                        <div class="centered">Active days:
-                                            {{ myEntry.activeDays }},
-                                            Start date:
+                                        <div class="centered">
+                                            <strong>Start date:</strong>
                                             {{ myEntry.start }},
-                                            End date:
+                                            <strong>End date:</strong>
                                             {{ myEntry.end }}
+                                        </div>
+                                        <div class="centered">
+                                            <strong>Active days:</strong>
+                                            <span class="badge">{{ myEntry.activeDays }}</span>
+                                            <strong>Ways per day:</strong>
+                                            Average <span class="badge badge-success">{{ myEntry.average }}</span>
+                                            Best <span class="badge badge-info">{{ myEntry.best }}</span>
+                                            Worst <span class="badge badge-warning">{{ myEntry.worst }}</span>
+                                            </div>
                                         </div>
                                     {# <div>{{ myEntry.timeline|safe }}</div>  #}
                                     </div>

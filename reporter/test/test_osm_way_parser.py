@@ -1,4 +1,10 @@
+# coding=utf-8
+"""Test cases for the OSM Way Parser module.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import xml
+import unittest
 
 from reporter.test.logged_unittest import LoggedTestCase
 from reporter.osm_way_parser import OsmParser

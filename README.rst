@@ -14,8 +14,8 @@ First clone::
 Then setup a venv::
 
     cd osm-reporter
-    virtualenv python
-    source python/bin/activate
+    virtualenv venv
+    source venv/bin/activate
     pip install -r REQUIREMENTS.txt
 
 Then deploy under apache mod_wsgi::
@@ -102,14 +102,15 @@ At the above site you can see the test results for each commit that is made
 to the repository. The following jenkins shell commands were used in the
 configuration options::
 
-    rm -rf python
-    virtualenv python
-    python/bin/pip install -r REQUIREMENTS.txt
-    export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/python/lib/python2.7/site-packages/
+    export OSM_REPORTER_LOGFILE='/tmp/osm-reporter-jenkins.log'
+    rm -rf venv
+    virtualenv venv
+    venv/bin/pip install -r requirements.txt
+    export PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH):`pwd`/venv/lib/python2.7/site-packages/
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
     rm -f pylint.log
     pylint --output-format=parseable --reports=y --rcfile=pylintrc_jenkins -i y reporter > pylint.log
-    pep8 --repeat --ignore=E203 --exclude none.py . > pep8.log
+    pep8 --repeat --ignore=E203 --exclude venv,none.py . > pep8.log
 
 
 Sentry

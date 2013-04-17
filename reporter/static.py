@@ -1,3 +1,8 @@
+# coding=utf-8
+"""Helper module for serving static files when running in dev mode.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 import os
 from flask import abort, Response
 
@@ -15,12 +20,24 @@ file_suffix_to_mimetype = {
 
 
 def static_file(path):
+    """Flask static file hander used for local testing.
+
+    Args:
+        path: str - path for the static resource to be served.
+
+    Retuns:
+        Response: an http Response of the correct mime type for the resource
+            requested.
+
+    Raises:
+        None
+    """
     try:
         f = open(path)
-    except IOError, e:
+    except IOError:
         abort(404)
         return
-    root, ext = os.path.splitext(path)
+    _, ext = os.path.splitext(path)
     if ext in file_suffix_to_mimetype:
         return Response(f.read(), mimetype=file_suffix_to_mimetype[ext])
     return f.read()

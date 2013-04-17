@@ -1,5 +1,12 @@
+# coding=utf-8
+"""Views to handle url requests. Flask main entry point is also defined here.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import urllib2
 import optparse
+import xml
 
 from flask import request, jsonify, render_template
 # App declared directly in __init__ as per
@@ -12,6 +19,7 @@ from reporter.utilities import (
     get_totals, osm_nodes_by_user)
 from reporter.osm import get_osm_file
 from reporter.static import static_file
+from reporter import LOGGER
 
 
 @app.route('/')
@@ -38,7 +46,13 @@ def home():
             if not myTagName in config.TAG_NAMES:
                 error = "Unsupported object type"
             else:
-                mySortedUserList = osm_object_contributions(myFile, myTagName)
+                try:
+                    mySortedUserList = osm_object_contributions(
+                        myFile, myTagName)
+                except xml.sax.SAXParseException:
+                    error = (
+                        'Invalid OSM xml file retrieved. Please try again '
+                        'later.')
 
     myNodeCount, myWayCount = get_totals(mySortedUserList)
 
@@ -95,7 +109,6 @@ def user_status():
 
 
 if __name__ == '__main__':
-    setup_logger()
     parser = optparse.OptionParser()
     parser.add_option('-d', '--debug', dest='debug', default=False,
                       help='turn on Flask debugging', action='store_true')

@@ -1,10 +1,10 @@
-import logging
+# coding=utf-8
+"""Helpers for tests.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import os
-
-from reporter.logger import setup_logger
-
-setup_logger()
-LOGGER = logging.getLogger('osm-reporter')
 
 FIXTURE_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
