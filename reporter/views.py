@@ -94,7 +94,7 @@ def buildings():
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
-    zip_file = extract_buildings_shapefile(my_file)
+    zip_file = extract_buildings_shapefile(my_file.name)
 
     try:
         f = open(zip_file)
