@@ -73,9 +73,7 @@ def get_osm_file(bbox, coordinates):
                  '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
                  .format(**coordinates))
     mySafeName = hashlib.md5(bbox).hexdigest() + '.osm'
-    myFilePath = os.path.join(
-        config.CACHE_DIR,
-        mySafeName)
+    myFilePath = os.path.join(config.CACHE_DIR, mySafeName)
     return load_osm_document(myFilePath, myUrlPath)
 
 
@@ -164,6 +162,15 @@ def extract_buildings_shapefile(theFilePath):
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'buildings.shp')
 
+    export_query = (
+        '"select way as the_geom, \\"building:structure\\" as '
+        'building_s, \\"building:walls\\" as building_w, '
+        '\\"building:roof\\" as building_r, \\"building:levels\\"'
+        ' as building_l, admin_level, \\"access:roof\\"'
+        ' as access_roof, \\"capacity:persons\\" as capacity,'
+        'religion, \\"type:id\\" as type_id from planet_osm_polygon '
+        'where building != \'no\';"')
+
     createdb_exectuable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
         createdb_exectuable, db_name)
@@ -173,8 +180,8 @@ def extract_buildings_shapefile(theFilePath):
         osm2pgsql_executable, style_file, db_name, theFilePath)
 
     pgsql2shp_executable = which('pgsql2shp')[0]
-    pgsql2shp_command = '%s -f %s %s planet_osm_polygon' % (
-        pgsql2shp_executable, shape_path, db_name)
+    pgsql2shp_command = '%s -f %s %s %s' % (
+        pgsql2shp_executable, shape_path, db_name, export_query)
 
     dropdb_executable = which('dropdb')[0]
     dropdb_command = '%s %s' % (dropdb_executable, db_name)
@@ -187,7 +194,7 @@ def extract_buildings_shapefile(theFilePath):
     print pgsql2shp_command
     call(pgsql2shp_command, shell=True)
     print dropdb_command
-    call(dropdb_command, shell=True)
+    #call(dropdb_command, shell=True)
 
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, remove_file=True)
