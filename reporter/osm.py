@@ -199,7 +199,7 @@ def extract_buildings_shapefile(theFilePath):
     print pgsql2shp_command
     call(pgsql2shp_command, shell=True)
     print dropdb_command
-    #call(dropdb_command, shell=True)
+    call(dropdb_command, shell=True)
 
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, remove_file=True)
