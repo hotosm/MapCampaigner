@@ -30,7 +30,22 @@ Modify the contents of osm-reporter.apache.conf to suite your installation. Then
    sudo ln -s /home/web/osm-reporter/apache/osm-reporter.apache.conf .
    sudo a2ensite osm-reporter.apache.conf
 
-If deploying locally you can leave the apache conf file mostly unchanged and add this to your /etc/hosts file::
+The default configuration assumes a user named 'osm-reporter' exists on your
+system that the wsgi process will run under. If you wish to follow this
+convention you should create the user::
+
+   sudo useradd osm-reporter
+
+And also give that user a database account (needed for the shape download
+feature) and database create permissions::
+
+    createuser osm-reporter
+    Shall the new role be a superuser? (y/n) n
+    Shall the new role be allowed to create databases? (y/n) y
+    Shall the new role be allowed to create more new roles? (y/n) n
+
+If deploying locally you can leave the apache conf file mostly unchanged and
+add this to your /etc/hosts file::
 
     127.0.0.1       osm-reporter.localhost
 
