@@ -8,6 +8,7 @@ import urllib2
 import time
 import os
 from subprocess import call
+from shutil import copyfile
 
 from reporter.utilities import temp_dir, unique_filename, zip_shp, which
 from reporter import config
@@ -166,6 +167,10 @@ def extract_buildings_shapefile(theFilePath):
     style_file = os.path.join(resource_path, 'building.style')
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'buildings.shp')
+    qml_source_path = os.path.join(resource_path, 'building.qml')
+    qml_dest_path = os.path.join(directory_name, 'buildings.qml')
+    prj_source_path = os.path.join(resource_path, 'building.prj')
+    prj_dest_path = os.path.join(directory_name, 'buildings.prj')
 
     export_query = (
         '"SELECT st_transform(way, 4326) AS the_geom, '
@@ -213,7 +218,10 @@ def extract_buildings_shapefile(theFilePath):
     print dropdb_command
     call(dropdb_command, shell=True)
 
+    copyfile(prj_source_path, prj_dest_path)
+    copyfile(qml_source_path, qml_dest_path)
+
     # Now zip it up and return the path to the zip, removing the original shp
-    zipfile = zip_shp(shape_path, remove_file=True)
+    zipfile = zip_shp(shape_path, extra_ext=['.qml'], remove_file=True)
     return zipfile
 
