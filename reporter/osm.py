@@ -58,7 +58,11 @@ def get_osm_file(bbox, coordinates):
 
 
     """
-
+    # This is my preferred way to query overpass since it only fetches back
+    # building features (we would adapt it to something similar for roads)
+    # so it is much more efficient. However it (the retrieved osm xml
+    # file) works for the report but not for the shp2pgsql stuff lower down.
+    # So for now it is commented out. Tim.
     # myUrlPath = (
     #     'http://overpass-api.de/api/interpreter?'
     #     'data=('
@@ -69,6 +73,7 @@ def get_osm_file(bbox, coordinates):
     #     'relation["building"]["building"!="no"]'
     #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
     #     '<;);out+meta;' % coordinates)
+    # Overpass query to fetch all features in extent
     myUrlPath = ('http://overpass-api.de/api/interpreter?data='
                  '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
                  .format(**coordinates))
