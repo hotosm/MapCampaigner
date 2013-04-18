@@ -101,7 +101,7 @@ def extract_buildings_shapefile(theFilePath):
         This is a multistep process:
             * Create a temporary postgis database
             * Load the osm dataset into POSTGIS with osm2pgsql and our custom
-             style file.
+                 style file.
             * Save the data out again to a shapefile
             * Zip the shapefile ready for user to download
         Args:

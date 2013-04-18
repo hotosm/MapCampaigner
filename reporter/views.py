@@ -8,7 +8,7 @@ import urllib2
 import optparse
 import xml
 
-from flask import request, jsonify, render_template
+from flask import request, jsonify, render_template, Response, abort
 # App declared directly in __init__ as per
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
 from reporter import app
@@ -17,7 +17,7 @@ from reporter.utilities import (
     split_bbox,
     osm_object_contributions,
     get_totals, osm_nodes_by_user)
-from reporter.osm import get_osm_file
+from reporter.osm import get_osm_file, extract_buildings_shapefile
 from reporter.static import static_file
 from reporter import LOGGER
 
@@ -74,6 +74,34 @@ def home():
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
     )
     return render_template('base.html', **context)
+
+
+@app.route('/buildings-shp')
+def buildings():
+    """View to download buildings as a shp."""
+    bbox = request.args.get('bbox', config.BBOX)
+    #error = None
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        #error = "Invalid bbox"
+        #coordinates = split_bbox(config.BBOX)
+        abort(500)
+    else:
+        try:
+            my_file = get_osm_file(bbox, coordinates)
+        except urllib2.URLError:
+            #error = "Bad request. Maybe the bbox is too big!"
+            abort(500)
+
+    zip_file = extract_buildings_shapefile(my_file)
+
+    try:
+        f = open(zip_file)
+    except IOError:
+        abort(404)
+        return
+    return Response(f.read(), mimetype='application/zip')
 
 
 @app.route('/user')
