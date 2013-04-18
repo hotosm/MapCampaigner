@@ -168,7 +168,7 @@ def extract_buildings_shapefile(theFilePath):
     shape_path = os.path.join(directory_name, 'buildings.shp')
 
     export_query = (
-        '"select way AS the_geom, '
+        '"SELECT st_transform(way, 4326) AS the_geom, '
         'building AS building, '
         '\\"building:structure\\" AS structure, '
         '\\"building:walls\\" AS wall_type, '
