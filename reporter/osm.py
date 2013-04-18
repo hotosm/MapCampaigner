@@ -149,7 +149,7 @@ def extract_buildings_shapefile(theFilePath):
 
     """
     work_dir = temp_dir(sub_dir='buildings')
-    directory_name = unique_filename(suffix='.keywords', dir=work_dir)
+    directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
 
     resource_path = os.path.abspath(
@@ -179,7 +179,7 @@ def extract_buildings_shapefile(theFilePath):
     call(pgsql2shp_command, shell=True)
     call(dropdb_command, shell=True)
 
-# Now zip it up and return the path to the zip, removing the original shp
+    # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, remove_file=True)
     return zipfile
 

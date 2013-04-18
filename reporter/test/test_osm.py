@@ -51,7 +51,7 @@ class OsmTestCase(LoggedTestCase):
         self.assertEqual(myFileTime, myFileTime2, myMessage)
 
     def test_extract_buildings_shapefile(self):
-        """Test the osm to shp convertor."""
+        """Test the osm to shp converter."""
         myZipPath = extract_buildings_shapefile(FIXTURE_PATH)
         print myZipPath
         self.assertTrue(os.path.exists(myZipPath), myZipPath)

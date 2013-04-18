@@ -493,7 +493,7 @@ def zip_shp(shp_path, extra_ext=None, remove_file=False):
                 os.remove(shp_base_name + ext)
 
     os.chdir(my_cwd)
-    return zip_filename
+    return os.path.join(shp_dir, zip_filename)
 
 
 def which(name, flags=os.X_OK):
