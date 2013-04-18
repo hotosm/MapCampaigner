@@ -3,9 +3,14 @@
 :copyright: (c) 2013 by Tim Sutton
 :license: GPLv3, see LICENSE for more details.
 """
+import os
+import sys
+import getpass
+from tempfile import mkstemp
 import xml
 import time
 from datetime import date, timedelta
+import zipfile
 
 import config
 from reporter.osm_node_parser import OsmNodeParser
@@ -331,3 +336,216 @@ def osm_nodes_by_user(theFile, username):
     myParser = OsmNodeParser(username)
     xml.sax.parse(theFile, myParser)
     return myParser.nodes
+
+
+def temp_dir(sub_dir='work'):
+    """Obtain the temporary working directory for the operating system.
+
+    An osm-reporter subdirectory will automatically be created under this.
+
+    .. note:: You can use this together with unique_filename to create
+       a file in a temporary directory under the inasafe workspace. e.g.
+
+       tmpdir = temp_dir('testing')
+       tmpfile = unique_filename(dir=tmpdir)
+       print tmpfile
+       /tmp/osm-reporter/23-08-2012/timlinux/testing/tmpMRpF_C
+
+    If you specify OSM_REPORTER_WORK_DIR as an environment var, it will be
+    used in preference to the system temp directory.
+
+    .. note:: This function was taken from InaSAFE (http://inasafe.org) with
+    minor adaptions.
+
+    Args:
+        sub_dir str - optional argument which will cause an additional
+                subirectory to be created e.g. /tmp/inasafe/foo/
+
+    Returns:
+        Path to the output clipped layer (placed in the system temp dir).
+
+    Raises:
+       Any errors from the underlying system calls.
+    """
+    user = getpass.getuser().replace(' ', '_')
+    current_date = date.today()
+    date_string = current_date.isoformat()
+    if 'OSM_REPORTER_WORK_DIR' in os.environ:
+        new_directory = os.environ['OSM_REPORTER_WORK_DIR']
+    else:
+        # Following 4 lines are a workaround for tempfile.tempdir()
+        # unreliabilty
+        handle, filename = mkstemp()
+        os.close(handle)
+        new_directory = os.path.dirname(filename)
+        os.remove(filename)
+
+    path = os.path.join(
+        new_directory, 'osm-reporter', date_string, user, sub_dir)
+
+    if not os.path.exists(path):
+        # Ensure that the dir is world writable
+        # Umask sets the new mask and returns the old
+        old_mask = os.umask(0000)
+        os.makedirs(path, 0777)
+        # Reinstate the old mask for tmp
+        os.umask(old_mask)
+    return path
+
+
+def unique_filename(**kwargs):
+    """Create new filename guaranteed not to exist previously
+
+
+    .. note:: This function was taken from InaSAFE (http://inasafe.org) with
+    minor adaptions.
+
+    Use mkstemp to create the file, then remove it and return the name
+
+    If dir is specified, the tempfile will be created in the path specified
+    otherwise the file will be created in a directory following this scheme:
+
+    :file:`/tmp/osm-reporter/<dd-mm-yyyy>/<user>/impacts'
+
+    See http://docs.python.org/library/tempfile.html for details.
+
+    Example usage:
+
+    tempdir = temp_dir(sub_dir='test')
+    filename = unique_filename(suffix='.keywords', dir=tempdir)
+    print filename
+    /tmp/osm-reporter/23-08-2012/timlinux/test/tmpyeO5VR.keywords
+
+    Or with no preferred subdir, a default subdir of 'impacts' is used:
+
+    filename = unique_filename(suffix='.shp')
+    print filename
+    /tmp/osm-reporter/23-08-2012/timlinux/impacts/tmpoOAmOi.shp
+
+    """
+
+    if 'dir' not in kwargs:
+        path = temp_dir('impacts')
+        kwargs['dir'] = path
+    else:
+        path = temp_dir(kwargs['dir'])
+        kwargs['dir'] = path
+    if not os.path.exists(kwargs['dir']):
+        # Ensure that the dir mask won't conflict with the mode
+        # Umask sets the new mask and returns the old
+        umask = os.umask(0000)
+        # Ensure that the dir is world writable by explictly setting mode
+        os.makedirs(kwargs['dir'], 0777)
+        # Reinstate the old mask for tmp dir
+        os.umask(umask)
+        # Now we have the working dir set up go on and return the filename
+    handle, filename = mkstemp(**kwargs)
+
+    # Need to close it using the filehandle first for windows!
+    os.close(handle)
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+    return filename
+
+
+def zip_shp(shp_path, extra_ext=None, remove_file=False):
+    """Zip shape file and its gang (.shx, .dbf, .prj).
+
+    .. note:: This function was taken from InaSAFE (http://inasafe.org) with
+    minor adaptions.
+
+    Args:
+        * shp_path: str - path to the main shape file.
+        * extra_ext: [str] - list of extra extensions related to shapefile.
+        * remove_file: bool - whether the original shp files should be
+            removed after zipping is complete. Defaults to False.
+    Returns:
+        str: full path to the created shapefile
+
+    Raises:
+        None
+
+    """
+
+    # go to the directory
+    my_cwd = os.getcwd()
+    shp_dir, shp_name = os.path.split(shp_path)
+    os.chdir(shp_dir)
+
+    shp_base_name, _ = os.path.splitext(shp_name)
+    extensions = ['.shp', '.shx', '.dbf', '.prj']
+    if extra_ext is not None:
+        extensions.extend(extra_ext)
+
+    # zip files
+    zip_filename = shp_base_name + '.zip'
+    zip_object = zipfile.ZipFile(zip_filename, 'w')
+    for ext in extensions:
+        if os.path.isfile(shp_base_name + ext):
+            zip_object.write(shp_base_name + ext)
+    zip_object.close()
+
+    if remove_file:
+        for ext in extensions:
+            if os.path.isfile(shp_base_name + ext):
+                os.remove(shp_base_name + ext)
+
+    os.chdir(my_cwd)
+    return os.path.join(shp_dir, zip_filename)
+
+
+def which(name, flags=os.X_OK):
+    """Search PATH for executable files with the given name.
+
+    ..note:: This function was taken verbatim from the twisted framework,
+      licence available here:
+      http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/LICENSE
+
+    On newer versions of MS-Windows, the PATHEXT environment variable will be
+    set to the list of file extensions for files considered executable. This
+    will normally include things like ".EXE". This fuction will also find files
+    with the given name ending with any of these extensions.
+
+    On MS-Windows the only flag that has any meaning is os.F_OK. Any other
+    flags will be ignored.
+
+    @type name: C{str}
+    @param name: The name for which to search.
+
+    @type flags: C{int}
+    @param flags: Arguments to L{os.access}.
+
+    @rtype: C{list}
+    @param: A list of the full paths to files found, in the
+    order in which they were found.
+    """
+    result = []
+    #pylint: disable=W0141
+    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
+    #pylint: enable=W0141
+    path = os.environ.get('PATH', None)
+    # In c6c9b26 we removed this hard coding for issue #529 but I am
+    # adding it back here in case the user's path does not include the
+    # gdal binary dir on OSX but it is actually there. (TS)
+    if sys.platform == 'darwin':  # Mac OS X
+        myGdalPrefix = ('/Library/Frameworks/GDAL.framework/'
+                        'Versions/1.9/Programs/')
+        path = '%s:%s' % (path, myGdalPrefix)
+
+    LOGGER.debug('Search path: %s' % path)
+
+    if path is None:
+        return []
+
+    for p in path.split(os.pathsep):
+        p = os.path.join(p, name)
+        if os.access(p, flags):
+            result.append(p)
+        for e in exts:
+            pext = p + e
+            if os.access(pext, flags):
+                result.append(pext)
+
+    return result

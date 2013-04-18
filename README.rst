@@ -6,6 +6,15 @@ See http://linfiniti.com/2012/12/holiday-openstreetmap-project-for-swellendam/
 Install
 =======
 
+Prerequisites::
+
+    sudo apt-get install osm2pgsql postgis
+
+You should also give the process that osm-reporter runs as createdb rights
+(needed to support the shape downloading feature). You should also have a
+postgis template named 'template_postgis' available on your system. Consult a
+postgis tutorial online to see how this is done.
+
 First clone::
 
     cd /home/web
