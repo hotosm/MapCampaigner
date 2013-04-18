@@ -168,13 +168,25 @@ def extract_buildings_shapefile(theFilePath):
     shape_path = os.path.join(directory_name, 'buildings.shp')
 
     export_query = (
-        '"select way as the_geom, \\"building:structure\\" as '
-        'building_s, \\"building:walls\\" as building_w, '
-        '\\"building:roof\\" as building_r, \\"building:levels\\"'
-        ' as building_l, admin_level, \\"access:roof\\"'
-        ' as access_roof, \\"capacity:persons\\" as capacity,'
-        'religion, \\"type:id\\" as type_id from planet_osm_polygon '
-        'where building != \'no\';"')
+        '"select way AS the_geom, '
+        'building AS building, '
+        '\\"building:structure\\" AS structure, '
+        '\\"building:walls\\" AS wall_type, '
+        '\\"building:roof\\" AS roof_type, '
+        '\\"building:levels\\" AS levels, '
+        'admin_level AS admin, '
+        '\\"access:roof\\" AS roof_access, '
+        '\\"capacity:persons\\" AS capacity, '
+        'religion, '
+        '\\"type:id\\" AS type , '
+        '\\"addr:full\\" AS full_address, '
+        'name, '
+        'amenity, '
+        'leisure, '
+        '\\"building:use\\" AS use, '
+        'office '
+        'FROM planet_osm_polygon '
+        'WHERE building != \'no\';"')
 
     createdb_exectuable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
