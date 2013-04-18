@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="row">
-            <p><a href="/buildings-shp?bbox={{ coordinates.SW_lat }},{{ coordinates.SW_lng }},{{ coordinates.NE_lat }}, {{ coordinates.NE_lng }}">
+            <p><a href="#" onclick="downloadShape();">
                 Download</a> this data as a zipped shapefile.</p>
         </div>
         <div class="row">
@@ -225,6 +225,12 @@
 
             {% endfor %}
         });
+        function downloadShape()
+        {
+            window.location.replace(
+                '/buildings-shp?bbox=' + map.getBounds().toBBoxString()
+            );
+        }
 
     </script>
 </body>
