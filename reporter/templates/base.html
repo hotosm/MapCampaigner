@@ -42,8 +42,12 @@
         {% endif %}
         <div class="hero-unit">
             <h1>Open Street Map Reporter</h1>
-            <p>This page lists people who have contributed <strong>{{ current_tag_name }}</strong> data to a map.</p>
-            <p><a href="#" onclick="downloadShape();">Download</a> this data as a zipped shapefile.</p>
+            <p>This page lists people who have contributed <strong>{{ current_tag_name }}</strong>
+                data to a map.</p>
+            {% if current_tag_name == "building" %}
+            <p><a href="#" onclick="downloadShape();">Download</a> this
+                building data as a zipped shapefile.</p>
+            {% endif %}
         </div>
 
         <div class="row">

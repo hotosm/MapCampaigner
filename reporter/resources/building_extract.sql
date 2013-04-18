@@ -1,0 +1,1 @@
+select way as the_geom, "building:structure" as building_s, "building:walls" as building_w, "building:roof" as building_r, "building:levels" as building_l, admin_level, "access:roof" as access_roof, "capacity:persons" as capacity, religion, "type:id" as type_id from planet_osm_polygon where building != 'no';
