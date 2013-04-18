@@ -26,8 +26,49 @@ def get_osm_file(bbox, coordinates):
 
     Raises:
         None
+
+    Note bbox is min lat, min lon, max lat, max lon
+
+    Coordinates look like this:
+    {'NE_lng': 20.444537401199337,
+     'SW_lat': -34.0460012312071,
+     'SW_lng': 20.439494848251343,
+     'NE_lat': -34.044441058971394}
+
+             Example overpass API query for buildings (testable at
+        http://overpass-turbo.eu/)::
+
+            (
+              node
+                ["building"]
+                ["building"!="no"]
+              ({{bbox}});
+              way
+                ["building"]
+                ["building"!="no"]
+              ({{bbox}});
+              rel
+                ["building"]
+                ["building"!="no"]
+              ({{bbox}});
+            <;);out+meta;
+
+        Equivalent url (http encoded)::
+
+
+
     """
-    # Note bbox is min lat, min lon, max lat, max lon
+
+    # myUrlPath = (
+    #     'http://overpass-api.de/api/interpreter?'
+    #     'data=('
+    #     'node["building"]["building"!="no"]'
+    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
+    #     'way["building"]["building"!="no"]'
+    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
+    #     'relation["building"]["building"!="no"]'
+    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
+    #     '<;);out+meta;' % coordinates)
     myUrlPath = ('http://overpass-api.de/api/interpreter?data='
                  '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
                  .format(**coordinates))
@@ -112,41 +153,6 @@ def extract_buildings_shapefile(theFilePath):
 
         Raises:
             None
-
-        Example overpass API query for buildings::
-
-            (
-              node
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-              way
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-              rel
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-            );
-            (._;>;);
-            out;
-
-        Equivalent url (http encoded)::
-
-            params = {
-                'xmin': -6.185440796831979,
-                'ymin': 106.82374835014343,
-                'xmax': -6.178966266481431,
-                'ymax': 106.83127999305725}
-
-        myOsmXmlUrlPath = ('http://overpass-api.de/api/interpreter?
-        data=(node[%%22building%%22!=%%22no%%22](%(xmin)s,%(ymin)s,
-        %(xmax)s,%(ymax)s);way[%%22building%%22!=%%22no%%22](%(xmin)s,
-        %(ymin)s,%(xmax)s,%(ymax)s);relation[%%22building%%22!%%22no%%22]
-        (%(xmin)s,%(ymin)s,%(xmax)s,%(ymax)s););(._;%%3E;);out%%20body;
-        ' % params)
-
     """
     work_dir = temp_dir(sub_dir='buildings')
     directory_name = unique_filename(dir=work_dir)
@@ -174,9 +180,13 @@ def extract_buildings_shapefile(theFilePath):
     dropdb_command = '%s %s' % (dropdb_executable, db_name)
 
     # Now run the commands in sequence:
+    print createdb_command
     call(createdb_command, shell=True)
+    print osm2pgsql_command
     call(osm2pgsql_command, shell=True)
+    print pgsql2shp_command
     call(pgsql2shp_command, shell=True)
+    print dropdb_command
     call(dropdb_command, shell=True)
 
     # Now zip it up and return the path to the zip, removing the original shp
