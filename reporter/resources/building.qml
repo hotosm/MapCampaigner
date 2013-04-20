@@ -1,24 +1,21 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="1.9.0-Master" minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+<qgis version="1.8.0-Lisboa" minimumScale="0" maximumScale="1e+08" hasScaleBasedVisibilityFlag="0">
+  <transparencyLevelInt>255</transparencyLevelInt>
   <renderer-v2 symbollevels="0" type="singleSymbol">
     <symbols>
-      <symbol alpha="1" type="fill" name="0">
+      <symbol outputUnit="MM" alpha="1" type="fill" name="0">
         <layer pass="0" class="SimpleFill" locked="0">
-          <prop k="border_width_unit" v="MM"/>
           <prop k="color" v="203,199,198,255"/>
           <prop k="color_border" v="204,204,204,255"/>
-          <prop k="offset" v="0.5,0.5"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset" v="1.5,1.5"/>
           <prop k="style" v="solid"/>
           <prop k="style_border" v="solid"/>
           <prop k="width_border" v="0.5"/>
         </layer>
         <layer pass="0" class="SimpleFill" locked="0">
-          <prop k="border_width_unit" v="MM"/>
           <prop k="color" v="136,105,40,255"/>
           <prop k="color_border" v="0,0,0,255"/>
           <prop k="offset" v="0,0"/>
-          <prop k="offset_unit" v="MM"/>
           <prop k="style" v="no"/>
           <prop k="style_border" v="solid"/>
           <prop k="width_border" v="0.26"/>
@@ -26,7 +23,7 @@
       </symbol>
     </symbols>
     <rotation field=""/>
-    <sizescale field="" scalemethod="area"/>
+    <sizescale field=""/>
   </renderer-v2>
   <customproperties>
     <property key="labeling" value="pal"/>
@@ -165,7 +162,6 @@
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/yQuadOffset" value="0"/>
   </customproperties>
-  <blendMode>0</blendMode>
   <displayfield>BUILDING</displayfield>
   <label>0</label>
   <labelattributes>
@@ -189,28 +185,25 @@
     <selectedonly on=""/>
   </labelattributes>
   <edittypes>
-    <edittype editable="0" type="0" name="ADMIN"/>
-    <edittype editable="0" type="0" name="AMENITY"/>
-    <edittype editable="0" type="0" name="BUILDING"/>
-    <edittype editable="0" type="0" name="CAPACITY"/>
-    <edittype editable="0" type="0" name="FULL_ADDRE"/>
-    <edittype editable="0" type="0" name="LEISURE"/>
-    <edittype editable="0" type="0" name="LEVELS"/>
-    <edittype editable="0" type="0" name="NAME"/>
-    <edittype editable="0" type="0" name="OFFICE"/>
-    <edittype editable="0" type="0" name="RELIGION"/>
-    <edittype editable="0" type="0" name="ROOF_ACCES"/>
-    <edittype editable="0" type="0" name="ROOF_TYPE"/>
-    <edittype editable="0" type="0" name="STRUCTURE"/>
-    <edittype editable="0" type="0" name="TYPE"/>
-    <edittype editable="0" type="0" name="USE"/>
-    <edittype editable="0" type="0" name="WALL_TYPE"/>
+    <edittype type="0" name="ADMIN"/>
+    <edittype type="0" name="AMENITY"/>
+    <edittype type="0" name="BUILDING"/>
+    <edittype type="0" name="CAPACITY"/>
+    <edittype type="0" name="FULL_ADDRE"/>
+    <edittype type="0" name="LEISURE"/>
+    <edittype type="0" name="LEVELS"/>
+    <edittype type="0" name="NAME"/>
+    <edittype type="0" name="OFFICE"/>
+    <edittype type="0" name="RELIGION"/>
+    <edittype type="0" name="ROOF_ACCES"/>
+    <edittype type="0" name="ROOF_TYPE"/>
+    <edittype type="0" name="STRUCTURE"/>
+    <edittype type="0" name="TYPE"/>
+    <edittype type="0" name="USE"/>
+    <edittype type="0" name="WALL_TYPE"/>
   </edittypes>
   <editform>.</editform>
   <editforminit></editforminit>
   <annotationform>.</annotationform>
-  <editorlayout>generatedlayout</editorlayout>
-  <excludeAttributesWMS/>
-  <excludeAttributesWFS/>
   <attributeactions/>
 </qgis>
