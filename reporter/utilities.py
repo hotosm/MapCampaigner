@@ -358,7 +358,7 @@ def temp_dir(sub_dir='work'):
     minor adaptions.
 
     Args:
-        sub_dir str - optional argument which will cause an additional
+        sub_dir: str - optional argument which will cause an additional
                 subirectory to be created e.g. /tmp/inasafe/foo/
 
     Returns:

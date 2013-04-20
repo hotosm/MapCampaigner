@@ -171,6 +171,7 @@ def extract_buildings_shapefile(theFilePath):
     qml_dest_path = os.path.join(directory_name, 'buildings.qml')
     prj_source_path = os.path.join(resource_path, 'building.prj')
     prj_dest_path = os.path.join(directory_name, 'buildings.prj')
+    transform_path = os.path.join(resource_path, 'transform.sql')
 
     export_query = (
         '"SELECT st_transform(way, 4326) AS the_geom, '
@@ -183,13 +184,14 @@ def extract_buildings_shapefile(theFilePath):
         '\\"access:roof\\" AS roof_access, '
         '\\"capacity:persons\\" AS capacity, '
         'religion, '
-        '\\"type:id\\" AS type , '
+        '\\"type:id\\" AS osm_type , '
         '\\"addr:full\\" AS full_address, '
         'name, '
         'amenity, '
         'leisure, '
         '\\"building:use\\" AS use, '
-        'office '
+        'office, '
+        'type '
         'FROM planet_osm_polygon '
         'WHERE building != \'no\';"')
 
@@ -200,6 +202,10 @@ def extract_buildings_shapefile(theFilePath):
     osm2pgsql_executable = which('osm2pgsql')[0]
     osm2pgsql_command = '%s -S %s -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, theFilePath)
+
+    psql_executable = which('psql')[0]
+    transform_command = '%s %s -f %s' % (
+        psql_executable, db_name, transform_path)
 
     pgsql2shp_executable = which('pgsql2shp')[0]
     pgsql2shp_command = '%s -f %s %s %s' % (
@@ -213,6 +219,8 @@ def extract_buildings_shapefile(theFilePath):
     call(createdb_command, shell=True)
     print osm2pgsql_command
     call(osm2pgsql_command, shell=True)
+    print transform_command
+    call(transform_command, shell=True)
     print pgsql2shp_command
     call(pgsql2shp_command, shell=True)
     print dropdb_command
@@ -224,4 +232,3 @@ def extract_buildings_shapefile(theFilePath):
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=['.qml'], remove_file=True)
     return zipfile
-
