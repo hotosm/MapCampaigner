@@ -169,7 +169,8 @@ def date_range(timeline):
     myEndDate = None
     for myDate in timeline.keys():
         myYear, myMonth, myDay = myDate.split('-')
-        LOGGER.info('Date: %s' % myDate)
+	myMessage = 'Date: %s' % myDate
+        LOGGER.info(myMessage)
         myTimelineDate = date(int(myYear), int(myMonth), int(myDay))
         if myStartDate is None:
             myStartDate = myTimelineDate
@@ -534,7 +535,8 @@ def which(name, flags=os.X_OK):
                         'Versions/1.9/Programs/')
         path = '%s:%s' % (path, myGdalPrefix)
 
-    LOGGER.debug('Search path: %s' % path)
+    myMessage = 'Search path: %s' % path
+    LOGGER.debug(myMessage)
 
     if path is None:
         return []

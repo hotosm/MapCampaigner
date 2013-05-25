@@ -108,7 +108,8 @@ def load_osm_document(theFilePath, theUrlPath):
             os.remove(theFilePath)
     if myElapsedSeconds > 3600 or not os.path.exists(theFilePath):
         fetch_osm(theUrlPath, theFilePath)
-        LOGGER.info('fetched %s' % theFilePath)
+        myMessage = ('fetched %s' % theFilePath)
+        LOGGER.info(myMessage)
     myFile = open(theFilePath, 'rt')
     return myFile
 
