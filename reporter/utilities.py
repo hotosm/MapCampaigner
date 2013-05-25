@@ -169,7 +169,7 @@ def date_range(timeline):
     myEndDate = None
     for myDate in timeline.keys():
         myYear, myMonth, myDay = myDate.split('-')
-	myMessage = 'Date: %s' % myDate
+        myMessage = 'Date: %s' % myDate
         LOGGER.info(myMessage)
         myTimelineDate = date(int(myYear), int(myMonth), int(myDay))
         if myStartDate is None:
