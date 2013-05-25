@@ -33,7 +33,7 @@ class OsmTestCase(LoggedTestCase):
         try:
             myFile = load_osm_document(myFilePath, myUrl)
         except:
-            myMessage = 'load_osm_document from overpass test failed %s' % myUrl
+            myMessage = 'load_osm_document from overpass failed %s' % myUrl
             LOGGER.exception(myMessage)
             raise
         myString = myFile.read()
