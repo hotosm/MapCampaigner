@@ -114,6 +114,10 @@ There is a test suite available, you can run it using nose e.g.::
     PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
     --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
+On OSX
+
+    export PYTHONPATH=`pwd`/reporter:`pwd`:$PYTHONPATH:venv/lib/python2.7/site-packages/; \
+    nosetests -v --with-id  --with-xunit --verbose --cover-package=reporter reporter
 
 Jenkins
 -------
