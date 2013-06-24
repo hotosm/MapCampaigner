@@ -165,16 +165,18 @@ def extract_buildings_shapefile(theFilePath):
 
     resource_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'resources'))
-    style_file = os.path.join(resource_path, 'building.style')
+    style_file = os.path.join(resource_path, 'resources/buildings.style')
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'buildings.shp')
-    qml_source_path = os.path.join(resource_path, 'building.qml')
+    qml_source_path = os.path.join(resource_path, 'resources/buildings.qml')
     qml_dest_path = os.path.join(directory_name, 'buildings.qml')
-    keywords_source_path = os.path.join(resource_path, 'building.keywords')
+    keywords_source_path = os.path.join(resource_path,
+                                        'resources/buildings.keywords')
     keywords_dest_path = os.path.join(directory_name, 'buildings.keywords')
-    license_source_path = os.path.join(resource_path, 'building.license')
+    license_source_path = os.path.join(resource_path,
+                                       'resources/buildings.license')
     license_dest_path = os.path.join(directory_name, 'buildings.license')
-    prj_source_path = os.path.join(resource_path, 'building.prj')
+    prj_source_path = os.path.join(resource_path, 'resources/buildings.prj')
     prj_dest_path = os.path.join(directory_name, 'buildings.prj')
     transform_path = os.path.join(resource_path, 'transform.sql')
 
