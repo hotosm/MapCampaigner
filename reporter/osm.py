@@ -237,5 +237,6 @@ def extract_buildings_shapefile(theFilePath):
     copyfile(license_source_path, license_dest_path)
 
     # Now zip it up and return the path to the zip, removing the original shp
-    zipfile = zip_shp(shape_path, extra_ext=['.qml'], remove_file=True)
+    zipfile = zip_shp(shape_path, extra_ext=[
+        '.qml', '.keywords', '.license'], remove_file=True)
     return zipfile
