@@ -171,7 +171,7 @@ def extract_buildings_shapefile(theFilePath):
     qml_source_path = os.path.join(resource_path, 'building.qml')
     qml_dest_path = os.path.join(directory_name, 'buildings.qml')
     keywords_source_path = os.path.join(resource_path, 'building.keywords')
-    keywords_dest_path = os.path.join(directory_name, 'building.keywords')
+    keywords_dest_path = os.path.join(directory_name, 'buildings.keywords')
     license_source_path = os.path.join(resource_path, 'building.license')
     license_dest_path = os.path.join(directory_name, 'buildings.license')
     prj_source_path = os.path.join(resource_path, 'building.prj')
