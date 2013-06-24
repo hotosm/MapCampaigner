@@ -170,6 +170,8 @@ def extract_buildings_shapefile(theFilePath):
     shape_path = os.path.join(directory_name, 'buildings.shp')
     qml_source_path = os.path.join(resource_path, 'building.qml')
     qml_dest_path = os.path.join(directory_name, 'buildings.qml')
+    keywords_source_path = os.path.join(resource_path, 'building.keywords')
+    keywords_dest_path = os.path.join(directory_name, 'buildings.keywords')
     prj_source_path = os.path.join(resource_path, 'building.prj')
     prj_dest_path = os.path.join(directory_name, 'buildings.prj')
     transform_path = os.path.join(resource_path, 'transform.sql')
