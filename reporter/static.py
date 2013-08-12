@@ -22,15 +22,12 @@ file_suffix_to_mimetype = {
 def static_file(path):
     """Flask static file hander used for local testing.
 
-    Args:
-        path: str - path for the static resource to be served.
+    :param path: Path for the static resource to be served.
+    :type path: str
 
-    Retuns:
-        Response: an http Response of the correct mime type for the resource
+    :returns: An http Response of the correct mime type for the resource
             requested.
-
-    Raises:
-        None
+    :rtype: HttpResponse
     """
     try:
         f = open(path)

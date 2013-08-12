@@ -13,19 +13,19 @@ from datetime import date, timedelta
 import zipfile
 
 import config
-from reporter.osm_node_parser import OsmNodeParser
-from reporter.osm_way_parser import OsmParser
-from reporter import LOGGER
+from .osm_node_parser import OsmNodeParser
+from .osm_way_parser import OsmParser
+from . import LOGGER
 
 
 def get_totals(sorted_user_list):
     """Given a sorted user list, get the totals for ways and nodes.
 
-    Args:
-        sorted_user_list: list - of user dicts sorted by number of ways.
+    :param sorted_user_list: User dicts sorted by number of ways.
+    :type sorted_user_list: list
 
-    Returns:
-        (int, int): two-tuple containing way count, node count.
+    :returns: Two-tuple (int, int) containing way count, node count.
+    :rtype: (int, int)
     """
     myWayCount = 0
     myNodeCount = 0
@@ -38,16 +38,14 @@ def get_totals(sorted_user_list):
 def split_bbox(bbox):
     """Split a bounding box into its parts.
 
-    Args:
-        bbox: str - a string describing a bbox e.g. '106.78674459457397,
-            -6.141301491467023,106.80691480636597,-6.133834354201348'
+    :param bbox: String describing a bbox e.g. '106.78674459457397,
+        -6.141301491467023,106.80691480636597,-6.133834354201348'
+    :type bbox: str
 
-    Returns:
-        dict: with keys: 'southwest_lng, southwest_lat, northeast_lng,
+    :returns: A dict with keys: 'southwest_lng, southwest_lat, northeast_lng,
             northeast_lat'
+    :rtype: dict
 
-    Raises:
-        None
     """
     values = bbox.split(',')
     if not len(values) == 4:
@@ -65,32 +63,32 @@ def split_bbox(bbox):
 def osm_object_contributions(osm_file, tag_name):
     """Compile a summary of user contributions for the selected osm data type.
 
-    Args:
-        osm_file: file - a file object reading from a .osm file.
-        tag_name: str - the tag name we want to filter on.
+    :param osm_file: A file object reading from a .osm file.
+    :type osm_file: file
 
-    Returns:
-        list: a list of dicts where items in the list are sorted from highest
-            contributor (based on number of ways) down to lowest. Each element
-            in the list is a dict in the form: {
-            'user': <user>,
-            'ways': <way count>,
-            'nodes': <node count>,
-            'timeline': <timelinedict>,
-            'best': <most ways in a single day>,
-            'worst': <least ways in single day>,
-            'average': <average ways across active days>,
-            'crew': <bool> }
-            where crew is used to designate users who are part of an active
-            data gathering campaign.
-            The timeline dict will contain a collection of dates and
-            the total number of ways created on that date e.g.
-            {
-                u'2010-12-09': 10,
-                u'2012-07-10': 14
-            }
-    Raises:
-        None
+    :param tag_name: The tag name we want to filter on.
+    :type tag_name: str
+
+    :returns: A list of dicts where items in the list are sorted from highest
+        contributor (based on number of ways) down to lowest. Each element
+        in the list is a dict in the form: {
+        'user': <user>,
+        'ways': <way count>,
+        'nodes': <node count>,
+        'timeline': <timelinedict>,
+        'best': <most ways in a single day>,
+        'worst': <least ways in single day>,
+        'average': <average ways across active days>,
+        'crew': <bool> }
+        where crew is used to designate users who are part of an active
+        data gathering campaign.
+        The timeline dict will contain a collection of dates and
+        the total number of ways created on that date e.g.
+        {
+            u'2010-12-09': 10,
+            u'2012-07-10': 14
+        }
+    :rtype: list
     """
     myParser = OsmParser(tagName=tag_name)
     try:
@@ -151,19 +149,17 @@ def date_range(timeline):
     between the min and max dates) and since it is a dict,
     the dates may be in any order.
 
-    Args:
-        timeline: dict - a dictionary of non-sequential dates (in
-            YYYY-MM-DD) as keys and values (representing ways collected on that
-            day).
+    :param timeline: A dictionary of non-sequential dates (in YYYY-MM-DD) as
+    keys and values (representing ways collected on that day).
+    :type timeline: dict
 
-    Returns:
-        myStartDate - a date object representing the earliest date in the time
+    :returns: A tuple containing two dates:
+        * myStartDate - a date object representing the earliest date in the
+            time line.
+        * myEndDate - a date object representing the newest date in the time
             line.
-        myEndDate - a date object representing the newest date in the time
-            line.
+    :rtype: (date, date)
 
-    Raises:
-        None
     """
     myStartDate = None
     myEndDate = None
@@ -186,16 +182,12 @@ def date_range(timeline):
 def average_for_active_days(timeline):
     """Compute the average activity per active day in a sparse timeline.
 
-    Args:
-        timeline: dict - a dictionary of non-sequential dates (in
-            YYYY-MM-DD) as keys and values (representing ways collected on that
-            day).
+    :param timeline: A dictionary of non-sequential dates (in YYYY-MM-DD) as
+        keys and values (representing ways collected on that day).
+    :type timeline: dict
 
-    Returns:
-        int: number of entities captured per day rounded to the nearest int.
-
-    Raises:
-        None
+    :returns: Number of entities captured per day rounded to the nearest int.
+    :rtype: int
     """
     myCount = 0
     mySum = 0
@@ -210,16 +202,12 @@ def average_for_active_days(timeline):
 def best_active_day(timeline):
     """Compute the best activity for a single active day in a sparse timeline.
 
-    Args:
-        timeline: dict - a dictionary of non-sequential dates (in
-            YYYY-MM-DD) as keys and values (representing ways collected on that
-            day).
+    :param timeline: A dictionary of non-sequential dates (in YYYY-MM-DD) as
+        keys and values (representing ways collected on that day).
+    :type timeline: dict
 
-    Returns:
-        int: number of entities captured for the user's best day.
-
-    Raises:
-        None
+    :returns: Number of entities captured for the user's best day.
+    :rtype: int
     """
     myBest = 0
     for myValue in timeline.values():
@@ -231,16 +219,12 @@ def best_active_day(timeline):
 def worst_active_day(timeline):
     """Compute the worst activity for a single active day in a sparse timeline.
 
-    Args:
-        timeline: dict - a dictionary of non-sequential dates (in
-            YYYY-MM-DD) as keys and values (representing ways collected on that
-            day).
+    :param timeline: A dictionary of non-sequential dates (in YYYY-MM-DD) as
+        keys and values (representing ways collected on that day).
+    :type timeline: dict
 
-    Returns:
-        int: number of entities captured for the user's worst day.
-
-    Raises:
-        None
+    :returns: Number of entities captured for the user's worst day.
+    :rtype: int
     """
     if len(timeline) < 1:
         return 0
@@ -261,31 +245,32 @@ def interpolated_timeline(timeline):
     an entry per day in the date range regardless of whether there was any
     activity or not.
 
-    Args:
-        timeline: dict - a dictionary of non sequential dates (in
-            YYYY-MM-DD) as keys and values (representing ways collected on that
-            day).
+    :param timeline: A dictionary of non-sequential dates (in YYYY-MM-DD) as
+        keys and values (representing ways collected on that day).
+    :type timeline: dict
 
-    Returns:
-        dict: An interpolated list where each date in the original
-            input date is present, and all days where no total was provided
-            are added to include that day.
+    :returns:  An interpolated list where each date in the original input
+        date is present, and all days where no total was provided are added
+        to include that day.
+    :rtype: list
 
-    Given an input looking like this:
-            {
-                {u'2012-09-24': 1},
-                {u'2012-09-21': 10},
-                {u'2012-09-25': 5},
-            }
+    Given an input looking like this::
 
-    The returned list will be in the form:
-            [
-                [Date(2012,09,21), 10],
-                [Date(2012,09,22), 0],
-                [Date(2012,09,23), 0],
-                [Date(2012,09,24), 1],
-                [Date(2012,09,25), 5],
-            ]
+        {
+            {u'2012-09-24': 1},
+            {u'2012-09-21': 10},
+            {u'2012-09-25': 5},
+        }
+
+    The returned list will be in the form::
+
+        [
+            [Date(2012,09,21), 10],
+            [Date(2012,09,22), 0],
+            [Date(2012,09,23), 0],
+            [Date(2012,09,24), 1],
+            [Date(2012,09,25), 5],
+        ]
     """
     # Work out the earliest and latest day
     myStartDate, myEndDate = date_range(timeline)
@@ -307,35 +292,33 @@ def interpolated_timeline(timeline):
 def date_range_iterator(start_date, end_date):
     """Given two dates return a collection of dates between start and end.
 
-    Args:
-        * start_date: date instance representing the start date.
-        * end_date: date instance representing the end date.
+    :param start_date: Date representing the start date.
+    :type start_date: date
 
-    Returns:
-        Iteratable collection yielding dates.
+    :param end_date: Date representing the end date.
+    :type end_date: date
 
-    Raises:
-        None
+    :returns: Iterable collection yielding dates.
+    :rtype: iterable
     """
     for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
 
 
-def osm_nodes_by_user(theFile, username):
+def osm_nodes_by_user(file_handle, username):
     """Obtain the nodes collected by a single user from an OSM file.
 
-    Args:
-        theFile: file - file handle to an open OSM XML document.
-        username: str - name of the user for whom nodes should be collected.
+    :param file_handle: File handle to an open OSM XML document.
+    :type file_handle: file
 
-    Returns:
-        list: a list of nodes for the given user.
+    :param username: Name of the user for whom nodes should be collected.
+    :type username: str
 
-    Raises:
-        None
+    :returns: A list of nodes for the given user.
+    :rtype: list
     """
     myParser = OsmNodeParser(username)
-    xml.sax.parse(theFile, myParser)
+    xml.sax.parse(file_handle, myParser)
     return myParser.nodes
 
 
@@ -358,15 +341,12 @@ def temp_dir(sub_dir='work'):
     .. note:: This function was taken from InaSAFE (http://inasafe.org) with
     minor adaptions.
 
-    Args:
-        sub_dir: str - optional argument which will cause an additional
-                subirectory to be created e.g. /tmp/inasafe/foo/
+    :param sub_dir: Optional argument which will cause an additional
+            subirectory to be created e.g. ``/tmp/inasafe/foo/``.
+    :type sub_dir: str
 
-    Returns:
-        Path to the output clipped layer (placed in the system temp dir).
-
-    Raises:
-       Any errors from the underlying system calls.
+    :returns: Path to the output clipped layer (placed in the system temp dir).
+    :rtype: str
     """
     user = getpass.getuser().replace(' ', '_')
     current_date = date.today()
@@ -397,6 +377,8 @@ def temp_dir(sub_dir='work'):
 def unique_filename(**kwargs):
     """Create new filename guaranteed not to exist previously
 
+    :param kwargs: A dictionary of keyword arguments which are passed on to
+        ``mkstemp(**kwargs)``
 
     .. note:: This function was taken from InaSAFE (http://inasafe.org) with
     minor adaptions.
@@ -410,18 +392,18 @@ def unique_filename(**kwargs):
 
     See http://docs.python.org/library/tempfile.html for details.
 
-    Example usage:
+    Example usage::
 
-    tempdir = temp_dir(sub_dir='test')
-    filename = unique_filename(suffix='.keywords', dir=tempdir)
-    print filename
-    /tmp/osm-reporter/23-08-2012/timlinux/test/tmpyeO5VR.keywords
+        tempdir = temp_dir(sub_dir='test')
+        filename = unique_filename(suffix='.keywords', dir=tempdir)
+        print filename
+        /tmp/osm-reporter/23-08-2012/timlinux/test/tmpyeO5VR.keywords
 
-    Or with no preferred subdir, a default subdir of 'impacts' is used:
+    Or with no preferred subdir, a default subdir of 'impacts' is used::
 
-    filename = unique_filename(suffix='.shp')
-    print filename
-    /tmp/osm-reporter/23-08-2012/timlinux/impacts/tmpoOAmOi.shp
+        filename = unique_filename(suffix='.shp')
+        print filename
+        /tmp/osm-reporter/23-08-2012/timlinux/impacts/tmpoOAmOi.shp
 
     """
 
@@ -457,17 +439,19 @@ def zip_shp(shp_path, extra_ext=None, remove_file=False):
     .. note:: This function was taken from InaSAFE (http://inasafe.org) with
     minor adaptions.
 
-    Args:
-        * shp_path: str - path to the main shape file.
-        * extra_ext: [str] - list of extra extensions related to shapefile.
-        * remove_file: bool - whether the original shp files should be
-            removed after zipping is complete. Defaults to False.
-    Returns:
-        str: full path to the created shapefile
+    :param shp_path: Path to the main shape file.
+    :type shp_path: str
 
-    Raises:
-        None
+    :param extra_ext: List of extra extensions (as strings) related to
+        shapefile that should be packaged up.
+    :type extra_ext: list
 
+    :param remove_file: bool - whether the original shp files should be
+        removed after zipping is complete. Defaults to False.
+    :type remove_file: bool
+
+    :returns: Full path to the created shapefile.
+    :rtype: str
     """
 
     # go to the directory
@@ -512,16 +496,19 @@ def which(name, flags=os.X_OK):
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
 
-    @type name: C{str}
-    @param name: The name for which to search.
+    :type name: C{str}
+    :param name: The name for which to search.
 
-    @type flags: C{int}
-    @param flags: Arguments to L{os.access}.
+    :type flags: C{int}
+    :param flags: Arguments to L{os.access}.
 
-    @rtype: C{list}
-    @param: A list of the full paths to files found, in the
+    :rtype: C{list}
+    :param: A list of the full paths to files found, in the
     order in which they were found.
     """
+    if os.path.exists('/usr/bin/%s' % name):
+        return ['/usr/bin/%s' % name]
+
     result = []
     #pylint: disable=W0141
     exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))

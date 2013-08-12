@@ -39,14 +39,12 @@ class OsmParser(xml.sax.ContentHandler):
     def startElement(self, name, attributes):
         """Callback for when an element start is encountered.
 
-        Args:
-            name: str - the name of the element.
-            attributes: dict - collection of key, value pairs representing
+        :param name: The name of the element.
+        :type name: str
+
+        :param attributes: dict - collection of key, value pairs representing
                 the attributes of the element.
-        Returns:
-            None
-        Raises:
-            None
+        :type attributes: OsmParser
         """
         if name == 'way':
             self.inWay = True
@@ -79,13 +77,8 @@ class OsmParser(xml.sax.ContentHandler):
     def endElement(self, name):
         """Callback for when an element start is encountered.
 
-        Args:
-            name: str - the name of the element that has ended.
-
-        Returns:
-            None
-        Raises:
-            None
+        :param name: The name of the element that has ended.
+        :type name: str
         """
         if name == 'way':
             if self.found:
@@ -106,5 +99,10 @@ class OsmParser(xml.sax.ContentHandler):
             self.wayCount = 0
 
     def characters(self, content):
-        """Return chars from content - unimplmented."""
+        """Return chars from content - unimplmented.
+
+        :param content: Unused node element.
+        :type content: node
+
+        """
         pass

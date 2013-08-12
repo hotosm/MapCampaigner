@@ -11,15 +11,15 @@ import xml
 from flask import request, jsonify, render_template, Response, abort
 # App declared directly in __init__ as per
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
-from reporter import app
-from reporter import config
-from reporter.utilities import (
+from . import app
+from . import config
+from .utilities import (
     split_bbox,
     osm_object_contributions,
     get_totals, osm_nodes_by_user)
-from reporter.osm import get_osm_file, extract_buildings_shapefile
-from reporter.static import static_file
-from reporter import LOGGER
+from .osm import get_osm_file, extract_buildings_shapefile
+from .static import static_file
+from . import LOGGER
 
 
 @app.route('/')

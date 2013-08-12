@@ -10,53 +10,54 @@ import os
 from subprocess import call
 from shutil import copyfile
 
-from reporter.utilities import temp_dir, unique_filename, zip_shp, which
-from reporter import config
-from reporter import LOGGER
+from .utilities import temp_dir, unique_filename, zip_shp, which
+from . import config
+from . import LOGGER
 
 
 def get_osm_file(bbox, coordinates):
-    """Fetch an osm file given a bounding box using the overpas API.
+    """Fetch an osm file given a bounding box using the overpass API.
 
-    Args:
-        bbox: list - [min lat, min lon, max lat, max lon]
-        coordinates: TODO: document this
+    .. todo:: Refactor so that we don't need to pass the same param twice in
+        different forms!
 
-    Returns:
-        file: a file object which has been opened on the retrieved OSM dataset.
+    :param bbox: Coordinates as a string
+        as passed in via the http request object.
+    :type bbox: str
 
-    Raises:
-        None
+    :param coordinates: Coordinates as a list in the form:
+        [min lat, min lon, max lat, max lon]
 
-    Note bbox is min lat, min lon, max lat, max lon
+    :returns: A file which has been opened on the retrieved OSM dataset.
+    :rtype: file
 
-    Coordinates look like this:
-    {'NE_lng': 20.444537401199337,
-     'SW_lat': -34.0460012312071,
-     'SW_lng': 20.439494848251343,
-     'NE_lat': -34.044441058971394}
+    .. note:: bbox is min lat, min lon, max lat, max lon
 
-             Example overpass API query for buildings (testable at
-        http://overpass-turbo.eu/)::
+        Coordinates look like this:
+        {'NE_lng': 20.444537401199337,
+         'SW_lat': -34.0460012312071,
+         'SW_lng': 20.439494848251343,
+         'NE_lat': -34.044441058971394}
 
-            (
-              node
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-              way
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-              rel
-                ["building"]
-                ["building"!="no"]
-              ({{bbox}});
-            <;);out+meta;
+                 Example overpass API query for buildings (testable at
+            http://overpass-turbo.eu/)::
 
-        Equivalent url (http encoded)::
+                (
+                  node
+                    ["building"]
+                    ["building"!="no"]
+                  ({{bbox}});
+                  way
+                    ["building"]
+                    ["building"!="no"]
+                  ({{bbox}});
+                  rel
+                    ["building"]
+                    ["building"!="no"]
+                  ({{bbox}});
+                <;);out+meta;
 
-
+    Equivalent url (http encoded)::
 
     """
     # This is my preferred way to query overpass since it only fetches back
@@ -83,57 +84,60 @@ def get_osm_file(bbox, coordinates):
     return load_osm_document(myFilePath, myUrlPath)
 
 
-def load_osm_document(theFilePath, theUrlPath):
+def load_osm_document(file_path, url_path):
     """Load an osm document, refreshing it if the cached copy is stale.
 
     To save bandwidth the file is not downloaded if it is less than 1 hour old.
 
-     Args:
-        * theUrlPath - (Mandatory) The path (relative to the ftp root)
-          from which the file should be retrieved.
-        * theFilePath - (Mandatory). The path on the filesystem to which
-          the file should be saved.
-     Returns:
-         file object for the the downloaded file.
+    :param url_path: Path (relative to the ftp root) from which the file
+        should be retrieved.
+    :type url_path: str
+
+    :param file_path: The path on the filesystem to which the file should
+        be saved.
+    :type file_path: str
+
+    :returns: A file object for the the downloaded file.
+    :rtype: file
 
      Raises:
          None
     """
     myElapsedSeconds = 0
-    if os.path.exists(theFilePath):
+    if os.path.exists(file_path):
         myTime = time.time()  # in unix epoch
-        myFileTime = os.path.getmtime(theFilePath)  # in unix epoch
+        myFileTime = os.path.getmtime(file_path)  # in unix epoch
         myElapsedSeconds = myTime - myFileTime
         if myElapsedSeconds > 3600:
-            os.remove(theFilePath)
-    if myElapsedSeconds > 3600 or not os.path.exists(theFilePath):
-        fetch_osm(theUrlPath, theFilePath)
-        myMessage = ('fetched %s' % theFilePath)
+            os.remove(file_path)
+    if myElapsedSeconds > 3600 or not os.path.exists(file_path):
+        fetch_osm(file_path, url_path)
+        myMessage = ('fetched %s' % file_path)
         LOGGER.info(myMessage)
-    myFile = open(theFilePath, 'rt')
+    myFile = open(file_path, 'rt')
     return myFile
 
 
-def fetch_osm(theUrlPath, theFilePath):
+def fetch_osm(file_path, url_path):
     """Fetch an osm map and store locally.
 
-     Args:
-        * theUrlPath - (Mandatory) The path (relative to the ftp root)
-          from which the file should be retrieved.
-        * theFilePath - (Mandatory). The path on the filesystem to which
-          the file should be saved.
 
-     Returns:
-         The path to the downloaded file.
+    :param url_path: The path (relative to the ftp root) from which the
+        file should be retrieved.
+    :type url_path: str
 
-     Raises:
-         None
+    :param file_path: The path on the filesystem to which the file should
+        be saved.
+    :type file_path: str
+
+    :returns: The path to the downloaded file.
+
     """
-    LOGGER.debug('Getting URL: %s', theUrlPath)
-    myRequest = urllib2.Request(theUrlPath)
+    LOGGER.debug('Getting URL: %s', url_path)
+    myRequest = urllib2.Request(url_path)
     try:
         myUrlHandle = urllib2.urlopen(myRequest, timeout=60)
-        myFile = file(theFilePath, 'wb')
+        myFile = file(file_path, 'wb')
         myFile.write(myUrlHandle.read())
         myFile.close()
     except urllib2.URLError:
@@ -141,7 +145,7 @@ def fetch_osm(theUrlPath, theFilePath):
         raise
 
 
-def extract_buildings_shapefile(theFilePath):
+def extract_buildings_shapefile(file_path):
     """Convert the OSM xml file to a buildings shapefile.
 
         This is a multistep process:
@@ -150,14 +154,13 @@ def extract_buildings_shapefile(theFilePath):
                  style file.
             * Save the data out again to a shapefile
             * Zip the shapefile ready for user to download
-        Args:
-            theFilePath: str - path to the OSM file name.
 
-        Returns:
-            str - path to zipfile that was created.
+        :param file_path: Path to the OSM file name.
+        :type file_path: str
 
-        Raises:
-            None
+        :returns: Path to zipfile that was created.
+        :rtype: str
+
     """
     work_dir = temp_dir(sub_dir='buildings')
     directory_name = unique_filename(dir=work_dir)
@@ -206,7 +209,7 @@ def extract_buildings_shapefile(theFilePath):
 
     osm2pgsql_executable = which('osm2pgsql')[0]
     osm2pgsql_command = '%s -S %s -d %s %s' % (
-        osm2pgsql_executable, style_file, db_name, theFilePath)
+        osm2pgsql_executable, style_file, db_name, file_path)
 
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (

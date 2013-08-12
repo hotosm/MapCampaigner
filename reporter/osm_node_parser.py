@@ -13,12 +13,12 @@ class OsmNodeParser(sax.ContentHandler):
     def __init__(self, username):
         """Constructor.
 
-        Args:
-            username: str - the name of the user for whom nodes should be
-                retrieved.
+        :param username: The name of the user for whom nodes should be
+            retrieved.
+        :type username: str
 
-        Returns:
-            An OsmNodeParser instance.
+        :returns: An OsmNodeParser instance.
+        :rtype: OsmNodeParser
 
         Raises:
             None
@@ -30,14 +30,12 @@ class OsmNodeParser(sax.ContentHandler):
     def startElement(self, name, attributes):
         """Callback for when an element start is encountered.
 
-        Args:
-            name: str - the name of the element.
-            attributes: dict - collection of key, value pairs representing
+        :param name: Name of the element.
+        :type name: str
+
+        :param attributes: Collection of key, value pairs representing
                 the attributes of the element.
-        Returns:
-            None
-        Raises:
-            None
+        :type attributes: node
         """
         if name == 'node':
             if attributes.getValue('user') == self.username:
