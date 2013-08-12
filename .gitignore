@@ -6,3 +6,4 @@ apache/osm-reporter.apache.conf
 reporter/config/local.py
 components/
 data
+*~
