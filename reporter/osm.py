@@ -232,7 +232,7 @@ def extract_buildings_shapefile(file_path):
     print pgsql2shp_command
     call(pgsql2shp_command, shell=True)
     print dropdb_command
-    #call(dropdb_command, shell=True)
+    call(dropdb_command, shell=True)
 
     copyfile(prj_source_path, prj_dest_path)
     copyfile(qml_source_path, qml_dest_path)
