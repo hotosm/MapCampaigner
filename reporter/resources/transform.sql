@@ -40,7 +40,24 @@ update planet_osm_polygon set type = 'Supermarket' where amenity
 ilike '%mall%' or amenity ilike '%market%';
 
 update planet_osm_polygon set type = 'Residential' where landuse ilike
-'%residential%';
+'%residential%' or "building:use"='residential';
 
 update planet_osm_polygon set type = 'Sports Facility' where landuse ilike
 '%recreation_ground%' or (leisure is not null and leisure != '') ;
+
+-- run near the end
+
+update planet_osm_polygon set type = 'Government' where
+  "building:use" = 'government' and type is null ;
+
+update planet_osm_polygon set type = 'Residential' where
+  "building:use" = 'residential' and type is null ;
+
+update planet_osm_polygon set type = 'School' where
+  "building:use" = 'education' and type is null ;
+
+update planet_osm_polygon set type = 'Clinic/Doctor' where
+  "building:use" = 'medical' and type is null ;
+
+update planet_osm_polygon set type = 'Place of Worship' where
+  "building:use" = 'place_of_worship' and type is null ;
