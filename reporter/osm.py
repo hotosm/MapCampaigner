@@ -65,7 +65,7 @@ def get_osm_file(bbox, coordinates):
     # so it is much more efficient. However it (the retrieved osm xml
     # file) works for the report but not for the shp2pgsql stuff lower down.
     # So for now it is commented out. Tim.
-    # myUrlPath = (
+    # url_path = (
     #     'http://overpass-api.de/api/interpreter?'
     #     'data=('
     #     'node["building"]["building"!="no"]'
@@ -76,12 +76,13 @@ def get_osm_file(bbox, coordinates):
     #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
     #     '<;);out+meta;' % coordinates)
     # Overpass query to fetch all features in extent
-    myUrlPath = ('http://overpass-api.de/api/interpreter?data='
-                 '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
-                 .format(**coordinates))
-    mySafeName = hashlib.md5(bbox).hexdigest() + '.osm'
-    myFilePath = os.path.join(config.CACHE_DIR, mySafeName)
-    return load_osm_document(myFilePath, myUrlPath)
+    url_path = (
+        'http://overpass-api.de/api/interpreter?data='
+        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+        .format(**coordinates))
+    safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
+    file_path = os.path.join(config.CACHE_DIR, safe_name)
+    return load_osm_document(file_path, url_path)
 
 
 def load_osm_document(file_path, url_path):
@@ -114,7 +115,7 @@ def load_osm_document(file_path, url_path):
         fetch_osm(file_path, url_path)
         message = ('fetched %s' % file_path)
         LOGGER.info(message)
-    file_handle = open(file_path)
+    file_handle = open(file_path, 'rb')
     return file_handle
 
 
@@ -134,12 +135,12 @@ def fetch_osm(file_path, url_path):
 
     """
     LOGGER.debug('Getting URL: %s', url_path)
-    myRequest = urllib2.Request(url_path)
+    request = urllib2.Request(url_path)
     try:
-        myUrlHandle = urllib2.urlopen(myRequest, timeout=60)
-        myFile = file(file_path, 'wb')
-        myFile.write(myUrlHandle.read())
-        myFile.close()
+        url_handle = urllib2.urlopen(request, timeout=60)
+        file_handle = file(file_path, 'wb')
+        file_handle.write(url_handle.read())
+        file_handle.close()
     except urllib2.URLError:
         LOGGER.exception('Bad Url or Timeout')
         raise

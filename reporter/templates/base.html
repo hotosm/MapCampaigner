@@ -85,11 +85,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for myEntry in mySortedUserList %}
+                            {% for entry in sorted_user_list %}
                             <tr>
                                 <td>{{ loop.index }}</td>
-                                <td>{{ myEntry.name }}
-                                {%  if myEntry.crew %}
+                                <td>{{ entry.name }}
+                                {%  if entry.crew %}
                                     <span class="label label-success">
                                         Crew</span>
                                 {% endif %}
@@ -98,11 +98,11 @@
                                         Guru!</span>
                                 {% endif %}
                                 </td>
-                                <td>{{ myEntry.ways }}</td>
-                                <td>{{ myEntry.nodes }}</td>
+                                <td>{{ entry.ways }}</td>
+                                <td>{{ entry.nodes }}</td>
                                 <td><input type="radio" name="view-hm"
                                            class="view-hm"
-                                       data-user="{{ myEntry.name }}">
+                                       data-user="{{ entry.name }}">
                                 </td>
                                 <td><input type="checkbox"
                                             value="details{{ loop.index }}"
@@ -121,29 +121,29 @@
                                                  height:80px"></div>
                                         <div class="centered">
                                             <strong>Start date:</strong>
-                                            {{ myEntry.start }},
+                                            {{ entry.start }},
                                             <strong>End date:</strong>
-                                            {{ myEntry.end }}
+                                            {{ entry.end }}
                                         </div>
                                         <div class="centered">
                                             <strong>Active days:</strong>
-                                            <span class="badge">{{ myEntry.activeDays }}</span>
+                                            <span class="badge">{{ entry.activeDays }}</span>
                                             <strong>Ways per day:</strong>
-                                            Average <span class="badge badge-success">{{ myEntry.average }}</span>
-                                            Best <span class="badge badge-info">{{ myEntry.best }}</span>
-                                            Worst <span class="badge badge-warning">{{ myEntry.worst }}</span>
+                                            Average <span class="badge badge-success">{{ entry.average }}</span>
+                                            Best <span class="badge badge-info">{{ entry.best }}</span>
+                                            Worst <span class="badge badge-warning">{{ entry.worst }}</span>
                                             </div>
                                         </div>
-                                    {# <div>{{ myEntry.timeline|safe }}</div>  #}
+                                    {# <div>{{ entry.timeline|safe }}</div>  #}
                                     </div>
                                 </td>
                             </tr>
                             {% endfor %}
                             <tr>
                               <td>Totals</td>
-                              <td>{{ myUserCount }}</td>
-                              <td>{{ myWayCount }}</td>
-                              <td>{{ myNodeCount }}</td>
+                              <td>{{ user_count }}</td>
+                              <td>{{ way_count }}</td>
+                              <td>{{ node_count }}</td>
                               <td><button class="clear-hm btn">Clear
                                   HeatMap</button></td>
                               <td><input type="checkbox" id="all-details"
@@ -185,11 +185,11 @@
         $(function () {
             {# Pie chart for all users #}
             var myData = [
-                {%  for myEntry in mySortedUserList %}
+                {%  for entry in sorted_user_list %}
                 {
-                    label: "{{myEntry.name}}",
-                    data: {{ myEntry.ways }},
-                    crew: {{ myEntry.crew|lower }}
+                    label: "{{entry.name}}",
+                    data: {{ entry.ways }},
+                    crew: {{ entry.crew|lower }}
                 },
                 {%  endfor %}]
             var myPlot = $.plot($("#chart"), myData, {
@@ -201,8 +201,8 @@
                 legend: {show: false}
             });
             {# User timeline charts #}
-            {% for myEntry in mySortedUserList %}
-                var d{{ loop.index }} = {{ myEntry.timeline|safe }};
+            {% for entry in sorted_user_list %}
+                var d{{ loop.index }} = {{ entry.timeline|safe }};
                 for (i=0; i < d{{ loop.index }}.length; i++)
                 {
                     var pair = d{{ loop.index }}[i];
