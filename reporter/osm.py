@@ -65,7 +65,7 @@ def get_osm_file(bbox, coordinates):
     # so it is much more efficient. However it (the retrieved osm xml
     # file) works for the report but not for the shp2pgsql stuff lower down.
     # So for now it is commented out. Tim.
-    # myUrlPath = (
+    # url_path = (
     #     'http://overpass-api.de/api/interpreter?'
     #     'data=('
     #     'node["building"]["building"!="no"]'
@@ -76,12 +76,13 @@ def get_osm_file(bbox, coordinates):
     #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
     #     '<;);out+meta;' % coordinates)
     # Overpass query to fetch all features in extent
-    myUrlPath = ('http://overpass-api.de/api/interpreter?data='
-                 '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
-                 .format(**coordinates))
-    mySafeName = hashlib.md5(bbox).hexdigest() + '.osm'
-    myFilePath = os.path.join(config.CACHE_DIR, mySafeName)
-    return load_osm_document(myFilePath, myUrlPath)
+    url_path = (
+        'http://overpass-api.de/api/interpreter?data='
+        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+        .format(**coordinates))
+    safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
+    file_path = os.path.join(config.CACHE_DIR, safe_name)
+    return load_osm_document(file_path, url_path)
 
 
 def load_osm_document(file_path, url_path):
@@ -103,19 +104,19 @@ def load_osm_document(file_path, url_path):
      Raises:
          None
     """
-    myElapsedSeconds = 0
+    elapsed_seconds = 0
     if os.path.exists(file_path):
-        myTime = time.time()  # in unix epoch
-        myFileTime = os.path.getmtime(file_path)  # in unix epoch
-        myElapsedSeconds = myTime - myFileTime
-        if myElapsedSeconds > 3600:
+        current_time = time.time()  # in unix epoch
+        file_time = os.path.getmtime(file_path)  # in unix epoch
+        elapsed_seconds = current_time - file_time
+        if elapsed_seconds > 3600:
             os.remove(file_path)
-    if myElapsedSeconds > 3600 or not os.path.exists(file_path):
+    if elapsed_seconds > 3600 or not os.path.exists(file_path):
         fetch_osm(file_path, url_path)
-        myMessage = ('fetched %s' % file_path)
-        LOGGER.info(myMessage)
-    myFile = open(file_path, 'rt')
-    return myFile
+        message = ('fetched %s' % file_path)
+        LOGGER.info(message)
+    file_handle = open(file_path, 'rb')
+    return file_handle
 
 
 def fetch_osm(file_path, url_path):
@@ -134,12 +135,12 @@ def fetch_osm(file_path, url_path):
 
     """
     LOGGER.debug('Getting URL: %s', url_path)
-    myRequest = urllib2.Request(url_path)
+    request = urllib2.Request(url_path)
     try:
-        myUrlHandle = urllib2.urlopen(myRequest, timeout=60)
-        myFile = file(file_path, 'wb')
-        myFile.write(myUrlHandle.read())
-        myFile.close()
+        url_handle = urllib2.urlopen(request, timeout=60)
+        file_handle = file(file_path, 'wb')
+        file_handle.write(url_handle.read())
+        file_handle.close()
     except urllib2.URLError:
         LOGGER.exception('Bad Url or Timeout')
         raise
@@ -167,7 +168,7 @@ def extract_buildings_shapefile(file_path):
     os.makedirs(directory_name)
 
     resource_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'resources'))
+        os.path.join(os.path.dirname(__file__), 'resources', 'buildings'))
     style_file = os.path.join(resource_path, 'buildings.style')
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'buildings.shp')
@@ -242,4 +243,89 @@ def extract_buildings_shapefile(file_path):
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license'], remove_file=True)
+    return zipfile
+
+
+def extract_roads_shapefile(file_path):
+    """Convert the OSM xml file to a roads shapefile.
+
+        This is a multistep process:
+            * Create a temporary postgis database
+            * Load the osm dataset into POSTGIS with osm2pgsql and our custom
+                 style file.
+            * Save the data out again to a shapefile
+            * Zip the shapefile ready for user to download
+
+        :param file_path: Path to the OSM file name.
+        :type file_path: str
+
+        :returns: Path to zipfile that was created.
+        :rtype: str
+
+    """
+    work_dir = temp_dir(sub_dir='roads')
+    directory_name = unique_filename(dir=work_dir)
+    os.makedirs(directory_name)
+
+    resource_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), 'resources', 'roads'))
+    style_file = os.path.join(resource_path, 'roads.style')
+    db_name = os.path.basename(directory_name)
+    shape_path = os.path.join(directory_name, 'roads.shp')
+    qml_source_path = os.path.join(resource_path, 'roads.qml')
+    qml_dest_path = os.path.join(directory_name, 'roads.qml')
+    keywords_source_path = os.path.join(resource_path, 'roads.keywords')
+    keywords_dest_path = os.path.join(directory_name, 'roads.keywords')
+    license_source_path = os.path.join(resource_path, 'roads.license')
+    license_dest_path = os.path.join(directory_name, 'roads.license')
+    prj_source_path = os.path.join(resource_path, 'roads.prj')
+    prj_dest_path = os.path.join(directory_name, 'roads.prj')
+    transform_path = os.path.join(resource_path, 'transform.sql')
+
+    export_query = (
+        '"SELECT st_transform(way, 4326) AS the_geom, '
+        '"name", highway as type '
+        'FROM planet_osm_line '
+        'WHERE highway != \'no\';"')
+
+    createdb_exectuable = which('createdb')[0]
+    createdb_command = '%s -T template_postgis %s' % (
+        createdb_exectuable, db_name)
+
+    osm2pgsql_executable = which('osm2pgsql')[0]
+    osm2pgsql_command = '%s -S %s -d %s %s' % (
+        osm2pgsql_executable, style_file, db_name, file_path)
+
+    psql_executable = which('psql')[0]
+    transform_command = '%s %s -f %s' % (
+        psql_executable, db_name, transform_path)
+
+    pgsql2shp_executable = which('pgsql2shp')[0]
+    pgsql2shp_command = '%s -f %s %s %s' % (
+        pgsql2shp_executable, shape_path, db_name, export_query)
+
+    dropdb_executable = which('dropdb')[0]
+    dropdb_command = '%s %s' % (dropdb_executable, db_name)
+
+    # Now run the commands in sequence:
+    print createdb_command
+    call(createdb_command, shell=True)
+    print osm2pgsql_command
+    call(osm2pgsql_command, shell=True)
+    print transform_command
+    call(transform_command, shell=True)
+    print pgsql2shp_command
+    call(pgsql2shp_command, shell=True)
+    print dropdb_command
+    call(dropdb_command, shell=True)
+
+    copyfile(prj_source_path, prj_dest_path)
+    copyfile(qml_source_path, qml_dest_path)
+    copyfile(keywords_source_path, keywords_dest_path)
+    copyfile(license_source_path, license_dest_path)
+
+    # Now zip it up and return the path to the zip, removing the original shp
+    zipfile = zip_shp(shape_path, extra_ext=[
+        '.qml', '.keywords', '.license'], remove_file=True)
+    print 'Shape written to %s' % shape_path
     return zipfile

@@ -6,7 +6,8 @@
 import os
 
 from reporter.utilities import LOGGER
-from reporter.osm import load_osm_document, extract_buildings_shapefile
+from reporter.osm import (
+    load_osm_document, extract_buildings_shapefile, extract_roads_shapefile)
 from reporter.test.helpers import FIXTURE_PATH
 
 from reporter.test.logged_unittest import LoggedTestCase
@@ -20,38 +21,45 @@ class OsmTestCase(LoggedTestCase):
         #
         # NOTE - INTERNET CONNECTION NEEDED FOR THIS TEST
         #
-        myUrl = ('http://overpass-api.de/api/interpreter?data='
-                 '(node(-34.03112731086964,20.44997155666351,'
-                 '-34.029571310785315,20.45501410961151);<;);out+meta;')
-        myFilePath = '/tmp/test_load_osm_document.osm'
-        if os.path.exists(myFilePath):
-            os.remove(myFilePath)
+        url = (
+            'http://overpass-api.de/api/interpreter?data='
+            '(node(-34.03112731086964,20.44997155666351,'
+            '-34.029571310785315,20.45501410961151);<;);out+meta;')
+        file_path = '/tmp/test_load_osm_document.osm'
+        if os.path.exists(file_path):
+            os.remove(file_path)
             # We test twice - once to ensure its fetched from the overpass api
         # and once to ensure the cached file is used on second access
         # Note: There is a small chance the second test could fail if it
         # exactly straddles the cache expiry time.
         try:
-            myFile = load_osm_document(myFilePath, myUrl)
+            file_handle = load_osm_document(file_path, url)
         except:
-            myMessage = 'load_osm_document from overpass failed %s' % myUrl
-            LOGGER.exception(myMessage)
+            message = 'load_osm_document from overpass failed %s' % url
+            LOGGER.exception(message)
             raise
-        myString = myFile.read()
-        myMessage = 'load_osm_document from overpass content check failed.'
-        assert 'Jacoline' in myString, myMessage
+        string = file_handle.read()
+        message = 'load_osm_document from overpass content check failed.'
+        assert 'Jacoline' in string, message
 
-        #myFile = load_osm_document(myFilePath, myUrl)
-        myFileTime = os.path.getmtime(myFilePath)
+        #file_handle = load_osm_document(myFilePath, url)
+        file_time = os.path.getmtime(file_path)
         #
         # This one should be cached now....
         #
-        load_osm_document(myFilePath, myUrl)
-        myFileTime2 = os.path.getmtime(myFilePath)
-        myMessage = 'load_osm_document cache test failed.'
-        self.assertEqual(myFileTime, myFileTime2, myMessage)
+        load_osm_document(file_path, url)
+        file_time2 = os.path.getmtime(file_path)
+        message = 'load_osm_document cache test failed.'
+        self.assertEqual(file_time, file_time2, message)
 
     def test_extract_buildings_shapefile(self):
         """Test the osm to shp converter."""
-        myZipPath = extract_buildings_shapefile(FIXTURE_PATH)
-        print myZipPath
-        self.assertTrue(os.path.exists(myZipPath), myZipPath)
+        zip_path = extract_buildings_shapefile(FIXTURE_PATH)
+        #print zip_path
+        self.assertTrue(os.path.exists(zip_path), zip_path)
+
+    def test_extract_roads_shapefile(self):
+        """Test the roads to shp converter."""
+        zip_path = extract_roads_shapefile(FIXTURE_PATH)
+        #print zip_path
+        self.assertTrue(os.path.exists(zip_path), zip_path)

@@ -27,12 +27,12 @@ def get_totals(sorted_user_list):
     :returns: Two-tuple (int, int) containing way count, node count.
     :rtype: (int, int)
     """
-    myWayCount = 0
-    myNodeCount = 0
-    for myUser in sorted_user_list:
-        myWayCount += myUser['ways']
-        myNodeCount += myUser['nodes']
-    return myNodeCount, myWayCount
+    way_count = 0
+    node_count = 0
+    for user in sorted_user_list:
+        way_count += user['ways']
+        node_count += user['nodes']
+    return node_count, way_count
 
 
 def split_bbox(bbox):
@@ -64,7 +64,7 @@ def osm_object_contributions(osm_file, tag_name):
     """Compile a summary of user contributions for the selected osm data type.
 
     :param osm_file: A file object reading from a .osm file.
-    :type osm_file: file
+    :type osm_file: file, FileIO
 
     :param tag_name: The tag name we want to filter on.
     :type tag_name: str
@@ -90,56 +90,59 @@ def osm_object_contributions(osm_file, tag_name):
         }
     :rtype: list
     """
-    myParser = OsmParser(tagName=tag_name)
+    parser = OsmParser(tagName=tag_name)
     try:
-        xml.sax.parse(osm_file, myParser)
+        xml.sax.parse(osm_file, parser)
     except xml.sax.SAXParseException:
         LOGGER.exception('Failed to parse OSM xml.')
         raise
 
-    myWayCountDict = myParser.wayCountDict
-    myNodeCountDict = myParser.nodeCountDict
-    myTimeLines = myParser.userDayCountDict
+    way_count_dict = parser.wayCountDict
+    node_count_dict = parser.nodeCountDict
+    timelines = parser.userDayCountDict
 
     # Convert to a list of dicts so we can sort it.
-    myCrewList = config.CREW
-    myUserList = []
+    crew_list = config.CREW
+    user_list = []
 
-    for myKey, myValue in myWayCountDict.iteritems():
-        myCrewFlag = False
-        if myKey in myCrewList:
-            myCrewFlag = True
-        myStartDate, myEndDate = date_range(myTimeLines[myKey])
-        myStartDate = time.strftime('%d-%m-%Y', myStartDate.timetuple())
-        myEndDate = time.strftime('%d-%m-%Y', myEndDate.timetuple())
-        user_timeline = myTimeLines[myKey]
-        myRecord = {'name': myKey,
-                    'ways': myValue,
-                    'nodes': myNodeCountDict[myKey],
-                    'timeline': interpolated_timeline(user_timeline),
-                    'start': myStartDate,
-                    'end': myEndDate,
-                    'activeDays': len(user_timeline),
-                    'best': best_active_day(user_timeline),
-                    'worst': worst_active_day(user_timeline),
-                    'average': average_for_active_days(user_timeline),
-                    'crew': myCrewFlag}
-        myUserList.append(myRecord)
+    for key, value in way_count_dict.iteritems():
+        crew_flag = False
+        if key in crew_list:
+            crew_flag = True
+        start_date, end_date = date_range(timelines[key])
+        start_date = time.strftime('%d-%m-%Y', start_date.timetuple())
+        end_date = time.strftime('%d-%m-%Y', end_date.timetuple())
+        user_timeline = timelines[key]
+        record = {
+            'name': key,
+            'ways': value,
+            'nodes': node_count_dict[key],
+            'timeline': interpolated_timeline(user_timeline),
+            'start': start_date,
+            'end': end_date,
+            'activeDays': len(user_timeline),
+            'best': best_active_day(user_timeline),
+            'worst': worst_active_day(user_timeline),
+            'average': average_for_active_days(user_timeline),
+            'crew': crew_flag
+        }
+        user_list.append(record)
 
     # Sort it
-    mySortedUserList = sorted(
-        myUserList, key=lambda d: (-d['ways'],
-                                   d['nodes'],
-                                   d['name'],
-                                   d['timeline'],
-                                   d['start'],
-                                   d['end'],
-                                   d['activeDays'],
-                                   d['best'],
-                                   d['worst'],
-                                   d['average'],
-                                   d['crew']))
-    return mySortedUserList
+    sorted_user_list = sorted(
+        user_list, key=lambda d: (
+            -d['ways'],
+            d['nodes'],
+            d['name'],
+            d['timeline'],
+            d['start'],
+            d['end'],
+            d['activeDays'],
+            d['best'],
+            d['worst'],
+            d['average'],
+            d['crew']))
+    return sorted_user_list
 
 
 def date_range(timeline):
@@ -154,29 +157,29 @@ def date_range(timeline):
     :type timeline: dict
 
     :returns: A tuple containing two dates:
-        * myStartDate - a date object representing the earliest date in the
+        * start_date - a date object representing the earliest date in the
             time line.
-        * myEndDate - a date object representing the newest date in the time
+        * end_date - a date object representing the newest date in the time
             line.
     :rtype: (date, date)
 
     """
-    myStartDate = None
-    myEndDate = None
-    for myDate in timeline.keys():
-        myYear, myMonth, myDay = myDate.split('-')
-        myMessage = 'Date: %s' % myDate
-        LOGGER.info(myMessage)
-        myTimelineDate = date(int(myYear), int(myMonth), int(myDay))
-        if myStartDate is None:
-            myStartDate = myTimelineDate
-        if myEndDate is None:
-            myEndDate = myTimelineDate
-        if myTimelineDate < myStartDate:
-            myStartDate = myTimelineDate
-        if myTimelineDate > myEndDate:
-            myEndDate = myTimelineDate
-    return myStartDate, myEndDate
+    start_date = None
+    end_date = None
+    for next_date in timeline.keys():
+        year, month, day = next_date.split('-')
+        message = 'Date: %s' % next_date
+        LOGGER.info(message)
+        timeline_date = date(int(year), int(month), int(day))
+        if start_date is None:
+            start_date = timeline_date
+        if end_date is None:
+            end_date = timeline_date
+        if timeline_date < start_date:
+            start_date = timeline_date
+        if timeline_date > end_date:
+            end_date = timeline_date
+    return start_date, end_date
 
 
 def average_for_active_days(timeline):
@@ -189,14 +192,14 @@ def average_for_active_days(timeline):
     :returns: Number of entities captured per day rounded to the nearest int.
     :rtype: int
     """
-    myCount = 0
-    mySum = 0
-    for myValue in timeline.values():
-        if myValue > 0:
-            myCount += 1
-            mySum += myValue
-    myAverage = mySum / myCount
-    return myAverage
+    count = 0
+    total = 0
+    for value in timeline.values():
+        if value > 0:
+            count += 1
+            total += value
+    average = total / count
+    return average
 
 
 def best_active_day(timeline):
@@ -209,11 +212,11 @@ def best_active_day(timeline):
     :returns: Number of entities captured for the user's best day.
     :rtype: int
     """
-    myBest = 0
-    for myValue in timeline.values():
-        if myValue > myBest:
-            myBest = myValue
-    return myBest
+    best = 0
+    for value in timeline.values():
+        if value > best:
+            best = value
+    return best
 
 
 def worst_active_day(timeline):
@@ -228,13 +231,13 @@ def worst_active_day(timeline):
     """
     if len(timeline) < 1:
         return 0
-    myWorst = timeline.values()[0]
-    for myValue in timeline.values():
-        if myValue == 0:  # should never be but just in case
+    worst = timeline.values()[0]
+    for value in timeline.values():
+        if value == 0:  # should never be but just in case
             continue
-        if myValue < myWorst:
-            myWorst = myValue
-    return myWorst
+        if value < worst:
+            worst = value
+    return worst
 
 
 def interpolated_timeline(timeline):
@@ -273,20 +276,20 @@ def interpolated_timeline(timeline):
         ]
     """
     # Work out the earliest and latest day
-    myStartDate, myEndDate = date_range(timeline)
+    start_date, end_date = date_range(timeline)
     # Loop through them, adding an entry for each day
-    myTimeline = '['
-    for myDate in date_range_iterator(myStartDate, myEndDate):
-        myDateString = time.strftime('%Y-%m-%d', myDate.timetuple())
-        if myDateString in timeline:
-            myValue = timeline[myDateString]
+    time_line = '['
+    for current_date in date_range_iterator(start_date, end_date):
+        date_string = time.strftime('%Y-%m-%d', current_date.timetuple())
+        if date_string in timeline:
+            value = timeline[date_string]
         else:
-            myValue = 0
-        if myTimeline != '[':
-            myTimeline += ','
-        myTimeline += '["%s",%i]' % (myDateString, myValue)
-    myTimeline += ']'
-    return myTimeline
+            value = 0
+        if time_line != '[':
+            time_line += ','
+        time_line += '["%s",%i]' % (date_string, value)
+    time_line += ']'
+    return time_line
 
 
 def date_range_iterator(start_date, end_date):
@@ -317,9 +320,9 @@ def osm_nodes_by_user(file_handle, username):
     :returns: A list of nodes for the given user.
     :rtype: list
     """
-    myParser = OsmNodeParser(username)
-    xml.sax.parse(file_handle, myParser)
-    return myParser.nodes
+    parser = OsmNodeParser(username)
+    xml.sax.parse(file_handle, parser)
+    return parser.nodes
 
 
 def temp_dir(sub_dir='work'):
@@ -518,12 +521,13 @@ def which(name, flags=os.X_OK):
     # adding it back here in case the user's path does not include the
     # gdal binary dir on OSX but it is actually there. (TS)
     if sys.platform == 'darwin':  # Mac OS X
-        myGdalPrefix = ('/Library/Frameworks/GDAL.framework/'
-                        'Versions/1.9/Programs/')
-        path = '%s:%s' % (path, myGdalPrefix)
+        gdal_prefix = (
+            '/Library/Frameworks/GDAL.framework/'
+            'Versions/1.10/Programs/')
+        path = '%s:%s' % (path, gdal_prefix)
 
-    myMessage = 'Search path: %s' % path
-    LOGGER.debug(myMessage)
+    message = 'Search path: %s' % path
+    LOGGER.debug(message)
 
     if path is None:
         return []
