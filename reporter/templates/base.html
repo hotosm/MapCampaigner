@@ -45,8 +45,11 @@
             <p>This page lists people who have contributed <strong>{{ current_tag_name }}</strong>
                 data to a map.</p>
             {% if current_tag_name == "building" %}
-            <p><a href="#" onclick="downloadShape();">Download</a> this
+            <p><a href="#" onclick="downloadBuildingsShape();">Download</a> this
                 building data as a zipped shapefile.</p>
+            {% else %}
+            <p><a href="#" onclick="downloadRoadsShape();">Download</a> this
+              highway data as a zipped shapefile.</p>
             {% endif %}
         </div>
 
@@ -227,9 +230,15 @@
 
             {% endfor %}
         });
-        function downloadShape()
+        function downloadBuildingsShape()
         {
-            var url = '/buildings-shp?bbox=' + map.getBounds().toBBoxString();
+          var url = '/buildings-shp?bbox=' + map.getBounds().toBBoxString();
+          console.log('New url: ' + url + ' <--');
+          window.location.replace(url);
+        }
+        function downloadRoadsShape()
+        {
+            var url = '/roads-shp?bbox=' + map.getBounds().toBBoxString();
             console.log('New url: ' + url + ' <--');
             window.location.replace(url);
         }

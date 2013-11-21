@@ -17,7 +17,10 @@ from .utilities import (
     split_bbox,
     osm_object_contributions,
     get_totals, osm_nodes_by_user)
-from .osm import get_osm_file, extract_buildings_shapefile
+from .osm import (
+    get_osm_file,
+    extract_buildings_shapefile,
+    extract_roads_shapefile)
 from .static import static_file
 from . import LOGGER
 
@@ -28,9 +31,9 @@ def home():
 
     On this page a map and the report will be shown.
     """
-    mySortedUserList = []
+    sorted_user_list = []
     bbox = request.args.get('bbox', config.BBOX)
-    myTagName = request.args.get('obj', config.TAG_NAMES[0])
+    tag_name = request.args.get('obj', config.TAG_NAMES[0])
     error = None
     try:
         coordinates = split_bbox(bbox)
@@ -39,22 +42,22 @@ def home():
         coordinates = split_bbox(config.BBOX)
     else:
         try:
-            myFile = get_osm_file(bbox, coordinates)
+            file_handle = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            if not myTagName in config.TAG_NAMES:
+            if not tag_name in config.TAG_NAMES:
                 error = "Unsupported object type"
             else:
                 try:
-                    mySortedUserList = osm_object_contributions(
-                        myFile, myTagName)
+                    sorted_user_list = osm_object_contributions(
+                        file_handle, tag_name)
                 except xml.sax.SAXParseException:
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
                         'later.')
 
-    myNodeCount, myWayCount = get_totals(mySortedUserList)
+    node_count, way_count = get_totals(sorted_user_list)
 
     # We need to manually cast float in string, otherwise floats are
     # truncated, and then rounds in Leaflet result in a wrong bbox
@@ -62,18 +65,47 @@ def home():
     coordinates = dict((k, repr(v)) for k, v in coordinates.iteritems())
 
     context = dict(
-        mySortedUserList=mySortedUserList,
-        myWayCount=myWayCount,
-        myNodeCount=myNodeCount,
-        myUserCount=len(mySortedUserList),
+        sorted_user_list=sorted_user_list,
+        way_count=way_count,
+        node_count=node_count,
+        user_count=len(sorted_user_list),
         bbox=bbox,
-        current_tag_name=myTagName,
+        current_tag_name=tag_name,
         available_tag_names=config.TAG_NAMES,
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
     )
+    #noinspection PyUnresolvedReferences
     return render_template('base.html', **context)
+
+@app.route('/roads-shp')
+def roads():
+    """View to download roads as a shp."""
+    bbox = request.args.get('bbox', config.BBOX)
+    #error = None
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        #error = "Invalid bbox"
+        #coordinates = split_bbox(config.BBOX)
+        abort(500)
+    else:
+        try:
+            file_handle = get_osm_file(bbox, coordinates)
+        except urllib2.URLError:
+            #error = "Bad request. Maybe the bbox is too big!"
+            abort(500)
+
+    #noinspection PyUnboundLocalVariable
+    zip_file = extract_roads_shapefile(file_handle.name)
+
+    try:
+        f = open(zip_file)
+    except IOError:
+        abort(404)
+        return
+    return Response(f.read(), mimetype='application/zip')
 
 
 @app.route('/buildings-shp')
@@ -89,12 +121,13 @@ def buildings():
         abort(500)
     else:
         try:
-            my_file = get_osm_file(bbox, coordinates)
+            file_handle = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
-    zip_file = extract_buildings_shapefile(my_file.name)
+    #noinspection PyUnboundLocalVariable
+    zip_file = extract_buildings_shapefile(file_handle.name)
 
     try:
         f = open(zip_file)
@@ -124,15 +157,15 @@ def user_status():
     except ValueError:
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
-        LOGGER.exception(error + coordinates)
+        LOGGER.exception(error + str(coordinates))
     else:
         try:
-            myFile = get_osm_file(bbox, coordinates)
+            file_handle = get_osm_file(bbox, coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
-            LOGGER.exception(error + coordinates)
+            LOGGER.exception(error + str(coordinates))
         else:
-            node_data = osm_nodes_by_user(myFile, username)
+            node_data = osm_nodes_by_user(file_handle, username)
             return jsonify(d=node_data)
 
 
