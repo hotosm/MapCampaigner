@@ -103,19 +103,19 @@ def load_osm_document(file_path, url_path):
      Raises:
          None
     """
-    myElapsedSeconds = 0
+    elapsed_seconds = 0
     if os.path.exists(file_path):
-        myTime = time.time()  # in unix epoch
-        myFileTime = os.path.getmtime(file_path)  # in unix epoch
-        myElapsedSeconds = myTime - myFileTime
-        if myElapsedSeconds > 3600:
+        current_time = time.time()  # in unix epoch
+        file_time = os.path.getmtime(file_path)  # in unix epoch
+        elapsed_seconds = current_time - file_time
+        if elapsed_seconds > 3600:
             os.remove(file_path)
-    if myElapsedSeconds > 3600 or not os.path.exists(file_path):
+    if elapsed_seconds > 3600 or not os.path.exists(file_path):
         fetch_osm(file_path, url_path)
-        myMessage = ('fetched %s' % file_path)
-        LOGGER.info(myMessage)
-    myFile = open(file_path, 'rt')
-    return myFile
+        message = ('fetched %s' % file_path)
+        LOGGER.info(message)
+    file_handle = open(file_path)
+    return file_handle
 
 
 def fetch_osm(file_path, url_path):

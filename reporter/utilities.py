@@ -64,7 +64,7 @@ def osm_object_contributions(osm_file, tag_name):
     """Compile a summary of user contributions for the selected osm data type.
 
     :param osm_file: A file object reading from a .osm file.
-    :type osm_file: file
+    :type osm_file: file, FileIO
 
     :param tag_name: The tag name we want to filter on.
     :type tag_name: str
@@ -193,12 +193,12 @@ def average_for_active_days(timeline):
     :rtype: int
     """
     count = 0
-    sum = 0
+    total = 0
     for value in timeline.values():
         if value > 0:
             count += 1
-            sum += value
-    average = sum / count
+            total += value
+    average = total / count
     return average
 
 
