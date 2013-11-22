@@ -1,21 +1,24 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="1.8.0-Lisboa" minimumScale="0" maximumScale="1e+08" hasScaleBasedVisibilityFlag="0">
-  <transparencyLevelInt>255</transparencyLevelInt>
+<qgis version="2.1.0-Master" minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 symbollevels="0" type="singleSymbol">
     <symbols>
-      <symbol outputUnit="MM" alpha="1" type="fill" name="0">
+      <symbol alpha="1" type="fill" name="0">
         <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_unit" v="MM"/>
           <prop k="color" v="203,199,198,255"/>
           <prop k="color_border" v="204,204,204,255"/>
-          <prop k="offset" v="1.5,1.5"/>
+          <prop k="offset" v="0.5,0.5"/>
+          <prop k="offset_unit" v="MM"/>
           <prop k="style" v="solid"/>
           <prop k="style_border" v="solid"/>
           <prop k="width_border" v="0.5"/>
         </layer>
         <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_unit" v="MM"/>
           <prop k="color" v="136,105,40,255"/>
           <prop k="color_border" v="0,0,0,255"/>
           <prop k="offset" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
           <prop k="style" v="no"/>
           <prop k="style_border" v="solid"/>
           <prop k="width_border" v="0.26"/>
@@ -23,7 +26,7 @@
       </symbol>
     </symbols>
     <rotation field=""/>
-    <sizescale field=""/>
+    <sizescale field="" scalemethod="area"/>
   </renderer-v2>
   <customproperties>
     <property key="labeling" value="pal"/>
@@ -35,41 +38,22 @@
     <property key="labeling/bufferColorB" value="255"/>
     <property key="labeling/bufferColorG" value="255"/>
     <property key="labeling/bufferColorR" value="255"/>
+    <property key="labeling/bufferDraw" value="true"/>
     <property key="labeling/bufferJoinStyle" value="64"/>
     <property key="labeling/bufferNoFill" value="false"/>
     <property key="labeling/bufferSize" value="1"/>
     <property key="labeling/bufferSizeInMapUnits" value="false"/>
     <property key="labeling/bufferTransp" value="0"/>
     <property key="labeling/centroidWhole" value="false"/>
-    <property key="labeling/dataDefined/AlwaysShow" value=""/>
-    <property key="labeling/dataDefined/Bold" value=""/>
-    <property key="labeling/dataDefined/BufferColor" value=""/>
-    <property key="labeling/dataDefined/BufferSize" value=""/>
-    <property key="labeling/dataDefined/BufferTransp" value=""/>
-    <property key="labeling/dataDefined/Color" value=""/>
-    <property key="labeling/dataDefined/Family" value=""/>
-    <property key="labeling/dataDefined/FontTransp" value=""/>
-    <property key="labeling/dataDefined/Hali" value=""/>
-    <property key="labeling/dataDefined/Italic" value=""/>
-    <property key="labeling/dataDefined/LabelDistance" value=""/>
-    <property key="labeling/dataDefined/MaxScale" value=""/>
-    <property key="labeling/dataDefined/MinScale" value=""/>
-    <property key="labeling/dataDefined/PositionX" value=""/>
-    <property key="labeling/dataDefined/PositionY" value=""/>
-    <property key="labeling/dataDefined/Rotation" value=""/>
-    <property key="labeling/dataDefined/Show" value=""/>
-    <property key="labeling/dataDefined/Size" value=""/>
-    <property key="labeling/dataDefined/Strikeout" value=""/>
-    <property key="labeling/dataDefined/Underline" value=""/>
-    <property key="labeling/dataDefined/Vali" value=""/>
     <property key="labeling/decimals" value="0"/>
     <property key="labeling/displayAll" value="false"/>
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/enabled" value="false"/>
     <property key="labeling/fieldName" value=""/>
+    <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
-    <property key="labeling/fontFamily" value="Lucida Grande"/>
+    <property key="labeling/fontFamily" value="Ubuntu"/>
     <property key="labeling/fontItalic" value="false"/>
     <property key="labeling/fontLetterSpacing" value="0"/>
     <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -94,19 +78,21 @@
     <property key="labeling/minFeatureSize" value="0"/>
     <property key="labeling/multilineAlign" value="0"/>
     <property key="labeling/multilineHeight" value="1"/>
-    <property key="labeling/namedStyle" value="Regular"/>
+    <property key="labeling/namedStyle" value="Bold Italic"/>
     <property key="labeling/obstacle" value="true"/>
     <property key="labeling/placeDirectionSymbol" value="0"/>
     <property key="labeling/placement" value="0"/>
     <property key="labeling/placementFlags" value="0"/>
-    <property key="labeling/plussign" value="true"/>
+    <property key="labeling/plussign" value="false"/>
     <property key="labeling/preserveRotation" value="true"/>
     <property key="labeling/previewBkgrdColor" value="#ffffff"/>
     <property key="labeling/priority" value="5"/>
+    <property key="labeling/quadOffset" value="4"/>
     <property key="labeling/reverseDirectionSymbol" value="false"/>
     <property key="labeling/rightDirectionSymbol" value=">"/>
-    <property key="labeling/scaleMax" value="0"/>
-    <property key="labeling/scaleMin" value="0"/>
+    <property key="labeling/scaleMax" value="10000000"/>
+    <property key="labeling/scaleMin" value="1"/>
+    <property key="labeling/scaleVisibility" value="false"/>
     <property key="labeling/shadowBlendMode" value="6"/>
     <property key="labeling/shadowColorB" value="0"/>
     <property key="labeling/shadowColorG" value="0"/>
@@ -162,6 +148,9 @@
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/yQuadOffset" value="0"/>
   </customproperties>
+  <blendMode>0</blendMode>
+  <featureBlendMode>0</featureBlendMode>
+  <layerTransparency>0</layerTransparency>
   <displayfield>BUILDING</displayfield>
   <label>0</label>
   <labelattributes>
@@ -185,25 +174,30 @@
     <selectedonly on=""/>
   </labelattributes>
   <edittypes>
-    <edittype type="0" name="ADMIN"/>
-    <edittype type="0" name="AMENITY"/>
-    <edittype type="0" name="BUILDING"/>
-    <edittype type="0" name="CAPACITY"/>
-    <edittype type="0" name="FULL_ADDRE"/>
-    <edittype type="0" name="LEISURE"/>
-    <edittype type="0" name="LEVELS"/>
-    <edittype type="0" name="NAME"/>
-    <edittype type="0" name="OFFICE"/>
-    <edittype type="0" name="RELIGION"/>
-    <edittype type="0" name="ROOF_ACCES"/>
-    <edittype type="0" name="ROOF_TYPE"/>
-    <edittype type="0" name="STRUCTURE"/>
-    <edittype type="0" name="TYPE"/>
-    <edittype type="0" name="USE"/>
-    <edittype type="0" name="WALL_TYPE"/>
+    <edittype labelontop="0" editable="1" type="0" name="ADMIN"/>
+    <edittype labelontop="0" editable="1" type="0" name="AMENITY"/>
+    <edittype labelontop="0" editable="1" type="0" name="BUILDING"/>
+    <edittype labelontop="0" editable="1" type="0" name="CAPACITY"/>
+    <edittype labelontop="0" editable="1" type="0" name="FULL_ADDRE"/>
+    <edittype labelontop="0" editable="1" type="0" name="LEISURE"/>
+    <edittype labelontop="0" editable="1" type="0" name="LEVELS"/>
+    <edittype labelontop="0" editable="1" type="0" name="NAME"/>
+    <edittype labelontop="0" editable="1" type="0" name="OFFICE"/>
+    <edittype labelontop="0" editable="1" type="0" name="OSM_TYPE"/>
+    <edittype labelontop="0" editable="1" type="0" name="RELIGION"/>
+    <edittype labelontop="0" editable="1" type="0" name="ROOF_ACCES"/>
+    <edittype labelontop="0" editable="1" type="0" name="ROOF_TYPE"/>
+    <edittype labelontop="0" editable="1" type="0" name="STRUCTURE"/>
+    <edittype labelontop="0" editable="1" type="0" name="TYPE"/>
+    <edittype labelontop="0" editable="1" type="0" name="USE"/>
+    <edittype labelontop="0" editable="1" type="0" name="WALL_TYPE"/>
   </edittypes>
   <editform>.</editform>
   <editforminit></editforminit>
+  <featformsuppress>0</featformsuppress>
   <annotationform>.</annotationform>
+  <editorlayout>generatedlayout</editorlayout>
+  <excludeAttributesWMS/>
+  <excludeAttributesWFS/>
   <attributeactions/>
 </qgis>
