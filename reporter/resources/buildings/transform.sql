@@ -61,3 +61,18 @@ update planet_osm_polygon set type = 'Clinic/Doctor' where
 
 update planet_osm_polygon set type = 'Place of Worship' where
   "building:use" = 'place_of_worship' and type is null ;
+  
+update planet_osm_polygon set type = 'School' where
+  "building:use" = 'school' and type is null ;
+
+update planet_osm_polygon set type = 'Hospital' where
+  "building:use" = 'hospital' and type is null ;
+  
+update planet_osm_polygon set type = 'Commercial' where
+  "building:use" = 'commercial' and type is null ;
+
+update planet_osm_polygon set type = 'Industrial' where
+  "building:use" = 'industrial' and type is null ;
+  
+update planet_osm_polygon set type = 'Utility' where
+  "building:use" = 'utility' and type is null ;
