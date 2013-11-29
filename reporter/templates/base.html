@@ -232,13 +232,15 @@
         });
         function downloadBuildingsShape()
         {
-          var url = '/buildings-shp?bbox=' + map.getBounds().toBBoxString();
+          var url = '/buildings-shp?bbox=' + map.getBounds().toBBoxString() +
+           '&qgis_version=2';
           console.log('New url: ' + url + ' <--');
           window.location.replace(url);
         }
         function downloadRoadsShape()
         {
-            var url = '/roads-shp?bbox=' + map.getBounds().toBBoxString();
+            var url = '/roads-shp?bbox=' + map.getBounds().toBBoxString() +
+          '&qgis_version=2';
             console.log('New url: ' + url + ' <--');
             window.location.replace(url);
         }
