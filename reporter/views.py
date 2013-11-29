@@ -84,6 +84,10 @@ def home():
 def roads():
     """View to download roads as a shp."""
     bbox = request.args.get('bbox', config.BBOX)
+    # Get the QGIS version
+    # Currently 1, 2 are accepted, default to 1
+    # A different qml style file will be returned depending on the version
+    qgis_version = int(request.args.get('qgis_version', '1'))
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -99,7 +103,7 @@ def roads():
             abort(500)
 
     #noinspection PyUnboundLocalVariable
-    zip_file = extract_roads_shapefile(file_handle.name)
+    zip_file = extract_roads_shapefile(file_handle.name, qgis_version)
 
     try:
         f = open(zip_file)
@@ -113,6 +117,10 @@ def roads():
 def buildings():
     """View to download buildings as a shp."""
     bbox = request.args.get('bbox', config.BBOX)
+    # Get the QGIS version
+    # Currently 1, 2 are accepted, default to 1
+    # A different qml style file will be returned depending on the version
+    qgis_version = int(request.args.get('qgis_version', '1'))
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -128,7 +136,7 @@ def buildings():
             abort(500)
 
     #noinspection PyUnboundLocalVariable
-    zip_file = extract_buildings_shapefile(file_handle.name)
+    zip_file = extract_buildings_shapefile(file_handle.name, qgis_version)
 
     try:
         f = open(zip_file)
