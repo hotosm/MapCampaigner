@@ -146,7 +146,7 @@ def fetch_osm(file_path, url_path):
         raise
 
 
-def extract_buildings_shapefile(file_path):
+def extract_buildings_shapefile(file_path, qgis_version=1):
     """Convert the OSM xml file to a buildings shapefile.
 
         This is a multistep process:
@@ -158,6 +158,11 @@ def extract_buildings_shapefile(file_path):
 
         :param file_path: Path to the OSM file name.
         :type file_path: str
+
+        :param qgis_version: Get the QGIS version. Currently 1,
+            2 are accepted, default to 1. A different qml style file will be
+            returned depending on the version
+        :type qgis_version: int
 
         :returns: Path to zipfile that was created.
         :rtype: str
@@ -172,7 +177,10 @@ def extract_buildings_shapefile(file_path):
     style_file = os.path.join(resource_path, 'buildings.style')
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'buildings.shp')
-    qml_source_path = os.path.join(resource_path, 'buildings.qml')
+    if qgis_version > 1:
+        qml_source_path = os.path.join(resource_path, 'buildings.qml')
+    else:
+        qml_source_path = os.path.join(resource_path, 'buildings-qgis1.qml')
     qml_dest_path = os.path.join(directory_name, 'buildings.qml')
     keywords_source_path = os.path.join(resource_path, 'buildings.keywords')
     keywords_dest_path = os.path.join(directory_name, 'buildings.keywords')
@@ -246,7 +254,7 @@ def extract_buildings_shapefile(file_path):
     return zipfile
 
 
-def extract_roads_shapefile(file_path):
+def extract_roads_shapefile(file_path, qgis_version=1):
     """Convert the OSM xml file to a roads shapefile.
 
         This is a multistep process:
@@ -258,6 +266,11 @@ def extract_roads_shapefile(file_path):
 
         :param file_path: Path to the OSM file name.
         :type file_path: str
+
+        :param qgis_version: Get the QGIS version. Currently 1,
+            2 are accepted, default to 1. A different qml style file will be
+            returned depending on the version
+        :type qgis_version: int
 
         :returns: Path to zipfile that was created.
         :rtype: str
@@ -272,7 +285,10 @@ def extract_roads_shapefile(file_path):
     style_file = os.path.join(resource_path, 'roads.style')
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, 'roads.shp')
-    qml_source_path = os.path.join(resource_path, 'roads.qml')
+    if qgis_version > 1:
+        qml_source_path = os.path.join(resource_path, 'roads.qml')
+    else:
+        qml_source_path = os.path.join(resource_path, 'roads-qgis1.qml')
     qml_dest_path = os.path.join(directory_name, 'roads.qml')
     keywords_source_path = os.path.join(resource_path, 'roads.keywords')
     keywords_dest_path = os.path.join(directory_name, 'roads.keywords')
