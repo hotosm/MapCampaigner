@@ -1,110 +1,88 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.1.0-Master" minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
-  <renderer-v2 attr="TYPE" symbollevels="1" type="categorizedSymbol">
-    <categories>
-      <category symbol="0" value="construction" label="construction"/>
-      <category symbol="1" value="crossing" label="crossing"/>
-      <category symbol="2" value="cycleway" label="cycleway"/>
-      <category symbol="3" value="footway" label="footway"/>
-      <category symbol="4" value="living_street" label="living_street"/>
-      <category symbol="5" value="motorway" label="motorway"/>
-      <category symbol="6" value="motorway_link" label="motorway_link"/>
-      <category symbol="7" value="path" label="path"/>
-      <category symbol="8" value="pedestrian" label="pedestrian"/>
-      <category symbol="9" value="primary" label="primary"/>
-      <category symbol="10" value="primary_link" label="primary_link"/>
-      <category symbol="11" value="residential" label="residential"/>
-      <category symbol="12" value="road" label="road"/>
-      <category symbol="13" value="secondary" label="secondary"/>
-      <category symbol="14" value="secondary_link" label="secondary_link"/>
-      <category symbol="15" value="service" label="service"/>
-      <category symbol="16" value="steps" label="steps"/>
-      <category symbol="17" value="tertiary" label="tertiary"/>
-      <category symbol="18" value="tertiary_link" label="tertiary_link"/>
-      <category symbol="19" value="track" label="track"/>
-      <category symbol="20" value="" label=""/>
-    </categories>
+<qgis version="2.0.1-Dufour" minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+  <renderer-v2 symbollevels="0" type="RuleRenderer">
+    <rules>
+      <rule scalemaxdenom="25000" symbol="0" scalemindenom="1" label="1:25000">
+        <rule filter="&quot;TYPE&quot; = 'cycleway'" symbol="1" label="&quot;TYPE&quot; = 'cycleway'"/>
+        <rule filter="&quot;TYPE&quot; = 'footway'" symbol="2" label="&quot;TYPE&quot; = 'footway'"/>
+        <rule filter="&quot;TYPE&quot; = 'highway'" symbol="3" label="&quot;TYPE&quot; = 'highway'"/>
+        <rule filter="&quot;TYPE&quot; = 'living_street'" symbol="4" label="&quot;TYPE&quot; = 'living_street'"/>
+        <rule filter="&quot;TYPE&quot; = 'motorway'" symbol="5" label="&quot;TYPE&quot; = 'motorway'"/>
+        <rule filter="&quot;TYPE&quot; = 'motorway_link'" symbol="6" label="&quot;TYPE&quot; = 'motorway_link'"/>
+        <rule filter="&quot;TYPE&quot; = 'path'" symbol="7" label="&quot;TYPE&quot; = 'path'"/>
+        <rule filter="&quot;TYPE&quot; = 'pedestrian'" symbol="8" label="&quot;TYPE&quot; = 'pedestrian'"/>
+        <rule filter="&quot;TYPE&quot; = 'primary'" symbol="9" label="&quot;TYPE&quot; = 'primary'"/>
+        <rule filter="&quot;TYPE&quot; = 'primary_link'" symbol="10" label="&quot;TYPE&quot; = 'primary_link'"/>
+        <rule filter="&quot;TYPE&quot; = 'residential'" symbol="11" label="&quot;TYPE&quot; = 'residential'"/>
+        <rule filter="&quot;TYPE&quot; = 'road'" symbol="12" label="&quot;TYPE&quot; = 'road'"/>
+        <rule filter="&quot;TYPE&quot; = 'secondary'" symbol="13" label="&quot;TYPE&quot; = 'secondary'"/>
+        <rule filter="&quot;TYPE&quot; = 'secondary_link'" symbol="14" label="&quot;TYPE&quot; = 'secondary_link'"/>
+        <rule filter="&quot;TYPE&quot; = 'service'" symbol="15" label="&quot;TYPE&quot; = 'service'"/>
+        <rule filter="&quot;TYPE&quot; = 'tertiary'" symbol="16" label="&quot;TYPE&quot; = 'tertiary'"/>
+        <rule filter="&quot;TYPE&quot; = 'tertiary_link'" symbol="17" label="&quot;TYPE&quot; = 'tertiary_link'"/>
+        <rule filter="&quot;TYPE&quot; = 'track'" symbol="18" label="&quot;TYPE&quot; = 'track'"/>
+        <rule filter="&quot;TYPE&quot; = 'unclassified'" symbol="19" label="&quot;TYPE&quot; = 'unclassified'"/>
+        <rule filter="&quot;TYPE&quot; = 'yes'" symbol="20" label="&quot;TYPE&quot; = 'yes'"/>
+        <rule filter="&quot;TYPE&quot; = ''" symbol="21" label="&quot;TYPE&quot; = ''"/>
+      </rule>
+      <rule scalemaxdenom="50000" symbol="22" scalemindenom="25001" label="25k to 50k"/>
+      <rule scalemaxdenom="10000000" symbol="23" scalemindenom="50001" label="50k +"/>
+    </rules>
     <symbols>
       <symbol alpha="1" type="line" name="0">
-        <layer pass="0" class="MarkerLine" locked="0">
-          <prop k="interval" v="2"/>
-          <prop k="interval_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="interval"/>
-          <prop k="rotate" v="1"/>
-          <symbol alpha="1" type="marker" name="@0@0">
-            <layer pass="0" class="SimpleMarker" locked="0">
-              <prop k="angle" v="0"/>
-              <prop k="color" v="255,0,0,255"/>
-              <prop k="color_border" v="0,0,0,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="name" v="rectangle"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="area"/>
-              <prop k="size" v="1.5"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
-            </layer>
-          </symbol>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="1">
         <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="255,255,255,255"/>
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="76,38,0,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="bevel"/>
+          <prop k="joinstyle" v="round"/>
           <prop k="offset" v="0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.26"/>
+          <prop k="width" v="2.1"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="MarkerLine" locked="0">
-          <prop k="interval" v="6"/>
-          <prop k="interval_unit" v="MM"/>
+        <layer pass="16" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="255,206,128,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
           <prop k="offset" v="0"/>
           <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="interval"/>
-          <prop k="rotate" v="1"/>
-          <symbol alpha="1" type="marker" name="@1@1">
-            <layer pass="0" class="SimpleMarker" locked="0">
-              <prop k="angle" v="0"/>
-              <prop k="color" v="255,255,255,255"/>
-              <prop k="color_border" v="0,0,0,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="name" v="rectangle"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="area"/>
-              <prop k="size" v="3"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
-            </layer>
-            <layer pass="0" class="SimpleMarker" locked="0">
-              <prop k="angle" v="0"/>
-              <prop k="color" v="35,149,255,255"/>
-              <prop k="color_border" v="0,0,0,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="name" v="rectangle"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="area"/>
-              <prop k="size" v="1"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
-            </layer>
-          </symbol>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.9"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="1">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="170,110,142,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="0.66"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="2" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="255,255,255,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="dot"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="0.53"/>
+          <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="10">
@@ -121,7 +99,7 @@
           <prop k="width" v="2.1"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="16" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="255,206,128,255"/>
           <prop k="customdash" v="5;2"/>
@@ -136,9 +114,9 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="11">
-        <layer pass="0" class="SimpleLine" locked="1">
+        <layer pass="7" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="0,0,0,255"/>
+          <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -146,12 +124,12 @@
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="2.26"/>
+          <prop k="width" v="3.36"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="14" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,255,255,255"/>
+          <prop k="color" v="248,248,248,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -159,35 +137,22 @@
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.26"/>
+          <prop k="width" v="3.16"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="12">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="0,0,0,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="2.26"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
         <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,255,255,255"/>
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
+          <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.26"/>
+          <prop k="width" v="0.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
@@ -205,7 +170,7 @@
           <prop k="width" v="0.4"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="3" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="255,206,211,255"/>
           <prop k="customdash" v="5;2"/>
@@ -233,7 +198,7 @@
           <prop k="width" v="0.4"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="3" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="255,206,211,255"/>
           <prop k="customdash" v="5;2"/>
@@ -250,7 +215,7 @@
       <symbol alpha="1" type="line" name="15">
         <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="0,0,0,255"/>
+          <prop k="color" v="135,226,188,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -261,9 +226,9 @@
           <prop k="width" v="2.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,255,255,255"/>
+          <prop k="color" v="135,226,188,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -277,134 +242,8 @@
       </symbol>
       <symbol alpha="1" type="line" name="16">
         <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="149,149,112,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="-1"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.26"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="144,144,108,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="2"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.26"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-        <layer pass="2" class="MarkerLine" locked="0">
-          <prop k="interval" v="1.5"/>
-          <prop k="interval_unit" v="MM"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="interval"/>
-          <prop k="rotate" v="1"/>
-          <symbol alpha="1" type="marker" name="@16@2">
-            <layer pass="0" class="SimpleMarker" locked="0">
-              <prop k="angle" v="0"/>
-              <prop k="color" v="255,0,0,255"/>
-              <prop k="color_border" v="0,0,0,255"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="name" v="line"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="scale_method" v="area"/>
-              <prop k="size" v="0.5"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
-            </layer>
-          </symbol>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="17">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="246,255,168,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.36"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="18">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="246,255,168,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.36"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="19">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="square"/>
-          <prop k="color" v="80,80,80,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.06"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="2">
-        <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="170,110,142,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.66"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,255,255,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="dot"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.53"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="20">
-        <layer pass="0" class="SimpleLine" locked="1">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="0,0,0,255"/>
+          <prop k="color" v="81,222,88,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -415,9 +254,9 @@
           <prop k="width" v="2.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="8,48,107,255"/>
+          <prop k="color" v="81,222,88,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -429,8 +268,92 @@
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
-      <symbol alpha="1" type="line" name="3">
+      <symbol alpha="1" type="line" name="17">
         <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="110,214,12,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="110,214,12,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="18">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="218,213,61,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="218,213,61,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="19">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="211,131,70,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="211,131,70,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="2">
+        <layer pass="3" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="193,176,166,255"/>
           <prop k="customdash" v="5;2"/>
@@ -444,10 +367,10 @@
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
-      <symbol alpha="1" type="line" name="4">
+      <symbol alpha="1" type="line" name="20">
         <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="90,80,100,255"/>
+          <prop k="color" v="220,50,72,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -455,12 +378,126 @@
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="2.56"/>
+          <prop k="width" v="2.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
-          <prop k="color" v="244,221,255,255"/>
+          <prop k="color" v="220,50,72,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="21">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="22">
+        <layer pass="7" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="80,80,80,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="14" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="248,248,248,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="0.8"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="23">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="0.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="3">
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="20,50,50,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="3.86"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="20" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="94,146,148,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="3.56"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="4">
+        <layer pass="7" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="round"/>
@@ -469,6 +506,19 @@
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
           <prop k="width" v="2.36"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="14" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="248,248,248,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.21952"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
@@ -486,7 +536,7 @@
           <prop k="width" v="3.86"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="20" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="94,146,148,255"/>
           <prop k="customdash" v="5;2"/>
@@ -514,7 +564,7 @@
           <prop k="width" v="2.2"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="16" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="100,165,165,255"/>
           <prop k="customdash" v="5;2"/>
@@ -529,58 +579,32 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="7">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="100,100,80,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.96"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
         <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,248,195,255"/>
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
+          <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.76"/>
+          <prop k="width" v="0.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="8">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="100,100,80,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.96"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
         <layer pass="1" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,248,195,255"/>
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
+          <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.76"/>
+          <prop k="width" v="0.26"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
@@ -598,7 +622,7 @@
           <prop k="width" v="3.56"/>
           <prop k="width_unit" v="MM"/>
         </layer>
-        <layer pass="1" class="SimpleLine" locked="0">
+        <layer pass="18" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="255,206,128,255"/>
           <prop k="customdash" v="5;2"/>
@@ -613,44 +637,6 @@
         </layer>
       </symbol>
     </symbols>
-    <source-symbol>
-      <symbol alpha="1" type="line" name="0">
-        <layer pass="0" class="SimpleLine" locked="1">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="0,0,0,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="2.26"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="round"/>
-          <prop k="color" v="255,255,255,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="joinstyle" v="round"/>
-          <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="1.26"/>
-          <prop k="width_unit" v="MM"/>
-        </layer>
-      </symbol>
-    </source-symbol>
-    <colorramp type="gradient" name="[source]">
-      <prop k="color1" v="247,251,255,255"/>
-      <prop k="color2" v="8,48,107,255"/>
-      <prop k="discrete" v="0"/>
-      <prop k="stops" v="0.13;222,235,247,255:0.26;198,219,239,255:0.39;158,202,225,255:0.52;107,174,214,255:0.65;66,146,198,255:0.78;33,113,181,255:0.9;8,81,156,255"/>
-    </colorramp>
-    <rotation field=""/>
-    <sizescale field="" scalemethod="area"/>
   </renderer-v2>
   <customproperties>
     <property key="labeling" value="pal"/>
@@ -731,7 +717,7 @@
     <property key="labeling/shadowRadiusUnits" value="1"/>
     <property key="labeling/shadowScale" value="100"/>
     <property key="labeling/shadowTransparency" value="30"/>
-    <property key="labeling/shadowUnder" value="0"/>
+    <property key="labeling/shadowUnder" value="1"/>
     <property key="labeling/shapeBlendMode" value="0"/>
     <property key="labeling/shapeBorderColorA" value="255"/>
     <property key="labeling/shapeBorderColorB" value="128"/>
@@ -876,10 +862,9 @@
     <edittype labelontop="0" editable="1" type="0" name="wood"/>
     <edittype labelontop="0" editable="1" type="0" name="z_order"/>
   </edittypes>
-  <editform>.</editform>
+  <editform>../../../../gisdata/InaSAFEPackages/Jakarta</editform>
   <editforminit></editforminit>
-  <featformsuppress>0</featformsuppress>
-  <annotationform>.</annotationform>
+  <annotationform>../../../../gisdata/InaSAFEPackages/Jakarta</annotationform>
   <editorlayout>generatedlayout</editorlayout>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
