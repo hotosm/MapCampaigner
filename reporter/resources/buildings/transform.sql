@@ -1,78 +1,78 @@
-alter table planet_osm_polygon add column type varchar(255) null;
+ALTER TABLE planet_osm_polygon ADD COLUMN "type" VARCHAR(255) NULL;
 
-update planet_osm_polygon set type = 'School' where amenity ilike
-'%school%' or amenity ilike '%kindergarten%';
+UPDATE planet_osm_polygon SET "type" = 'School' WHERE amenity  ILIKE
+'%school%' OR amenity  ILIKE '%kindergarten%';
 
-update planet_osm_polygon set type = 'University/College' where
-amenity ilike '%university%' or amenity ilike '%college%';
+UPDATE planet_osm_polygon SET "type" = 'University/College' WHERE
+amenity  ILIKE '%university%' OR amenity  ILIKE '%college%';
 
-update planet_osm_polygon set type = 'Government' where amenity
-ilike '%government%' or office ilike 'government';
+UPDATE planet_osm_polygon SET "type" = 'Government' WHERE amenity
+ ILIKE '%government%' OR office  ILIKE 'government';
 
-update planet_osm_polygon set type = 'Clinic/Doctor' where amenity
-ilike '%clinic%' or amenity ilike '%doctor%';
+UPDATE planet_osm_polygon SET "type" = 'Clinic/Doctor' WHERE amenity
+ ILIKE '%clinic%' OR amenity  ILIKE '%doctor%';
 
-update planet_osm_polygon set type = 'Hospital' where amenity ilike
+UPDATE planet_osm_polygon SET "type" = 'Hospital' WHERE amenity  ILIKE
 '%hospital%';
-update planet_osm_polygon set type = 'Fire Station' where amenity
-ilike '%fire%';
+UPDATE planet_osm_polygon SET "type" = 'Fire Station' WHERE amenity
+ ILIKE '%fire%';
 
-update planet_osm_polygon set type = 'Police Station' where
-amenity ilike '%police%';
+UPDATE planet_osm_polygon SET "type" = 'Police Station' WHERE
+amenity  ILIKE '%police%';
 
-update planet_osm_polygon set type = 'Public Building' where
-amenity ilike '%public building%';
+UPDATE planet_osm_polygon SET "type" = 'Public Building' WHERE
+amenity  ILIKE '%public building%';
 
-update planet_osm_polygon set type = 'Place of Worship - Islam'
-where amenity ilike '%worship%' and (religion ilike '%islam'
-or religion ilike '%muslim%');
+UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Islam'
+where amenity  ILIKE '%worship%' and (religion  ILIKE '%islam'
+or religion  ILIKE '%muslim%');
 
-update planet_osm_polygon set type = 'Place of Worship - Unitarian'
-where amenity ilike '%worship%' and religion ilike '%unitarian%';
+UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Unitarian'
+where amenity  ILIKE '%worship%' and religion  ILIKE '%unitarian%';
 
-update planet_osm_polygon set type = 'Place of Worship - Buddhist' where
-amenity ilike '%worship%' and religion ilike '%budd%';
+UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Buddhist' WHERE
+amenity  ILIKE '%worship%' and religion  ILIKE '%budd%';
 
-update planet_osm_polygon set type = 'Place of Worship - Unitarian' where
-amenity ilike '%worship%' and religion ilike '%unitarian%';
+UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Unitarian' WHERE
+amenity  ILIKE '%worship%' and religion  ILIKE '%unitarian%';
 
-update planet_osm_polygon set type = 'Supermarket' where amenity
-ilike '%mall%' or amenity ilike '%market%';
+UPDATE planet_osm_polygon SET "type" = 'Supermarket' WHERE amenity
+ ILIKE '%mall%' OR amenity  ILIKE '%market%';
 
-update planet_osm_polygon set type = 'Residential' where landuse ilike
-'%residential%' or "building:use"='residential';
+UPDATE planet_osm_polygon SET "type" = 'Residential' WHERE landuse  ILIKE
+'%residential%' OR "building:use"='residential';
 
-update planet_osm_polygon set type = 'Sports Facility' where landuse ilike
-'%recreation_ground%' or (leisure is not null and leisure != '') ;
+UPDATE planet_osm_polygon SET "type" = 'Sports Facility' WHERE landuse  ILIKE
+'%recreation_ground%' OR (leisure IS NOT NULL AND leisure != '') ;
 
 -- run near the end
 
-update planet_osm_polygon set type = 'Government' where
-  "building:use" = 'government' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Government' WHERE
+  "building:use" = 'government' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'Residential' where
-  "building:use" = 'residential' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Residential' WHERE
+  "building:use" = 'residential' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'School' where
-  "building:use" = 'education' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'School' WHERE
+  "building:use" = 'education' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'Clinic/Doctor' where
-  "building:use" = 'medical' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Clinic/Doctor' WHERE
+  "building:use" = 'medical' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'Place of Worship' where
-  "building:use" = 'place_of_worship' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Place of Worship' WHERE
+  "building:use" = 'place_of_worship' AND "type" IS NULL ;
   
-update planet_osm_polygon set type = 'School' where
-  "building:use" = 'school' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'School' WHERE
+  "building:use" = 'school' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'Hospital' where
-  "building:use" = 'hospital' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Hospital' WHERE
+  "building:use" = 'hospital' AND "type" IS NULL ;
   
-update planet_osm_polygon set type = 'Commercial' where
-  "building:use" = 'commercial' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Commercial' WHERE
+  "building:use" = 'commercial' AND "type" IS NULL ;
 
-update planet_osm_polygon set type = 'Industrial' where
-  "building:use" = 'industrial' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Industrial' WHERE
+  "building:use" = 'industrial' AND "type" IS NULL ;
   
-update planet_osm_polygon set type = 'Utility' where
-  "building:use" = 'utility' and type is null ;
+UPDATE planet_osm_polygon SET "type" = 'Utility' WHERE
+  "building:use" = 'utility' AND "type" IS NULL ;

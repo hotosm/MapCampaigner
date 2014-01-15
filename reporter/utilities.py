@@ -517,7 +517,7 @@ def which(name, flags=os.X_OK):
 
     result = []
     #pylint: disable=W0141
-    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
+    extensions = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
     #pylint: enable=W0141
     path = os.environ.get('PATH', None)
     # In c6c9b26 we removed this hard coding for issue #529 but I am
@@ -539,7 +539,7 @@ def which(name, flags=os.X_OK):
         p = os.path.join(p, name)
         if os.access(p, flags):
             result.append(p)
-        for e in exts:
+        for e in extensions:
             pext = p + e
             if os.access(pext, flags):
                 result.append(pext)

@@ -190,6 +190,9 @@ def extract_buildings_shapefile(file_path, qgis_version=1):
     prj_dest_path = os.path.join(directory_name, 'buildings.prj')
     transform_path = os.path.join(resource_path, 'transform.sql')
 
+    # Used to extract the buildings as a shapefile from pg
+    # We don't store in an sql file as the sql needs to be escaped
+    # as it is passed as an inline command line option to pgsql2shp
     export_query = (
         '"SELECT st_transform(way, 4326) AS the_geom, '
         'building AS building, '
@@ -257,6 +260,9 @@ def extract_buildings_shapefile(file_path, qgis_version=1):
 def extract_roads_shapefile(file_path, qgis_version=1):
     """Convert the OSM xml file to a roads shapefile.
 
+        .. note:: I know it is misleading, but osm2pgsql puts the roads into
+            planet_osm_line table not planet_osm_roads !
+
         This is a multistep process:
             * Create a temporary postgis database
             * Load the osm dataset into POSTGIS with osm2pgsql and our custom
@@ -296,17 +302,24 @@ def extract_roads_shapefile(file_path, qgis_version=1):
     license_dest_path = os.path.join(directory_name, 'roads.license')
     prj_source_path = os.path.join(resource_path, 'roads.prj')
     prj_dest_path = os.path.join(directory_name, 'roads.prj')
+
+    # Used to standarise types while data is in pg still
     transform_path = os.path.join(resource_path, 'transform.sql')
 
+    # Used to extract the roads as a shapefile from pg
+    # We don't store in an sql file as the sql needs to be escaped
+    # as it is passed as an inline command line option to pgsql2shp
     export_query = (
         '"SELECT st_transform(way, 4326) AS the_geom, '
-        '"name", highway as type '
+        '"name", '
+        'highway as osm_type,'
+        'type '
         'FROM planet_osm_line '
         'WHERE highway != \'no\';"')
 
-    createdb_exectuable = which('createdb')[0]
+    createdb_executable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
-        createdb_exectuable, db_name)
+        createdb_executable, db_name)
 
     osm2pgsql_executable = which('osm2pgsql')[0]
     osm2pgsql_command = '%s -S %s -d %s %s' % (
