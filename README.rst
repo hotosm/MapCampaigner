@@ -1,5 +1,8 @@
 A simple tool for getting stats for an openstreetmap area.
 
+[![Build Status](http://jenkins.linfiniti.com/buildStatus/icon?job=osm-reporter)](http://jenkins.linfiniti.com/job/osm-reporter/)
+
+
 See http://linfiniti.com/2012/12/holiday-openstreetmap-project-for-swellendam/
 
 
@@ -139,7 +142,7 @@ configuration options::
     export PYTHONPATH=`pwd`/reporter:`pwd`:`pwd`/venv/lib/python2.7/site-packages/
     nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
     #rm -f pylint.log
-    pylint --output-format=parseable --reports=y --rcfile=pylintrc_jenkins y reporter > pylint.log
+    pylint --output-format=parseable --reports=y --rcfile=pylintrc reporter > pylint.log
     pep8 --repeat --ignore=E203 --exclude venv,none.py . > pep8.log
 
 
