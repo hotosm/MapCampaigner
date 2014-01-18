@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.1.0-Master" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="7" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="3" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.1.0-Master" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="0" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 symbollevels="0" type="RuleRenderer">
     <rules>
       <rule scalemaxdenom="25000" scalemindenom="1" label="1:25000">
@@ -15,8 +15,13 @@
         <rule filter="&quot;TYPE&quot; = 'track'" symbol="9" label="Track"/>
         <rule filter="&quot;TYPE&quot; = 'cycleway' OR &quot;TYPE&quot; = 'footpath' OR &quot;TYPE&quot; = 'pedestrian' OR &quot;TYPE&quot; = 'footway' OR &quot;TYPE&quot; = 'path'" symbol="10" label="Cycleway, footpath etc."/>
       </rule>
-      <rule scalemaxdenom="50000" symbol="11" scalemindenom="25001" label="25k to 50k"/>
-      <rule scalemaxdenom="10000000" symbol="12" scalemindenom="50001" label="50k +"/>
+      <rule scalemaxdenom="50000" symbol="11" scalemindenom="25001" label="25k to 50k">
+        <rule filter=" &quot;type&quot;  =  'motorway' or  &quot;type&quot;  =  'highway' " symbol="12" label="Motorway or highway"/>
+        <rule filter="&quot;TYPE&quot; = 'primary'" symbol="13" label="Primary"/>
+      </rule>
+      <rule scalemaxdenom="10000000" symbol="14" scalemindenom="50001" label="50k +">
+        <rule filter=" &quot;type&quot;  =  'motorway' or  &quot;type&quot;  =  'highway' " symbol="15" label="Motorway or highway"/>
+      </rule>
     </rules>
     <symbols>
       <symbol alpha="1" type="line" name="0">
@@ -132,9 +137,65 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="12">
+        <layer pass="0" class="SimpleLine" locked="1">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="20,50,50,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="3.86"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="20" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="94,146,148,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="3.56"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="13">
+        <layer pass="0" class="SimpleLine" locked="1">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="76,38,0,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.1"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="16" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="255,206,128,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="1.9"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="14">
         <layer pass="0" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
-          <prop k="color" v="0,0,0,255"/>
+          <prop k="color" v="84,84,84,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="joinstyle" v="bevel"/>
@@ -143,6 +204,34 @@
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
           <prop k="width" v="0.26"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" type="line" name="15">
+        <layer pass="0" class="SimpleLine" locked="1">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="20,50,50,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.2"/>
+          <prop k="width_unit" v="MM"/>
+        </layer>
+        <layer pass="16" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="round"/>
+          <prop k="color" v="100,165,165,255"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="joinstyle" v="round"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="penstyle" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width" v="2.1"/>
           <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
@@ -394,7 +483,7 @@
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="NAME"/>
+    <property key="labeling/fieldName" value="name"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="FreeSansQGIS"/>
@@ -548,12 +637,14 @@
     <edittype labelontop="0" editable="1" type="0" name="denomination"/>
     <edittype labelontop="0" editable="1" type="0" name="disused"/>
     <edittype labelontop="0" editable="1" type="0" name="embankment"/>
+    <edittype labelontop="0" editable="1" type="0" name="flooded"/>
     <edittype labelontop="0" editable="1" type="0" name="foot"/>
     <edittype labelontop="0" editable="1" type="0" name="generator:source"/>
     <edittype labelontop="0" editable="1" type="0" name="harbour"/>
     <edittype labelontop="0" editable="1" type="0" name="highway"/>
     <edittype labelontop="0" editable="1" type="0" name="historic"/>
     <edittype labelontop="0" editable="1" type="0" name="horse"/>
+    <edittype labelontop="0" editable="1" type="0" name="id"/>
     <edittype labelontop="0" editable="1" type="0" name="intermittent"/>
     <edittype labelontop="0" editable="1" type="0" name="junction"/>
     <edittype labelontop="0" editable="1" type="0" name="landuse"/>
@@ -587,6 +678,7 @@
     <edittype labelontop="0" editable="1" type="0" name="tower:type"/>
     <edittype labelontop="0" editable="1" type="0" name="tracktype"/>
     <edittype labelontop="0" editable="1" type="0" name="tunnel"/>
+    <edittype labelontop="0" editable="1" type="0" name="type"/>
     <edittype labelontop="0" editable="1" type="0" name="type:id"/>
     <edittype labelontop="0" editable="1" type="0" name="water"/>
     <edittype labelontop="0" editable="1" type="0" name="waterway"/>
@@ -596,10 +688,10 @@
     <edittype labelontop="0" editable="1" type="0" name="wood"/>
     <edittype labelontop="0" editable="1" type="0" name="z_order"/>
   </edittypes>
-  <editform>../../../../gisdata/InaSAFEPackages/Jakarta</editform>
+  <editform>/gisdata/InaSAFEPackages/Jakarta</editform>
   <editforminit></editforminit>
   <featformsuppress>0</featformsuppress>
-  <annotationform>../../../../gisdata/InaSAFEPackages/Jakarta</annotationform>
+  <annotationform>/gisdata/InaSAFEPackages/Jakarta</annotationform>
   <editorlayout>generatedlayout</editorlayout>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
