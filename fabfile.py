@@ -125,7 +125,6 @@ def freshen():
     fastprint('*******************************************\n')
 
 
-
 @task
 def sync_project_to_server():
     """Synchronize project with webserver ignoring venv and sqlite db..
@@ -150,7 +149,3 @@ def sync_project_to_server():
         run('touch apache/osm-reporter.wsgi')
     fastprint(blue(
         'Your server is now in synchronised to your local project\n'))
-
-
-
-
