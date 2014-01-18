@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/timlinux/osm-reporter.png?label=ready)](https://waffle.io/timlinux/osm-reporter)
 A simple tool for getting stats for an openstreetmap area.
 
 [![Build Status](http://jenkins.linfiniti.com/buildStatus/icon?job=osm-reporter)](http://jenkins.linfiniti.com/job/osm-reporter/)
