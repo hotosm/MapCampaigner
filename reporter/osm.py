@@ -146,6 +146,19 @@ def fetch_osm(file_path, url_path):
         raise
 
 
+def add_keyword_timestamp(keywords_file_path):
+    """Add the current date / time to the keywords file.
+
+    :param keywords_file_path: Keywords file path that the timestamp should be
+        written to.
+    :type keywords_file_path: str
+    """
+    time_stamp = time.strftime('%d-%m-%Y %H:%M')
+    keywords_file = file(keywords_file_path, 'ab')
+    keywords_file.write('date: %s' % time_stamp)
+    keywords_file.close()
+
+
 def extract_buildings_shapefile(file_path, qgis_version=1):
     """Convert the OSM xml file to a buildings shapefile.
 
@@ -251,6 +264,8 @@ def extract_buildings_shapefile(file_path, qgis_version=1):
     copyfile(keywords_source_path, keywords_dest_path)
     copyfile(license_source_path, license_dest_path)
 
+    add_keyword_timestamp(keywords_dest_path)
+
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license'], remove_file=True)
@@ -352,6 +367,8 @@ def extract_roads_shapefile(file_path, qgis_version=1):
     copyfile(qml_source_path, qml_dest_path)
     copyfile(keywords_source_path, keywords_dest_path)
     copyfile(license_source_path, license_dest_path)
+
+    add_keyword_timestamp(keywords_dest_path)
 
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
