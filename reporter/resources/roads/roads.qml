@@ -1,26 +1,26 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.1.0-Master" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="0" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.0.1-Dufour" minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 symbollevels="0" type="RuleRenderer">
     <rules>
       <rule scalemaxdenom="25000" scalemindenom="1" label="1:25000">
-        <rule filter="&quot;TYPE&quot; = 'motorway' OR &quot;TYPE&quot; = 'highway'" symbol="0" label="Motorway or highway"/>
-        <rule filter="&quot;TYPE&quot; = 'motorway_link'" symbol="1" label="Motorway Link"/>
-        <rule filter="&quot;TYPE&quot; = 'primary'" symbol="2" label="Primary road"/>
-        <rule filter="&quot;TYPE&quot; = 'primary_link'" symbol="3" label="Primary link"/>
-        <rule filter="&quot;TYPE&quot; = 'tertiary'" symbol="4" label="Tertiary"/>
-        <rule filter="&quot;TYPE&quot; = 'tertiary_link'" symbol="5" label="Tertiary link"/>
-        <rule filter="&quot;TYPE&quot; = 'secondary'" symbol="6" label="Secondary"/>
-        <rule filter="&quot;TYPE&quot; = 'secondary_link'" symbol="7" label="Secondary link"/>
-        <rule filter="&quot;TYPE&quot; = 'living_street'  OR &quot;TYPE&quot; = 'residential' OR &quot;TYPE&quot; = 'yes' OR &quot;TYPE&quot; = 'road' OR &quot;TYPE&quot; = 'unclassified' OR &quot;TYPE&quot; = 'service' OR &quot;TYPE&quot; = ''" symbol="8" label="Road, residential, living street, etc."/>
-        <rule filter="&quot;TYPE&quot; = 'track'" symbol="9" label="Track"/>
-        <rule filter="&quot;TYPE&quot; = 'cycleway' OR &quot;TYPE&quot; = 'footpath' OR &quot;TYPE&quot; = 'pedestrian' OR &quot;TYPE&quot; = 'footway' OR &quot;TYPE&quot; = 'path'" symbol="10" label="Cycleway, footpath etc."/>
+        <rule filter="&quot;TYPE&quot; = 'Motorway or highway'" symbol="0" label="Motorway or highway"/>
+        <rule filter="&quot;TYPE&quot; = 'Motorway link'" symbol="1" label="Motorway Link"/>
+        <rule filter="&quot;TYPE&quot; = 'Primary road'" symbol="2" label="Primary road"/>
+        <rule filter="&quot;TYPE&quot; = 'Primary link'" symbol="3" label="Primary link"/>
+        <rule filter="&quot;TYPE&quot; = 'Tertiary'" symbol="4" label="Tertiary"/>
+        <rule filter="&quot;TYPE&quot; = 'Tertiary link'" symbol="5" label="Tertiary link"/>
+        <rule filter="&quot;TYPE&quot; = 'Secondary'" symbol="6" label="Secondary"/>
+        <rule filter="&quot;TYPE&quot; = 'Secondary link'" symbol="7" label="Secondary link"/>
+        <rule filter="&quot;TYPE&quot; = 'Road, residential, living street, etc.'" symbol="8" label="Road, residential, living street, etc."/>
+        <rule filter="&quot;TYPE&quot; = 'Track'" symbol="9" label="Track"/>
+        <rule filter="&quot;TYPE&quot; = 'Cycleway, footpath, etc.'" symbol="10" label="Cycleway, footpath etc."/>
       </rule>
       <rule scalemaxdenom="50000" symbol="11" scalemindenom="25001" label="25k to 50k">
-        <rule filter=" &quot;type&quot;  =  'motorway' or  &quot;type&quot;  =  'highway' " symbol="12" label="Motorway or highway"/>
-        <rule filter="&quot;TYPE&quot; = 'primary'" symbol="13" label="Primary"/>
+        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway'" symbol="12" label="Motorway or highway"/>
+        <rule filter="&quot;TYPE&quot; = 'Primary road'" symbol="13" label="Primary"/>
       </rule>
       <rule scalemaxdenom="10000000" symbol="14" scalemindenom="50001" label="50k +">
-        <rule filter=" &quot;type&quot;  =  'motorway' or  &quot;type&quot;  =  'highway' " symbol="15" label="Motorway or highway"/>
+        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway' " symbol="15" label="Motorway or highway"/>
       </rule>
     </rules>
     <symbols>
@@ -483,7 +483,7 @@
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="name"/>
+    <property key="labeling/fieldName" value="NAME"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="FreeSansQGIS"/>
@@ -606,6 +606,7 @@
   </labelattributes>
   <edittypes>
     <edittype labelontop="0" editable="1" type="0" name="NAME"/>
+    <edittype labelontop="0" editable="1" type="0" name="OSM_TYPE"/>
     <edittype labelontop="0" editable="1" type="0" name="TYPE"/>
     <edittype labelontop="0" editable="1" type="0" name="access"/>
     <edittype labelontop="0" editable="1" type="0" name="access:roof"/>
@@ -690,7 +691,6 @@
   </edittypes>
   <editform>/gisdata/InaSAFEPackages/Jakarta</editform>
   <editforminit></editforminit>
-  <featformsuppress>0</featformsuppress>
   <annotationform>/gisdata/InaSAFEPackages/Jakarta</annotationform>
   <editorlayout>generatedlayout</editorlayout>
   <excludeAttributesWMS/>
