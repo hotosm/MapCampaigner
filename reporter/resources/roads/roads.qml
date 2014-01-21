@@ -81,7 +81,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="10">
-        <layer pass="0" class="SimpleLine" locked="0">
+        <layer pass="1" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="170,110,142,255"/>
           <prop k="customdash" v="5;2"/>
@@ -137,7 +137,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="12">
-        <layer pass="0" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="20,50,50,255"/>
           <prop k="customdash" v="5;2"/>
@@ -165,7 +165,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="13">
-        <layer pass="0" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="76,38,0,255"/>
           <prop k="customdash" v="5;2"/>
@@ -193,7 +193,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="14">
-        <layer pass="0" class="SimpleLine" locked="0">
+        <layer pass="1" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="84,84,84,255"/>
           <prop k="customdash" v="5;2"/>
@@ -208,7 +208,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="15">
-        <layer pass="0" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="20,50,50,255"/>
           <prop k="customdash" v="5;2"/>
@@ -292,7 +292,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="4">
-        <layer pass="12" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="214,214,214,255"/>
           <prop k="customdash" v="5;2"/>
@@ -320,7 +320,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="5">
-        <layer pass="10" class="SimpleLine" locked="0">
+        <layer pass="1" class="SimpleLine" locked="0">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="223,223,223,255"/>
           <prop k="customdash" v="5;2"/>
@@ -348,7 +348,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="6">
-        <layer pass="8" class="SimpleLine" locked="0">
+        <layer pass="1" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="223,223,223,255"/>
           <prop k="customdash" v="5;2"/>
@@ -376,7 +376,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="7">
-        <layer pass="6" class="SimpleLine" locked="0">
+        <layer pass="1" class="SimpleLine" locked="0">
           <prop k="capstyle" v="square"/>
           <prop k="color" v="223,223,223,255"/>
           <prop k="customdash" v="5;2"/>
@@ -404,7 +404,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="8">
-        <layer pass="4" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="80,80,80,255"/>
           <prop k="customdash" v="5;2"/>
@@ -432,7 +432,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" type="line" name="9">
-        <layer pass="2" class="SimpleLine" locked="1">
+        <layer pass="1" class="SimpleLine" locked="1">
           <prop k="capstyle" v="round"/>
           <prop k="color" v="223,223,223,255"/>
           <prop k="customdash" v="5;2"/>
@@ -483,7 +483,7 @@
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="NAME"/>
+    <property key="labeling/fieldName" value="name"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="FreeSansQGIS"/>
@@ -661,6 +661,7 @@
     <edittype labelontop="0" editable="1" type="0" name="oneway"/>
     <edittype labelontop="0" editable="1" type="0" name="operator"/>
     <edittype labelontop="0" editable="1" type="0" name="osm_id"/>
+    <edittype labelontop="0" editable="1" type="0" name="osm_type"/>
     <edittype labelontop="0" editable="1" type="0" name="place"/>
     <edittype labelontop="0" editable="1" type="0" name="population"/>
     <edittype labelontop="0" editable="1" type="0" name="power"/>
