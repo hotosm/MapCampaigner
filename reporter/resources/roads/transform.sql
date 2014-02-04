@@ -5,7 +5,7 @@ UPDATE
 SET
   "type" = 'Motorway or highway'
 WHERE
-  highway ILIKE 'motorway' OR highway ILIKE 'highway';
+  highway ILIKE 'motorway' OR highway ILIKE 'highway' or highway ILIKE 'trunk';
 
 --
 
