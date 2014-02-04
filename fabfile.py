@@ -11,7 +11,7 @@
 import os
 import getpass
 
-from fabric.api import task, fastprint, cd, run
+from fabric.api import task, fastprint, cd, run, hosts
 from fabric.contrib.project import rsync_project
 from fabric.colors import red, blue
 from fabtools import require
@@ -104,6 +104,7 @@ def deploy():
     fastprint('*******************************************\n')
 
 
+@hosts('linfiniti3')
 @task
 def freshen():
     """Freshen the server with latest git copy and touch wsgi.
