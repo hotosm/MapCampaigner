@@ -104,7 +104,7 @@ def deploy():
     fastprint('*******************************************\n')
 
 
-@hosts('linfiniti3')
+@hosts('linfiniti2')
 @task
 def freshen():
     """Freshen the server with latest git copy and touch wsgi.
