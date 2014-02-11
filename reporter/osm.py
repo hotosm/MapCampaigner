@@ -192,38 +192,8 @@ def extract_buildings_shapefile(
     if not check_string(output_prefix):
         raise Exception('Invalid output filename')
 
-    output_prefix += 'buildings'
-
-    work_dir = temp_dir(sub_dir='buildings')
-    directory_name = unique_filename(dir=work_dir)
-    os.makedirs(directory_name)
-
-    resource_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'resources', 'buildings'))
-    style_file = os.path.join(resource_path, 'buildings.style')
-    db_name = os.path.basename(directory_name)
-
-    shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
-
-    if qgis_version > 1:
-        qml_source_path = os.path.join(resource_path, 'buildings.qml')
-    else:
-        qml_source_path = os.path.join(resource_path, 'buildings-qgis1.qml')
-    qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
-
-    keywords_source_path = os.path.join(resource_path, 'buildings.keywords')
-    keywords_dest_path = os.path.join(
-        directory_name, '%s.keywords' % output_prefix)
-
-    license_source_path = os.path.join(resource_path, 'buildings.license')
-    license_dest_path = os.path.join(
-        directory_name, '%s.license' % output_prefix)
-
-    prj_source_path = os.path.join(resource_path, 'buildings.prj')
-    prj_dest_path = os.path.join(
-        directory_name, '%s.prj' % output_prefix)
-
-    transform_path = os.path.join(resource_path, 'transform.sql')
+    feature_type = 'buildings'
+    output_prefix += feature_type
 
     # Used to extract the buildings as a shapefile from pg
     # We don't store in an sql file as the sql needs to be escaped
@@ -250,62 +220,12 @@ def extract_buildings_shapefile(
         'FROM planet_osm_polygon '
         'WHERE building != \'no\';"')
 
-    createdb_exectuable = which('createdb')[0]
-    createdb_command = '%s -T template_postgis %s' % (
-        createdb_exectuable, db_name)
-
-    osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s -d %s %s' % (
-        osm2pgsql_executable, style_file, db_name, file_path)
-
-    psql_executable = which('psql')[0]
-    transform_command = '%s %s -f %s' % (
-        psql_executable, db_name, transform_path)
-
-    pgsql2shp_executable = which('pgsql2shp')[0]
-    pgsql2shp_command = '%s -f %s %s %s' % (
-        pgsql2shp_executable, shape_path, db_name, export_query)
-
-    dropdb_executable = which('dropdb')[0]
-    dropdb_command = '%s %s' % (dropdb_executable, db_name)
-
-    # Now run the commands in sequence:
-    print createdb_command
-    call(createdb_command, shell=True)
-    print osm2pgsql_command
-    call(osm2pgsql_command, shell=True)
-    print transform_command
-    call(transform_command, shell=True)
-    print pgsql2shp_command
-    call(pgsql2shp_command, shell=True)
-    print dropdb_command
-    call(dropdb_command, shell=True)
-
-    copyfile(prj_source_path, prj_dest_path)
-    copyfile(qml_source_path, qml_dest_path)
-    copyfile(keywords_source_path, keywords_dest_path)
-    copyfile(license_source_path, license_dest_path)
-
-    add_keyword_timestamp(keywords_dest_path)
-
-    # Now zip it up and return the path to the zip, removing the original shp
-    zipfile = zip_shp(shape_path, extra_ext=[
-        '.qml', '.keywords', '.license'], remove_file=True)
-    return zipfile
-
-
-def check_string(text, search=re.compile(r'[^a-z0-9-_]').search):
-    """Test that a string doesnt contain unwanted characters.
-
-    :param text: Text that you want to verify is compliant.
-    :type text: str
-
-    :param search: Regex to use to check the string. Defaults to allowing
-        [^a-z0-9-_].
-
-    :return: bool
-    """
-    return not bool(search(text))
+    return perform_extract(
+        export_query,
+        feature_type,
+        file_path,
+        output_prefix,
+        qgis_version)
 
 
 def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
@@ -341,40 +261,8 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
     """
     if not check_string(output_prefix):
         raise Exception('Invalid output filename')
-
-    output_prefix += 'roads'
-
-    work_dir = temp_dir(sub_dir='roads')
-    directory_name = unique_filename(dir=work_dir)
-    os.makedirs(directory_name)
-
-    resource_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'resources', 'roads'))
-    style_file = os.path.join(resource_path, 'roads.style')
-    db_name = os.path.basename(directory_name)
-    shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
-
-    if qgis_version > 1:
-        qml_source_path = os.path.join(resource_path, 'roads.qml')
-    else:
-        qml_source_path = os.path.join(resource_path, 'roads-qgis1.qml')
-    qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
-
-    keywords_source_path = os.path.join(resource_path, 'roads.keywords')
-    keywords_dest_path = os.path.join(
-        directory_name, '%s.keywords' % output_prefix)
-
-    license_source_path = os.path.join(resource_path, 'roads.license')
-    license_dest_path = os.path.join(
-        directory_name, '%s.license' % output_prefix)
-
-    prj_source_path = os.path.join(resource_path, 'roads.prj')
-    prj_dest_path = os.path.join(
-        directory_name, '%s.prj' % output_prefix)
-
-    # Used to standarise types while data is in pg still
-    transform_path = os.path.join(resource_path, 'transform.sql')
-
+    feature_type = 'roads'
+    output_prefix += feature_type
     # Used to extract the roads as a shapefile from pg
     # We don't store in an sql file as the sql needs to be escaped
     # as it is passed as an inline command line option to pgsql2shp
@@ -386,25 +274,108 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
         'FROM planet_osm_line '
         'WHERE highway != \'no\';"')
 
+    return perform_extract(
+        export_query,
+        feature_type,
+        file_path,
+        output_prefix,
+        qgis_version)
+
+
+def check_string(text, search=re.compile(r'[^a-z0-9-_]').search):
+    """Test that a string doesnt contain unwanted characters.
+
+    :param text: Text that you want to verify is compliant.
+    :type text: str
+
+    :param search: Regex to use to check the string. Defaults to allowing
+        [^a-z0-9-_].
+
+    :return: bool
+    """
+    return not bool(search(text))
+
+
+def perform_extract(
+        export_query,
+        feature_type,
+        file_path,
+        output_prefix,
+        qgis_version):
+    """
+    Generic method to perform an extract for a feature type.
+
+    :param export_query: A suitable query for extracting data from the OSM
+        file which has been loaded into postgresql. See one of the calling
+        functions for an example of this.
+    :type export_query: str
+
+    :param feature_type: The type of feature to extract. Currently 'roads' and
+        'buildings' are supported - more to be added in the future.
+    :type feature_type: str
+
+    :param file_path: Path to the OSM file name.
+    :type file_path: str
+
+    :param qgis_version: Get the QGIS version. Currently 1,
+        2 are accepted, default to 1. A different qml style file will be
+        returned depending on the version
+    :type qgis_version: int
+
+    :param output_prefix: Base name for the shape file. Defaults to 'roads'
+        which will result in an output file of 'roads.shp'.  Adding a
+        prefix of e.g. 'test-' would result in a downloaded file name of
+        'test-roads.shp'. Allowed characters are [a-zA-Z-_0-9].
+    :type output_prefix: str
+
+    :returns: Path to zipfile that was created.
+    :rtype: str
+
+    """
+    work_dir = temp_dir(sub_dir=feature_type)
+    directory_name = unique_filename(dir=work_dir)
+    os.makedirs(directory_name)
+    resource_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), 'resources', feature_type))
+    style_file = os.path.join(resource_path, '%s.style' % feature_type)
+    db_name = os.path.basename(directory_name)
+    shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
+    if qgis_version > 1:
+        qml_source_path = os.path.join(
+            resource_path, '%s.qml' % feature_type)
+    else:
+        qml_source_path = os.path.join(
+            resource_path, '%s-qgis1.qml' % feature_type)
+    qml_dest_path = os.path.join(
+        directory_name, '%s.qml' % output_prefix)
+    keywords_source_path = os.path.join(
+        resource_path, '%s.keywords' % feature_type)
+    keywords_dest_path = os.path.join(
+        directory_name, '%s.keywords' % output_prefix)
+    license_source_path = os.path.join(
+        resource_path, '%s.license' % feature_type)
+    license_dest_path = os.path.join(
+        directory_name, '%s.license' % output_prefix)
+    prj_source_path = os.path.join(
+        resource_path, '%s.prj' % feature_type)
+    prj_dest_path = os.path.join(
+        directory_name, '%s.prj' % output_prefix)
+    # Used to standarise types while data is in pg still
+    transform_path = os.path.join(resource_path, 'transform.sql')
     createdb_executable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
-
     osm2pgsql_executable = which('osm2pgsql')[0]
     osm2pgsql_command = '%s -S %s -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
-
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
         psql_executable, db_name, transform_path)
-
     pgsql2shp_executable = which('pgsql2shp')[0]
     pgsql2shp_command = '%s -f %s %s %s' % (
         pgsql2shp_executable, shape_path, db_name, export_query)
-
     dropdb_executable = which('dropdb')[0]
     dropdb_command = '%s %s' % (dropdb_executable, db_name)
-
     # Now run the commands in sequence:
     print createdb_command
     call(createdb_command, shell=True)
@@ -416,14 +387,11 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
     call(pgsql2shp_command, shell=True)
     print dropdb_command
     call(dropdb_command, shell=True)
-
     copyfile(prj_source_path, prj_dest_path)
     copyfile(qml_source_path, qml_dest_path)
     copyfile(keywords_source_path, keywords_dest_path)
     copyfile(license_source_path, license_dest_path)
-
     add_keyword_timestamp(keywords_dest_path)
-
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license'], remove_file=True)
