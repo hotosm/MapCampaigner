@@ -7,6 +7,7 @@ import hashlib
 import urllib2
 import time
 import os
+import re
 from subprocess import call
 from shutil import copyfile
 
@@ -159,28 +160,37 @@ def add_keyword_timestamp(keywords_file_path):
     keywords_file.close()
 
 
-def extract_buildings_shapefile(file_path, qgis_version=1):
+def extract_buildings_shapefile(
+        file_path, qgis_version=1, output_prefix='buildings'):
     """Convert the OSM xml file to a buildings shapefile.
 
-        This is a multistep process:
-            * Create a temporary postgis database
-            * Load the osm dataset into POSTGIS with osm2pgsql and our custom
-                 style file.
-            * Save the data out again to a shapefile
-            * Zip the shapefile ready for user to download
+    This is a multistep process:
+        * Create a temporary postgis database
+        * Load the osm dataset into POSTGIS with osm2pgsql and our custom
+             style file.
+        * Save the data out again to a shapefile
+        * Zip the shapefile ready for user to download
 
-        :param file_path: Path to the OSM file name.
-        :type file_path: str
+    :param file_path: Path to the OSM file name.
+    :type file_path: str
 
-        :param qgis_version: Get the QGIS version. Currently 1,
-            2 are accepted, default to 1. A different qml style file will be
-            returned depending on the version
-        :type qgis_version: int
+    :param qgis_version: Get the QGIS version. Currently 1,
+        2 are accepted, default to 1. A different qml style file will be
+        returned depending on the version
+    :type qgis_version: int
 
-        :returns: Path to zipfile that was created.
-        :rtype: str
+    :param output_prefix: Base name for the shape file. Defaults to 'buildings'
+        which will result in an output file of 'buildings.shp'.
+        Allowed characters are [a-zA-Z-_0-9].
+    :type output_prefix: str
+
+    :returns: Path to zipfile that was created.
+    :rtype: str
 
     """
+    if not check_string(output_prefix):
+        raise Exception('Invalid output filename')
+
     work_dir = temp_dir(sub_dir='buildings')
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
@@ -189,18 +199,27 @@ def extract_buildings_shapefile(file_path, qgis_version=1):
         os.path.join(os.path.dirname(__file__), 'resources', 'buildings'))
     style_file = os.path.join(resource_path, 'buildings.style')
     db_name = os.path.basename(directory_name)
-    shape_path = os.path.join(directory_name, 'buildings.shp')
+
+    shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
+
     if qgis_version > 1:
         qml_source_path = os.path.join(resource_path, 'buildings.qml')
     else:
         qml_source_path = os.path.join(resource_path, 'buildings-qgis1.qml')
-    qml_dest_path = os.path.join(directory_name, 'buildings.qml')
+    qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
+
     keywords_source_path = os.path.join(resource_path, 'buildings.keywords')
-    keywords_dest_path = os.path.join(directory_name, 'buildings.keywords')
+    keywords_dest_path = os.path.join(
+        directory_name, '%s.keywords' % output_prefix)
+
     license_source_path = os.path.join(resource_path, 'buildings.license')
-    license_dest_path = os.path.join(directory_name, 'buildings.license')
+    license_dest_path = os.path.join(
+        directory_name, '%s.license' % output_prefix)
+
     prj_source_path = os.path.join(resource_path, 'buildings.prj')
-    prj_dest_path = os.path.join(directory_name, 'buildings.prj')
+    prj_dest_path = os.path.join(
+        directory_name, '%s.prj' % output_prefix)
+
     transform_path = os.path.join(resource_path, 'transform.sql')
 
     # Used to extract the buildings as a shapefile from pg
@@ -272,31 +291,53 @@ def extract_buildings_shapefile(file_path, qgis_version=1):
     return zipfile
 
 
-def extract_roads_shapefile(file_path, qgis_version=1):
+def check_string(text, search=re.compile(r'[^a-z0-9-_]').search):
+    """Test that a string doesnt contain unwanted characters.
+
+    :param text: Text that you want to verify is compliant.
+    :type text: str
+
+    :param search: Regex to use to check the string. Defaults to allowing
+        [^a-z0-9-_].
+
+    :return: bool
+    """
+    return not bool(search(text))
+
+
+def extract_roads_shapefile(file_path, qgis_version=1, output_prefix='roads'):
     """Convert the OSM xml file to a roads shapefile.
 
-        .. note:: I know it is misleading, but osm2pgsql puts the roads into
-            planet_osm_line table not planet_osm_roads !
+    .. note:: I know it is misleading, but osm2pgsql puts the roads into
+        planet_osm_line table not planet_osm_roads !
 
-        This is a multistep process:
-            * Create a temporary postgis database
-            * Load the osm dataset into POSTGIS with osm2pgsql and our custom
-                 style file.
-            * Save the data out again to a shapefile
-            * Zip the shapefile ready for user to download
+    This is a multistep process:
+        * Create a temporary postgis database
+        * Load the osm dataset into POSTGIS with osm2pgsql and our custom
+             style file.
+        * Save the data out again to a shapefile
+        * Zip the shapefile ready for user to download
 
-        :param file_path: Path to the OSM file name.
-        :type file_path: str
+    :param file_path: Path to the OSM file name.
+    :type file_path: str
 
-        :param qgis_version: Get the QGIS version. Currently 1,
-            2 are accepted, default to 1. A different qml style file will be
-            returned depending on the version
-        :type qgis_version: int
+    :param qgis_version: Get the QGIS version. Currently 1,
+        2 are accepted, default to 1. A different qml style file will be
+        returned depending on the version
+    :type qgis_version: int
 
-        :returns: Path to zipfile that was created.
-        :rtype: str
+    :param output_prefix: Base name for the shape file. Defaults to 'roads'
+        which will result in an output file of 'roads.shp'. Allowed characters
+        are [a-zA-Z-_0-9].
+    :type output_prefix: str
+
+    :returns: Path to zipfile that was created.
+    :rtype: str
 
     """
+    if not check_string(output_prefix):
+        raise Exception('Invalid output filename')
+
     work_dir = temp_dir(sub_dir='roads')
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
@@ -305,18 +346,25 @@ def extract_roads_shapefile(file_path, qgis_version=1):
         os.path.join(os.path.dirname(__file__), 'resources', 'roads'))
     style_file = os.path.join(resource_path, 'roads.style')
     db_name = os.path.basename(directory_name)
-    shape_path = os.path.join(directory_name, 'roads.shp')
+    shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
+
     if qgis_version > 1:
         qml_source_path = os.path.join(resource_path, 'roads.qml')
     else:
         qml_source_path = os.path.join(resource_path, 'roads-qgis1.qml')
-    qml_dest_path = os.path.join(directory_name, 'roads.qml')
+    qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
+
     keywords_source_path = os.path.join(resource_path, 'roads.keywords')
-    keywords_dest_path = os.path.join(directory_name, 'roads.keywords')
+    keywords_dest_path = os.path.join(
+        directory_name, '%s.keywords' % output_prefix)
+
     license_source_path = os.path.join(resource_path, 'roads.license')
-    license_dest_path = os.path.join(directory_name, 'roads.license')
+    license_dest_path = os.path.join(
+        directory_name, '%s.license' % output_prefix)
+
     prj_source_path = os.path.join(resource_path, 'roads.prj')
-    prj_dest_path = os.path.join(directory_name, 'roads.prj')
+    prj_dest_path = os.path.join(
+        directory_name, '%s.prj' % output_prefix)
 
     # Used to standarise types while data is in pg still
     transform_path = os.path.join(resource_path, 'transform.sql')

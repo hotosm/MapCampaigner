@@ -88,6 +88,9 @@ def roads():
     # Currently 1, 2 are accepted, default to 1
     # A different qml style file will be returned depending on the version
     qgis_version = int(request.args.get('qgis_version', '1'))
+    # Optional parameter that allows the user to specify the filename for
+    # the downloaded roads.
+    output_prefix = request.args.get('output_prefix', 'roads')
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -102,10 +105,10 @@ def roads():
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
-    #noinspection PyUnboundLocalVariable
-    zip_file = extract_roads_shapefile(file_handle.name, qgis_version)
-
     try:
+        #noinspection PyUnboundLocalVariable
+        zip_file = extract_roads_shapefile(
+            file_handle.name, qgis_version, output_prefix)
         f = open(zip_file)
     except IOError:
         abort(404)
@@ -121,6 +124,9 @@ def buildings():
     # Currently 1, 2 are accepted, default to 1
     # A different qml style file will be returned depending on the version
     qgis_version = int(request.args.get('qgis_version', '1'))
+    # Optional parameter that allows the user to specify the filename for
+    # the downloaded roads.
+    output_prefix = request.args.get('output_prefix', 'buildings')
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -135,10 +141,10 @@ def buildings():
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
-    #noinspection PyUnboundLocalVariable
-    zip_file = extract_buildings_shapefile(file_handle.name, qgis_version)
-
     try:
+        #noinspection PyUnboundLocalVariable
+        zip_file = extract_buildings_shapefile(
+            file_handle.name, qgis_version, output_prefix)
         f = open(zip_file)
     except IOError:
         abort(404)

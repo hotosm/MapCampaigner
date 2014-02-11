@@ -15,6 +15,16 @@ Prerequisites::
 
     sudo apt-get install osm2pgsql postgis
 
+Or under OSX::
+
+    brew install osm2pgsql
+
+If you install Postgres9.3.app you will get ``pgsql2shp`` on OSX.
+
+Ensure that the above binaries are in your path. If running on OSX you
+will need to ensure that ``/Applications/Postgres93.app/Contents/MacOS/bin/``
+is in the path of the user running the server.
+
 You should also give the process that osm-reporter runs as createdb rights
 (needed to support the shape downloading feature). You should also have a
 postgis template named 'template_postgis' available on your system. Consult a

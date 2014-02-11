@@ -7,7 +7,10 @@ import os
 
 from reporter.utilities import LOGGER
 from reporter.osm import (
-    load_osm_document, extract_buildings_shapefile, extract_roads_shapefile)
+    load_osm_document,
+    extract_buildings_shapefile,
+    extract_roads_shapefile,
+    check_string)
 from reporter.test.helpers import FIXTURE_PATH
 
 from reporter.test.logged_unittest import LoggedTestCase
@@ -63,3 +66,19 @@ class OsmTestCase(LoggedTestCase):
         zip_path = extract_roads_shapefile(FIXTURE_PATH)
         #print zip_path
         self.assertTrue(os.path.exists(zip_path), zip_path)
+
+    def test_check_string(self):
+        """Test that we can validate for bad strings."""
+        bad_text = ['../../etc/passwd', '&^%$']
+        good_text = ['roads', 'buildings', 'roads_12012014']
+
+        for bad in bad_text:
+            self.assertFalse(
+                check_string(bad),
+                '%s should NOT be acceptible' % bad)
+
+        for good in good_text:
+            self.assertTrue(
+                check_string(good),
+                '%s should be acceptible' % good)
+
