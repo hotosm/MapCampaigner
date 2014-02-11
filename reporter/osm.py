@@ -161,7 +161,7 @@ def add_keyword_timestamp(keywords_file_path):
 
 
 def extract_buildings_shapefile(
-        file_path, qgis_version=1, output_prefix='buildings'):
+        file_path, qgis_version=1, output_prefix=''):
     """Convert the OSM xml file to a buildings shapefile.
 
     This is a multistep process:
@@ -179,9 +179,10 @@ def extract_buildings_shapefile(
         returned depending on the version
     :type qgis_version: int
 
-    :param output_prefix: Base name for the shape file. Defaults to 'buildings'
-        which will result in an output file of 'buildings.shp'.
-        Allowed characters are [a-zA-Z-_0-9].
+    :param output_prefix: Base name for the shape file. Defaults to ''
+        which will result in an output file of 'buildings.shp'. Adding a
+        prefix of e.g. 'test-' would result in a downloaded file name of
+        'test-buildings.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
 
     :returns: Path to zipfile that was created.
@@ -190,6 +191,8 @@ def extract_buildings_shapefile(
     """
     if not check_string(output_prefix):
         raise Exception('Invalid output filename')
+
+    output_prefix += 'buildings'
 
     work_dir = temp_dir(sub_dir='buildings')
     directory_name = unique_filename(dir=work_dir)
@@ -305,7 +308,7 @@ def check_string(text, search=re.compile(r'[^a-z0-9-_]').search):
     return not bool(search(text))
 
 
-def extract_roads_shapefile(file_path, qgis_version=1, output_prefix='roads'):
+def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
     """Convert the OSM xml file to a roads shapefile.
 
     .. note:: I know it is misleading, but osm2pgsql puts the roads into
@@ -327,8 +330,9 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix='roads'):
     :type qgis_version: int
 
     :param output_prefix: Base name for the shape file. Defaults to 'roads'
-        which will result in an output file of 'roads.shp'. Allowed characters
-        are [a-zA-Z-_0-9].
+        which will result in an output file of 'roads.shp'.  Adding a
+        prefix of e.g. 'test-' would result in a downloaded file name of
+        'test-roads.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
 
     :returns: Path to zipfile that was created.
@@ -337,6 +341,8 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix='roads'):
     """
     if not check_string(output_prefix):
         raise Exception('Invalid output filename')
+
+    output_prefix += 'roads'
 
     work_dir = temp_dir(sub_dir='roads')
     directory_name = unique_filename(dir=work_dir)
