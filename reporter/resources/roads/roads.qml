@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.1.0-Master" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.1.0-Master" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 symbollevels="0" type="RuleRenderer">
     <rules>
       <rule scalemaxdenom="25000" scalemindenom="1" label="1:25000">
@@ -16,11 +16,11 @@
         <rule filter="&quot;TYPE&quot; = 'Cycleway, footpath, etc.'" symbol="10" label="Cycleway, footpath etc."/>
       </rule>
       <rule scalemaxdenom="50000" symbol="11" scalemindenom="25001" label="25k to 50k">
-        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway'" symbol="12" label="Motorway or highway"/>
+        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway'" symbol="12" label="Motorway / highway"/>
         <rule filter="&quot;TYPE&quot; = 'Primary road'" symbol="13" label="Primary"/>
       </rule>
       <rule scalemaxdenom="10000000" symbol="14" scalemindenom="50001" label="50k +">
-        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway' " symbol="15" label="Motorway or highway"/>
+        <rule filter=" &quot;TYPE&quot;  =  'Motorway or highway' " symbol="15" label="Motorway / highway"/>
       </rule>
     </rules>
     <symbols>
