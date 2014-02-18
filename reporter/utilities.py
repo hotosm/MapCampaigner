@@ -371,9 +371,16 @@ def temp_dir(sub_dir='work'):
         # Ensure that the dir is world writable
         # Umask sets the new mask and returns the old
         old_mask = os.umask(0000)
-        os.makedirs(path, 0777)
+        try:
+            os.makedirs(path, 0777)
+        except OSError:
+            #one of the directories in the path already exists maybe
+            pass
         # Reinstate the old mask for tmp
         os.umask(old_mask)
+        if not os.path.exists(path):
+            raise Exception('Could not create working directory', path)
+
     return path
 
 
