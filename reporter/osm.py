@@ -190,7 +190,9 @@ def extract_buildings_shapefile(
 
     """
     if not check_string(output_prefix):
-        raise Exception('Invalid output filename')
+        error = 'Invalid output prefix: %s' % output_prefix
+        LOGGER.exception(error)
+        raise Exception(error)
 
     feature_type = 'buildings'
     output_prefix += feature_type
@@ -260,7 +262,9 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
 
     """
     if not check_string(output_prefix):
-        raise Exception('Invalid output filename')
+        error = 'Invalid output prefix: %s' % output_prefix
+        LOGGER.exception(error)
+        raise Exception(error)
     feature_type = 'roads'
     output_prefix += feature_type
     # Used to extract the roads as a shapefile from pg
@@ -282,7 +286,7 @@ def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
         qgis_version)
 
 
-def check_string(text, search=re.compile(r'[^a-z0-9-_]').search):
+def check_string(text, search=re.compile(r'[^A-Za-z0-9-_]').search):
     """Test that a string doesnt contain unwanted characters.
 
     :param text: Text that you want to verify is compliant.

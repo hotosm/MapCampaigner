@@ -70,7 +70,7 @@ class OsmTestCase(LoggedTestCase):
     def test_check_string(self):
         """Test that we can validate for bad strings."""
         bad_text = ['../../etc/passwd', '&^%$']
-        good_text = ['roads', 'buildings', 'roads_12012014']
+        good_text = ['roads', 'buildings', 'roads_12012014', 'ID_']
 
         for bad in bad_text:
             self.assertFalse(
