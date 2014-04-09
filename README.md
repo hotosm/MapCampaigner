@@ -44,21 +44,21 @@ Then setup a venv::
 
 Then deploy under apache mod_wsgi::
 
-   cd apache
-   cp osm-reporter.apache.conf.templ osm-reporter.apache.conf
+    cd apache
+    cp osm-reporter.apache.conf.templ osm-reporter.apache.conf
 
 Modify the contents of osm-reporter.apache.conf to suite your installation. Then do ::
 
-   sudo apt-get install libapache2-mod-wsgi
-   cd /etc/apache/sites-available
-   sudo ln -s /home/web/osm-reporter/apache/osm-reporter.apache.conf .
-   sudo a2ensite osm-reporter.apache.conf
+    sudo apt-get install libapache2-mod-wsgi
+    cd /etc/apache/sites-available
+    sudo ln -s /home/web/osm-reporter/apache/osm-reporter.apache.conf .
+    sudo a2ensite osm-reporter.apache.conf
 
 The default configuration assumes a user named 'osm-reporter' exists on your
 system that the wsgi process will run under. If you wish to follow this
 convention you should create the user::
 
-   sudo useradd osm-reporter
+    sudo useradd osm-reporter
 
 And also give that user a database account (needed for the shape download
 feature) and database create permissions::
