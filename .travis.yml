@@ -15,7 +15,7 @@ branches:
 
 install:
   - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover
-  - pip install -e . --use-mirrors
+  - pip install -r requirements.txt
   - pip install flake8
   - echo "Checking out test data at" `date`
 
