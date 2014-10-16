@@ -14,7 +14,18 @@ branches:
   - sudo apt-get -qq -y update
 
 install:
-  - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover
+  - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover osm2pgsql
+  - sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
+  - sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+  - sudo apt-get update
+  - sudo mkdir -p /var/lib/docker
+  - echo exit 101 | sudo tee /usr/sbin/policy-rc.d
+  - sudo chmod +x /usr/sbin/policy-rc.d
+  - sudo apt-get install -y slirp lxc lxc-docker aufs-tools cgroup-lite
+  - sudo docker pull kartoza/postgis
+
+script:
+  - ./linux quiet mem=2G rootfstype=hostfs rw eth0=slirp,,/usr/bin/slirp-fullbolt init=$(pwd)/uml.sh WORKDIR=$(pwd) HOME=$HOME
   - pip install -r requirements.txt
   - pip install flake8
   - echo "Checking out test data at" `date`
