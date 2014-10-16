@@ -1,0 +1,35 @@
+language: python
+
+python:
+  - "2.7"
+
+branches:
+  only:
+    - master
+    - develop
+    - travis
+
+-before_install:
+  - sudo apt-get -qq -y update
+
+install:
+  - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover
+  - pip install -e . --use-mirrors
+  - pip install flake8
+  - echo "Checking out test data at" `date`
+
+before_script:
+  - echo "Build starting on " `date`
+
+script:
+  - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
+    --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#kartoza"
+    use_notice: true
+
+  email:
+    - tim@kartoza.com
