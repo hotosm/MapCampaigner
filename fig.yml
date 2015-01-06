@@ -1,0 +1,13 @@
+db:
+  image: kartoza/postgis
+  hostname: db
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+web:
+  image: kartoza/osm-reporter
+  hostname: web
+  links:
+    - db:db
+
