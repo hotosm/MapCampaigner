@@ -370,16 +370,16 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s -d %s %s' % (
+    osm2pgsql_command = '%s -S %s -d %s -U docker -H db %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
     psql_executable = which('psql')[0]
-    transform_command = '%s %s -f %s' % (
+    transform_command = '%s %s -U docker -h db -f %s' % (
         psql_executable, db_name, transform_path)
     pgsql2shp_executable = which('pgsql2shp')[0]
-    pgsql2shp_command = '%s -f %s %s %s' % (
+    pgsql2shp_command = '%s -U docker -h db -f %s %s %s' % (
         pgsql2shp_executable, shape_path, db_name, export_query)
     dropdb_executable = which('dropdb')[0]
-    dropdb_command = '%s %s' % (dropdb_executable, db_name)
+    dropdb_command = '%s -U docker -h db %s' % (dropdb_executable, db_name)
     # Now run the commands in sequence:
     print createdb_command
     call(createdb_command, shell=True)

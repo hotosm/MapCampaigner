@@ -19,6 +19,8 @@ ADD reporter /reporter
 
 RUN apt-get -y update
 RUN apt-get -y install postgis osm2pgsql
+ADD pgpass.txt /root/.pgpass
+RUN chmod 0600 /root/.pgpass
 # Open port 80 so linked containers can see them
 EXPOSE 8080
 
