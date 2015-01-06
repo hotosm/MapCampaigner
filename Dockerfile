@@ -18,7 +18,7 @@ ADD server.py /server.py
 ADD reporter /reporter
 
 RUN apt-get -y update
-RUN apt-get -y install postgis
+RUN apt-get -y install postgis osm2pgsql
 # Open port 80 so linked containers can see them
 EXPOSE 8080
 
