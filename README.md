@@ -29,7 +29,7 @@ running container. e.g.:
 
 ```
 upstream osm-reporter {
-    server 127.0.0.1:65000;
+    server 127.0.0.1:64000;
 }
 
 server {
