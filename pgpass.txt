@@ -1,2 +1,0 @@
-# This file gets placed inside the web docker container
-db:5432:*:docker:docker
