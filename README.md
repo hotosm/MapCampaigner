@@ -8,8 +8,57 @@ See http://linfiniti.com/2012/12/holiday-openstreetmap-project-for-swellendam/
 You can also use this tool to download OSM shapefiles with a nice QGIS canned
 style for OSM roads and buildings for the area of your choosing.
 
-Install
-=======
+# Install
+
+# Docker install
+
+This will install and setup a postgis (kartoza/postgis) and an osm-reporter
+(kartoza/osm-reporter) container and then run the application with the source
+code from osm-reporter mounted into the osm-reporter container.
+
+```
+sudo apt-get install python-pip git
+sudo pip install fig
+git clone git://github.com/kartoza/osm-reporter.git
+cd osm-reporter
+fig up -d
+```
+
+Now make an nginx reverse proxy (or apache2 if you prefer) pointing to the
+running container. e.g.:
+
+```
+upstream osm-reporter {
+    server 127.0.0.1:65000;
+}
+
+server {
+
+    # OTF gzip compression
+    gzip on;
+    gzip_min_length 860;
+    gzip_comp_level 5;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain application/xml application/x-javascript text/xml text/css application/json;
+    gzip_disable “MSIE [1-6].(?!.*SV1)”;
+
+    # the port your site will be served on
+    listen      80;
+    # the domain name it will serve for
+    server_name osm.linfiniti.com osm.kartoza.com osm.inasafe.org;
+    charset     utf-8;
+
+    # max upload size, adjust to taste
+    client_max_body_size 15M;
+
+    location / {
+        proxy_pass http://osm-reporter;
+    }
+}
+```
+
+
+# Manual Install
 
 Prerequisites::
 
