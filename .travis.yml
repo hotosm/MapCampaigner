@@ -1,0 +1,54 @@
+language: python
+
+python:
+  - "2.7"
+
+addons:
+  postgresql: "9.3"
+
+branches:
+  only:
+    - master
+    - develop
+    - travis
+
+
+-before_install:
+  - sudo apt-get -qq -y update
+
+install:
+  - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover
+  - sudo apt-get install autoconf automake libtool make g++ libxml2-dev libgeos-dev libgeos++-dev libpq-dev libbz2-dev libproj-dev protobuf-c-compiler libprotobuf-c0-dev lua5.2 liblua5.2-dev libboost-dev
+  - git clone git://github.com/openstreetmap/osm2pgsql.git
+  - cd osm2pgsql && ./autogen.sh && ./configure && make && make install && cd ..
+  - sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
+  - sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+  - sudo apt-get update
+  - sudo mkdir -p /var/lib/docker
+  - echo exit 101 | sudo tee /usr/sbin/policy-rc.d
+  - sudo chmod +x /usr/sbin/policy-rc.d
+  - sudo apt-get install -y slirp lxc lxc-docker aufs-tools cgroup-lite
+  - sudo docker pull kartoza/postgis
+
+script:
+  - ./linux quiet mem=2G rootfstype=hostfs rw eth0=slirp,,/usr/bin/slirp-fullbolt init=$(pwd)/uml.sh WORKDIR=$(pwd) HOME=$HOME
+  - pip install -r requirements.txt
+  - pip install flake8
+  - echo "Checking out test data at" `date`
+
+before_script:
+  - echo "Build starting on " `date`
+  - psql -U postgres -c "create extension postgis"
+
+script:
+  - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
+    --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#kartoza"
+    use_notice: true
+
+  email:
+    - tim@kartoza.com
