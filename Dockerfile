@@ -15,7 +15,8 @@ ADD 71-apt-cacher-ng /etc/apt/apt.conf.d/71-apt-cacher-ng
 ADD requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
 ADD server.py /server.py
-ADD reporter /reporter
+# we will use a volume rather
+#ADD reporter /reporter
 
 RUN apt-get -y update
 RUN apt-get -y install postgis osm2pgsql
