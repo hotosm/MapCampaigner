@@ -158,9 +158,9 @@ def buildings_points():
     """View to download buildings points as a shp."""
     bbox = request.args.get('bbox', config.BBOX)
     # Get the QGIS version
-    # Currently 1, 2 are accepted, default to 1
+    # Currently 1, 2 are accepted, default to 2
     # A different qml style file will be returned depending on the version
-    qgis_version = int(request.args.get('qgis_version', '1'))
+    qgis_version = int(request.args.get('qgis_version', '2'))
     # Optional parameter that allows the user to specify the filename for
     # the downloaded roads.
     output_prefix = request.args.get('output_prefix', 'buildings-points')
