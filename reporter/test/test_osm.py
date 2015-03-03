@@ -9,6 +9,7 @@ from reporter.utilities import LOGGER
 from reporter.osm import (
     load_osm_document,
     extract_buildings_shapefile,
+    extract_buildings_points_shapefile,
     extract_roads_shapefile,
     check_string)
 from reporter.test.helpers import FIXTURE_PATH
@@ -58,6 +59,12 @@ class OsmTestCase(LoggedTestCase):
     def test_extract_buildings_shapefile(self):
         """Test the osm to shp converter."""
         zip_path = extract_buildings_shapefile(FIXTURE_PATH)
+        #print zip_path
+        self.assertTrue(os.path.exists(zip_path), zip_path)
+
+    def test_extract_buildings_points_shapefile(self):
+        """Test the osm to shp converter."""
+        zip_path = extract_buildings_points_shapefile(FIXTURE_PATH)
         #print zip_path
         self.assertTrue(os.path.exists(zip_path), zip_path)
 

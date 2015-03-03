@@ -20,6 +20,7 @@ from .utilities import (
 from .osm import (
     get_osm_file,
     extract_buildings_shapefile,
+    extract_buildings_points_shapefile,
     extract_roads_shapefile)
 from .static import static_file
 from . import LOGGER
@@ -144,6 +145,42 @@ def buildings():
     try:
         #noinspection PyUnboundLocalVariable
         zip_file = extract_buildings_shapefile(
+            file_handle.name, qgis_version, output_prefix)
+        f = open(zip_file)
+    except IOError:
+        abort(404)
+        return
+    return Response(f.read(), mimetype='application/zip')
+
+
+@app.route('/buildings-points-shp')
+def buildings_points():
+    """View to download buildings points as a shp."""
+    bbox = request.args.get('bbox', config.BBOX)
+    # Get the QGIS version
+    # Currently 1, 2 are accepted, default to 1
+    # A different qml style file will be returned depending on the version
+    qgis_version = int(request.args.get('qgis_version', '1'))
+    # Optional parameter that allows the user to specify the filename for
+    # the downloaded roads.
+    output_prefix = request.args.get('output_prefix', 'buildings-points')
+    #error = None
+    try:
+        coordinates = split_bbox(bbox)
+    except ValueError:
+        #error = "Invalid bbox"
+        #coordinates = split_bbox(config.BBOX)
+        abort(500)
+    else:
+        try:
+            file_handle = get_osm_file(bbox, coordinates)
+        except urllib2.URLError:
+            #error = "Bad request. Maybe the bbox is too big!"
+            abort(500)
+
+    try:
+        #noinspection PyUnboundLocalVariable
+        zip_file = extract_buildings_points_shapefile(
             file_handle.name, qgis_version, output_prefix)
         f = open(zip_file)
     except IOError:
