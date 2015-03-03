@@ -161,7 +161,7 @@ def add_keyword_timestamp(keywords_file_path):
 
 
 def extract_buildings_shapefile(
-        file_path, qgis_version=1, output_prefix=''):
+        file_path, qgis_version=2, output_prefix=''):
     """Convert the OSM xml file to a buildings shapefile.
 
     This is a multistep process:
@@ -175,7 +175,7 @@ def extract_buildings_shapefile(
     :type file_path: str
 
     :param qgis_version: Get the QGIS version. Currently 1,
-        2 are accepted, default to 1. A different qml style file will be
+        2 are accepted, default to 2. A different qml style file will be
         returned depending on the version
     :type qgis_version: int
 
@@ -230,7 +230,7 @@ def extract_buildings_shapefile(
         qgis_version)
 
 
-def extract_roads_shapefile(file_path, qgis_version=1, output_prefix=''):
+def extract_roads_shapefile(file_path, qgis_version=2, output_prefix=''):
     """Convert the OSM xml file to a roads shapefile.
 
     .. note:: I know it is misleading, but osm2pgsql puts the roads into
