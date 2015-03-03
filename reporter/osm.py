@@ -16,7 +16,7 @@ from . import config
 from . import LOGGER
 
 
-def get_osm_file(bbox, coordinates):
+def get_osm_file(bbox, coordinates, url_path = None):
     """Fetch an osm file given a bounding box using the overpass API.
 
     .. todo:: Refactor so that we don't need to pass the same param twice in
@@ -28,6 +28,9 @@ def get_osm_file(bbox, coordinates):
 
     :param coordinates: Coordinates as a list in the form:
         [min lat, min lon, max lat, max lon]
+
+    :param url_path: The URL to fetch with the query inside.
+    :type url_path: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
     :rtype: file
@@ -61,26 +64,14 @@ def get_osm_file(bbox, coordinates):
     Equivalent url (http encoded)::
 
     """
-    # This is my preferred way to query overpass since it only fetches back
-    # building features (we would adapt it to something similar for roads)
-    # so it is much more efficient. However it (the retrieved osm xml
-    # file) works for the report but not for the shp2pgsql stuff lower down.
-    # So for now it is commented out. Tim.
-    # url_path = (
-    #     'http://overpass-api.de/api/interpreter?'
-    #     'data=('
-    #     'node["building"]["building"!="no"]'
-    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
-    #     'way["building"]["building"!="no"]'
-    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
-    #     'relation["building"]["building"!="no"]'
-    #     '(%(SW_lat)s,%(SW_lng)s,%(NE_lat)s,%(NE_lng)s);'
-    #     '<;);out+meta;' % coordinates)
-    # Overpass query to fetch all features in extent
-    url_path = (
-        'http://overpass-api.de/api/interpreter?data='
-        '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
-        .format(**coordinates))
+
+    # If no url_path provided, we fetch all osm data in the BBOX
+    if not url_path:
+        url_path = (
+            'http://overpass-api.de/api/interpreter?data='
+            '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+            .format(**coordinates))
+
     safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     return load_osm_document(file_path, url_path)
