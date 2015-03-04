@@ -16,7 +16,7 @@ from . import config
 from . import LOGGER
 
 
-def get_osm_file(bbox, coordinates, url_path = None):
+def get_osm_file(bbox, coordinates, feature, url_path=None):
     """Fetch an osm file given a bounding box using the overpass API.
 
     .. todo:: Refactor so that we don't need to pass the same param twice in
@@ -28,6 +28,10 @@ def get_osm_file(bbox, coordinates, url_path = None):
 
     :param coordinates: Coordinates as a list in the form:
         [min lat, min lon, max lat, max lon]
+
+    :param feature: The type of feature (buildings or roads).
+        Request for 'buildings' or 'building-points' use the same osm file.
+    :type feature: str
 
     :param url_path: The URL to fetch with the query inside.
         If no url_path provided, we fetch all osm data in the BBOX.
@@ -71,7 +75,8 @@ def get_osm_file(bbox, coordinates, url_path = None):
             '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
             .format(**coordinates))
 
-    safe_name = hashlib.md5(bbox).hexdigest() + '.osm'
+    safe_name = hashlib.md5(bbox).hexdigest()
+    safe_name = '%s-%s' % (safe_name, feature) + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     return load_osm_document(file_path, url_path)
 
