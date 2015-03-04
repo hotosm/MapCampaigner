@@ -237,8 +237,7 @@ def building_points():
         zip_file = extract_building_points_shapefile(
             file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
-    except IOError, e:
-        print e
+    except IOError:
         abort(404)
         return
     return Response(f.read(), mimetype='application/zip')
