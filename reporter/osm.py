@@ -30,6 +30,7 @@ def get_osm_file(bbox, coordinates, url_path = None):
         [min lat, min lon, max lat, max lon]
 
     :param url_path: The URL to fetch with the query inside.
+        If no url_path provided, we fetch all osm data in the BBOX.
     :type url_path: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
@@ -62,10 +63,8 @@ def get_osm_file(bbox, coordinates, url_path = None):
                 <;);out+meta;
 
     Equivalent url (http encoded)::
-
     """
 
-    # If no url_path provided, we fetch all osm data in the BBOX
     if not url_path:
         url_path = (
             'http://overpass-api.de/api/interpreter?data='
