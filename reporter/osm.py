@@ -230,6 +230,76 @@ def extract_buildings_shapefile(
         qgis_version)
 
 
+def extract_building_points_shapefile(file_path, qgis_version=2, output_prefix=''):
+    """Convert the OSM xml file to a building points shapefile.
+
+    This is a multistep process:
+        * Create a temporary postgis database
+        * Load the osm dataset into POSTGIS with osm2pgsql and our custom
+             style file.
+        * Calculate point on surface for building centroids
+        * Save the data out again to a shapefile
+        * Zip the shapefile ready for user to download
+
+    :param file_path: Path to the OSM file name.
+    :type file_path: str
+
+    :param qgis_version: Get the QGIS version. Currently 1,
+        2 are accepted, default to 2. A different qml style file will be
+        returned depending on the version
+    :type qgis_version: int
+
+    :param output_prefix: Base name for the shape file. Defaults to ''
+        which will result in an output file of 'building_points.shp'. Adding a
+        prefix of e.g. 'test-' would result in a downloaded file name of
+        'test-building_points.shp'. Allowed characters are [a-zA-Z-_0-9].
+    :type output_prefix: str
+
+    :returns: Path to zipfile that was created.
+    :rtype: str
+
+    """
+    if not check_string(output_prefix):
+        error = 'Invalid output prefix: %s' % output_prefix
+        LOGGER.exception(error)
+        raise Exception(error)
+
+    feature_type = 'building-points'
+    output_prefix += feature_type
+
+    # Used to extract the buildings as a shapefile from pg
+    # We don't store in an sql file as the sql needs to be escaped
+    # as it is passed as an inline command line option to pgsql2shp
+    export_query = (
+        '"SELECT st_transform(st_pointonsurface(way), 4326) AS the_geom, '
+        'building AS building, '
+        '\\"building:structure\\" AS structure, '
+        '\\"building:walls\\" AS wall_type, '
+        '\\"building:roof\\" AS roof_type, '
+        '\\"building:levels\\" AS levels, '
+        'admin_level AS admin, '
+        '\\"access:roof\\" AS roof_access, '
+        '\\"capacity:persons\\" AS capacity, '
+        'religion, '
+        '\\"type:id\\" AS osm_type , '
+        '\\"addr:full\\" AS full_address, '
+        'name, '
+        'amenity, '
+        'leisure, '
+        '\\"building:use\\" AS use, '
+        'office, '
+        'type '
+        'FROM planet_osm_polygon '
+        'WHERE building != \'no\';"')
+
+    return perform_extract(
+        export_query,
+        feature_type,
+        file_path,
+        output_prefix,
+        qgis_version)
+
+
 def extract_roads_shapefile(file_path, qgis_version=2, output_prefix=''):
     """Convert the OSM xml file to a roads shapefile.
 
@@ -370,7 +440,7 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s -d %s %s' % (
+    osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
