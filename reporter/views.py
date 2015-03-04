@@ -199,7 +199,20 @@ def building_points():
         abort(500)
     else:
         try:
-            file_handle = get_osm_file(bbox, coordinates)
+            url_path = (
+                'http://overpass-api.de/api/interpreter?data='
+                '('
+                'node["building"]'
+                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+                'way["building"]'
+                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+                'relation["building"]'
+                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+                ');'
+                '(._;>;);'
+                'out+body;'.format(**coordinates))
+
+            file_handle = get_osm_file(bbox, coordinates, url_path)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
