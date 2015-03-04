@@ -92,6 +92,11 @@ def roads():
     # Optional parameter that allows the user to specify the filename for
     # the downloaded roads.
     output_prefix = request.args.get('output_prefix', 'roads')
+
+    # Optional parameter that allows the user to specify the language for
+    # the legend in QGIS.
+    lang = request.args.get('lang', 'en')
+
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -122,7 +127,7 @@ def roads():
     try:
         #noinspection PyUnboundLocalVariable
         zip_file = extract_roads_shapefile(
-            file_handle.name, qgis_version, output_prefix)
+            file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
     except IOError:
         abort(404)
@@ -141,6 +146,11 @@ def buildings():
     # Optional parameter that allows the user to specify the filename for
     # the downloaded roads.
     output_prefix = request.args.get('output_prefix', 'buildings')
+
+    # Optional parameter that allows the user to specify the language for
+    # the legend in QGIS.
+    lang = request.args.get('lang', 'en')
+
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -171,7 +181,7 @@ def buildings():
     try:
         #noinspection PyUnboundLocalVariable
         zip_file = extract_buildings_shapefile(
-            file_handle.name, qgis_version, output_prefix)
+            file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
     except IOError:
         abort(404)
@@ -190,6 +200,11 @@ def building_points():
     # Optional parameter that allows the user to specify the filename for
     # the downloaded roads.
     output_prefix = request.args.get('output_prefix', 'building-points')
+
+    # Optional parameter that allows the user to specify the language for
+    # the legend in QGIS.
+    lang = request.args.get('lang', 'en')
+
     #error = None
     try:
         coordinates = split_bbox(bbox)
@@ -220,9 +235,10 @@ def building_points():
     try:
         #noinspection PyUnboundLocalVariable
         zip_file = extract_building_points_shapefile(
-            file_handle.name, qgis_version, output_prefix)
+            file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
-    except IOError:
+    except IOError, e:
+        print e
         abort(404)
         return
     return Response(f.read(), mimetype='application/zip')
