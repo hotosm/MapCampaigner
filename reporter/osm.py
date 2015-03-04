@@ -230,13 +230,14 @@ def extract_buildings_shapefile(
         qgis_version)
 
 
-def extract_buildings_points_shapefile(file_path, qgis_version=2, output_prefix=''):
-    """Convert the OSM xml file to a buildings points shapefile.
+def extract_building_points_shapefile(file_path, qgis_version=2, output_prefix=''):
+    """Convert the OSM xml file to a building points shapefile.
 
     This is a multistep process:
         * Create a temporary postgis database
         * Load the osm dataset into POSTGIS with osm2pgsql and our custom
              style file.
+        * Calculate point on surface for building centroids
         * Save the data out again to a shapefile
         * Zip the shapefile ready for user to download
 
@@ -249,9 +250,9 @@ def extract_buildings_points_shapefile(file_path, qgis_version=2, output_prefix=
     :type qgis_version: int
 
     :param output_prefix: Base name for the shape file. Defaults to ''
-        which will result in an output file of 'buildings.shp'. Adding a
+        which will result in an output file of 'building_points.shp'. Adding a
         prefix of e.g. 'test-' would result in a downloaded file name of
-        'test-buildings.shp'. Allowed characters are [a-zA-Z-_0-9].
+        'test-building_points.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
 
     :returns: Path to zipfile that was created.
@@ -263,7 +264,7 @@ def extract_buildings_points_shapefile(file_path, qgis_version=2, output_prefix=
         LOGGER.exception(error)
         raise Exception(error)
 
-    feature_type = 'buildings-points'
+    feature_type = 'building-points'
     output_prefix += feature_type
 
     # Used to extract the buildings as a shapefile from pg
@@ -439,7 +440,7 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s -d %s %s' % (
+    osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
