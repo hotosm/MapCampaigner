@@ -430,7 +430,7 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (
+    osm2pgsql_command = '%s -S %s -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
