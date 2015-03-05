@@ -119,7 +119,7 @@ def roads():
                 '(._;>;);'
                 'out+body;'.format(**coordinates))
 
-            file_handle = get_osm_file(bbox, coordinates, url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'roads', url_path)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
@@ -173,7 +173,7 @@ def buildings():
                 '(._;>;);'
                 'out+body;'.format(**coordinates))
 
-            file_handle = get_osm_file(bbox, coordinates, url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'buildings', url_path)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
@@ -227,7 +227,7 @@ def building_points():
                 '(._;>;);'
                 'out+body;'.format(**coordinates))
 
-            file_handle = get_osm_file(bbox, coordinates, url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'buildings', url_path)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
