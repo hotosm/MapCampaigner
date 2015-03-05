@@ -156,7 +156,7 @@ def add_keyword_timestamp(keywords_file_path):
 
 
 def extract_buildings_shapefile(
-        file_path, qgis_version=2, output_prefix=''):
+        file_path, qgis_version=2, output_prefix='', lang='en'):
     """Convert the OSM xml file to a buildings shapefile.
 
     This is a multistep process:
@@ -179,6 +179,10 @@ def extract_buildings_shapefile(
         prefix of e.g. 'test-' would result in a downloaded file name of
         'test-buildings.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
+
+    :param lang: The language desired for the labels in the legend.
+        Example : 'en', 'fr', etc. Default is 'en'.
+    :type lang: str
 
     :returns: Path to zipfile that was created.
     :rtype: str
@@ -222,10 +226,12 @@ def extract_buildings_shapefile(
         feature_type,
         file_path,
         output_prefix,
+        lang,
         qgis_version)
 
 
-def extract_building_points_shapefile(file_path, qgis_version=2, output_prefix=''):
+def extract_building_points_shapefile(
+        file_path, qgis_version=2, output_prefix='', lang='en'):
     """Convert the OSM xml file to a building points shapefile.
 
     This is a multistep process:
@@ -249,6 +255,10 @@ def extract_building_points_shapefile(file_path, qgis_version=2, output_prefix='
         prefix of e.g. 'test-' would result in a downloaded file name of
         'test-building_points.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
+
+    :param lang: The language desired for the labels in the legend.
+        Example : 'en', 'fr', etc. Default is 'en'.
+    :type lang: str
 
     :returns: Path to zipfile that was created.
     :rtype: str
@@ -292,10 +302,12 @@ def extract_building_points_shapefile(file_path, qgis_version=2, output_prefix='
         feature_type,
         file_path,
         output_prefix,
+        lang,
         qgis_version)
 
 
-def extract_roads_shapefile(file_path, qgis_version=2, output_prefix=''):
+def extract_roads_shapefile(
+        file_path, qgis_version=2, output_prefix='', lang='en'):
     """Convert the OSM xml file to a roads shapefile.
 
     .. note:: I know it is misleading, but osm2pgsql puts the roads into
@@ -321,6 +333,10 @@ def extract_roads_shapefile(file_path, qgis_version=2, output_prefix=''):
         prefix of e.g. 'test-' would result in a downloaded file name of
         'test-roads.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
+
+    :param lang: The language desired for the labels in the legend.
+        Example : 'en', 'fr', etc. Default is 'en'.
+    :type lang: str
 
     :returns: Path to zipfile that was created.
     :rtype: str
@@ -348,6 +364,7 @@ def extract_roads_shapefile(file_path, qgis_version=2, output_prefix=''):
         feature_type,
         file_path,
         output_prefix,
+        lang,
         qgis_version)
 
 
@@ -370,6 +387,7 @@ def perform_extract(
         feature_type,
         file_path,
         output_prefix,
+        lang,
         qgis_version):
     """
     Generic method to perform an extract for a feature type.
@@ -391,6 +409,10 @@ def perform_extract(
         returned depending on the version
     :type qgis_version: int
 
+    :param lang: The language desired for the labels in the legend.
+        Example : 'en', 'fr', etc.
+    :type lang: str
+
     :param output_prefix: Base name for the shape file. Defaults to 'roads'
         which will result in an output file of 'roads.shp'.  Adding a
         prefix of e.g. 'test-' would result in a downloaded file name of
@@ -409,16 +431,26 @@ def perform_extract(
     style_file = os.path.join(resource_path, '%s.style' % feature_type)
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
+
     if qgis_version > 1:
         qml_source_path = os.path.join(
-            resource_path, '%s.qml' % feature_type)
+            resource_path, '%s-%s.qml' % (feature_type, lang))
+        if not os.path.isfile(qml_source_path):
+            qml_source_path = os.path.join(
+                resource_path, '%s-en.qml' % feature_type)
     else:
         qml_source_path = os.path.join(
             resource_path, '%s-qgis1.qml' % feature_type)
+
     qml_dest_path = os.path.join(
         directory_name, '%s.qml' % output_prefix)
+
     keywords_source_path = os.path.join(
-        resource_path, '%s.keywords' % feature_type)
+        resource_path, '%s-%s.keywords' % (feature_type, lang))
+    if not os.path.isfile(keywords_source_path):
+        keywords_source_path = os.path.join(
+            resource_path, '%s-en.keywords' % feature_type)
+
     keywords_dest_path = os.path.join(
         directory_name, '%s.keywords' % output_prefix)
     license_source_path = os.path.join(
@@ -435,7 +467,7 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (
+    osm2pgsql_command = '%s -S %s -d %s %s' % (
         osm2pgsql_executable, style_file, db_name, file_path)
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
