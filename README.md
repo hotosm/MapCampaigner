@@ -58,7 +58,7 @@ server {
 ```
 
 
-# Manual Install
+# Manual Install for deployment
 
 Prerequisites::
 
@@ -128,6 +128,15 @@ Next restart apache::
 
 Now test - open chrome and visit: http://osm-reporter.localhost
 
+# Manual install for development
+
+Follow the install above and stop after setting up a venv.
+You don't need to configure apache, there is a lightweight development web server.
+You can run it::
+
+    python runserver.py
+
+and then visit http://127.0.0.1:5000/
 
 Config
 ======
@@ -170,6 +179,12 @@ TAG_NAMES :
 
     (list) tag names available for stats (default: ['building', 'highway'])
 
+Osm2pgsql
+------------
+
+On some computers with less RAM than servers, you may adapt the import into postgis with osm2pgsql.
+For instance::
+    --cache-strategy sparse -C 1000
 
 Tests and QA
 ------------
