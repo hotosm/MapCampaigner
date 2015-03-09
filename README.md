@@ -179,16 +179,15 @@ TAG_NAMES :
 
     (list) tag names available for stats (default: ['building', 'highway'])
 
+OSM2PGSQL_OPTIONS :
+    (str) options for the osm2pgsql command line
+
 Osm2pgsql
 ------------
 
 On some computers with less RAM than servers, you may adapt the import into postgis with osm2pgsql.
-For instance in ``perform_extract`` from osm.py::
-    ``osm2pgsql_command = '%s -S %s -d %s %s' % (``
-could become::
-    ``osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (``
-
-Be carefull to not commit this change.
+For instance in your 'config' python module above ::
+    ``OSM2PGSQL_OPTIONS = '--cache-strategy sparse -C 1000'``
 
 Tests and QA
 ------------
