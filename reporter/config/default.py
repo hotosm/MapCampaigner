@@ -16,3 +16,5 @@ TAG_NAMES = [
     "building",  # first is default
     "highway",
 ]
+# Options for the osm2pgsql command line
+OSM2PGSQL_OPTIONS = ""

@@ -467,8 +467,13 @@ def perform_extract(
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_command = '%s -S %s -d %s %s' % (
-        osm2pgsql_executable, style_file, db_name, file_path)
+    osm2pgsql_options = config.OSM2PGSQL_OPTIONS.encode(encoding='utf-8')
+    osm2pgsql_command = '%s -S %s -d %s %s %s' % (
+        osm2pgsql_executable,
+        style_file,
+        db_name,
+        osm2pgsql_options,
+        file_path)
     psql_executable = which('psql')[0]
     transform_command = '%s %s -f %s' % (
         psql_executable, db_name, transform_path)
