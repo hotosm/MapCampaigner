@@ -183,8 +183,12 @@ Osm2pgsql
 ------------
 
 On some computers with less RAM than servers, you may adapt the import into postgis with osm2pgsql.
-For instance::
-    --cache-strategy sparse -C 1000
+For instance in ``perform_extract`` from osm.py::
+    ``osm2pgsql_command = '%s -S %s -d %s %s' % (``
+could become::
+    ``osm2pgsql_command = '%s -S %s --cache-strategy sparse -C 1000 -d %s %s' % (``
+
+Be carefull to not commit this change.
 
 Tests and QA
 ------------
