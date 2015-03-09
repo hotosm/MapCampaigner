@@ -76,3 +76,6 @@ UPDATE planet_osm_polygon SET "type" = 'Industrial' WHERE
   
 UPDATE planet_osm_polygon SET "type" = 'Utility' WHERE
   "building:use" = 'utility' AND "type" IS NULL ;
+
+-- Add default type
+UPDATE planet_osm_polygon SET "type" = 'Residential' WHERE "type" IS NULL ;
