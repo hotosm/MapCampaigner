@@ -187,7 +187,7 @@ Osm2pgsql
 
 On some computers with less RAM than servers, you may adapt the import into postgis with osm2pgsql.
 For instance in your 'config' python module above ::
-    ``OSM2PGSQL_OPTIONS = "--cache-strategy sparse -C 1000"``
+    ``OSM2PGSQL_OPTIONS = '--cache-strategy sparse -C 1000'``
 
 Tests and QA
 ------------
