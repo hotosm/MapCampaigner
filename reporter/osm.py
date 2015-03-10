@@ -202,6 +202,7 @@ def extract_buildings_shapefile(
     export_query = (
         '"SELECT st_transform(way, 4326) AS the_geom, '
         'building AS building, '
+        'type, '
         '\\"building:structure\\" AS structure, '
         '\\"building:walls\\" AS wall_type, '
         '\\"building:roof\\" AS roof_type, '
@@ -216,8 +217,7 @@ def extract_buildings_shapefile(
         'amenity, '
         'leisure, '
         '\\"building:use\\" AS use, '
-        'office, '
-        'type '
+        'office '
         'FROM planet_osm_polygon '
         'WHERE building != \'no\';"')
 
@@ -278,6 +278,7 @@ def extract_building_points_shapefile(
     export_query = (
         '"SELECT st_transform(st_pointonsurface(way), 4326) AS the_geom, '
         'building AS building, '
+        'type, '
         '\\"building:structure\\" AS structure, '
         '\\"building:walls\\" AS wall_type, '
         '\\"building:roof\\" AS roof_type, '
@@ -292,8 +293,7 @@ def extract_building_points_shapefile(
         'amenity, '
         'leisure, '
         '\\"building:use\\" AS use, '
-        'office, '
-        'type '
+        'office '
         'FROM planet_osm_polygon '
         'WHERE building != \'no\';"')
 
