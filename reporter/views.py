@@ -106,20 +106,7 @@ def roads():
         abort(500)
     else:
         try:
-            url_path = (
-                'http://overpass-api.de/api/interpreter?data='
-                '('
-                'node["highway"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'way["highway"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'relation["highway"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                ');'
-                '(._;>;);'
-                'out+body;'.format(**coordinates))
-
-            file_handle = get_osm_file(bbox, coordinates, 'roads', url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'roads')
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
@@ -160,20 +147,7 @@ def buildings():
         abort(500)
     else:
         try:
-            url_path = (
-                'http://overpass-api.de/api/interpreter?data='
-                '('
-                'node["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'way["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'relation["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                ');'
-                '(._;>;);'
-                'out+body;'.format(**coordinates))
-
-            file_handle = get_osm_file(bbox, coordinates, 'buildings', url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'buildings')
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
@@ -214,20 +188,7 @@ def building_points():
         abort(500)
     else:
         try:
-            url_path = (
-                'http://overpass-api.de/api/interpreter?data='
-                '('
-                'node["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'way["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                'relation["building"]'
-                '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-                ');'
-                '(._;>;);'
-                'out+body;'.format(**coordinates))
-
-            file_handle = get_osm_file(bbox, coordinates, 'buildings', url_path)
+            file_handle = get_osm_file(bbox, coordinates, 'buildings')
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)

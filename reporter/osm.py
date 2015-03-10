@@ -16,7 +16,7 @@ from . import config
 from . import LOGGER
 
 
-def get_osm_file(bbox, coordinates, feature, url_path=None):
+def get_osm_file(bbox, coordinates, feature='all'):
     """Fetch an osm file given a bounding box using the overpass API.
 
     .. todo:: Refactor so that we don't need to pass the same param twice in
@@ -32,10 +32,6 @@ def get_osm_file(bbox, coordinates, feature, url_path=None):
     :param feature: The type of feature (buildings or roads).
         Request for 'buildings' or 'building-points' use the same osm file.
     :type feature: str
-
-    :param url_path: The URL to fetch with the query inside.
-        If no url_path provided, we fetch all osm data in the BBOX.
-    :type url_path: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
     :rtype: file
@@ -69,7 +65,35 @@ def get_osm_file(bbox, coordinates, feature, url_path=None):
     Equivalent url (http encoded)::
     """
 
-    if not url_path:
+    if feature == 'roads':
+        url_path = (
+            'http://overpass-api.de/api/interpreter?data='
+            '('
+            'node["highway"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            'way["highway"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            'relation["highway"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            ');'
+            '(._;>;);'
+            'out+body;'.format(**coordinates))
+
+    elif feature == 'buildings':
+        url_path = (
+            'http://overpass-api.de/api/interpreter?data='
+            '('
+            'node["building"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            'way["building"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            'relation["building"]'
+            '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+            ');'
+            '(._;>;);'
+            'out+body;'.format(**coordinates))
+
+    else:
         url_path = (
             'http://overpass-api.de/api/interpreter?data='
             '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
