@@ -303,6 +303,7 @@ def extract_building_points_shapefile(
         '"SELECT st_transform(st_pointonsurface(way), 4326) AS the_geom, '
         'building AS building, '
         'type, '
+        'cast(st_area(st_transform(way, 3857)) as integer) as area_meters, '
         '\\"building:structure\\" AS structure, '
         '\\"building:walls\\" AS wall_type, '
         '\\"building:roof\\" AS roof_type, '
