@@ -202,6 +202,9 @@ On OSX
     export PYTHONPATH=`pwd`/reporter:`pwd`:$PYTHONPATH:venv/lib/python2.7/site-packages/; \
     nosetests -v --with-id  --with-xunit --verbose --cover-package=reporter reporter
 
+Using Docker
+    fig build test
+
 Jenkins
 -------
 
