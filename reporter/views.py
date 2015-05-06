@@ -19,9 +19,7 @@ from .utilities import (
     get_totals, osm_nodes_by_user)
 from .osm import (
     get_osm_file,
-    extract_buildings_shapefile,
-    extract_building_points_shapefile,
-    extract_roads_shapefile)
+    extract_shapefile)
 from .static import static_file
 from . import LOGGER
 
@@ -81,17 +79,24 @@ def home():
     return render_template('base.html', **context)
 
 
-@app.route('/roads-shp')
-def roads():
-    """View to download roads as a shp."""
+def osm_download_request(request, feature_type):
+    """Generic request to download OSM data.
+
+    :param request The request.
+    :type request RequestContext
+
+    :param feature_type The feature to extract.
+    :type feature_type str
+
+    :return A zip file
+    """
     bbox = request.args.get('bbox', config.BBOX)
     # Get the QGIS version
     # Currently 1, 2 are accepted, default to 2
     # A different qml style file will be returned depending on the version
     qgis_version = int(request.args.get('qgis_version', '2'))
-    # Optional parameter that allows the user to specify the filename for
-    # the downloaded roads.
-    output_prefix = request.args.get('output_prefix', 'roads')
+    # Optional parameter that allows the user to specify the filename.
+    output_prefix = request.args.get('output_prefix', feature_type)
 
     # Optional parameter that allows the user to specify the language for
     # the legend in QGIS.
@@ -106,102 +111,41 @@ def roads():
         abort(500)
     else:
         try:
-            file_handle = get_osm_file(bbox, coordinates, 'roads')
+            file_handle = get_osm_file(coordinates, feature_type)
         except urllib2.URLError:
             #error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
     try:
         #noinspection PyUnboundLocalVariable
-        zip_file = extract_roads_shapefile(
-            file_handle.name, qgis_version, output_prefix, lang)
+        zip_file = extract_shapefile(
+            feature_type, file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
     except IOError:
         abort(404)
         return
     return Response(f.read(), mimetype='application/zip')
+
+
+@app.route('/roads-shp')
+def roads():
+    """View to download roads as a shp."""
+    feature_type = 'roads'
+    return osm_download_request(request, feature_type)
 
 
 @app.route('/buildings-shp')
 def buildings():
     """View to download buildings as a shp."""
-    bbox = request.args.get('bbox', config.BBOX)
-    # Get the QGIS version
-    # Currently 1, 2 are accepted, default to 2
-    # A different qml style file will be returned depending on the version
-    qgis_version = int(request.args.get('qgis_version', '2'))
-    # Optional parameter that allows the user to specify the filename for
-    # the downloaded roads.
-    output_prefix = request.args.get('output_prefix', 'buildings')
-
-    # Optional parameter that allows the user to specify the language for
-    # the legend in QGIS.
-    lang = request.args.get('lang', 'en')
-
-    #error = None
-    try:
-        coordinates = split_bbox(bbox)
-    except ValueError:
-        #error = "Invalid bbox"
-        #coordinates = split_bbox(config.BBOX)
-        abort(500)
-    else:
-        try:
-            file_handle = get_osm_file(bbox, coordinates, 'buildings')
-        except urllib2.URLError:
-            #error = "Bad request. Maybe the bbox is too big!"
-            abort(500)
-
-    try:
-        #noinspection PyUnboundLocalVariable
-        zip_file = extract_buildings_shapefile(
-            file_handle.name, qgis_version, output_prefix, lang)
-        f = open(zip_file)
-    except IOError:
-        abort(404)
-        return
-    return Response(f.read(), mimetype='application/zip')
+    feature_type = 'buildings'
+    return osm_download_request(request, feature_type)
 
 
 @app.route('/building-points-shp')
 def building_points():
     """View to download building points as a shp."""
-    bbox = request.args.get('bbox', config.BBOX)
-    # Get the QGIS version
-    # Currently 1, 2 are accepted, default to 2
-    # A different qml style file will be returned depending on the version
-    qgis_version = int(request.args.get('qgis_version', '2'))
-    # Optional parameter that allows the user to specify the filename for
-    # the downloaded roads.
-    output_prefix = request.args.get('output_prefix', 'building-points')
-
-    # Optional parameter that allows the user to specify the language for
-    # the legend in QGIS.
-    lang = request.args.get('lang', 'en')
-
-    #error = None
-    try:
-        coordinates = split_bbox(bbox)
-    except ValueError:
-        #error = "Invalid bbox"
-        #coordinates = split_bbox(config.BBOX)
-        abort(500)
-    else:
-        try:
-            file_handle = get_osm_file(bbox, coordinates, 'buildings')
-        except urllib2.URLError:
-            #error = "Bad request. Maybe the bbox is too big!"
-            abort(500)
-
-    try:
-        #noinspection PyUnboundLocalVariable
-        zip_file = extract_building_points_shapefile(
-            file_handle.name, qgis_version, output_prefix, lang)
-        f = open(zip_file)
-    except IOError:
-        abort(404)
-        return
-    return Response(f.read(), mimetype='application/zip')
+    feature_type = 'building-points'
+    return osm_download_request(request, feature_type)
 
 
 @app.route('/user')
