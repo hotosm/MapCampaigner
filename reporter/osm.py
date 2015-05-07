@@ -113,7 +113,8 @@ def fetch_osm(file_path, url_path):
 
     """
     LOGGER.debug('Getting URL: %s', url_path)
-    request = urllib2.Request(url_path)
+    headers = {'User-Agent': 'InaSAFE'}
+    request = urllib2.Request(url_path, None, headers)
     try:
         url_handle = urllib2.urlopen(request, timeout=60)
         file_handle = file(file_path, 'wb')
