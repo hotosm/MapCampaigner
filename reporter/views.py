@@ -102,22 +102,22 @@ def osm_download_request(request, feature_type):
     # the legend in QGIS.
     lang = request.args.get('lang', 'en')
 
-    #error = None
+    # error = None
     try:
         coordinates = split_bbox(bbox)
     except ValueError:
-        #error = "Invalid bbox"
-        #coordinates = split_bbox(config.BBOX)
+        # error = "Invalid bbox"
+        # coordinates = split_bbox(config.BBOX)
         abort(500)
     else:
         try:
             file_handle = get_osm_file(coordinates, feature_type)
         except urllib2.URLError:
-            #error = "Bad request. Maybe the bbox is too big!"
+            # error = "Bad request. Maybe the bbox is too big!"
             abort(500)
 
     try:
-        #noinspection PyUnboundLocalVariable
+        # noinspection PyUnboundLocalVariable
         zip_file = extract_shapefile(
             feature_type, file_handle.name, qgis_version, output_prefix, lang)
         f = open(zip_file)
@@ -171,7 +171,7 @@ def user_status():
         LOGGER.exception(error + str(coordinates))
     else:
         try:
-            file_handle = get_osm_file(bbox, coordinates)
+            file_handle = get_osm_file(coordinates)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
             LOGGER.exception(error + str(coordinates))
