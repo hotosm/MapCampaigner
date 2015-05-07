@@ -26,10 +26,19 @@ ROADS_OVERPASS_QUERY = (
     '(._;>;);'
     'out+body;')
 
+BOUNDARY_8_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="8"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
 OVERPASS_QUERY_MAP = {
     'buildings': BUILDINGS_OVERPASS_QUERY,
     'building-points': BUILDINGS_OVERPASS_QUERY,
     'roads': ROADS_OVERPASS_QUERY,
+    'boundary_8': BOUNDARY_8_OVERPASS_QUERY,
     'all': ALL_OVERPASS_QUERY
 }
 
@@ -90,8 +99,16 @@ BUILDINGS_SQL_QUERY = (
     'FROM planet_osm_polygon '
     'WHERE building != \'no\';"')
 
+BOUNDARY_8_SQL_QUERY = (
+    '"SELECT ST_Transform(way, 4326) AS the_geom, '
+    'name, '
+    'population, '
+    'ref '
+    'FROM planet_osm_polygon"')
+
 SQL_QUERY_MAP = {
     'buildings': BUILDINGS_SQL_QUERY,
     'building-points': BUILDING_POINTS_SQL_QUERY,
     'roads': ROADS_SQL_QUERY,
+    'boundary_8': BOUNDARY_8_SQL_QUERY,
 }

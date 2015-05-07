@@ -148,6 +148,12 @@ def building_points():
     return osm_download_request(request, feature_type)
 
 
+@app.route('/boundary-8-shp')
+def boundary_8():
+    """View to download admin_level 8 boundaries as a shp."""
+    feature_type = 'boundary_8'
+    return osm_download_request(request, feature_type)
+
 @app.route('/user')
 def user_status():
     """Get nodes for user as a json doc.
