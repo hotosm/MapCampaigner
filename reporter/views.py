@@ -134,6 +134,13 @@ def roads():
     return osm_download_request(request, feature_type)
 
 
+@app.route('/potential-idp-shp')
+def potential_idp():
+    """View to download potential idp as a shp."""
+    feature_type = 'potential-idp'
+    return osm_download_request(request, feature_type)
+
+
 @app.route('/buildings-shp')
 def buildings():
     """View to download buildings as a shp."""
