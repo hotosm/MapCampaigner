@@ -1,0 +1,23 @@
+node,way access               text    linear  #osm2pgsql style
+node,way access:roof          text  #JOSM preset
+node,way addr:full            text  #JOSM preset
+node,way addr:housename       text    linear  #osm2pgsql style
+node,way addr:housenumber     text    linear  #osm2pgsql style
+node,way addr:interpolation   text    linear  #osm2pgsql style
+node,way amenity              text    nocache,polygon  #osm2pgsql style
+node,way building             text    polygon  #osm2pgsql style
+node,way building:levels      text  #JOSM preset
+node,way building:roof        text  #JOSM preset
+node,way building:structure   text  #JOSM preset
+node,way building:use         text  #JOSM preset
+node,way building:walls       text  #JOSM preset
+node,way capacity:persons     text  #JOSM preset
+node,way denomination         text    linear  #osm2pgsql style
+node,way leisure              text    polygon  #osm2pgsql style
+node,way name                 text    linear  #osm2pgsql style
+node,way ref                  text    linear  #osm2pgsql style
+node,way religion             text    nocache  #osm2pgsql style
+node,way sport                text    polygon  #osm2pgsql style
+way      way_area             real  #osm2pgsql style
+node,way z_order              int4    linear  #osm2pgsql style
+
