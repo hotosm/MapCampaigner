@@ -1,7 +1,0 @@
-node,way admin_level          text    linear  #osm2pgsql style
-node,way boundary             text    linear  #osm2pgsql style
-node,way name                 text    linear  #osm2pgsql style
-node,way population           text    linear  #osm2pgsql style
-node,way ref                  text    linear  #osm2pgsql style
-way      way_area             real            #osm2pgsql style
-node,way z_order              int4    linear  #osm2pgsql style

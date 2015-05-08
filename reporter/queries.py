@@ -26,9 +26,89 @@ ROADS_OVERPASS_QUERY = (
     '(._;>;);'
     'out+body;')
 
+BOUNDARY_1_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="1"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_2_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="2"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_3_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="3"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_4_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="4"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_5_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="5"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_6_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="6"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_7_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="7"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
 BOUNDARY_8_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="8"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_9_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="9"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_10_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="10"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
+BOUNDARY_11_OVERPASS_QUERY = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="11"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
@@ -38,7 +118,17 @@ OVERPASS_QUERY_MAP = {
     'buildings': BUILDINGS_OVERPASS_QUERY,
     'building-points': BUILDINGS_OVERPASS_QUERY,
     'roads': ROADS_OVERPASS_QUERY,
-    'boundary_8': BOUNDARY_8_OVERPASS_QUERY,
+    'boundary-1': BOUNDARY_1_OVERPASS_QUERY,
+    'boundary-2': BOUNDARY_2_OVERPASS_QUERY,
+    'boundary-3': BOUNDARY_3_OVERPASS_QUERY,
+    'boundary-4': BOUNDARY_4_OVERPASS_QUERY,
+    'boundary-5': BOUNDARY_5_OVERPASS_QUERY,
+    'boundary-6': BOUNDARY_6_OVERPASS_QUERY,
+    'boundary-7': BOUNDARY_7_OVERPASS_QUERY,
+    'boundary-8': BOUNDARY_8_OVERPASS_QUERY,
+    'boundary-9': BOUNDARY_9_OVERPASS_QUERY,
+    'boundary-10': BOUNDARY_10_OVERPASS_QUERY,
+    'boundary-11': BOUNDARY_11_OVERPASS_QUERY,
     'all': ALL_OVERPASS_QUERY
 }
 
@@ -99,16 +189,45 @@ BUILDINGS_SQL_QUERY = (
     'FROM planet_osm_polygon '
     'WHERE building != \'no\';"')
 
-BOUNDARY_8_SQL_QUERY = (
+BOUNDARY_SQL_QUERY = (
     '"SELECT ST_Transform(way, 4326) AS the_geom, '
     'name, '
     'population, '
-    'ref '
+    'ref, '
+    'admin_level AS level '
     'FROM planet_osm_polygon"')
 
 SQL_QUERY_MAP = {
     'buildings': BUILDINGS_SQL_QUERY,
     'building-points': BUILDING_POINTS_SQL_QUERY,
     'roads': ROADS_SQL_QUERY,
-    'boundary_8': BOUNDARY_8_SQL_QUERY,
+    'boundary-1': BOUNDARY_SQL_QUERY,
+    'boundary-2': BOUNDARY_SQL_QUERY,
+    'boundary-3': BOUNDARY_SQL_QUERY,
+    'boundary-4': BOUNDARY_SQL_QUERY,
+    'boundary-5': BOUNDARY_SQL_QUERY,
+    'boundary-6': BOUNDARY_SQL_QUERY,
+    'boundary-7': BOUNDARY_SQL_QUERY,
+    'boundary-8': BOUNDARY_SQL_QUERY,
+    'boundary-9': BOUNDARY_SQL_QUERY,
+    'boundary-10': BOUNDARY_SQL_QUERY,
+    'boundary-11': BOUNDARY_SQL_QUERY,
+}
+
+# The name of the resource folder to use for the feature.
+RESOURCES_MAP = {
+    'buildings': 'buildings',
+    'building-points': 'building-points',
+    'roads': 'roads',
+    'boundary-1': 'boundary',
+    'boundary-2': 'boundary',
+    'boundary-3': 'boundary',
+    'boundary-4': 'boundary',
+    'boundary-5': 'boundary',
+    'boundary-6': 'boundary',
+    'boundary-7': 'boundary',
+    'boundary-8': 'boundary',
+    'boundary-9': 'boundary',
+    'boundary-10': 'boundary',
+    'boundary-11': 'boundary'
 }
