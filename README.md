@@ -203,7 +203,9 @@ On OSX
     nosetests -v --with-id  --with-xunit --verbose --cover-package=reporter reporter
 
 Using Docker
+
     docker-compose build test
+    docker-compose run test
 
 Jenkins
 -------
