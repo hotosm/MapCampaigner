@@ -27,7 +27,7 @@ test:
     - PGPASSWORD=docker
     - PGHOST=db
   ports:
-    - "64000:8080"
+    - "64001:8080"
   links:
     - db:db
   volumes:

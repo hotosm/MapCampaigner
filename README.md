@@ -18,10 +18,10 @@ code from osm-reporter mounted into the osm-reporter container.
 
 ```
 sudo apt-get install python-pip git
-sudo pip install fig
+sudo pip install docker-compose
 git clone git://github.com/kartoza/osm-reporter.git
 cd osm-reporter
-fig up -d
+docker-compose up -d
 ```
 
 Now make an nginx reverse proxy (or apache2 if you prefer) pointing to the
@@ -203,7 +203,7 @@ On OSX
     nosetests -v --with-id  --with-xunit --verbose --cover-package=reporter reporter
 
 Using Docker
-    fig build test
+    docker-compose build test
 
 Jenkins
 -------
@@ -235,4 +235,4 @@ Sentry is a service that collects exceptions and displays aggregate reports
 for them. You can view the sentry project we have running for osm-reporter
 here: http://sentry.linfiniti.com/osm-reporter/
 
-Tim Sutton & Yohan Boniface
+Tim Sutton, Etienne Trimaille & Yohan Boniface
