@@ -75,7 +75,7 @@ BUILDINGS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out+body;')
+    'out body;')
 
 ROADS_OVERPASS_QUERY = (
     '('
@@ -87,7 +87,7 @@ ROADS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out+body;')
+    'out body;')
 
 BOUNDARY_1_OVERPASS_QUERY = (
     '('
@@ -307,6 +307,7 @@ RESOURCES_MAP = {
     'buildings': 'buildings',
     'building-points': 'building-points',
     'roads': 'roads',
+    'potential-idp': 'potential-idp',
     'boundary-1': 'boundary',
     'boundary-2': 'boundary',
     'boundary-3': 'boundary',
