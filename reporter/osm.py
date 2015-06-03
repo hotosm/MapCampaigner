@@ -5,6 +5,7 @@
 """
 import hashlib
 import urllib2
+import urllib
 import time
 import os
 import re
@@ -57,7 +58,8 @@ def get_osm_file(coordinates, feature='all'):
     """
     server_url = 'http://overpass-api.de/api/interpreter?data='
     query = OVERPASS_QUERY_MAP[feature].format(**coordinates)
-    url_path = '%s%s' % (server_url, query)
+    encoded_query = urllib.quote(query)
+    url_path = '%s%s' % (server_url, encoded_query)
     safe_name = hashlib.md5(query).hexdigest() + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     return load_osm_document(file_path, url_path)

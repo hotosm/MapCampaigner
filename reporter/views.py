@@ -41,7 +41,8 @@ def home():
         coordinates = split_bbox(config.BBOX)
     else:
         try:
-            file_handle = get_osm_file(coordinates)
+            feature_type = 'all'
+            file_handle = get_osm_file(coordinates, feature_type)
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
@@ -131,6 +132,13 @@ def osm_download_request(url_request, feature_type):
 def roads():
     """View to download roads as a shp."""
     feature_type = 'roads'
+    return osm_download_request(request, feature_type)
+
+
+@app.route('/potential-idp-shp')
+def potential_idp():
+    """View to download potential idp as a shp."""
+    feature_type = 'potential-idp'
     return osm_download_request(request, feature_type)
 
 

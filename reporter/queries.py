@@ -1,6 +1,6 @@
 # coding=utf-8
 
-ALL_OVERPASS_QUERY = '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out+meta;'
+ALL_OVERPASS_QUERY = '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out meta;'
 
 BUILDINGS_OVERPASS_QUERY = (
     '('
