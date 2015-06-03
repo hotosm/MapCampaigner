@@ -5,6 +5,7 @@
 """
 import hashlib
 import urllib2
+import urllib
 import time
 import os
 import re
@@ -14,7 +15,7 @@ from shutil import copyfile
 from .utilities import temp_dir, unique_filename, zip_shp, which
 from . import config
 from . import LOGGER
-from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
+from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP, RESOURCES_MAP
 
 
 def get_osm_file(coordinates, feature='all'):
@@ -57,7 +58,8 @@ def get_osm_file(coordinates, feature='all'):
     """
     server_url = 'http://overpass-api.de/api/interpreter?data='
     query = OVERPASS_QUERY_MAP[feature].format(**coordinates)
-    url_path = '%s%s' % (server_url, query)
+    encoded_query = urllib.quote(query)
+    url_path = '%s%s' % (server_url, encoded_query)
     safe_name = hashlib.md5(query).hexdigest() + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     return load_osm_document(file_path, url_path)
@@ -186,38 +188,42 @@ def extract_shapefile(
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
     resource_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'resources', feature_type))
-    style_file = os.path.join(resource_path, '%s.style' % feature_type)
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            RESOURCES_MAP[feature_type]))
+    style_file = os.path.join(
+        resource_path, '%s.style' % RESOURCES_MAP[feature_type])
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
 
     if qgis_version > 1:
         qml_source_path = os.path.join(
-            resource_path, '%s-%s.qml' % (feature_type, lang))
+            resource_path, '%s-%s.qml' % (RESOURCES_MAP[feature_type], lang))
         if not os.path.isfile(qml_source_path):
             qml_source_path = os.path.join(
-                resource_path, '%s-en.qml' % feature_type)
+                resource_path, '%s-en.qml' % RESOURCES_MAP[feature_type])
     else:
         qml_source_path = os.path.join(
-            resource_path, '%s-qgis1.qml' % feature_type)
+            resource_path, '%s-qgis1.qml' % RESOURCES_MAP[feature_type])
 
     qml_dest_path = os.path.join(
         directory_name, '%s.qml' % output_prefix)
 
     keywords_source_path = os.path.join(
-        resource_path, '%s-%s.keywords' % (feature_type, lang))
+        resource_path, '%s-%s.keywords' % (RESOURCES_MAP[feature_type], lang))
     if not os.path.isfile(keywords_source_path):
         keywords_source_path = os.path.join(
-            resource_path, '%s-en.keywords' % feature_type)
+            resource_path, '%s-en.keywords' % RESOURCES_MAP[feature_type])
 
     keywords_dest_path = os.path.join(
         directory_name, '%s.keywords' % output_prefix)
     license_source_path = os.path.join(
-        resource_path, '%s.license' % feature_type)
+        resource_path, '%s.license' % RESOURCES_MAP[feature_type])
     license_dest_path = os.path.join(
         directory_name, '%s.license' % output_prefix)
     prj_source_path = os.path.join(
-        resource_path, '%s.prj' % feature_type)
+        resource_path, '%s.prj' % RESOURCES_MAP[feature_type])
     prj_dest_path = os.path.join(
         directory_name, '%s.prj' % output_prefix)
     # Used to standarise types while data is in pg still
