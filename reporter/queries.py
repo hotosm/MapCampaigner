@@ -93,6 +93,8 @@ BOUNDARY_1_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="1"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="1"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -100,6 +102,8 @@ BOUNDARY_1_OVERPASS_QUERY = (
 BOUNDARY_2_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="2"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="2"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
@@ -109,6 +113,8 @@ BOUNDARY_3_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="3"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="3"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -116,6 +122,8 @@ BOUNDARY_3_OVERPASS_QUERY = (
 BOUNDARY_4_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="4"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="4"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
@@ -125,6 +133,8 @@ BOUNDARY_5_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="5"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="5"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -132,6 +142,8 @@ BOUNDARY_5_OVERPASS_QUERY = (
 BOUNDARY_6_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="6"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="6"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
@@ -141,6 +153,8 @@ BOUNDARY_7_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="7"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="7"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -148,6 +162,8 @@ BOUNDARY_7_OVERPASS_QUERY = (
 BOUNDARY_8_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="8"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="8"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
@@ -157,6 +173,8 @@ BOUNDARY_9_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="9"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="9"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -165,6 +183,8 @@ BOUNDARY_10_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="10"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="10"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
     'out body;')
@@ -172,6 +192,8 @@ BOUNDARY_10_OVERPASS_QUERY = (
 BOUNDARY_11_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="11"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["boundary"="administrative"]["admin_level"="11"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
