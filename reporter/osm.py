@@ -127,21 +127,183 @@ def fetch_osm(file_path, url_path):
         raise
 
 
-def add_keyword_timestamp(keywords_file_path):
-    """Add the current date / time to the keywords file.
+def add_metadata_timestamp(metadata_file_path):
+    """Add the current date / time to the metadata file.
 
-    :param keywords_file_path: Keywords file path that the timestamp should be
+    :param metadata_file_path: Metadata file path that the timestamp should be
         written to.
-    :type keywords_file_path: str
+    :type metadata_file_path: str
     """
     time_stamp = time.strftime('%d-%m-%Y %H:%M')
-    keywords_file = file(keywords_file_path, 'ab')
-    keywords_file.write('date: %s' % time_stamp)
-    keywords_file.close()
+
+    extension = os.path.splitext(metadata_file_path)[1]
+
+    if extension == 'keywords':
+        keyword_file = file(metadata_file_path, 'ab')
+        keyword_file.write('date: %s' % time_stamp)
+        keyword_file.close()
+    else:
+        # Need to write this section : write date/time in XML file
+        pass
+
+
+def get_shorter_version(version):
+    """Get a shorter version, only with the major and minor version.
+
+    :param version: The version.
+    :type version: str
+
+    :return 'major.minor' version number.
+    :rtype float
+    """
+    return float('.'.join(version.split('.')[0:2]))
+
+
+def get_resource_path(feature_type):
+    """Get the resource folder according to the OSM feature.
+
+    :param feature_type: The type of feature.
+    :type feature_type: str
+
+    :return The resource folder.
+    :rtype str
+    """
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            RESOURCES_MAP[feature_type]))
+
+
+def latest_xml_metadata_file(feature):
+    """Get the latest version available of the XML metadata for a feature.
+
+    :param feature: The feature.
+    :type feature: str
+
+    :return The latest version available.
+    :rtype float
+    """
+    resource_path = get_resource_path(feature)
+    resource = RESOURCES_MAP[feature]
+    files = os.listdir(resource_path)
+    regexp = '^%s-(\d.\d)-en.xml' % resource
+
+    max_version = None
+    for one_file in files:
+        r = re.search(regexp, one_file)
+        if r:
+            version = float(r.group(1))
+            if not max_version or max_version < version:
+                max_version = version
+    return max_version
+
+
+def metadata_file(extension, version, lang, feature):
+    """Get the correct metadata file.
+
+    :param extension: The extension 'xml' or 'keywords'.
+    :rtype extension: str
+
+    :param version: The InaSAFE version.
+    :rtype version: float
+
+    :param lang: The language of the user.
+    :rtype lang: str
+
+    :param feature: The feature type.
+    :rtype feature: str
+
+    :return: The filename.
+    :rtype: str
+    """
+    resource_path = get_resource_path(feature)
+    resource = RESOURCES_MAP[feature]
+
+    if extension == 'keywords':
+        # We check for only the localised file.
+        source_path = os.path.join(
+            resource_path, '%s-%s.keywords' % (resource, lang))
+        if not os.path.isfile(source_path):
+            # If not, we take the english version.
+            source_path = os.path.join(
+                resource_path, '%s-en.keywords' % resource)
+
+    else:
+        # Extension is xml.
+
+        # We check first for the perfect file (version and lang).
+        source_path = os.path.join(
+            resource_path, '%s-%s-%s.xml' % (resource, version, lang))
+        if not os.path.isfile(source_path):
+            # If not, we check for the same version, but in english.
+            source_path = os.path.join(
+                resource_path, '%s-%s-en.xml' % (resource, version))
+
+            if not os.path.isfile(source_path):
+                # We check for the maximum version available and localised.
+                latest = latest_xml_metadata_file(feature)
+
+                source_path = os.path.join(
+                    resource_path, '%s-%s-%s.xml' % (resource, latest, lang))
+                if not os.path.isfile(source_path):
+                    # We check for the maximum version available in english.
+                    source_path = os.path.join(
+                        resource_path, '%s-%s-en.xml' % (resource, latest))
+
+    return os.path.split(source_path)[1]
+
+
+def get_metadata_files(version, lang, feature, output_prefix):
+    """Get all metadata files which should be included in the zip.
+
+    :param version: The InaSAFE version.
+    :type version: str
+
+    :param lang: The language desired for the labels in the legend.
+    :type lang: str
+
+    :param feature: The feature to extract.
+    :type feature: str
+
+    :param output_prefix: Base name for the metadata file.
+    :type output_prefix: str
+
+    :return: A dictionary with destination / source file.
+    :rtype: dict
+    """
+    if version:
+        version = get_shorter_version(version)
+
+    xml_file = metadata_file('xml', version, lang, feature)
+    keyword_file = metadata_file('keywords', version, lang, feature)
+    if version is None:
+        # no inasafe_version supplied, provide legacy keywords and XML.
+        metadatas = {
+            '%s.keywords' % output_prefix: keyword_file,
+            '%s.xml' % output_prefix: xml_file
+        }
+    elif version < 3.2:
+        # keywords only.
+        metadatas = {
+            '%s.keywords' % output_prefix: keyword_file
+        }
+    else:
+        # version >= 3.2 : XML only.
+        metadatas = {
+            '%s.xml' % output_prefix: xml_file
+        }
+
+    return metadatas
 
 
 def extract_shapefile(
-        feature_type, file_path, qgis_version=2, output_prefix='', lang='en'):
+        feature_type,
+        file_path,
+        qgis_version=2,
+        output_prefix='',
+        inasafe_version=None,
+        lang='en'):
     """Convert the OSM xml file to a shapefile.
 
     This is a multi-step process:
@@ -187,11 +349,8 @@ def extract_shapefile(
     work_dir = temp_dir(sub_dir=feature_type)
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
-    resource_path = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            'resources',
-            RESOURCES_MAP[feature_type]))
+    resource_path = get_resource_path(feature_type)
+
     style_file = os.path.join(
         resource_path, '%s.style' % RESOURCES_MAP[feature_type])
     db_name = os.path.basename(directory_name)
@@ -210,14 +369,6 @@ def extract_shapefile(
     qml_dest_path = os.path.join(
         directory_name, '%s.qml' % output_prefix)
 
-    keywords_source_path = os.path.join(
-        resource_path, '%s-%s.keywords' % (RESOURCES_MAP[feature_type], lang))
-    if not os.path.isfile(keywords_source_path):
-        keywords_source_path = os.path.join(
-            resource_path, '%s-en.keywords' % RESOURCES_MAP[feature_type])
-
-    keywords_dest_path = os.path.join(
-        directory_name, '%s.keywords' % output_prefix)
     license_source_path = os.path.join(
         resource_path, '%s.license' % RESOURCES_MAP[feature_type])
     license_dest_path = os.path.join(
@@ -260,12 +411,20 @@ def extract_shapefile(
     call(dropdb_command, shell=True)
     copyfile(prj_source_path, prj_dest_path)
     copyfile(qml_source_path, qml_dest_path)
-    copyfile(keywords_source_path, keywords_dest_path)
+
+    metadata = get_metadata_files(
+        inasafe_version, lang, feature_type, output_prefix)
+
+    for destination, source in metadata.iteritems():
+        source_path = os.path.join(resource_path, source)
+        destination_path = os.path.join(directory_name, destination)
+        copyfile(source_path, destination_path)
+        add_metadata_timestamp(destination_path)
+
     copyfile(license_source_path, license_dest_path)
-    add_keyword_timestamp(keywords_dest_path)
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
-        '.qml', '.keywords', '.license'], remove_file=True)
+        '.qml', '.keywords', '.license', '.xml'], remove_file=True)
     print 'Shape written to %s' % shape_path
 
     return zipfile

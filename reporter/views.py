@@ -98,7 +98,8 @@ def osm_download_request(url_request, feature_type):
     qgis_version = int(url_request.args.get('qgis_version', '2'))
     # Optional parameter that allows the user to specify the filename.
     output_prefix = url_request.args.get('output_prefix', feature_type)
-
+    # A different keywords file will be returned depending on the version.
+    inasafe_version = url_request.args.get('inasafe_version', None)
     # Optional parameter that allows the user to specify the language for
     # the legend in QGIS.
     lang = url_request.args.get('lang', 'en')
@@ -120,7 +121,13 @@ def osm_download_request(url_request, feature_type):
     try:
         # noinspection PyUnboundLocalVariable
         zip_file = extract_shapefile(
-            feature_type, file_handle.name, qgis_version, output_prefix, lang)
+            feature_type,
+            file_handle.name,
+            qgis_version,
+            output_prefix,
+            inasafe_version,
+            lang)
+
         f = open(zip_file)
     except IOError:
         abort(404)

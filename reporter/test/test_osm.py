@@ -9,6 +9,10 @@ from reporter.utilities import LOGGER
 from reporter.osm import (
     load_osm_document,
     extract_shapefile,
+    get_shorter_version,
+    latest_xml_metadata_file,
+    metadata_file,
+    get_metadata_files,
     check_string)
 from reporter.test.helpers import FIXTURE_PATH
 
@@ -54,10 +58,52 @@ class OsmTestCase(LoggedTestCase):
         message = 'load_osm_document cache test failed.'
         self.assertEqual(file_time, file_time2, message)
 
+    def latest_xml_metadata_file(self):
+        """Test the maximum version of an XML keyword file."""
+        self.assertTrue(latest_xml_metadata_file('building-points') == 3.2)
+        self.assertTrue(latest_xml_metadata_file('buildings') == 3.2)
+        self.assertTrue(latest_xml_metadata_file('roads') == 3.2)
+
+    def test_metadata_file(self):
+        """Test we get the good metadata file."""
+        file_name = metadata_file('keywords', '3.1', 'fake_lang', 'roads')
+        self.assertEqual('roads-en.keywords', file_name)
+
+        file_name = metadata_file('keywords', None, 'fr', 'roads')
+        self.assertEqual('roads-fr.keywords', file_name)
+
+        file_name = metadata_file('xml', '3.3', 'fake_lang', 'roads')
+        self.assertEqual('roads-3.2-en.xml', file_name)
+
+        file_name = metadata_file('xml', '3.2', 'en', 'roads')
+        self.assertEqual('roads-3.2-en.xml', file_name)
+
+    def test_get_metadata_files(self):
+        """Test we get all metadata files."""
+        metadata = get_metadata_files('3.2', 'en', 'roads', 'test')
+        expected_metadata = {'test.xml': 'roads-3.2-en.xml'}
+        self.assertDictEqual(expected_metadata, metadata)
+
+        metadata = get_metadata_files(None, 'fr', 'roads', 'test')
+        expected_metadata = {
+            'test.xml': 'roads-3.2-en.xml',
+            'test.keywords': 'roads-fr.keywords'
+        }
+        self.assertDictEqual(expected_metadata, metadata)
+
+        metadata = get_metadata_files('3.1', 'en', 'roads', 'test')
+        expected_metadata = {'test.keywords': 'roads-en.keywords'}
+        self.assertDictEqual(expected_metadata, metadata)
+
+    def test_get_shorter_version(self):
+        """Test the inasafe version."""
+        self.assertEquals(get_shorter_version('3.2.0.dev-dbb84de'), 3.2)
+        self.assertEquals(get_shorter_version('3.2.0'), 3.2)
+        self.assertEquals(get_shorter_version('3.2'), 3.2)
+
     def test_extract_shapefile(self):
         """Test the roads to shp converter."""
         zip_path = extract_shapefile('buildings', FIXTURE_PATH)
-        #print zip_path
         self.assertTrue(os.path.exists(zip_path), zip_path)
 
     def test_check_string(self):
