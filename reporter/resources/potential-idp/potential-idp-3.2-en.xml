@@ -172,13 +172,14 @@
             </gmd:extent>
             <gmd:supplementalInformation>
                 <inasafe_keywords>
-<![CDATA[title: Roads
+<![CDATA[date: {{ datetime }}
+license: Open Data Commons Open Database License (ODbL)
+title: Potential IDP
 source: OpenStreetMap - www.openstreetmap.org
-layer_geometry: line
-layer_purpose: exposure
+layer_geometry: point
+layer_purpose: idp
 layer_mode: classified
-road_class_field: TYPE
-exposure: road
+idp_class_field: TYPE
 ]]>
 </inasafe_keywords>
             </gmd:supplementalInformation>
