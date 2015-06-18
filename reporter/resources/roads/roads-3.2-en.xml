@@ -172,7 +172,9 @@
             </gmd:extent>
             <gmd:supplementalInformation>
                 <inasafe_keywords>
-<![CDATA[title: Roads
+<![CDATA[date: {{ datetime }}
+license: Open Data Commons Open Database License (ODbL)
+title: Roads
 source: OpenStreetMap - www.openstreetmap.org
 layer_geometry: line
 layer_purpose: exposure
