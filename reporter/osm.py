@@ -145,7 +145,16 @@ def add_metadata_timestamp(metadata_file_path):
         keyword_file.close()
     else:
         # Need to write this section : write date/time in XML file
-        pass
+        # {{ datetime }} -> 18-06-2018 03:23
+        f = open(metadata_file_path, 'r')
+        file_data = f.read()
+        f.close()
+
+        new_data = file_data.replace('{{ datetime }}', time_stamp)
+
+        f = open(metadata_file_path, 'w')
+        f.write(new_data)
+        f.close()
 
 
 def short_version(version):
