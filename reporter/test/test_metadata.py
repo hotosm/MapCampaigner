@@ -40,7 +40,6 @@ class OsmTestCase(LoggedTestCase):
         # noinspection PyTypeChecker
         metadata = metadata_files(None, 'fr', 'roads', 'test')
         expected_metadata = {
-            'test.xml': '-3.2-en.xml',
             'test.keywords': '-fr.keywords'
         }
         self.assertDictEqual(expected_metadata, metadata)
