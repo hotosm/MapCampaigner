@@ -15,7 +15,9 @@ from shutil import copyfile
 from .utilities import temp_dir, unique_filename, zip_shp, which
 from . import config
 from . import LOGGER
-from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP, RESOURCES_MAP
+from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
+from utilities import resource_base_path
+from metadata import metadata_files
 
 
 def get_osm_file(coordinates, feature='all'):
@@ -24,7 +26,8 @@ def get_osm_file(coordinates, feature='all'):
     :param coordinates: Coordinates as a list in the form:
         [min lat, min lon, max lat, max lon]
 
-    :param feature: The type of feature (buildings, building-points or roads).
+    :param feature: The type of feature to extract:
+        buildings, building-points, roads, potential-idp, boundary-[1,11]
     :type feature: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
@@ -127,21 +130,42 @@ def fetch_osm(file_path, url_path):
         raise
 
 
-def add_keyword_timestamp(keywords_file_path):
-    """Add the current date / time to the keywords file.
+def add_metadata_timestamp(metadata_file_path):
+    """Add the current date / time to the metadata file.
 
-    :param keywords_file_path: Keywords file path that the timestamp should be
+    :param metadata_file_path: Metadata file path that the timestamp should be
         written to.
-    :type keywords_file_path: str
+    :type metadata_file_path: str
     """
     time_stamp = time.strftime('%d-%m-%Y %H:%M')
-    keywords_file = file(keywords_file_path, 'ab')
-    keywords_file.write('date: %s' % time_stamp)
-    keywords_file.close()
+
+    extension = os.path.splitext(metadata_file_path)[1]
+
+    if extension == 'keywords':
+        keyword_file = file(metadata_file_path, 'ab')
+        keyword_file.write('date: %s' % time_stamp)
+        keyword_file.close()
+    else:
+        # Need to write this section : write date/time in XML file
+        # {{ datetime }} -> 18-06-2018 03:23
+        f = open(metadata_file_path, 'r')
+        file_data = f.read()
+        f.close()
+
+        new_data = file_data.replace('{{ datetime }}', time_stamp)
+
+        f = open(metadata_file_path, 'w')
+        f.write(new_data)
+        f.close()
 
 
 def extract_shapefile(
-        feature_type, file_path, qgis_version=2, output_prefix='', lang='en'):
+        feature_type,
+        file_path,
+        qgis_version=2,
+        output_prefix='',
+        inasafe_version=None,
+        lang='en'):
     """Convert the OSM xml file to a shapefile.
 
     This is a multi-step process:
@@ -167,6 +191,9 @@ def extract_shapefile(
         prefix of e.g. 'test-' would result in a downloaded file name of
         'test-buildings.shp'. Allowed characters are [a-zA-Z-_0-9].
     :type output_prefix: str
+    
+    :param inasafe_version: The InaSAFE version, to get correct metadata.
+    :type inasafe_version: str
 
     :param lang: The language desired for the labels in the legend.
         Example : 'en', 'fr', etc. Default is 'en'.
@@ -187,47 +214,29 @@ def extract_shapefile(
     work_dir = temp_dir(sub_dir=feature_type)
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
-    resource_path = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            'resources',
-            RESOURCES_MAP[feature_type]))
-    style_file = os.path.join(
-        resource_path, '%s.style' % RESOURCES_MAP[feature_type])
+    resource_path = resource_base_path(feature_type)
+
+    style_file = '%s.style' % resource_path
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
 
     if qgis_version > 1:
-        qml_source_path = os.path.join(
-            resource_path, '%s-%s.qml' % (RESOURCES_MAP[feature_type], lang))
+        qml_source_path = '%s-%s.qml' % (resource_path, lang)
         if not os.path.isfile(qml_source_path):
-            qml_source_path = os.path.join(
-                resource_path, '%s-en.qml' % RESOURCES_MAP[feature_type])
+            qml_source_path = '%s-en.qml' % resource_path
     else:
-        qml_source_path = os.path.join(
-            resource_path, '%s-qgis1.qml' % RESOURCES_MAP[feature_type])
+        qml_source_path = '%s-qgis1.qml' % resource_path
 
-    qml_dest_path = os.path.join(
-        directory_name, '%s.qml' % output_prefix)
+    qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
 
-    keywords_source_path = os.path.join(
-        resource_path, '%s-%s.keywords' % (RESOURCES_MAP[feature_type], lang))
-    if not os.path.isfile(keywords_source_path):
-        keywords_source_path = os.path.join(
-            resource_path, '%s-en.keywords' % RESOURCES_MAP[feature_type])
-
-    keywords_dest_path = os.path.join(
-        directory_name, '%s.keywords' % output_prefix)
-    license_source_path = os.path.join(
-        resource_path, '%s.license' % RESOURCES_MAP[feature_type])
+    license_source_path = '%s.license' % resource_path
     license_dest_path = os.path.join(
         directory_name, '%s.license' % output_prefix)
-    prj_source_path = os.path.join(
-        resource_path, '%s.prj' % RESOURCES_MAP[feature_type])
+    prj_source_path = '%s.prj' % resource_path
     prj_dest_path = os.path.join(
         directory_name, '%s.prj' % output_prefix)
     # Used to standarise types while data is in pg still
-    transform_path = os.path.join(resource_path, 'transform.sql')
+    transform_path = '%s.sql' % resource_path
     createdb_executable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
@@ -260,12 +269,20 @@ def extract_shapefile(
     call(dropdb_command, shell=True)
     copyfile(prj_source_path, prj_dest_path)
     copyfile(qml_source_path, qml_dest_path)
-    copyfile(keywords_source_path, keywords_dest_path)
+
+    metadata = metadata_files(
+        inasafe_version, lang, feature_type, output_prefix)
+
+    for destination, source in metadata.iteritems():
+        source_path = '%s%s' % (resource_path, source)
+        destination_path = os.path.join(directory_name, destination)
+        copyfile(source_path, destination_path)
+        add_metadata_timestamp(destination_path)
+
     copyfile(license_source_path, license_dest_path)
-    add_keyword_timestamp(keywords_dest_path)
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
-        '.qml', '.keywords', '.license'], remove_file=True)
+        '.qml', '.keywords', '.license', '.xml'], remove_file=True)
     print 'Shape written to %s' % shape_path
 
     return zipfile

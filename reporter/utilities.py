@@ -15,7 +15,26 @@ import zipfile
 import config
 from .osm_node_parser import OsmNodeParser
 from .osm_way_parser import OsmParser
+from queries import RESOURCES_MAP
 from . import LOGGER
+
+
+def resource_base_path(feature_type):
+    """Get the resource base path according to the feature we extract.
+
+    :param feature_type: The type of feature :
+        buildings, building-points, roads, potential-idp, boundary-[1,11]
+    :type feature_type: str
+
+    :return The resource folder.
+    :rtype str
+    """
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            RESOURCES_MAP[feature_type],
+            RESOURCES_MAP[feature_type]))
 
 
 def get_totals(sorted_user_list):
@@ -374,7 +393,7 @@ def temp_dir(sub_dir='work'):
         try:
             os.makedirs(path, 0777)
         except OSError:
-            #one of the directories in the path already exists maybe
+            # one of the directories in the path already exists maybe
             pass
         # Reinstate the old mask for tmp
         os.umask(old_mask)

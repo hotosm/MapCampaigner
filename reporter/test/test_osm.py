@@ -57,7 +57,6 @@ class OsmTestCase(LoggedTestCase):
     def test_extract_shapefile(self):
         """Test the roads to shp converter."""
         zip_path = extract_shapefile('buildings', FIXTURE_PATH)
-        #print zip_path
         self.assertTrue(os.path.exists(zip_path), zip_path)
 
     def test_check_string(self):
@@ -74,4 +73,3 @@ class OsmTestCase(LoggedTestCase):
             self.assertTrue(
                 check_string(good),
                 '%s should be acceptible' % good)
-
