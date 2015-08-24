@@ -89,7 +89,7 @@ Then setup a venv::
     cd osm-reporter
     virtualenv venv
     source venv/bin/activate
-    pip install -r REQUIREMENTS.txt
+    pip install -r requirements.txt
 
 Then deploy under apache mod_wsgi::
 
@@ -194,7 +194,7 @@ Tests and QA
 
 There is a test suite available, you can run it using nose e.g.::
 
-    PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
+    PYTHONPATH=`pwd`/reporter:`pwd`:${PYTHONPATH} nosetests -v --with-id \
     --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
 On OSX
