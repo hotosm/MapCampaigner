@@ -17,7 +17,7 @@ branches:
 
 install:
   - sudo apt-get -qq -y update
-  - sudo apt-get -y install postgresql-9.1-postgis-2.1/precise osm2pgsql
+  - sudo apt-get -y install postgresql-9.1-postgis-2.1 osm2pgsql
 
 before_script:
   - echo "Build starting on " `date`
