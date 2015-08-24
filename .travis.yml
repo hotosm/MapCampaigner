@@ -4,7 +4,7 @@ python:
   - "2.7"
 
 addons:
-  postgresql: "9.3"
+  postgresql: "9.1"
 
 branches:
   only:
@@ -14,11 +14,14 @@ branches:
 
 
 -before_install:
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y # For postgresql-9.1-postgis-2.1
   - sudo apt-get -qq -y update
+  - sudo apt-get -y install postgresql-9.1-postgis-2.1/precise
+
 
 install:
   - sudo apt-get install -y git pylint pep8 python-nose python-coverage pyflakes python-nosexcover
-  - sudo apt-get install autoconf automake libtool make g++ libxml2-dev libgeos-dev libgeos++-dev libpq-dev libbz2-dev libproj-dev protobuf-c-compiler libprotobuf-c0-dev lua5.2 liblua5.2-dev libboost-dev osm2pgsql
+  - sudo apt-get install autoconf automake libtool make g++ libxml2-dev libgeos-dev libgeos++-dev libpq-dev libbz2-dev libproj-dev protobuf-c-compiler libprotobuf-c0-dev lua5.2 liblua5.2-dev libboost-dev
   - git clone git://github.com/openstreetmap/osm2pgsql.git
   - cd osm2pgsql && ./autogen.sh && ./configure && make && make install && cd ..
   - sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
