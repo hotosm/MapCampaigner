@@ -12,18 +12,17 @@ branches:
     - develop
     - travis
 
-
 -before_install:
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y # For postgresql-9.1-postgis-2.1
-  - sudo apt-get -qq -y update
-  - sudo apt-get -y install postgresql-9.1-postgis-2.1/precise osm2pgsql
 
 install:
-  - sudo pip install requirements-dev.txt
+  - sudo apt-get -qq -y update
+  - sudo apt-get -y install postgresql-9.1-postgis-2.1/precise osm2pgsql
 
 before_script:
   - echo "Build starting on " `date`
   - psql -U postgres -c "create extension postgis"
+  - sudo pip install requirements-dev.txt
 
 script:
   - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
