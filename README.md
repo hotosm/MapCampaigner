@@ -1,5 +1,4 @@
 [![Stories in Ready](https://badge.waffle.io/timlinux/osm-reporter.png?label=ready)](https://waffle.io/timlinux/osm-reporter)
-[![Build Status](http://jenkins.linfiniti.com/buildStatus/icon?job=osm-reporter)](http://jenkins.linfiniti.com/job/osm-reporter/)
 
 # A simple tool for getting stats for an openstreetmap area.
 
@@ -89,7 +88,7 @@ Then setup a venv::
     cd osm-reporter
     virtualenv venv
     source venv/bin/activate
-    pip install -r REQUIREMENTS.txt
+    pip install -r requirements.txt
 
 Then deploy under apache mod_wsgi::
 
@@ -194,7 +193,7 @@ Tests and QA
 
 There is a test suite available, you can run it using nose e.g.::
 
-    PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
+    PYTHONPATH=`pwd`/reporter:`pwd`:${PYTHONPATH} nosetests -v --with-id \
     --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
 On OSX
