@@ -5,7 +5,7 @@
       <symbol alpha="1" clip_to_extent="1" type="fill" name="0">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="color" v="237,34,37,128"/>
+          <prop k="color" v="36,125,255,128"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>

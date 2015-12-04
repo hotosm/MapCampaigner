@@ -312,17 +312,17 @@ BUILDINGS_SQL_QUERY = (
 FLOOD_PRONE_SQL_QUERY = (
     '"SELECT ST_Transform(way, 4326) AS the_geom, '
     'flood_prone as floodprone, '
-    'kab_name, '
-    'kec_name, '
-    'kel_name, '
-    'rt_number, '
-    'rw_number, '
     '\\"flood:rain\\" AS flood_rain, '
     '\\"flood:send\\" AS flood_send, '
     'flood_depth, '
     'flood_duration, '
     'flood_latest, '
-    'fire_hazard '
+    'fire_hazard, '
+    'kab_name, '
+    'kec_name, '
+    'kel_name, '
+    'rt_number, '
+    'rw_number '
     'FROM planet_osm_polygon"')
 
 BOUNDARY_SQL_QUERY = (
