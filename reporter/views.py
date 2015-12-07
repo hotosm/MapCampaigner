@@ -163,6 +163,13 @@ def building_points():
     return osm_download_request(request, feature_type)
 
 
+@app.route('/flood-prone-shp')
+def flood_prone():
+    """View to download flood prone as a shp."""
+    feature_type = 'flood-prone'
+    return osm_download_request(request, feature_type)
+
+
 @app.route('/boundary-1-shp')
 def boundary_1():
     """View to download admin_level 1 boundaries as a shp."""

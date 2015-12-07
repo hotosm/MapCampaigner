@@ -89,6 +89,16 @@ ROADS_OVERPASS_QUERY = (
     '(._;>;);'
     'out body;')
 
+FLOOD_PRONE_OVERPASS_QUERY = (
+    '('
+    'way["flood_prone"="yes"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    'way["flood_prone"="yes"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out body;')
+
 BOUNDARY_1_OVERPASS_QUERY = (
     '('
     'relation["boundary"="administrative"]["admin_level"="1"]'
@@ -203,6 +213,7 @@ OVERPASS_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY,
     'buildings': BUILDINGS_OVERPASS_QUERY,
     'building-points': BUILDINGS_OVERPASS_QUERY,
+    'flood-prone': FLOOD_PRONE_OVERPASS_QUERY,
     'roads': ROADS_OVERPASS_QUERY,
     'boundary-1': BOUNDARY_1_OVERPASS_QUERY,
     'boundary-2': BOUNDARY_2_OVERPASS_QUERY,
@@ -298,6 +309,22 @@ BUILDINGS_SQL_QUERY = (
     'FROM planet_osm_polygon '
     'WHERE building != \'no\';"')
 
+FLOOD_PRONE_SQL_QUERY = (
+    '"SELECT ST_Transform(way, 4326) AS the_geom, '
+    'flood_prone as floodprone, '
+    '\\"flood:rain\\" AS flood_rain, '
+    '\\"flood:send\\" AS flood_send, '
+    'flood_depth, '
+    'flood_duration, '
+    'flood_latest, '
+    'fire_hazard, '
+    'kab_name, '
+    'kec_name, '
+    'kel_name, '
+    'rt_number, '
+    'rw_number '
+    'FROM planet_osm_polygon"')
+
 BOUNDARY_SQL_QUERY = (
     '"SELECT ST_Transform(way, 4326) AS the_geom, '
     'name, '
@@ -311,6 +338,7 @@ SQL_QUERY_MAP = {
     'buildings': BUILDINGS_SQL_QUERY,
     'building-points': BUILDING_POINTS_SQL_QUERY,
     'roads': ROADS_SQL_QUERY,
+    'flood-prone': FLOOD_PRONE_SQL_QUERY,
     'boundary-1': BOUNDARY_SQL_QUERY,
     'boundary-2': BOUNDARY_SQL_QUERY,
     'boundary-3': BOUNDARY_SQL_QUERY,
@@ -330,6 +358,7 @@ RESOURCES_MAP = {
     'building-points': 'building-points',
     'roads': 'roads',
     'potential-idp': 'potential-idp',
+    'flood-prone': 'flood-prone',
     'boundary-1': 'boundary',
     'boundary-2': 'boundary',
     'boundary-3': 'boundary',
