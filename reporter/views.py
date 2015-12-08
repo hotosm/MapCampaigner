@@ -144,8 +144,18 @@ def roads():
 
 @app.route('/potential-idp-shp')
 def potential_idp():
-    """View to download potential idp as a shp."""
+    """View to download potential idp as a shp.
+
+    ..deprecated:: Use :func:`evacuation_center` instead.
+    """
     feature_type = 'potential-idp'
+    return osm_download_request(request, feature_type)
+
+
+@app.route('/evacuation-centers-shp')
+def evacuation_center():
+    """View to download evacuation center as a shp."""
+    feature_type = 'evacuation-center'
     return osm_download_request(request, feature_type)
 
 
