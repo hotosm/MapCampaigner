@@ -16,7 +16,7 @@ from .utilities import temp_dir, unique_filename, zip_shp, which
 from . import config
 from . import LOGGER
 from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
-from utilities import resource_base_path
+from utilities import resource_base_path, generic_resource_base_path
 from metadata import metadata_files
 
 
@@ -229,10 +229,10 @@ def extract_shapefile(
 
     qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
 
-    license_source_path = '%s.license' % resource_path
+    license_source_path = '%s.license' % generic_resource_base_path()
     license_dest_path = os.path.join(
         directory_name, '%s.license' % output_prefix)
-    prj_source_path = '%s.prj' % resource_path
+    prj_source_path = '%s.prj' % generic_resource_base_path()
     prj_dest_path = os.path.join(
         directory_name, '%s.prj' % output_prefix)
     # Used to standarise types while data is in pg still
@@ -267,7 +267,6 @@ def extract_shapefile(
     call(pgsql2shp_command, shell=True)
     print dropdb_command
     call(dropdb_command, shell=True)
-    copyfile(prj_source_path, prj_dest_path)
     copyfile(qml_source_path, qml_dest_path)
 
     metadata = metadata_files(
@@ -279,7 +278,10 @@ def extract_shapefile(
         copyfile(source_path, destination_path)
         add_metadata_timestamp(destination_path)
 
+    # Generic files
+    copyfile(prj_source_path, prj_dest_path)
     copyfile(license_source_path, license_dest_path)
+
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license', '.xml'], remove_file=True)
