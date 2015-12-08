@@ -37,6 +37,19 @@ def resource_base_path(feature_type):
             RESOURCES_MAP[feature_type]))
 
 
+def generic_resource_base_path():
+    """Get the generic resource base path.
+
+    :return The generic resource folder.
+    :rtype str
+    """
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'generic',
+            'generic'))
+
 def get_totals(sorted_user_list):
     """Given a sorted user list, get the totals for ways and nodes.
 
