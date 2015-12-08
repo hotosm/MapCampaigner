@@ -279,8 +279,6 @@ def extract_shapefile(
         add_metadata_timestamp(destination_path)
 
     # Generic files
-    print license_source_path
-    print prj_source_path
     copyfile(prj_source_path, prj_dest_path)
     copyfile(license_source_path, license_dest_path)
 
