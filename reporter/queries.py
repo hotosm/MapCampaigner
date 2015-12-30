@@ -20,12 +20,12 @@ FEATURES = [
     'boundary-11',
 ]
 
-ALL_OVERPASS_QUERY = (
-    '('
-    'node({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-    '<;'
-    ');'
-    'out {print_mode};')
+TAG_MAPPING = {
+    'highway': 'roads',
+    'building': 'buildings',
+    'evacuation_center': 'evacuation-centers',
+    'flood_prone': 'flood-prone'
+}
 
 POTENTIAL_IDP_OVERPASS_QUERY = (
     '('
@@ -264,7 +264,6 @@ OVERPASS_QUERY_MAP = {
     'boundary-9': BOUNDARY_9_OVERPASS_QUERY,
     'boundary-10': BOUNDARY_10_OVERPASS_QUERY,
     'boundary-11': BOUNDARY_11_OVERPASS_QUERY,
-    'all': ALL_OVERPASS_QUERY
 }
 
 # Used to extract the features as a shapefile from pg

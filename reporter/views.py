@@ -20,7 +20,7 @@ from .utilities import (
 from .osm import (
     get_osm_file,
     extract_shapefile)
-from .queries import FEATURES
+from .queries import FEATURES, TAG_MAPPING
 from .static import static_file
 from . import LOGGER
 
@@ -31,9 +31,10 @@ def home():
 
     On this page a map and the report will be shown.
     """
+    default_tag = 'highway'
     sorted_user_list = []
     bbox = request.args.get('bbox', config.BBOX)
-    tag_name = request.args.get('obj', config.TAG_NAMES[0])
+    tag_name = request.args.get('obj', default_tag)
     error = None
     try:
         coordinates = split_bbox(bbox)
@@ -41,22 +42,23 @@ def home():
         error = "Invalid bbox"
         coordinates = split_bbox(config.BBOX)
     else:
+
+        if tag_name not in TAG_MAPPING.keys():
+            error = "Unsupported object type"
+            tag_name = default_tag
         try:
-            feature_type = 'all'
+            feature_type = TAG_MAPPING[tag_name]
             file_handle = get_osm_file(coordinates, feature_type, 'meta')
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
-            if tag_name not in config.TAG_NAMES:
-                error = "Unsupported object type"
-            else:
-                try:
-                    sorted_user_list = osm_object_contributions(
-                        file_handle, tag_name)
-                except xml.sax.SAXParseException:
-                    error = (
-                        'Invalid OSM xml file retrieved. Please try again '
-                        'later.')
+            try:
+                sorted_user_list = osm_object_contributions(
+                    file_handle, tag_name)
+            except xml.sax.SAXParseException:
+                error = (
+                    'Invalid OSM xml file retrieved. Please try again '
+                    'later.')
 
     node_count, way_count = get_totals(sorted_user_list)
 
@@ -72,7 +74,7 @@ def home():
         user_count=len(sorted_user_list),
         bbox=bbox,
         current_tag_name=tag_name,
-        available_tag_names=config.TAG_NAMES,
+        available_tag_names=TAG_MAPPING.keys(),
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),
