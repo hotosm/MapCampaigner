@@ -16,7 +16,10 @@ from .utilities import temp_dir, unique_filename, zip_shp, which
 from . import config
 from . import LOGGER
 from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
-from utilities import resource_base_path, generic_resource_base_path
+from utilities import (
+    shapefile_resource_base_path,
+    overpass_resource_base_path,
+    generic_shapefile_base_path)
 from metadata import metadata_files
 
 
@@ -220,29 +223,30 @@ def extract_shapefile(
     work_dir = temp_dir(sub_dir=feature_type)
     directory_name = unique_filename(dir=work_dir)
     os.makedirs(directory_name)
-    resource_path = resource_base_path(feature_type)
+    overpass_resource_path = overpass_resource_base_path(feature_type)
+    shapefile_resource_path = shapefile_resource_base_path(feature_type)
 
-    style_file = '%s.style' % resource_path
+    style_file = '%s.style' % overpass_resource_path
     db_name = os.path.basename(directory_name)
     shape_path = os.path.join(directory_name, '%s.shp' % output_prefix)
 
     if qgis_version > 1:
-        qml_source_path = '%s-%s.qml' % (resource_path, lang)
+        qml_source_path = '%s-%s.qml' % (shapefile_resource_path, lang)
         if not os.path.isfile(qml_source_path):
-            qml_source_path = '%s-en.qml' % resource_path
+            qml_source_path = '%s-en.qml' % shapefile_resource_path
     else:
-        qml_source_path = '%s-qgis1.qml' % resource_path
+        qml_source_path = '%s-qgis1.qml' % shapefile_resource_path
 
     qml_dest_path = os.path.join(directory_name, '%s.qml' % output_prefix)
 
-    license_source_path = '%s.license' % generic_resource_base_path()
+    license_source_path = '%s.license' % generic_shapefile_base_path()
     license_dest_path = os.path.join(
         directory_name, '%s.license' % output_prefix)
-    prj_source_path = '%s.prj' % generic_resource_base_path()
+    prj_source_path = '%s.prj' % generic_shapefile_base_path()
     prj_dest_path = os.path.join(
         directory_name, '%s.prj' % output_prefix)
     # Used to standarise types while data is in pg still
-    transform_path = '%s.sql' % resource_path
+    transform_path = '%s.sql' % overpass_resource_path
     createdb_executable = which('createdb')[0]
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
@@ -279,7 +283,7 @@ def extract_shapefile(
         inasafe_version, lang, feature_type, output_prefix)
 
     for destination, source in metadata.iteritems():
-        source_path = '%s%s' % (resource_path, source)
+        source_path = '%s%s' % (shapefile_resource_path, source)
         destination_path = os.path.join(directory_name, destination)
         copyfile(source_path, destination_path)
         add_metadata_timestamp(destination_path)

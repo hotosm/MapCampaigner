@@ -19,8 +19,8 @@ from queries import RESOURCES_MAP
 from . import LOGGER
 
 
-def resource_base_path(feature_type):
-    """Get the resource base path according to the feature we extract.
+def overpass_resource_base_path(feature_type):
+    """Get the overpass resource base path according to the feature we extract.
 
     :param feature_type: The type of feature :
         buildings, building-points, roads, potential-idp, boundary-[1,11]
@@ -33,12 +33,32 @@ def resource_base_path(feature_type):
         os.path.join(
             os.path.dirname(__file__),
             'resources',
+            'overpass',
             RESOURCES_MAP[feature_type],
             RESOURCES_MAP[feature_type]))
 
 
-def generic_resource_base_path():
-    """Get the generic resource base path.
+def shapefile_resource_base_path(feature_type):
+    """Get the shapefile resource base path according to the feature we extract.
+
+    :param feature_type: The type of feature :
+        buildings, building-points, roads, potential-idp, boundary-[1,11]
+    :type feature_type: str
+
+    :return The resource folder.
+    :rtype str
+    """
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'shapefile',
+            RESOURCES_MAP[feature_type],
+            RESOURCES_MAP[feature_type]))
+
+
+def generic_shapefile_base_path():
+    """Get the generic shapefile resource base path.
 
     :return The generic resource folder.
     :rtype str
@@ -47,6 +67,7 @@ def generic_resource_base_path():
         os.path.join(
             os.path.dirname(__file__),
             'resources',
+            'shapefile',
             'generic',
             'generic'))
 
