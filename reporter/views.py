@@ -67,6 +67,7 @@ def home():
     # Note: slit_bbox should better keep returning real floats
     coordinates = dict((k, repr(v)) for k, v in coordinates.iteritems())
 
+    download_url = '%s-shp' % TAG_MAPPING[tag_name]
     context = dict(
         sorted_user_list=sorted_user_list,
         way_count=way_count,
@@ -74,6 +75,7 @@ def home():
         user_count=len(sorted_user_list),
         bbox=bbox,
         current_tag_name=tag_name,
+        download_url=download_url,
         available_tag_names=TAG_MAPPING.keys(),
         error=error,
         coordinates=coordinates,
