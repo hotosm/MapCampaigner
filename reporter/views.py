@@ -155,7 +155,7 @@ def potential_idp():
 @app.route('/evacuation-centers-shp')
 def evacuation_center():
     """View to download evacuation center as a shp."""
-    feature_type = 'evacuation-center'
+    feature_type = 'evacuation-centers'
     return osm_download_request(request, feature_type)
 
 

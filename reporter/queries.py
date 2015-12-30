@@ -65,7 +65,7 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
     'out body;'
 )
 
-EVACUATION_CENTER_OVERPASS_QUERY = (
+EVACUATION_CENTERS_OVERPASS_QUERY = (
     '('
     'node["evacuation_center"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
@@ -223,7 +223,7 @@ BOUNDARY_11_OVERPASS_QUERY = (
 
 OVERPASS_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY,
-    'evacuation-center': EVACUATION_CENTER_OVERPASS_QUERY,
+    'evacuation-centers': EVACUATION_CENTERS_OVERPASS_QUERY,
     'buildings': BUILDINGS_OVERPASS_QUERY,
     'building-points': BUILDINGS_OVERPASS_QUERY,
     'flood-prone': FLOOD_PRONE_OVERPASS_QUERY,
@@ -269,7 +269,7 @@ POTENTIAL_IDP_SQL_QUERY = (
     'sport '
     'FROM idp;"')
 
-EVACUATION_CENTER_SQL_QUERY = (
+EVACUATION_CENTERS_SQL_QUERY = (
     '"SELECT ST_Transform(way, 4326) AS the_geom, '
     'evacuation_center AS evacuation,'
     'name,'
@@ -373,7 +373,7 @@ BOUNDARY_SQL_QUERY = (
 
 SQL_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_SQL_QUERY,
-    'evacuation-center': EVACUATION_CENTER_SQL_QUERY,
+    'evacuation-centers': EVACUATION_CENTERS_SQL_QUERY,
     'buildings': BUILDINGS_SQL_QUERY,
     'building-points': BUILDING_POINTS_SQL_QUERY,
     'roads': ROADS_SQL_QUERY,
@@ -397,7 +397,7 @@ RESOURCES_MAP = {
     'building-points': 'building-points',
     'roads': 'roads',
     'potential-idp': 'potential-idp',
-    'evacuation-center': 'evacuation-center',
+    'evacuation-centers': 'evacuation-centers',
     'flood-prone': 'flood-prone',
     'boundary-1': 'boundary',
     'boundary-2': 'boundary',
