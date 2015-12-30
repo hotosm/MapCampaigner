@@ -30,9 +30,9 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
     'way["amenity"="school"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'relation["amenity"="school"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
 
     # Amenity hospital
-    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'node["amenity"="hospital"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'way["amenity"="hospital"]'
