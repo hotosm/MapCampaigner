@@ -43,7 +43,7 @@ def home():
     else:
         try:
             feature_type = 'all'
-            file_handle = get_osm_file(coordinates, feature_type)
+            file_handle = get_osm_file(coordinates, feature_type, 'meta')
         except urllib2.URLError:
             error = "Bad request. Maybe the bbox is too big!"
         else:
@@ -115,7 +115,7 @@ def download_feature(feature_type):
         abort(500)
     else:
         try:
-            file_handle = get_osm_file(coordinates, feature_type)
+            file_handle = get_osm_file(coordinates, feature_type, 'body')
         except urllib2.URLError:
             # error = "Bad request. Maybe the bbox is too big!"
             abort(500)

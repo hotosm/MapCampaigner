@@ -20,7 +20,12 @@ FEATURES = [
     'boundary-11',
 ]
 
-ALL_OVERPASS_QUERY = '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out meta;'
+ALL_OVERPASS_QUERY = (
+    '('
+    'node({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    '<;'
+    ');'
+    'out {print_mode};')
 
 POTENTIAL_IDP_OVERPASS_QUERY = (
     '('
@@ -82,7 +87,7 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
 
     ');'
     '(._;>;);'
-    'out body;'
+    'out {print_mode};'
 )
 
 EVACUATION_CENTERS_OVERPASS_QUERY = (
@@ -95,7 +100,7 @@ EVACUATION_CENTERS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BUILDINGS_OVERPASS_QUERY = (
     '('
@@ -107,7 +112,7 @@ BUILDINGS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 ROADS_OVERPASS_QUERY = (
     '('
@@ -119,7 +124,7 @@ ROADS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 FLOOD_PRONE_OVERPASS_QUERY = (
     '('
@@ -129,7 +134,7 @@ FLOOD_PRONE_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_1_OVERPASS_QUERY = (
     '('
@@ -139,7 +144,7 @@ BOUNDARY_1_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_2_OVERPASS_QUERY = (
     '('
@@ -149,7 +154,7 @@ BOUNDARY_2_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_3_OVERPASS_QUERY = (
     '('
@@ -159,7 +164,7 @@ BOUNDARY_3_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_4_OVERPASS_QUERY = (
     '('
@@ -169,7 +174,7 @@ BOUNDARY_4_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_5_OVERPASS_QUERY = (
     '('
@@ -179,7 +184,7 @@ BOUNDARY_5_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_6_OVERPASS_QUERY = (
     '('
@@ -189,7 +194,7 @@ BOUNDARY_6_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_7_OVERPASS_QUERY = (
     '('
@@ -199,7 +204,7 @@ BOUNDARY_7_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_8_OVERPASS_QUERY = (
     '('
@@ -209,7 +214,7 @@ BOUNDARY_8_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_9_OVERPASS_QUERY = (
     '('
@@ -219,7 +224,7 @@ BOUNDARY_9_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_10_OVERPASS_QUERY = (
     '('
@@ -229,7 +234,7 @@ BOUNDARY_10_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_11_OVERPASS_QUERY = (
     '('
@@ -239,7 +244,7 @@ BOUNDARY_11_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 OVERPASS_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY,
