@@ -1,5 +1,25 @@
 # coding=utf-8
 
+FEATURES = [
+    'potential-idp',
+    'evacuation-centers',
+    'buildings',
+    'building-points',
+    'flood-prone',
+    'roads',
+    'boundary-1',
+    'boundary-2',
+    'boundary-3',
+    'boundary-4',
+    'boundary-5',
+    'boundary-6',
+    'boundary-7',
+    'boundary-8',
+    'boundary-9',
+    'boundary-10',
+    'boundary-11',
+]
+
 ALL_OVERPASS_QUERY = '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out meta;'
 
 POTENTIAL_IDP_OVERPASS_QUERY = (

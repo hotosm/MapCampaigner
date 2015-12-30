@@ -20,6 +20,7 @@ from .utilities import (
 from .osm import (
     get_osm_file,
     extract_shapefile)
+from .queries import FEATURES
 from .static import static_file
 from . import LOGGER
 
@@ -80,29 +81,30 @@ def home():
     return render_template('base.html', **context)
 
 
-def osm_download_request(url_request, feature_type):
+@app.route('/<feature_type>-shp')
+def download_feature(feature_type):
     """Generic request to download OSM data.
-
-    :param url_request The request.
-    :type url_request RequestContext
 
     :param feature_type The feature to extract.
     :type feature_type str
 
     :return A zip file
     """
-    bbox = url_request.args.get('bbox', config.BBOX)
+    if feature_type not in FEATURES:
+        abort(404)
+
+    bbox = request.args.get('bbox', config.BBOX)
     # Get the QGIS version
     # Currently 1, 2 are accepted, default to 2
     # A different qml style file will be returned depending on the version
-    qgis_version = int(url_request.args.get('qgis_version', '2'))
+    qgis_version = int(request.args.get('qgis_version', '2'))
     # Optional parameter that allows the user to specify the filename.
-    output_prefix = url_request.args.get('output_prefix', feature_type)
+    output_prefix = request.args.get('output_prefix', feature_type)
     # A different keywords file will be returned depending on the version.
-    inasafe_version = url_request.args.get('inasafe_version', None)
+    inasafe_version = request.args.get('inasafe_version', None)
     # Optional parameter that allows the user to specify the language for
     # the legend in QGIS.
-    lang = url_request.args.get('lang', 'en')
+    lang = request.args.get('lang', 'en')
 
     # error = None
     try:
@@ -133,127 +135,6 @@ def osm_download_request(url_request, feature_type):
         abort(404)
         return
     return Response(f.read(), mimetype='application/zip')
-
-
-@app.route('/roads-shp')
-def roads():
-    """View to download roads as a shp."""
-    feature_type = 'roads'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/potential-idp-shp')
-def potential_idp():
-    """View to download potential idp as a shp.
-
-    ..deprecated:: Use :func:`evacuation_center` instead.
-    """
-    feature_type = 'potential-idp'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/evacuation-centers-shp')
-def evacuation_center():
-    """View to download evacuation center as a shp."""
-    feature_type = 'evacuation-centers'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/buildings-shp')
-def buildings():
-    """View to download buildings as a shp."""
-    feature_type = 'buildings'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/building-points-shp')
-def building_points():
-    """View to download building points as a shp."""
-    feature_type = 'building-points'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/flood-prone-shp')
-def flood_prone():
-    """View to download flood prone as a shp."""
-    feature_type = 'flood-prone'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-1-shp')
-def boundary_1():
-    """View to download admin_level 1 boundaries as a shp."""
-    feature_type = 'boundary-1'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-2-shp')
-def boundary_2():
-    """View to download admin_level 2 boundaries as a shp."""
-    feature_type = 'boundary-2'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-3-shp')
-def boundary_3():
-    """View to download admin_level 3 boundaries as a shp."""
-    feature_type = 'boundary-3'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-4-shp')
-def boundary_4():
-    """View to download admin_level 4 boundaries as a shp."""
-    feature_type = 'boundary-4'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-5-shp')
-def boundary_5():
-    """View to download admin_level 5 boundaries as a shp."""
-    feature_type = 'boundary-5'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-6-shp')
-def boundary_6():
-    """View to download admin_level 6 boundaries as a shp."""
-    feature_type = 'boundary-6'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-7-shp')
-def boundary_7():
-    """View to download admin_level 7 boundaries as a shp."""
-    feature_type = 'boundary-7'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-8-shp')
-def boundary_8():
-    """View to download admin_level 8 boundaries as a shp."""
-    feature_type = 'boundary-8'
-    return osm_download_request(request, feature_type)
-
-@app.route('/boundary-9-shp')
-def boundary_9():
-    """View to download admin_level 9 boundaries as a shp."""
-    feature_type = 'boundary-9'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-10-shp')
-def boundary_10():
-    """View to download admin_level 10 boundaries as a shp."""
-    feature_type = 'boundary-10'
-    return osm_download_request(request, feature_type)
-
-
-@app.route('/boundary-11-shp')
-def boundary_11():
-    """View to download admin_level 11 boundaries as a shp."""
-    feature_type = 'boundary-11'
-    return osm_download_request(request, feature_type)
 
 
 @app.route('/user')
