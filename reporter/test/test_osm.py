@@ -8,7 +8,7 @@ import os
 from reporter.utilities import LOGGER
 from reporter.osm import (
     load_osm_document,
-    extract_shapefile,
+    import_and_extract_shapefile,
     check_string)
 from reporter.test.helpers import FIXTURE_PATH
 
@@ -54,9 +54,9 @@ class OsmTestCase(LoggedTestCase):
         message = 'load_osm_document cache test failed.'
         self.assertEqual(file_time, file_time2, message)
 
-    def test_extract_shapefile(self):
+    def test_import_and_extract_shapefile(self):
         """Test the roads to shp converter."""
-        zip_path = extract_shapefile('buildings', FIXTURE_PATH)
+        zip_path = import_and_extract_shapefile('buildings', FIXTURE_PATH)
         self.assertTrue(os.path.exists(zip_path), zip_path)
 
     def test_check_string(self):

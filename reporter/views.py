@@ -19,7 +19,7 @@ from .utilities import (
     get_totals, osm_nodes_by_user)
 from .osm import (
     get_osm_file,
-    extract_shapefile)
+    import_and_extract_shapefile)
 from .queries import FEATURES, TAG_MAPPING
 from .static import static_file
 from . import LOGGER
@@ -126,7 +126,7 @@ def download_feature(feature_type):
 
     try:
         # noinspection PyUnboundLocalVariable
-        zip_file = extract_shapefile(
+        zip_file = import_and_extract_shapefile(
             feature_type,
             file_handle.name,
             qgis_version,
