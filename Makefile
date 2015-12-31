@@ -20,20 +20,6 @@ build:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) build web
 
-build-test:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Building in test mode"
-	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) build test
-
-run-test:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Running in test mode"
-	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) run test
-
 kill:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -47,6 +33,10 @@ rm: kill
 	@echo "Removing in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) rm web
+
+# ----------------------------------------------------------------------------
+#    D E V E L O P M E N T     C O M M A N D S
+# ----------------------------------------------------------------------------
 
 # Run pep8 style checking
 #http://pypi.python.org/pypi/pep8
@@ -65,3 +55,17 @@ pylint:
 	@echo "-----------------"
 	@pylint --version
 	@pylint --reports=n --rcfile=pylintrc reporter || true
+
+build-test:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Building in test mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) build test
+
+run-test:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running in test mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run test
