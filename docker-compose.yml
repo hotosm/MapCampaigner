@@ -1,6 +1,7 @@
 db:
   image: kartoza/postgis:9.4-2.1
   hostname: db
+  container_name: osmreporter_db
   environment:
     - USERNAME=docker
     - PASS=docker
@@ -8,6 +9,7 @@ db:
 web:
   image: kartoza/osm-reporter
   hostname: web
+  container_name: osmreporter_web
   environment:
     - PGUSER=docker
     - PGPASSWORD=docker
@@ -19,9 +21,27 @@ web:
   volumes:
     - ./reporter:/reporter
 
+dev:
+  build: .
+  dockerfile: Dockerfile.dev
+  hostname: devweb
+  container_name: osmreporter_devweb
+  environment:
+    - PGUSER=docker
+    - PGPASSWORD=docker
+    - PGHOST=db
+  ports:
+    - "64002:5000"
+  links:
+    - db:db
+  volumes:
+    - ./reporter:/reporter
+
 test:
-  build: docker-test
-  hostname: web
+  build: .
+  dockerfile: Dockerfile.test
+  hostname: testweb
+  container_name: osmreporter_testweb
   environment:
     - PGUSER=docker
     - PGPASSWORD=docker
