@@ -44,7 +44,7 @@ class OsmTestCase(LoggedTestCase):
         message = 'load_osm_document from overpass content check failed.'
         assert 'Jacoline' in string, message
 
-        #file_handle = load_osm_document(myFilePath, url)
+        # file_handle = load_osm_document(myFilePath, url)
         file_time = os.path.getmtime(file_path)
         #
         # This one should be cached now....

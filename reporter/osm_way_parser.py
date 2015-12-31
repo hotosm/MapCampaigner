@@ -51,7 +51,7 @@ class OsmParser(xml.sax.ContentHandler):
             self.wayCount += 1
             self.user = attributes.getValue('user')
             timestamp = attributes.getValue('timestamp')
-            #2012-12-10T12:26:21Z
+            # 2012-12-10T12:26:21Z
             date_part = timestamp.split('T')[0]
             if self.user not in self.userDayCountDict:
                 self.userDayCountDict[self.user] = dict()
@@ -72,7 +72,7 @@ class OsmParser(xml.sax.ContentHandler):
 
         else:
             pass
-            #print 'Node not known %s' % name
+            # print 'Node not known %s' % name
 
     def endElement(self, name):
         """Callback for when an element start is encountered.

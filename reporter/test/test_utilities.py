@@ -53,7 +53,7 @@ class UtilitiesTestCase(LoggedTestCase):
             'expected_osm_building_contributions.txt'
         ), 'rb').read())
 
-        #noinspection PyPep8Naming
+        # noinspection PyPep8Naming
         self.maxDiff = None
         print contributor_list
         self.assertListEqual(contributor_list, expected_list)
@@ -83,7 +83,7 @@ class UtilitiesTestCase(LoggedTestCase):
             '["2012-12-09",0],'
             '["2012-12-10",1]]')
         result = interpolated_timeline(time_line)
-        #noinspection PyPep8Naming
+        # noinspection PyPep8Naming
         self.maxDiff = None
         self.assertEqual(expected_result, result)
 

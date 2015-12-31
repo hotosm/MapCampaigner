@@ -71,6 +71,7 @@ def generic_shapefile_base_path():
             'generic',
             'generic'))
 
+
 def get_totals(sorted_user_list):
     """Given a sorted user list, get the totals for ways and nodes.
 
@@ -576,9 +577,9 @@ def which(name, flags=os.X_OK):
         return ['/usr/local/bin/%s' % name]
 
     result = []
-    #pylint: disable=W0141
+    # pylint: disable=W0141
     extensions = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-    #pylint: enable=W0141
+    # pylint: enable=W0141
     path = os.environ.get('PATH', None)
     # In c6c9b26 we removed this hard coding for issue #529 but I am
     # adding it back here in case the user's path does not include the

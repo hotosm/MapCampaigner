@@ -18,7 +18,7 @@ try:
         fromlist=["REPORTER_CONFIG_MODULE"]
     )
 except KeyError:
-    # Don't fail to keep local config optional
+    # Don't fail to keep local config optional
     user_settings = {}
 
 # Override with user ones

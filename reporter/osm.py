@@ -82,13 +82,13 @@ def load_osm_document(file_path, url_path):
 
     To save bandwidth the file is not downloaded if it is less than 1 hour old.
 
+    :type file_path: object
+    :param file_path: The path on the filesystem to which the file should
+        be saved.
+
     :param url_path: Path (relative to the ftp root) from which the file
         should be retrieved.
     :type url_path: str
-
-    :param file_path: The path on the filesystem to which the file should
-        be saved.
-    :type file_path: str
 
     :returns: A file object for the the downloaded file.
     :rtype: file
@@ -167,6 +167,7 @@ def add_metadata_timestamp(metadata_file_path):
         f.write(new_data)
         f.close()
 
+
 def import_and_extract_shapefile(
         feature_type,
         file_path,
@@ -222,7 +223,7 @@ def import_and_extract_shapefile(
     directory_name = unique_filename(dir=work_dir)
     db_name = os.path.basename(directory_name)
 
-    import_osm_file(db_name,feature_type, file_path)
+    import_osm_file(db_name, feature_type, file_path)
     zip_file = extract_shapefile(
         feature_type,
         db_name,
