@@ -105,7 +105,7 @@ FLOOD_PRONE_OVERPASS_QUERY = (
     '('
     'way["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-    'way["flood_prone"="yes"]'
+    'relation["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
