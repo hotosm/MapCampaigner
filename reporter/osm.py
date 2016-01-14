@@ -20,7 +20,7 @@ from utilities import resource_base_path, generic_resource_base_path
 from metadata import metadata_files
 
 
-def get_osm_file(coordinates, feature='all'):
+def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
     """Fetch an osm file given a bounding box using the overpass API.
 
     :param coordinates: Coordinates as a list in the form:
@@ -29,6 +29,10 @@ def get_osm_file(coordinates, feature='all'):
     :param feature: The type of feature to extract:
         buildings, building-points, roads, potential-idp, boundary-[1,11]
     :type feature: str
+
+    :param overpass_verbosity: Output verbosity in Overpass.
+        It can be body, skeleton, ids_only or meta.
+    :type overpass_verbosity: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
     :rtype: file
@@ -60,7 +64,9 @@ def get_osm_file(coordinates, feature='all'):
     Equivalent url (http encoded)::
     """
     server_url = 'http://overpass-api.de/api/interpreter?data='
-    query = OVERPASS_QUERY_MAP[feature].format(**coordinates)
+    parameters = coordinates
+    parameters['print_mode'] = overpass_verbosity
+    query = OVERPASS_QUERY_MAP[feature].format(**parameters)
     encoded_query = urllib.quote(query)
     url_path = '%s%s' % (server_url, encoded_query)
     safe_name = hashlib.md5(query).hexdigest() + '.osm'
