@@ -1,6 +1,31 @@
 # coding=utf-8
 
-ALL_OVERPASS_QUERY = '(node({SW_lat},{SW_lng},{NE_lat},{NE_lng});<;);out meta;'
+FEATURES = [
+    'potential-idp',
+    'evacuation-centers',
+    'buildings',
+    'building-points',
+    'flood-prone',
+    'roads',
+    'boundary-1',
+    'boundary-2',
+    'boundary-3',
+    'boundary-4',
+    'boundary-5',
+    'boundary-6',
+    'boundary-7',
+    'boundary-8',
+    'boundary-9',
+    'boundary-10',
+    'boundary-11',
+]
+
+TAG_MAPPING = {
+    'highway': 'roads',
+    'building': 'buildings',
+    'evacuation_center': 'evacuation-centers',
+    'flood_prone': 'flood-prone'
+}
 
 POTENTIAL_IDP_OVERPASS_QUERY = (
     '('
@@ -10,9 +35,9 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
     'way["amenity"="school"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'relation["amenity"="school"]'
+    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
 
     # Amenity hospital
-    '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'node["amenity"="hospital"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'way["amenity"="hospital"]'
@@ -62,10 +87,10 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
 
     ');'
     '(._;>;);'
-    'out body;'
+    'out {print_mode};'
 )
 
-EVACUATION_CENTER_OVERPASS_QUERY = (
+EVACUATION_CENTERS_OVERPASS_QUERY = (
     '('
     'node["evacuation_center"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
@@ -75,7 +100,7 @@ EVACUATION_CENTER_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BUILDINGS_OVERPASS_QUERY = (
     '('
@@ -87,7 +112,7 @@ BUILDINGS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 ROADS_OVERPASS_QUERY = (
     '('
@@ -99,17 +124,17 @@ ROADS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 FLOOD_PRONE_OVERPASS_QUERY = (
     '('
     'way["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
-    'way["flood_prone"="yes"]'
+    'relation["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_1_OVERPASS_QUERY = (
     '('
@@ -119,7 +144,7 @@ BOUNDARY_1_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_2_OVERPASS_QUERY = (
     '('
@@ -129,7 +154,7 @@ BOUNDARY_2_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_3_OVERPASS_QUERY = (
     '('
@@ -139,7 +164,7 @@ BOUNDARY_3_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_4_OVERPASS_QUERY = (
     '('
@@ -149,7 +174,7 @@ BOUNDARY_4_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_5_OVERPASS_QUERY = (
     '('
@@ -159,7 +184,7 @@ BOUNDARY_5_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_6_OVERPASS_QUERY = (
     '('
@@ -169,7 +194,7 @@ BOUNDARY_6_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_7_OVERPASS_QUERY = (
     '('
@@ -179,7 +204,7 @@ BOUNDARY_7_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_8_OVERPASS_QUERY = (
     '('
@@ -189,7 +214,7 @@ BOUNDARY_8_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_9_OVERPASS_QUERY = (
     '('
@@ -199,7 +224,7 @@ BOUNDARY_9_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_10_OVERPASS_QUERY = (
     '('
@@ -209,7 +234,7 @@ BOUNDARY_10_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 BOUNDARY_11_OVERPASS_QUERY = (
     '('
@@ -219,11 +244,11 @@ BOUNDARY_11_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     ');'
     '(._;>;);'
-    'out body;')
+    'out {print_mode};')
 
 OVERPASS_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY,
-    'evacuation-center': EVACUATION_CENTER_OVERPASS_QUERY,
+    'evacuation-centers': EVACUATION_CENTERS_OVERPASS_QUERY,
     'buildings': BUILDINGS_OVERPASS_QUERY,
     'building-points': BUILDINGS_OVERPASS_QUERY,
     'flood-prone': FLOOD_PRONE_OVERPASS_QUERY,
@@ -239,7 +264,6 @@ OVERPASS_QUERY_MAP = {
     'boundary-9': BOUNDARY_9_OVERPASS_QUERY,
     'boundary-10': BOUNDARY_10_OVERPASS_QUERY,
     'boundary-11': BOUNDARY_11_OVERPASS_QUERY,
-    'all': ALL_OVERPASS_QUERY
 }
 
 # Used to extract the features as a shapefile from pg
@@ -269,7 +293,7 @@ POTENTIAL_IDP_SQL_QUERY = (
     'sport '
     'FROM idp;"')
 
-EVACUATION_CENTER_SQL_QUERY = (
+EVACUATION_CENTERS_SQL_QUERY = (
     '"SELECT ST_Transform(way, 4326) AS the_geom, '
     'evacuation_center AS evacuation,'
     'name,'
@@ -373,7 +397,7 @@ BOUNDARY_SQL_QUERY = (
 
 SQL_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_SQL_QUERY,
-    'evacuation-center': EVACUATION_CENTER_SQL_QUERY,
+    'evacuation-centers': EVACUATION_CENTERS_SQL_QUERY,
     'buildings': BUILDINGS_SQL_QUERY,
     'building-points': BUILDING_POINTS_SQL_QUERY,
     'roads': ROADS_SQL_QUERY,
@@ -397,7 +421,7 @@ RESOURCES_MAP = {
     'building-points': 'building-points',
     'roads': 'roads',
     'potential-idp': 'potential-idp',
-    'evacuation-center': 'evacuation-center',
+    'evacuation-centers': 'evacuation-centers',
     'flood-prone': 'flood-prone',
     'boundary-1': 'boundary',
     'boundary-2': 'boundary',

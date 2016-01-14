@@ -11,10 +11,5 @@ BBOX = '20.411482,-34.053726,20.467358,-34.009483'
 DISPLAY_UPDATE_CONTROL = True
 # Where to store OSM files
 CACHE_DIR = '/tmp'
-# Default object type
-TAG_NAMES = [
-    'building',  # first is default
-    'highway',
-]
 # Options for the osm2pgsql command line
 OSM2PGSQL_OPTIONS = ''

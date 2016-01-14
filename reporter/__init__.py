@@ -55,11 +55,11 @@ def setup_logger():
     console_handler.setLevel(logging.ERROR)
 
     try:
-        #pylint: disable=F0401
+        # pylint: disable=F0401
         from raven.handlers.logging import SentryHandler
         # noinspection PyUnresolvedReferences
         from raven import Client
-        #pylint: enable=F0401
+        # pylint: enable=F0401
         client = Client(
             'http://12ef42a1d4394255a2041ac0428e8ef7:'
             '755880e336f54892bc2a65d308019997@sentry.linfiniti.com/6')
@@ -72,7 +72,7 @@ def setup_logger():
     except ImportError:
         logger.debug('Sentry logging disabled. Try pip install raven')
 
-    #Set formatters
+    # Set formatters
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 

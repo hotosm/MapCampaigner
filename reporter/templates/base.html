@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>Open Street Map Reporter</title>
+    <title>OpenStreetMap Reporter</title>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
     <link rel="stylesheet" href="/static/css/bootstrap.css"
           type="text/css" static="screen, projection"/>
@@ -41,16 +41,11 @@
         </div>
         {% endif %}
         <div class="hero-unit">
-            <h1>Open Street Map Reporter</h1>
+            <h1>OpenStreetMap Reporter</h1>
             <p>This page lists people who have contributed <strong>{{ current_tag_name }}</strong>
                 data to a map.</p>
-            {% if current_tag_name == "building" %}
-            <p><a href="#" onclick="downloadBuildingsShape();">Download</a> this
-                building data as a zipped shapefile.</p>
-            {% else %}
-            <p><a href="#" onclick="downloadRoadsShape();">Download</a> this
-              highway data as a zipped shapefile.</p>
-            {% endif %}
+            <p><a href="#" onclick="download_feature();">Download</a> this
+                {{ current_tag_name | replace('_', ' ')}} data as a zipped shapefile.</p>
         </div>
 
         <div class="row">
@@ -71,7 +66,7 @@
                 </p>
             </div>
             <div class="span8">
-                <h2>{{ current_tag_name|capitalize }} Contributors</h2>
+                <h2>{{ current_tag_name|capitalize|replace('_', ' ')}} Contributors</h2>
                 <p>
                     <table class="table">
                         <thead>
@@ -230,19 +225,12 @@
 
             {% endfor %}
         });
-        function downloadBuildingsShape()
+        function download_feature()
         {
-          var url = '/buildings-shp?bbox=' + map.getBounds().toBBoxString() +
+          var url = '/{{ download_url }}?bbox=' + map.getBounds().toBBoxString() +
            '&qgis_version=2';
           console.log('New url: ' + url + ' <--');
           window.location.replace(url);
-        }
-        function downloadRoadsShape()
-        {
-            var url = '/roads-shp?bbox=' + map.getBounds().toBBoxString() +
-          '&qgis_version=2';
-            console.log('New url: ' + url + ' <--');
-            window.location.replace(url);
         }
 
     </script>
