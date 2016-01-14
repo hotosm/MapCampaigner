@@ -52,15 +52,15 @@ class OsmParserTestCase(LoggedTestCase):
             }
         }
 
-        #OsmParser way count test
+        # OsmParser way count test
         self.assertDictEqual(myExpectedWayDict,
                              myParser.wayCountDict)
 
-        #OsmParser node count test
+        # OsmParser node count test
         self.assertDictEqual(myExpectedNodeDict,
                              myParser.nodeCountDict)
 
-        #OsmParser timeline test
+        # OsmParser timeline test
         self.assertDictEqual(myExpectedTimelineDict,
                              myParser.userDayCountDict)
 

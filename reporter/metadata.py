@@ -6,7 +6,7 @@
 import os
 import re
 
-from utilities import resource_base_path
+from utilities import shapefile_resource_base_path
 
 
 def short_version(version):
@@ -31,7 +31,7 @@ def latest_xml_metadata_file(feature):
     :return The latest version available.
     :rtype float
     """
-    base_path = resource_base_path(feature)
+    base_path = shapefile_resource_base_path(feature)
     directory = os.path.dirname(os.path.abspath(base_path))
     files = os.listdir(directory)
     resource = os.path.basename(base_path)
@@ -66,7 +66,7 @@ def metadata_file(extension, version, lang, feature):
     :return: The filename.
     :rtype: str
     """
-    base_path = resource_base_path(feature)
+    base_path = shapefile_resource_base_path(feature)
 
     if extension == 'keywords':
         # We check for only the localised file.

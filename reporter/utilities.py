@@ -19,8 +19,8 @@ from queries import RESOURCES_MAP
 from . import LOGGER
 
 
-def resource_base_path(feature_type):
-    """Get the resource base path according to the feature we extract.
+def overpass_resource_base_path(feature_type):
+    """Get the overpass resource base path according to the feature we extract.
 
     :param feature_type: The type of feature :
         buildings, building-points, roads, potential-idp, boundary-[1,11]
@@ -33,12 +33,32 @@ def resource_base_path(feature_type):
         os.path.join(
             os.path.dirname(__file__),
             'resources',
+            'overpass',
             RESOURCES_MAP[feature_type],
             RESOURCES_MAP[feature_type]))
 
 
-def generic_resource_base_path():
-    """Get the generic resource base path.
+def shapefile_resource_base_path(feature_type):
+    """Get the shapefile resource base path according to the feature we extract.
+
+    :param feature_type: The type of feature :
+        buildings, building-points, roads, potential-idp, boundary-[1,11]
+    :type feature_type: str
+
+    :return The resource folder.
+    :rtype str
+    """
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            'resources',
+            'shapefile',
+            RESOURCES_MAP[feature_type],
+            RESOURCES_MAP[feature_type]))
+
+
+def generic_shapefile_base_path():
+    """Get the generic shapefile resource base path.
 
     :return The generic resource folder.
     :rtype str
@@ -47,8 +67,10 @@ def generic_resource_base_path():
         os.path.join(
             os.path.dirname(__file__),
             'resources',
+            'shapefile',
             'generic',
             'generic'))
+
 
 def get_totals(sorted_user_list):
     """Given a sorted user list, get the totals for ways and nodes.
@@ -555,9 +577,9 @@ def which(name, flags=os.X_OK):
         return ['/usr/local/bin/%s' % name]
 
     result = []
-    #pylint: disable=W0141
+    # pylint: disable=W0141
     extensions = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-    #pylint: enable=W0141
+    # pylint: enable=W0141
     path = os.environ.get('PATH', None)
     # In c6c9b26 we removed this hard coding for issue #529 but I am
     # adding it back here in case the user's path does not include the
