@@ -69,3 +69,26 @@ run-test:
 	@echo "Running in test mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run test
+
+build-dev:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Building in development mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) build dev
+
+
+run-dev:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running in development mode"
+	@echo "You can access it on http://localhost:64002"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) up -d dev
+
+log:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing flask logs in development mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) logs dev
