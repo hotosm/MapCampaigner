@@ -13,9 +13,9 @@ class OsmTestCase(LoggedTestCase):
 
     def test_latest_xml_metadata_file(self):
         """Test the maximum version available of an XML keyword file."""
-        self.assertTrue(latest_xml_metadata_file('building-points') == 3.2)
-        self.assertTrue(latest_xml_metadata_file('buildings') == 3.2)
-        self.assertTrue(latest_xml_metadata_file('roads') == 3.2)
+        self.assertTrue(latest_xml_metadata_file('building-points') == 3.3)
+        self.assertTrue(latest_xml_metadata_file('buildings') == 3.3)
+        self.assertTrue(latest_xml_metadata_file('roads') == 3.3)
 
     def test_metadata_file(self):
         """Test we get the good metadata file."""
@@ -25,11 +25,14 @@ class OsmTestCase(LoggedTestCase):
         file_suffix = metadata_file('keywords', None, 'fr', 'roads')
         self.assertEqual('-fr.keywords', file_suffix)
 
-        file_suffix = metadata_file('xml', '3.3', 'fake_lang', 'roads')
-        self.assertEqual('-3.2-en.xml', file_suffix)
+        file_suffix = metadata_file('xml', '99.0', 'fake_lang', 'roads')
+        self.assertEqual('-3.3-en.xml', file_suffix)
 
-        file_suffix = metadata_file('xml', '3.2', 'en', 'roads')
-        self.assertEqual('-3.2-en.xml', file_suffix)
+        file_suffix = metadata_file('xml', '99.0', 'fr', 'roads')
+        self.assertEqual('-3.3-fr.xml', file_suffix)
+
+        file_suffix = metadata_file('xml', '3.3', 'en', 'roads')
+        self.assertEqual('-3.3-en.xml', file_suffix)
 
     def test_metadata_files(self):
         """Test we get all metadata files."""
@@ -44,8 +47,8 @@ class OsmTestCase(LoggedTestCase):
         }
         self.assertDictEqual(expected_metadata, metadata)
 
-        metadata = metadata_files('3.1', 'en', 'roads', 'test')
-        expected_metadata = {'test.keywords': '-en.keywords'}
+        metadata = metadata_files('3.1', 'fr', 'roads', 'test')
+        expected_metadata = {'test.keywords': '-fr.keywords'}
         self.assertDictEqual(expected_metadata, metadata)
 
     def test_short_version(self):
