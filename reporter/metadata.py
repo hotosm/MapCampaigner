@@ -79,7 +79,7 @@ def metadata_file(extension, version, lang, feature):
     else:
         # Extension is xml.
         # We check first for the perfect file (version and lang).
-        prefix = '%s-%s.xml' % (version, lang)
+        prefix = '-%s-%s.xml' % (version, lang)
         source_path = '%s%s' % (base_path, prefix)
 
         if not os.path.isfile(source_path):
