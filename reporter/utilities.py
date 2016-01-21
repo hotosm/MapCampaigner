@@ -606,3 +606,15 @@ def which(name, flags=os.X_OK):
                 result.append(pext)
 
     return result
+
+
+def short_version(version):
+    """Get a shorter version, only with the major and minor version.
+
+    :param version: The version.
+    :type version: str
+
+    :return 'major.minor' version number.
+    :rtype float
+    """
+    return float('.'.join(version.split('.')[0:2]))

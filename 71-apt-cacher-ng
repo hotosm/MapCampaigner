@@ -3,5 +3,9 @@
 # use apt-cacher in your image build out (and the 
 # Subsequent running container.
 
+# If you change this file, use this command line :
+# git update-index --assume-unchanged 71-apt-cacher-ng
+# and be sure you don't commit this file.
+
 #Acquire::http { Proxy "http://192.168.2.9:3142"; };
 #Acquire::http { Proxy "http://192.168.1.13:3142"; };

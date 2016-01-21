@@ -6,19 +6,7 @@
 import os
 import re
 
-from utilities import shapefile_resource_base_path
-
-
-def short_version(version):
-    """Get a shorter version, only with the major and minor version.
-
-    :param version: The version.
-    :type version: str
-
-    :return 'major.minor' version number.
-    :rtype float
-    """
-    return float('.'.join(version.split('.')[0:2]))
+from utilities import shapefile_resource_base_path, short_version
 
 
 def latest_xml_metadata_file(feature):

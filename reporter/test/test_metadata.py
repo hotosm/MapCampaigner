@@ -1,7 +1,6 @@
 __author__ = 'etienne'
 
 from reporter.metadata import (
-    short_version,
     latest_xml_metadata_file,
     metadata_file,
     metadata_files)
@@ -50,9 +49,3 @@ class OsmTestCase(LoggedTestCase):
         metadata = metadata_files('3.1', 'fr', 'roads', 'test')
         expected_metadata = {'test.keywords': '-fr.keywords'}
         self.assertDictEqual(expected_metadata, metadata)
-
-    def test_short_version(self):
-        """Test the inasafe version."""
-        self.assertEquals(short_version('3.2.0.dev-dbb84de'), 3.2)
-        self.assertEquals(short_version('3.2.0'), 3.2)
-        self.assertEquals(short_version('3.2'), 3.2)
