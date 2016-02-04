@@ -1,6 +1,7 @@
 node,way   access:roof          text
 node,way   addr:housename       text    linear
 node,way   addr:housenumber     text    linear
+node,way   addr:street          text    linear
 node,way   amenity              text    nocache,polygon
 node,way   building             text    polygon
 node,way   building:levels      text

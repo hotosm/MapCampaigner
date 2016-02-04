@@ -3,6 +3,7 @@ node,way access:roof          text  #JOSM preset
 node,way addr:full            text  #JOSM preset
 node,way addr:housename       text    linear  #osm2pgsql style
 node,way addr:housenumber     text    linear  #osm2pgsql style
+node,way addr:street          text    linear  #osm2pgsql style
 node,way addr:interpolation   text    linear  #osm2pgsql style
 node,way admin_level          text    linear  #osm2pgsql style
 node,way aerialway            text    linear  #osm2pgsql style
