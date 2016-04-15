@@ -7,3 +7,11 @@
 
 class OverpassTimeoutException(Exception):
     pass
+
+
+class OverpassBadRequestException(Exception):
+    pass
+
+
+class OverpassConcurrentRequestException(Exception):
+    pass

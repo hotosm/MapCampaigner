@@ -20,7 +20,10 @@ from .utilities import (
 from .osm import (
     get_osm_file,
     import_and_extract_shapefile)
-from .exceptions import OverpassTimeoutException
+from .exceptions import (
+    OverpassTimeoutException,
+    OverpassBadRequestException,
+    OverpassConcurrentRequestException)
 from .queries import FEATURES, TAG_MAPPING
 from .static import static_file
 from . import LOGGER
@@ -50,10 +53,15 @@ def home():
         try:
             feature_type = TAG_MAPPING[tag_name]
             file_handle = get_osm_file(coordinates, feature_type, 'meta')
-        except urllib2.URLError:
-            error = "Bad request."
         except OverpassTimeoutException:
-            error = "Bad request. Maybe the bbox is too big!"
+            error = 'Timeout, try a smaller area.'
+        except OverpassBadRequestException:
+            error = 'Bad request.'
+        except OverpassConcurrentRequestException:
+            error = 'Please try again later, another query is running.'
+        except urllib2.URLError:
+            error = 'Bad request.'
+
         else:
             try:
                 sorted_user_list = osm_object_contributions(
@@ -123,11 +131,14 @@ def download_feature(feature_type):
     else:
         try:
             file_handle = get_osm_file(coordinates, feature_type, 'body')
-        except urllib2.URLError:
-            # error = "Bad request. Maybe the bbox is too big!"
-            abort(500)
         except OverpassTimeoutException:
             abort(408)
+        except OverpassBadRequestException:
+            abort(500)
+        except OverpassConcurrentRequestException:
+            abort(509)
+        except urllib2.URLError:
+            abort(500)
 
     try:
         # noinspection PyUnboundLocalVariable
@@ -170,11 +181,17 @@ def user_status():
     else:
         try:
             file_handle = get_osm_file(coordinates)
-        except urllib2.URLError:
-            error = "Bad request."
-            LOGGER.exception(error + str(coordinates))
         except OverpassTimeoutException:
             error = "Bad request. Maybe the bbox is too big!"
+            LOGGER.exception(error + str(coordinates))
+        except OverpassConcurrentRequestException:
+            error = 'Please try again later, another query is running.'
+            LOGGER.exception(error + str(coordinates))
+        except OverpassBadRequestException:
+            error = "Bad request."
+            LOGGER.exception(error + str(coordinates))
+        except urllib2.URLError:
+            error = "Bad request."
             LOGGER.exception(error + str(coordinates))
         else:
             node_data = osm_nodes_by_user(file_handle, username)
