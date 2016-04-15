@@ -20,6 +20,7 @@ from .utilities import (
 from .osm import (
     get_osm_file,
     import_and_extract_shapefile)
+from .exceptions import OverpassTimeoutException
 from .queries import FEATURES, TAG_MAPPING
 from .static import static_file
 from . import LOGGER
@@ -50,6 +51,8 @@ def home():
             feature_type = TAG_MAPPING[tag_name]
             file_handle = get_osm_file(coordinates, feature_type, 'meta')
         except urllib2.URLError:
+            error = "Bad request."
+        except OverpassTimeoutException:
             error = "Bad request. Maybe the bbox is too big!"
         else:
             try:
@@ -123,6 +126,8 @@ def download_feature(feature_type):
         except urllib2.URLError:
             # error = "Bad request. Maybe the bbox is too big!"
             abort(500)
+        except OverpassTimeoutException:
+            abort(408)
 
     try:
         # noinspection PyUnboundLocalVariable
@@ -166,6 +171,9 @@ def user_status():
         try:
             file_handle = get_osm_file(coordinates)
         except urllib2.URLError:
+            error = "Bad request."
+            LOGGER.exception(error + str(coordinates))
+        except OverpassTimeoutException:
             error = "Bad request. Maybe the bbox is too big!"
             LOGGER.exception(error + str(coordinates))
         else:
