@@ -20,6 +20,10 @@ from utilities import (
     shapefile_resource_base_path,
     overpass_resource_base_path,
     generic_shapefile_base_path)
+from exceptions import (
+    OverpassTimeoutException,
+    OverpassBadRequestException,
+    OverpassConcurrentRequestException)
 from metadata import metadata_files
 
 
@@ -131,12 +135,23 @@ def fetch_osm(file_path, url_path):
     request = urllib2.Request(url_path, None, headers)
     try:
         url_handle = urllib2.urlopen(request, timeout=60)
+        data = url_handle.read()
+        regex = '<remark> runtime error:'
+        if re.search(regex, data):
+            raise OverpassTimeoutException
+
         file_handle = file(file_path, 'wb')
-        file_handle.write(url_handle.read())
+        file_handle.write(data)
         file_handle.close()
-    except urllib2.URLError:
-        LOGGER.exception('Bad Url or Timeout')
-        raise
+    except urllib2.URLError as e:
+        if e.code == 400:
+            LOGGER.exception('Bad request to Overpass')
+            raise OverpassBadRequestException
+        elif e.code == 419:
+            raise OverpassConcurrentRequestException
+
+        LOGGER.exception('Error with Overpass')
+        raise e
 
 
 def add_metadata_timestamp(metadata_file_path):
