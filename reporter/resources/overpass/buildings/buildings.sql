@@ -27,9 +27,6 @@ UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Islam'
 where amenity  ILIKE '%worship%' and (religion  ILIKE '%islam'
 or religion  ILIKE '%muslim%');
 
-UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Unitarian'
-where amenity  ILIKE '%worship%' and religion  ILIKE '%unitarian%';
-
 UPDATE planet_osm_polygon SET "type" = 'Place of Worship - Buddhist' WHERE
 amenity  ILIKE '%worship%' and religion  ILIKE '%budd%';
 
