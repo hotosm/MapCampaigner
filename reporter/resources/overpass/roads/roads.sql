@@ -3,9 +3,9 @@ ALTER TABLE planet_osm_line ADD COLUMN "type" VARCHAR(255) NULL;
 UPDATE
   planet_osm_line
 SET
-  "type" = 'Motorway or highway'
+  "type" = 'Motorway'
 WHERE
-  highway ILIKE 'motorway' OR highway ILIKE 'highway' or highway ILIKE 'trunk';
+  highway ILIKE 'motorway' OR highway ILIKE 'trunk';
 
 --
 

@@ -215,7 +215,7 @@
             <gco:CharacterString/>
           </datatype>
           <value_map>
-            <gco:Dictionary>{&quot;Primary road&quot;: [&quot;Primary road&quot;], &quot;Road, residential, living street, etc.&quot;: [&quot;Road, residential, living street, etc.&quot;], &quot;Tertiary link&quot;: [&quot;Tertiary link&quot;], &quot;Track&quot;: [&quot;Track&quot;], &quot;Primary link&quot;: [&quot;Primary link&quot;], &quot;Motorway / highway&quot;: [&quot;Motorway or highway&quot;], &quot;Other&quot;: [], &quot;Motorway link&quot;: [&quot;Motorway link&quot;], &quot;Cycleway, footpath, etc.&quot;: [&quot;Cycleway, footpath, etc.&quot;], &quot;Secondary link&quot;: [&quot;Secondary link&quot;], &quot;Tertiary&quot;: [&quot;Tertiary&quot;], &quot;Secondary&quot;: [&quot;Secondary&quot;]}</gco:Dictionary>
+            <gco:Dictionary>{&quot;primary&quot;: [&quot;Primary road&quot;, &quot;Primary link&quot;], &quot;motorway&quot;: [&quot;Motorway&quot;, &quot;Motorway link&quot;], &quot;other&quot;: [&quot;Road, residential, living street, etc.&quot;], &quot;path&quot;: [&quot;Track&quot;, &quot;Cycleway, footpath, etc.&quot;], &quot;local&quot;: [&quot;Tertiary&quot;, &quot;Tertiary link&quot;], &quot;secondary&quot;: [&quot;Secondary&quot;, &quot;Secondary link&quot;]}</gco:Dictionary>
           </value_map>
           <structure_class_field>
             <gco:CharacterString/>
