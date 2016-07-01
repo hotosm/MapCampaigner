@@ -47,7 +47,7 @@
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>Buildings</gco:CharacterString>
+            <gco:CharacterString>Routes</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
@@ -194,7 +194,7 @@
             <gco:CharacterString>OpenStreetMap.org</gco:CharacterString>
           </source>
           <layer_geometry>
-            <gco:CharacterString>polygon</gco:CharacterString>
+            <gco:CharacterString>line</gco:CharacterString>
           </layer_geometry>
           <field>
             <gco:CharacterString/>
@@ -206,7 +206,7 @@
             <gco:CharacterString/>
           </report>
           <exposure>
-            <gco:CharacterString>structure</gco:CharacterString>
+            <gco:CharacterString>road</gco:CharacterString>
           </exposure>
           <keyword_version>
             <gco:CharacterString>3.3</gco:CharacterString>
@@ -215,10 +215,10 @@
             <gco:CharacterString/>
           </datatype>
           <value_map>
-            <gco:Dictionary>{&quot;recreation&quot;: [&quot;Sports Facility&quot;], &quot;public facility&quot;: [&quot;Fire Station&quot;, &quot;Police Station&quot;, &quot;Public Building&quot;], &quot;government&quot;: [&quot;Government&quot;], &quot;residential&quot;: [&quot;Residential&quot;], &quot;commercial&quot;: [&quot;Supermarket&quot;, &quot;Commercial&quot;, &quot;Industrial&quot;], &quot;other&quot;: [&quot;Utility&quot;], &quot;health&quot;: [&quot;Clinic/Doctor&quot;, &quot;Hospital&quot;], &quot;education&quot;: [&quot;School&quot;, &quot;University/College&quot;], &quot;place of worship&quot;: [&quot;Place of Worship - Islam&quot;, &quot;Place of Worship - Unitarian&quot;, &quot;Place of Worship - Buddhist&quot;, &quot;Place of Worship&quot;]}</gco:Dictionary>
+            <gco:Dictionary>{&quot;primary&quot;: [&quot;Primary road&quot;, &quot;Primary link&quot;], &quot;motorway&quot;: [&quot;Motorway or highway&quot;, &quot;Motorway link&quot;], &quot;other&quot;: [&quot;Road, residential, living street, etc.&quot;], &quot;path&quot;: [&quot;Track&quot;, &quot;Cycleway, footpath, etc.&quot;], &quot;local&quot;: [&quot;Tertiary&quot;, &quot;Tertiary link&quot;], &quot;secondary&quot;: [&quot;Secondary&quot;, &quot;Secondary link&quot;]}</gco:Dictionary>
           </value_map>
           <structure_class_field>
-            <gco:CharacterString>TYPE</gco:CharacterString>
+            <gco:CharacterString/>
           </structure_class_field>
           <allow_resampling>
             <gco:CharacterString/>
@@ -233,7 +233,7 @@
             <gco:CharacterString>classified</gco:CharacterString>
           </layer_mode>
           <road_class_field>
-            <gco:CharacterString/>
+            <gco:CharacterString>TYPE</gco:CharacterString>
           </road_class_field>
         </inasafe>
       </gmd:supplementalInformation>
