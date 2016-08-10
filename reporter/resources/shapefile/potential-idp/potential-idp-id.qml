@@ -61,11 +61,11 @@
   </edittypes>
   <renderer-v2 symbollevels="0" type="RuleRenderer">
     <rules key="{e45beec7-9934-4dd0-9c53-15f37a715af5}">
-      <rule filter="TYPE = 'Hospital'" key="{baa2eb6f-602f-4605-b1a9-b2d23bf6aba5}" symbol="0" label="Hôpital"/>
-      <rule filter="TYPE = 'Place of Worship' OR &#xa;TYPE = 'Place of Worship - Islam' OR &#xa;TYPE = 'Place of Worship - Unitarian' OR&#xa;TYPE = 'Place of Worship - Buddhist'" key="{26494c21-a8df-4a4a-88d2-25aa1f7a03c3}" symbol="1" label="Lieu de culte"/>
-      <rule filter="TYPE = 'School' OR TYPE = 'University/College'" key="{d0265b96-f2bc-4c40-a9c1-d9fa480b9593}" symbol="2" label="École, collège, université"/>
-      <rule filter="TYPE = 'Public Building'" key="{e4c3292d-8b7c-4f18-8193-025494aab422}" symbol="3" label="Bâtiment public"/>
-      <rule filter="ELSE" key="{50cdcb78-cee4-4167-9cba-5dab04a3bf3a}" symbol="4" label="Other"/>
+      <rule filter="TYPE = 'Hospital'" key="{baa2eb6f-602f-4605-b1a9-b2d23bf6aba5}" symbol="0" label="Rumah Sakit"/>
+      <rule filter="TYPE = 'Place of Worship' OR &#xa;TYPE = 'Place of Worship - Islam' OR &#xa;TYPE = 'Place of Worship - Unitarian' OR&#xa;TYPE = 'Place of Worship - Buddhist'" key="{26494c21-a8df-4a4a-88d2-25aa1f7a03c3}" symbol="1" label="Tempat Ibadah"/>
+      <rule filter="TYPE = 'School' OR TYPE = 'University/College'" key="{d0265b96-f2bc-4c40-a9c1-d9fa480b9593}" symbol="2" label="Sekolah/Kampus/Universitas"/>
+      <rule filter="TYPE = 'Public Building'" key="{e4c3292d-8b7c-4f18-8193-025494aab422}" symbol="3" label="Bangunan Umum"/>
+      <rule filter="ELSE" key="{50cdcb78-cee4-4167-9cba-5dab04a3bf3a}" symbol="4" label="Lainnya"/>
     </rules>
     <symbols>
       <symbol alpha="1" type="marker" name="0">

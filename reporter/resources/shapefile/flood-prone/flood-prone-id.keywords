@@ -1,0 +1,11 @@
+title: Poligon Banjir
+layer_geometry: polygon
+layer_mode: classified
+layer_purpose: hazard
+field: FLOODPRONE
+hazard: flood
+hazard_category: single_event
+value_map: {'dry': ['NO'], 'wet': ['YES']}
+vector_hazard_classification: flood_vector_hazard_classes
+source: OpenStreetMap - www.openstreetmap.org
+license: Open Data Commons Open Database License (ODbL)
