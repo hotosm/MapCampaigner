@@ -47,7 +47,7 @@
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>Bâtiments ponctuels</gco:CharacterString>
+            <gco:CharacterString>Bangunan</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
@@ -194,7 +194,7 @@
             <gco:CharacterString>OpenStreetMap.org</gco:CharacterString>
           </source>
           <layer_geometry>
-            <gco:CharacterString>point</gco:CharacterString>
+            <gco:CharacterString>polygon</gco:CharacterString>
           </layer_geometry>
           <field>
             <gco:CharacterString/>
