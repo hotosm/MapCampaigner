@@ -12,9 +12,9 @@ class OsmTestCase(LoggedTestCase):
 
     def test_latest_xml_metadata_file(self):
         """Test the maximum version available of an XML keyword file."""
-        self.assertTrue(latest_xml_metadata_file('building-points') == 3.3)
-        self.assertTrue(latest_xml_metadata_file('buildings') == 3.3)
-        self.assertTrue(latest_xml_metadata_file('roads') == 3.3)
+        self.assertTrue(latest_xml_metadata_file('building-points') == 4.0)
+        self.assertTrue(latest_xml_metadata_file('buildings') == 4.0)
+        self.assertTrue(latest_xml_metadata_file('roads') == 4.0)
 
     def test_metadata_file(self):
         """Test we get the good metadata file."""
@@ -25,10 +25,10 @@ class OsmTestCase(LoggedTestCase):
         self.assertEqual('-fr.keywords', file_suffix)
 
         file_suffix = metadata_file('xml', '99.0', 'fake_lang', 'roads')
-        self.assertEqual('-3.3-en.xml', file_suffix)
+        self.assertEqual('-4.0-en.xml', file_suffix)
 
         file_suffix = metadata_file('xml', '99.0', 'fr', 'roads')
-        self.assertEqual('-3.3-fr.xml', file_suffix)
+        self.assertEqual('-4.0-en.xml', file_suffix)
 
         file_suffix = metadata_file('xml', '3.3', 'en', 'roads')
         self.assertEqual('-3.3-en.xml', file_suffix)
