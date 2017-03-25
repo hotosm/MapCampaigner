@@ -1,4 +1,3 @@
 Flask-Testing
 pylint
 pep8
-fabgis==0.17.0
