@@ -75,6 +75,8 @@ before_script:
   - psql -U postgres -c "create database template_postgis encoding 'UTF8' TEMPLATE template0;"
   - psql -U postgres -c "update pg_database set datistemplate=true where datname='template_postgis';"
   - psql -U postgres -c "create extension postgis;" template_postgis 
+  - ls -lah /usr/share/postgresql/
+  - ls -lah /usr/share/postgresql/9.4/contrib/postgis-2.3/
   - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.3/legacy_minimal.sql
   - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.3/legacy_gist.sql
   - echo "Databases:"
