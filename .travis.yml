@@ -32,7 +32,7 @@ matrix:
       sudo: false
       cache:
         apt: true
-		pip: true
+        pip: true
         directories:
           - /tmp # cache any previously downloaded .osm files
       python: "3.6"
