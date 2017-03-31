@@ -87,6 +87,7 @@ before_script:
   - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.1/legacy_gist.sql
   - echo "Databases:"
   - psql -l
+  - which pgsql2shp
   - pip install -r requirements-dev.txt
 
 script:
