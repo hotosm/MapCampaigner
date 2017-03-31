@@ -30,7 +30,6 @@ matrix:
       language: python # This lets us use newer python versions from virtualenv
       env:
         - TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
-      dist: trusty
       sudo: false
       cache:
         apt: true
