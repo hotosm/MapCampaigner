@@ -1,13 +1,7 @@
 # coding=utf-8
-"""Views to handle url requests. Flask main entry point is also defined here.
-:copyright: (c) 2013 by Tim Sutton
-:license: GPLv3, see LICENSE for more details.
-"""
-
-import urllib2
+import sys
 import optparse
 import xml
-
 from flask import request, jsonify, render_template, Response, abort
 # App declared directly in __init__ as per
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
@@ -27,6 +21,18 @@ from .exceptions import (
 from .queries import FEATURES, TAG_MAPPING
 from .static import static_file
 from . import LOGGER
+if sys.version_info > (2, 7):
+    import urllib2
+    # noinspection PyPep8Naming
+    import urllib2.URLError as url_error
+else:
+    import urllib.request as urllib2
+    import urllib.error as url_error
+
+"""Views to handle url requests. Flask main entry point is also defined here.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 
 
 @app.route('/')
@@ -59,7 +65,7 @@ def home():
             error = 'Bad request.'
         except OverpassConcurrentRequestException:
             error = 'Please try again later, another query is running.'
-        except urllib2.URLError:
+        except url_error:
             error = 'Bad request.'
 
         else:

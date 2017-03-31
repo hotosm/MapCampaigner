@@ -1,17 +1,11 @@
 # coding=utf-8
-"""Module for low level OSM file retrieval.
-:copyright: (c) 2013 by Tim Sutton
-:license: GPLv3, see LICENSE for more details.
-"""
 import hashlib
-import urllib2
 import urllib
 import time
 import os
 import re
 from subprocess import call
 from shutil import copyfile
-
 from .utilities import temp_dir, unique_filename, zip_shp, which
 from . import config
 from . import LOGGER
@@ -25,6 +19,18 @@ from exceptions import (
     OverpassBadRequestException,
     OverpassConcurrentRequestException)
 from metadata import metadata_files
+if sys.version_info > (2, 7):
+    import urllib2
+    # noinspection PyPep8Naming
+    import urllib2.URLError as url_error
+else:
+    import urllib.request as urllib2
+    import urllib.error as url_error
+
+"""Module for low level OSM file retrieval.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 
 
 def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
@@ -132,7 +138,7 @@ def fetch_osm(file_path, url_path):
     """
     LOGGER.debug('Getting URL: %s', url_path)
     headers = {'User-Agent': 'InaSAFE'}
-    request = urllib2.Request(url_path, None, headers)
+    request = request(url_path, None, headers)
     try:
         url_handle = urllib2.urlopen(request, timeout=60)
         data = url_handle.read()
@@ -143,7 +149,7 @@ def fetch_osm(file_path, url_path):
         file_handle = file(file_path, 'wb')
         file_handle.write(data)
         file_handle.close()
-    except urllib2.URLError as e:
+    except url_error as e:
         if e.code == 400:
             LOGGER.exception('Bad request to Overpass')
             raise OverpassBadRequestException
