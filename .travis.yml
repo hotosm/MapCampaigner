@@ -90,8 +90,7 @@ before_script:
   - pip install -r requirements-dev.txt
 
 script:
-  - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
-    --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+  - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
 after_script:
   -
