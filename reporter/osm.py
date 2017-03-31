@@ -4,6 +4,7 @@ import urllib
 import time
 import os
 import re
+import sys
 from subprocess import call
 from shutil import copyfile
 from .utilities import temp_dir, unique_filename, zip_shp, which
