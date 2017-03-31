@@ -24,10 +24,10 @@ from . import LOGGER
 if sys.version_info > (2, 7):
     import urllib2
     # noinspection PyPep8Naming
-    import urllib2.URLError as url_error
+    from urllib2 import URLError as url_error
 else:
     import urllib.request as urllib2
-    import urllib.error as url_error
+    from urllib import error as url_error
 
 """Views to handle url requests. Flask main entry point is also defined here.
 :copyright: (c) 2013 by Tim Sutton
