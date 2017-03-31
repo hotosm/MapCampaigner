@@ -45,6 +45,7 @@ matrix:
           packages:
             # Check that legacy scripts are available before upgrading postgis - they are required!
             - postgresql-9.4-postgis-2.1 
+            - postgis
             - osm2pgsql
 git:
   depth: 30
