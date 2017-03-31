@@ -21,7 +21,8 @@ matrix:
           sources:
             - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
           packages:
-            - postgresql-9.4-postgis-2.3 
+            # Check that legacy scripts are available before upgrading postgis - they are required!
+            - postgresql-9.4-postgis-2.1 
             - osm2pgsql
     # Python 3 // using container based builds
     - os: linux
@@ -42,7 +43,8 @@ matrix:
           sources:
             - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
           packages:
-            - postgresql-9.4-postgis-2.3 
+            # Check that legacy scripts are available before upgrading postgis - they are required!
+            - postgresql-9.4-postgis-2.1 
             - osm2pgsql
 git:
   depth: 30
@@ -78,9 +80,10 @@ before_script:
   - ls -lah /usr/share/postgresql/
   - ls -lah /usr/share/postgresql/9.4/
   - ls -lah /usr/share/postgresql/9.4/contrib/
-  - ls -lah /usr/share/postgresql/9.4/contrib/postgis-2.3/
-  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.3/legacy_minimal.sql
-  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.3/legacy_gist.sql
+  # Check that legacy scripts are available before upgrading postgis to a newer version than 2.1 - they are required!
+  - ls -lah /usr/share/postgresql/9.4/contrib/postgis-2.1/
+  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.1/legacy_minimal.sql
+  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.1/legacy_gist.sql
   - echo "Databases:"
   - psql -l
   - pip install -r requirements-dev.txt
