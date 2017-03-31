@@ -139,9 +139,9 @@ def fetch_osm(file_path, url_path):
     """
     LOGGER.debug('Getting URL: %s', url_path)
     headers = {'User-Agent': 'InaSAFE'}
-    request = request(url_path, None, headers)
+    web_request = request(url_path, None, headers)
     try:
-        url_handle = urllib2.urlopen(request, timeout=60)
+        url_handle = urllib2.urlopen(web_request, timeout=60)
         data = url_handle.read()
         regex = '<remark> runtime error:'
         if re.search(regex, data):
