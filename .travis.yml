@@ -24,6 +24,7 @@ matrix:
             # Check that legacy scripts are available before upgrading postgis - they are required!
             - postgresql-9.4-postgis-2.1 
             - osm2pgsql
+            - postgis
     # Python 3 // using container based builds
     - os: linux
       language: python # This lets us use newer python versions from virtualenv
@@ -45,8 +46,8 @@ matrix:
           packages:
             # Check that legacy scripts are available before upgrading postgis - they are required!
             - postgresql-9.4-postgis-2.1 
-            - postgis
             - osm2pgsql
+            - postgis
 git:
   depth: 30
 
