@@ -1,3 +1,4 @@
 Flask-Testing
 pylint
 pep8
+nosexcover
