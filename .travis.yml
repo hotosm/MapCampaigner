@@ -73,7 +73,7 @@ install:
 before_script:
   - echo "Build starting on " `date`
   - psql -U postgres -c "create extension postgis"
-  - sudo pip install requirements-dev.txt
+  - pip install requirements-dev.txt
 
 script:
   - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
