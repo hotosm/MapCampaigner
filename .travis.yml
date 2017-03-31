@@ -1,23 +1,74 @@
-language: python
+matrix:
+  fast_finish: true
+  include:
+    # Python 2 // using container based builds
+    - os: linux
+      language: python # This lets us use newer python versions from virtualenv
+      env:
+        - TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
+      sudo: false
+      cache:
+        apt: true
+        pip: true
+        directories:
+          - /tmp # cache any previously downloaded .osm files
+        timeout: 1000
+      compiler: clang
+      python: "3.3"
+      addons:
+        postgresql: "9.4"
+        apt:
+          sources:
+            - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
+          packages:
+            - postgresql-9.4-postgis-2.3 
+            - osm2pgsql
+    # Python 3 // using container based builds
+    - os: linux
+      language: python # This lets us use newer python versions from virtualenv
+      env:
+        - TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+      dist: trusty
+      sudo: false
+      cache:
+        apt: true
+		pip: true
+        directories:
+          - /tmp # cache any previously downloaded .osm files
+      python: "3.6"
+      addons:
+        postgresql: "9.4"
+        apt:
+          sources:
+            - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
+          packages:
+            - postgresql-9.4-postgis-2.3 
+            - osm2pgsql
+git:
+  depth: 30
 
-python:
-  - "2.7"
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#kartoza"
+    use_notice: true
 
-#addons:
-#  postgresql: "9.1"
+  email:
+    - tim@kartoza.com
+#  webhooks:
+#    urls:
+#      - https://webhooks.gitter.im/e/467e3aff72e344d1dae3 # need to get a proper app key first
+#    on_success: change  # options: [always|never|change] default: always
+#    on_failure: always # options: [always|never|change] default: always
+#    on_start: never # default: never
 
-branches:
-  only:
-    - master
-    - develop
-    - travis
-
--before_install:
-  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y # For postgresql-9.1-postgis-2.1
+before_install:
+  #- ./ci/travis/${TRAVIS_CONFIG}/before_install.sh
+  -
 
 install:
-  - sudo apt-get -qq -y update
-  - sudo apt-get -y install postgresql-9.6-postgis-2.3 osm2pgsql
+  #- ./ci/travis/${TRAVIS_CONFIG}/install.sh
+  -
 
 before_script:
   - echo "Build starting on " `date`
@@ -28,11 +79,5 @@ script:
   - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id \
     --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#kartoza"
-    use_notice: true
-
-  email:
-    - tim@kartoza.com
+after_script:
+  -
