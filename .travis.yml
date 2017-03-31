@@ -72,7 +72,7 @@ install:
 
 before_script:
   - echo "Build starting on " `date`
-  - su - postgres -c "createdb template_postgis -E UTF8 -T template0"
+  - psql -U postgres -c "create database template_postgis encoding 'UTF8' template0"
   - psql -U postgres -c "update pg_database set datistemplate=true where datname='template_postgis';"
   - psql -U postgres -c "create extension postgis" template_postgis 
   - pip install -r requirements-dev.txt
