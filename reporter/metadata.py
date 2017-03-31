@@ -113,9 +113,7 @@ def metadata_files(version, lang, feature, output_prefix):
     if version is None:
         # no inasafe_version supplied, provide legacy keywords.
         files = {
-            '%s.keywords' % output_prefix: keyword_file,
-            # Problem with InaSAFE 3.0 and 3.1.
-            # '%s.xml' % output_prefix: xml_file
+            '%s.xml' % output_prefix: xml_file
         }
     elif version < 3.2:
         # keywords only.
