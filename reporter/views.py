@@ -5,29 +5,30 @@ import xml
 from flask import request, jsonify, render_template, Response, abort
 # App declared directly in __init__ as per
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
-from . import app
-from . import config
-from .utilities import (
+from reporter import app
+from reporter import config
+from reporter.utilities import (
     split_bbox,
     osm_object_contributions,
     get_totals, osm_nodes_by_user)
-from .osm import (
+from reporter.osm import (
     get_osm_file,
     import_and_extract_shapefile)
-from .exceptions import (
+from reporter.exceptions import (
     OverpassTimeoutException,
     OverpassBadRequestException,
     OverpassConcurrentRequestException)
-from .queries import FEATURES, TAG_MAPPING
-from .static import static_file
-from . import LOGGER
+from reporter.queries import FEATURES, TAG_MAPPING
+from reporter.static_files import static_file
+from reporter import LOGGER
 if sys.version_info > (2, 7):
+    import urllib.request as urllib2
+    # noinspection PyPep8Naming
+    from urllib.error import URLError as url_error
+else:
     import urllib2
     # noinspection PyPep8Naming
     from urllib2 import URLError as url_error
-else:
-    import urllib.request as urllib2
-    from urllib import error as url_error
 
 """Views to handle url requests. Flask main entry point is also defined here.
 :copyright: (c) 2013 by Tim Sutton
@@ -53,7 +54,7 @@ def home():
         coordinates = split_bbox(config.BBOX)
     else:
 
-        if tag_name not in TAG_MAPPING.keys():
+        if tag_name not in list(TAG_MAPPING.keys()):
             error = "Unsupported object type"
             tag_name = default_tag
         try:
@@ -67,7 +68,6 @@ def home():
             error = 'Please try again later, another query is running.'
         except url_error:
             error = 'Bad request.'
-
         else:
             try:
                 sorted_user_list = osm_object_contributions(
@@ -82,7 +82,7 @@ def home():
     # We need to manually cast float in string, otherwise floats are
     # truncated, and then rounds in Leaflet result in a wrong bbox
     # Note: slit_bbox should better keep returning real floats
-    coordinates = dict((k, repr(v)) for k, v in coordinates.iteritems())
+    coordinates = dict((k, repr(v)) for k, v in coordinates.items())
 
     download_url = '%s-shp' % TAG_MAPPING[tag_name]
     context = dict(
@@ -93,7 +93,7 @@ def home():
         bbox=bbox,
         current_tag_name=tag_name,
         download_url=download_url,
-        available_tag_names=TAG_MAPPING.keys(),
+        available_tag_names=list(TAG_MAPPING.keys()),
         error=error,
         coordinates=coordinates,
         display_update_control=int(config.DISPLAY_UPDATE_CONTROL),

@@ -88,4 +88,4 @@ app = Flask(__name__)
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
 # Also views must be imported AFTER app is created above.
 # noinspection PyUnresolvedReferences
-import views
+from reporter import views

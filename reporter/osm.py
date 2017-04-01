@@ -7,26 +7,31 @@ import re
 import sys
 from subprocess import call
 from shutil import copyfile
-from .utilities import temp_dir, unique_filename, zip_shp, which
-from . import config
-from . import LOGGER
-from queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
-from utilities import (
+from reporter.utilities import temp_dir, unique_filename, zip_shp, which
+from reporter import config
+from reporter import LOGGER
+from reporter.queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
+from reporter.utilities import (
     shapefile_resource_base_path,
     overpass_resource_base_path,
     generic_shapefile_base_path)
-from exceptions import (
+from reporter.exceptions import (
     OverpassTimeoutException,
     OverpassBadRequestException,
     OverpassConcurrentRequestException)
-from metadata import metadata_files
+from reporter.metadata import metadata_files
 if sys.version_info > (2, 7):
-    import urllib2
+    from urllib.request import urlopen as urlopen
+    # noinspection PyPep8Naming
+    from urllib.request import Request as request
+    from urllib.parse import quote
+    # noinspection PyPep8Naming
+    from urllib.error import HTTPError as url_error
+else:
+    import urllib2.request as request
+    import urllib2.urlopen as urlopen
     # noinspection PyPep8Naming
     from urllib2 import URLError as url_error
-else:
-    import urllib.request as urllib2
-    from urllib import error as url_error
 
 """Module for low level OSM file retrieval.
 :copyright: (c) 2013 by Tim Sutton
@@ -81,9 +86,9 @@ def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
     parameters = coordinates
     parameters['print_mode'] = overpass_verbosity
     query = OVERPASS_QUERY_MAP[feature].format(**parameters)
-    encoded_query = urllib.quote(query)
+    encoded_query = quote(query)
     url_path = '%s%s' % (server_url, encoded_query)
-    safe_name = hashlib.md5(query).hexdigest() + '.osm'
+    safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     return load_osm_document(file_path, url_path)
 
@@ -141,14 +146,14 @@ def fetch_osm(file_path, url_path):
     headers = {'User-Agent': 'InaSAFE'}
     web_request = request(url_path, None, headers)
     try:
-        url_handle = urllib2.urlopen(web_request, timeout=60)
-        data = url_handle.read()
+        url_handle = urlopen(web_request, timeout=60)
+        data = url_handle.read().decode('utf-8')
         regex = '<remark> runtime error:'
         if re.search(regex, data):
             raise OverpassTimeoutException
 
-        file_handle = file(file_path, 'wb')
-        file_handle.write(data)
+        file_handle = open(file_path, 'wb')
+        file_handle.write(data.encode('utf-8'))
         file_handle.close()
     except url_error as e:
         if e.code == 400:
@@ -290,11 +295,11 @@ def import_osm_file(db_name, feature_type, file_path):
     transform_command = '%s %s -f %s' % (
         psql_executable, db_name, transform_path)
 
-    print createdb_command
+    print (createdb_command)
     call(createdb_command, shell=True)
-    print osm2pgsql_command
+    print (osm2pgsql_command)
     call(osm2pgsql_command, shell=True)
-    print transform_command
+    print (transform_command)
     call(transform_command, shell=True)
 
 
@@ -305,7 +310,7 @@ def drop_database(db_name):
     """
     dropdb_executable = which('dropdb')[0]
     dropdb_command = '%s %s' % (dropdb_executable, db_name)
-    print dropdb_command
+    print (dropdb_command)
     call(dropdb_command, shell=True)
 
 
@@ -385,7 +390,7 @@ def extract_shapefile(
         pgsql2shp_executable, shape_path, db_name, SQL_QUERY_MAP[feature_type])
 
     # Now run the commands in sequence:
-    print pgsql2shp_command
+    print (pgsql2shp_command)
     call(pgsql2shp_command, shell=True)
     copyfile(qml_source_path, qml_dest_path)
 
@@ -405,7 +410,7 @@ def extract_shapefile(
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license', '.xml'], remove_file=True)
-    print 'Shape written to %s' % shape_path
+    print ('Shape written to %s' % shape_path)
 
     return zipfile
 
