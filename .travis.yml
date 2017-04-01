@@ -1,17 +1,15 @@
 # Common to all builds in the build matrixs
 os: linux
 language: python # This lets us use newer python versions from virtualenv
-env:
-  - TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
 sudo: false
 cache:
   apt: true
   pip: true
   directories:
-    - /tmp # cache any previously downloaded .osm files
+    # commented out - we want to get fresh overpass file each time
+    #- /tmp # cache any previously downloaded .osm files
   timeout: 1000
 compiler: clang
-python: "2.7"
 addons:
   postgresql: "9.4"
   apt:
