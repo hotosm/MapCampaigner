@@ -22,19 +22,28 @@ addons:
       - postgresql-9.4-postgis-2.1
       - osm2pgsql
       - postgis
+# python defs need to be here as well as in include for test matrix
+# see https://docs.travis-ci.com/user/customizing-the-build#Explicitly-Included-Jobs-need-complete-definitions
+python:
+  - '3.6'
+  - '3.5'
+  - '3.4'
+  - '2.7'
 
-# Build environment specific options
+# Build environment specific options - one build per top level item in include list
 matrix:
   fast_finish: true
   include:
-      - env:
-        - TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
-        python:
-          - "2.7"
-      - env:
-        - TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
-        python:
-          - "3.6"
+    - python: '3.6'
+      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+    - python: '3.5'
+      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+    - python: '3.4'
+      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+    - python: '2.7'
+      env: TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
+
+
 git:
   depth: 30
 
