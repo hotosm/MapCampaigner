@@ -1,52 +1,40 @@
+# Common to all builds in the build matrixs
+os: linux
+language: python # This lets us use newer python versions from virtualenv
+env:
+  - TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
+sudo: false
+cache:
+  apt: true
+  pip: true
+  directories:
+    - /tmp # cache any previously downloaded .osm files
+  timeout: 1000
+compiler: clang
+python: "2.7"
+addons:
+  postgresql: "9.4"
+  apt:
+    sources:
+      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
+    packages:
+      # Check that legacy scripts are available before upgrading postgis - they are required!
+      - postgresql-9.4-postgis-2.1
+      - osm2pgsql
+      - postgis
+
+# Build environment specific options
 matrix:
   fast_finish: true
   include:
-    # Python 2 // using container based builds
-    - os: linux
-      language: python # This lets us use newer python versions from virtualenv
-      env:
+      - env:
         - TRAVIS_CONFIG=PYTHON2 # used if you want to run environment specific stuff in before_script
-      sudo: false
-      cache:
-        apt: true
-        pip: true
-        directories:
-          - /tmp # cache any previously downloaded .osm files
-        timeout: 1000
-      compiler: clang
-      python: "2.7"
-      addons:
-        postgresql: "9.4"
-        apt:
-          sources:
-            - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
-          packages:
-            # Check that legacy scripts are available before upgrading postgis - they are required!
-            - postgresql-9.4-postgis-2.1 
-            - osm2pgsql
-            - postgis
-    # Python 3 // using container based builds
-    - os: linux
-      language: python # This lets us use newer python versions from virtualenv
-      env:
+        python:
+          - "2.7"
+      - env:
         - TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
-      sudo: false
-      cache:
-        apt: true
-        pip: true
-        directories:
-          - /tmp # cache any previously downloaded .osm files
-      python: "3.6"
-      addons:
-        postgresql: "9.4"
-        apt:
-          sources:
-            - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
-          packages:
-            # Check that legacy scripts are available before upgrading postgis - they are required!
-            - postgresql-9.4-postgis-2.1 
-            - osm2pgsql
-            - postgis
+        python:
+          - "3.6"
 git:
   depth: 30
 
