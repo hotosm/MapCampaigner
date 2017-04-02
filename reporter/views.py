@@ -27,7 +27,7 @@ if sys.version_info > (3, 0):
     from urllib.error import URLError as url_error
 else:
     import urllib2
-    # noinspection PyPep8Naming
+    # noinspection PyPep8Naming,PyUnresolvedReferences
     from urllib2 import URLError as url_error
 
 """Views to handle url requests. Flask main entry point is also defined here.
@@ -160,7 +160,7 @@ def download_feature(feature_type):
     except IOError:
         abort(404)
         return
-    return Response(f.read().decode('utf-8'), mimetype='application/zip')
+    return Response(f.read(), mimetype='application/zip')
 
 
 @app.route('/user')

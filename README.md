@@ -156,12 +156,21 @@ You can run it:
 
 and then visit http://127.0.0.1:5000/
 
-## Config
+*Note*: If running under PyCharm on MacOS, ensure that your run configuration
+includes the following:
+
+* *Script:* ``/Users/timlinux/dev/python/osm-reporter/runserver.py``
+* *Environment:* ``PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin/;PYTHONUNBUFFERED=1``
+* *Working directory:* ``/Users/timlinux/dev/python/osm-reporter/``
+
+(Update these paths as needed to match your system)
+
+# Config
 
 You can optionally define a 'config' python module to override the default
 behaviour of *OSM-Reporter*.
 
-You can create the python wherever you want, and then you will need to add
+You can create the python module wherever you want, and then you will need to add
 the environment var `REPORTER_CONFIG_MODULE` to make `reporter` aware of
 it. For example:
 
