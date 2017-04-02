@@ -30,7 +30,7 @@ else:
     # noinspection PyUnresolvedReferences,PyPep8Naming
     from urllib2 import Request as request
     # noinspection PyUnresolvedReferences
-    import urllib2.urlopen as urlopen
+    from urllib2 import urlopen
     # noinspection PyPep8Naming,PyUnresolvedReferences
     from urllib2 import URLError as url_error
 
