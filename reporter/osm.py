@@ -154,7 +154,6 @@ def fetch_osm(file_path, url_path):
             raise OverpassTimeoutException
 
         file_handle = open(file_path, 'wb')
-        LOGGER.info(print(data.encode('utf-8')))
         file_handle.write(data.encode('utf-8'))
         file_handle.close()
     except url_error as e:
