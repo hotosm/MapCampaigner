@@ -27,8 +27,8 @@ if sys.version_info > (3, 0):
     # noinspection PyPep8Naming
     from urllib.error import HTTPError as url_error
 else:
-    # noinspection PyUnresolvedReferences
-    import urllib2.request as request
+    # noinspection PyUnresolvedReferences,PyPep8Naming
+    import urllib2.Request as request
     # noinspection PyUnresolvedReferences
     import urllib2.urlopen as urlopen
     # noinspection PyPep8Naming,PyUnresolvedReferences
