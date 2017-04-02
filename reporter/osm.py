@@ -286,8 +286,8 @@ def import_osm_file(db_name, feature_type, file_path):
     createdb_command = '%s -T template_postgis %s' % (
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
-    osm2pgsql_options = config.OSM2PGSQL_OPTIONS.encode(encoding='utf-8')
-    osm2pgsql_command = '%s -S %s -d %s %s %s' % (
+    osm2pgsql_options = config.OSM2PGSQL_OPTIONS
+    osm2pgsql_command = '%s -r xml -S %s -d %s %s %s' % (
         osm2pgsql_executable,
         style_file,
         db_name,
@@ -307,6 +307,7 @@ def import_osm_file(db_name, feature_type, file_path):
 
 def drop_database(db_name):
     """Remove a database.
+
     :param db_name: The database
     :type db_name: str
     """
