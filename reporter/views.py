@@ -156,7 +156,7 @@ def download_feature(feature_type):
             inasafe_version,
             lang)
 
-        f = open(zip_file)
+        f = open(zip_file, 'rb')
     except IOError:
         abort(404)
         return
