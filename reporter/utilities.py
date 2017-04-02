@@ -144,7 +144,7 @@ def osm_object_contributions(osm_file, tag_name):
         }
     :rtype: list
     """
-    parser = OsmParser(tagName=tag_name)
+    parser = OsmParser(tag_name=tag_name)
     try:
         xml.sax.parse(osm_file, parser)
     except xml.sax.SAXParseException:
@@ -252,7 +252,8 @@ def average_for_active_days(timeline):
         if value > 0:
             count += 1
             total += value
-    average = total / count
+    # Python 3 seems to automagically turn integer maths into float if needed
+    average = int(total / count)
     return average
 
 

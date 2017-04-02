@@ -12,18 +12,15 @@ class OsmParser(xml.sax.ContentHandler):
     Sax is used so that large documents can be parsed efficiently.
     """
 
-    def __init__(self, tagName):
+    def __init__(self, tag_name):
         """Constructor for parser.
 
-        Args:
-            tagName: str - the name of the osm tag to use for parsing e.g.
+        :param tag_name: Name of the osm tag to use for parsing e.g.
             'buildings' or 'roads'.
+        :type tag_name: basestring
 
-        Returns:
-            OsmParser instance.
-        Raises:
-            None
-
+        :returns: An OsmParser
+        :rtype: OsmParser instance.
         """
         xml.sax.ContentHandler.__init__(self)
         self.wayCount = 0
@@ -31,7 +28,7 @@ class OsmParser(xml.sax.ContentHandler):
         self.inWay = False
         self.user = None
         self.found = False  # mark when object found
-        self.tagName = tagName
+        self.tagName = tag_name
         self.wayCountDict = {}
         self.nodeCountDict = {}
         self.userDayCountDict = {}
@@ -44,13 +41,13 @@ class OsmParser(xml.sax.ContentHandler):
 
         :param attributes: dict - collection of key, value pairs representing
                 the attributes of the element.
-        :type attributes: OsmParser
+        :type attributes: dict
         """
         if name == 'way':
             self.inWay = True
             self.wayCount += 1
-            self.user = attributes.getValue('user')
-            timestamp = attributes.getValue('timestamp')
+            self.user = attributes.get('user')
+            timestamp = attributes.get('timestamp')
             # 2012-12-10T12:26:21Z
             date_part = timestamp.split('T')[0]
             if self.user not in self.userDayCountDict:
@@ -67,7 +64,7 @@ class OsmParser(xml.sax.ContentHandler):
             self.nodeCount += 1
 
         elif name == 'tag' and self.inWay:
-            if attributes.getValue('k') == self.tagName:
+            if attributes.get('k') == self.tagName:
                 self.found = True
 
         else:
@@ -84,10 +81,10 @@ class OsmParser(xml.sax.ContentHandler):
             if self.found:
                 # Its a target object so update it and node counts
                 if self.user in self.wayCountDict:
-                    myValue = self.wayCountDict[self.user]
-                    self.wayCountDict[self.user] = myValue + 1
-                    myValue = self.nodeCountDict[self.user]
-                    self.nodeCountDict[self.user] = myValue + self.nodeCount
+                    value = self.wayCountDict[self.user]
+                    self.wayCountDict[self.user] = value + 1
+                    value = self.nodeCountDict[self.user]
+                    self.nodeCountDict[self.user] = value + self.nodeCount
                 else:
                     self.wayCountDict[self.user] = 1
                     self.nodeCountDict[self.user] = self.nodeCount

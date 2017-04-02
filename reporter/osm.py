@@ -1,6 +1,5 @@
 # coding=utf-8
 import hashlib
-import urllib
 import time
 import os
 import re
@@ -28,9 +27,11 @@ if sys.version_info > (2, 7):
     # noinspection PyPep8Naming
     from urllib.error import HTTPError as url_error
 else:
+    # noinspection PyUnresolvedReferences
     import urllib2.request as request
+    # noinspection PyUnresolvedReferences
     import urllib2.urlopen as urlopen
-    # noinspection PyPep8Naming
+    # noinspection PyPep8Naming,PyUnresolvedReferences
     from urllib2 import URLError as url_error
 
 """Module for low level OSM file retrieval.
@@ -98,7 +99,7 @@ def load_osm_document(file_path, url_path):
 
     To save bandwidth the file is not downloaded if it is less than 1 hour old.
 
-    :type file_path: object
+    :type file_path: basestring
     :param file_path: The path on the filesystem to which the file should
         be saved.
 
@@ -153,7 +154,7 @@ def fetch_osm(file_path, url_path):
             raise OverpassTimeoutException
 
         file_handle = open(file_path, 'wb')
-        print(data.encode('utf-8'))
+        LOGGER.info(print(data.encode('utf-8')))
         file_handle.write(data.encode('utf-8'))
         file_handle.close()
     except url_error as e:
@@ -179,8 +180,9 @@ def add_metadata_timestamp(metadata_file_path):
     extension = os.path.splitext(metadata_file_path)[1]
 
     if extension == 'keywords':
-        keyword_file = file(metadata_file_path, 'ab')
-        keyword_file.write('date: %s' % time_stamp)
+        keyword_file = open(metadata_file_path, 'ab')
+        content = 'date: %s' % time_stamp
+        keyword_file.write(content.encode('utf-8'))
         keyword_file.close()
     else:
         # Need to write this section : write date/time in XML file
@@ -296,11 +298,11 @@ def import_osm_file(db_name, feature_type, file_path):
     transform_command = '%s %s -f %s' % (
         psql_executable, db_name, transform_path)
 
-    print (createdb_command)
+    LOGGER.info(createdb_command)
     call(createdb_command, shell=True)
-    print (osm2pgsql_command)
+    LOGGER.info(osm2pgsql_command)
     call(osm2pgsql_command, shell=True)
-    print (transform_command)
+    LOGGER.info(transform_command)
     call(transform_command, shell=True)
 
 
@@ -311,7 +313,7 @@ def drop_database(db_name):
     """
     dropdb_executable = which('dropdb')[0]
     dropdb_command = '%s %s' % (dropdb_executable, db_name)
-    print (dropdb_command)
+    LOGGER.info(dropdb_command)
     call(dropdb_command, shell=True)
 
 
@@ -391,14 +393,14 @@ def extract_shapefile(
         pgsql2shp_executable, shape_path, db_name, SQL_QUERY_MAP[feature_type])
 
     # Now run the commands in sequence:
-    print (pgsql2shp_command)
+    LOGGER.info(pgsql2shp_command)
     call(pgsql2shp_command, shell=True)
     copyfile(qml_source_path, qml_dest_path)
 
     metadata = metadata_files(
         inasafe_version, lang, feature_type, output_prefix)
 
-    for destination, source in metadata.iteritems():
+    for destination, source in metadata.items():
         source_path = '%s%s' % (shapefile_resource_path, source)
         destination_path = os.path.join(directory_name, destination)
         copyfile(source_path, destination_path)
@@ -411,7 +413,7 @@ def extract_shapefile(
     # Now zip it up and return the path to the zip, removing the original shp
     zipfile = zip_shp(shape_path, extra_ext=[
         '.qml', '.keywords', '.license', '.xml'], remove_file=True)
-    print ('Shape written to %s' % shape_path)
+    LOGGER.info('Shape written to %s' % shape_path)
 
     return zipfile
 

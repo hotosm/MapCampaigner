@@ -1,13 +1,14 @@
 # coding=utf-8
-"""This is the main package for the application.
-:copyright: (c) 2013 by Tim Sutton
-:license: GPLv3, see LICENSE for more details.
-"""
 
 import os
 import logging
 
 from flask import Flask
+
+"""This is the main package for the application.
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
 
 
 def add_handler_once(logger, handler):
@@ -56,6 +57,7 @@ def setup_logger():
 
     try:
         # pylint: disable=F0401
+        # noinspection PyUnresolvedReferences
         from raven.handlers.logging import SentryHandler
         # noinspection PyUnresolvedReferences
         from raven import Client

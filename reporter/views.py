@@ -160,7 +160,7 @@ def download_feature(feature_type):
     except IOError:
         abort(404)
         return
-    return Response(f.read(), mimetype='application/zip')
+    return Response(f.read().decode('utf-8'), mimetype='application/zip')
 
 
 @app.route('/user')

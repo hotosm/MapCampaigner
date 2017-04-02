@@ -16,16 +16,16 @@ class OsmParserTestCase(LoggedTestCase):
 
     def test_parse(self):
         """Test that we can parse a predefined osm file."""
-        myParser = OsmParser(tagName="building")
+        parser = OsmParser(tag_name="building")
         source = open(FIXTURE_PATH)
-        xml.sax.parse(source, myParser)
-        myExpectedWayDict = {u'Babsie': 37,
+        xml.sax.parse(source, parser)
+        expected_way_dict = {u'Babsie': 37,
                              u'Firefishy': 12,
                              u'Jacoline': 3}
-        myExpectedNodeDict = {u'Babsie': 306,
+        expected_node_dict = {u'Babsie': 306,
                               u'Firefishy': 104,
                               u'Jacoline': 17}
-        myExpectedTimelineDict = {
+        expected_timeline_dict = {
             u'Babsie': {
                 u'2012-12-08': 15,
                 u'2012-12-10': 22
@@ -53,16 +53,13 @@ class OsmParserTestCase(LoggedTestCase):
         }
 
         # OsmParser way count test
-        self.assertDictEqual(myExpectedWayDict,
-                             myParser.wayCountDict)
+        self.assertDictEqual(expected_way_dict, parser.wayCountDict)
 
         # OsmParser node count test
-        self.assertDictEqual(myExpectedNodeDict,
-                             myParser.nodeCountDict)
+        self.assertDictEqual(expected_node_dict, parser.nodeCountDict)
 
         # OsmParser timeline test
-        self.assertDictEqual(myExpectedTimelineDict,
-                             myParser.userDayCountDict)
+        self.assertDictEqual(expected_timeline_dict, parser.userDayCountDict)
 
 
 if __name__ == '__main__':

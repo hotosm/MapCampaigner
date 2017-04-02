@@ -52,7 +52,7 @@ class UtilitiesTestCase(LoggedTestCase):
             os.path.dirname(os.path.realpath(__file__)),
             'test_data',
             'expected_osm_building_contributions.txt'
-        ), 'rb').read())
+        ), 'rb').read().decode('utf-8'))
 
         # noinspection PyPep8Naming
         self.maxDiff = None

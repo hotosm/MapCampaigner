@@ -1,10 +1,12 @@
-__author__ = 'etienne'
+# coding=utf-8
 
 from reporter.metadata import (
     latest_xml_metadata_file,
     metadata_file,
     metadata_files)
 from reporter.test.logged_unittest import LoggedTestCase
+
+__author__ = 'etienne'
 
 
 class OsmTestCase(LoggedTestCase):
