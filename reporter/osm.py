@@ -287,7 +287,7 @@ def import_osm_file(db_name, feature_type, file_path):
         createdb_executable, db_name)
     osm2pgsql_executable = which('osm2pgsql')[0]
     osm2pgsql_options = config.OSM2PGSQL_OPTIONS
-    osm2pgsql_command = '%s -r xml -S %s -d %s %s %s' % (
+    osm2pgsql_command = '%s -S %s -d %s %s %s' % (
         osm2pgsql_executable,
         style_file,
         db_name,
