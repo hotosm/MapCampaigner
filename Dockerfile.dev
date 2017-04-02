@@ -1,5 +1,5 @@
 #--------- Generic stuff all our Dockerfiles should start with so we get caching ------------
-FROM python:2.7.8
+FROM python:3.6
 MAINTAINER Tim Sutton<tim@kartoza.com>
 
 RUN  export DEBIAN_FRONTEND=noninteractive
