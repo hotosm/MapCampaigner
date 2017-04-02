@@ -19,7 +19,7 @@ from reporter.exceptions import (
     OverpassBadRequestException,
     OverpassConcurrentRequestException)
 from reporter.metadata import metadata_files
-if sys.version_info > (2, 7):
+if sys.version_info > (3, 0):
     from urllib.request import urlopen as urlopen
     # noinspection PyPep8Naming
     from urllib.request import Request as request

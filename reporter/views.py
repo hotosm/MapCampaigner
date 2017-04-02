@@ -21,7 +21,7 @@ from reporter.exceptions import (
 from reporter.queries import FEATURES, TAG_MAPPING
 from reporter.static_files import static_file
 from reporter import LOGGER
-if sys.version_info > (2, 7):
+if sys.version_info > (3, 0):
     import urllib.request as urllib2
     # noinspection PyPep8Naming
     from urllib.error import URLError as url_error
