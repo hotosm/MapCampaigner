@@ -6,7 +6,7 @@
 import os
 import re
 
-from utilities import shapefile_resource_base_path, short_version
+from reporter.utilities import shapefile_resource_base_path, short_version
 
 
 def latest_xml_metadata_file(feature):

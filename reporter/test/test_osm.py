@@ -28,6 +28,8 @@ class OsmTestCase(LoggedTestCase):
             '(node(-34.03112731086964,20.44997155666351,'
             '-34.029571310785315,20.45501410961151);<;);out+meta;')
         file_path = '/tmp/test_load_osm_document.osm'
+        LOGGER.info('url: %s' % url)
+        LOGGER.info('file_path: %s' % file_path)
         if os.path.exists(file_path):
             os.remove(file_path)
             # We test twice - once to ensure its fetched from the overpass api
@@ -40,10 +42,10 @@ class OsmTestCase(LoggedTestCase):
             message = 'load_osm_document from overpass failed %s' % url
             LOGGER.exception(message)
             raise
-        string = file_handle.read()
-        message = 'load_osm_document from overpass content check failed.'
-        assert 'Jacoline' in string, message
-
+        string = file_handle.read().decode('utf-8')
+        LOGGER.info('Checking that Jacoline is in the returned document...')
+        self.assertIn('Jacoline', string)
+        LOGGER.info('....OK')
         # file_handle = load_osm_document(myFilePath, url)
         file_time = os.path.getmtime(file_path)
         #
@@ -52,7 +54,9 @@ class OsmTestCase(LoggedTestCase):
         load_osm_document(file_path, url)
         file_time2 = os.path.getmtime(file_path)
         message = 'load_osm_document cache test failed.'
+        LOGGER.info('Checking that downloaded file has a recent timestamp...')
         self.assertEqual(file_time, file_time2, message)
+        LOGGER.info('....OK')
 
     def test_import_and_extract_shapefile(self):
         """Test the roads to shp converter."""

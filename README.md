@@ -59,43 +59,62 @@ server {
 
 # Manual Install for deployment
 
-Prerequisites::
+Prerequisites:
 
     sudo apt-get install osm2pgsql postgis
 
-Or under OSX::
+Or under MacOS:
 
     brew install osm2pgsql
 
-If you install Postgres9.3.app you will get ``pgsql2shp`` on OSX.
+If you install Postgres9.4.app you will get ``pgsql2shp`` on MacOS.
 
-Ensure that the above binaries are in your path. If running on OSX you
-will need to ensure that ``/Applications/Postgres93.app/Contents/MacOS/bin/``
+Ensure that the above binaries are in your path. If running on MacOS you
+will need to ensure that ``/Applications/Postgres94.app/Contents/MacOS/bin/``
 is in the path of the user running the server.
 
 You should also give the process that osm-reporter runs as createdb rights
 (needed to support the shape downloading feature). You should also have a
 postgis template named 'template_postgis' available on your system. Consult a
-postgis tutorial online to see how this is done.
+postgis tutorial online to see how this is done. En example of setting this up
+under MacOS is provided below:
 
-First clone::
+    export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin/
+    psql
+    
+Now execute the following commands to create the template_postgis database:
+
+    create database template_postgis encoding 'UTF8' TEMPLATE template0;
+    update pg_database set datistemplate=true where datname='template_postgis';
+    
+
+Now execute the following bash commands to load the required legacy postgis
+support:
+
+    psql template_postgis < "create extension postgis;"
+    psql template_postgis < /Applications/Postgres.app/Contents/Versions/9.4/share/postgresql/contrib/postgis-2.1/legacy_minimal.sql 
+    psql template_postgis < /Applications/Postgres.app/Contents/Versions/9.4/share/postgresql/contrib/postgis-2.1/legacy_gist.sql
+
+
+
+First clone:
 
     cd /home/web
     git clone git://github.com/timlinux/osm-reporter.git
 
-Then setup a venv::
+Then setup a venv:
 
     cd osm-reporter
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
 
-Then deploy under apache mod_wsgi::
+Then deploy under apache mod_wsgi:
 
     cd apache
     cp osm-reporter.apache.conf.templ osm-reporter.apache.conf
 
-Modify the contents of osm-reporter.apache.conf to suite your installation. Then do ::
+Modify the contents of osm-reporter.apache.conf to suite your installation. Then do :
 
     sudo apt-get install libapache2-mod-wsgi
     cd /etc/apache/sites-available
@@ -104,12 +123,12 @@ Modify the contents of osm-reporter.apache.conf to suite your installation. Then
 
 The default configuration assumes a user named 'osm-reporter' exists on your
 system that the wsgi process will run under. If you wish to follow this
-convention you should create the user::
+convention you should create the user:
 
     sudo useradd osm-reporter
 
 And also give that user a database account (needed for the shape download
-feature) and database create permissions::
+feature) and database create permissions:
 
     createuser osm-reporter
     Shall the new role be a superuser? (y/n) n
@@ -117,11 +136,11 @@ feature) and database create permissions::
     Shall the new role be allowed to create more new roles? (y/n) n
 
 If deploying locally you can leave the apache conf file mostly unchanged and
-add this to your /etc/hosts file::
+add this to your /etc/hosts file:
 
     127.0.0.1       osm-reporter.localhost
 
-Next restart apache::
+Next restart apache:
 
     sudo service apache2 restart
 
@@ -131,21 +150,29 @@ Now test - open chrome and visit: http://osm-reporter.localhost
 
 Follow the install above and stop after setting up a venv.
 You don't need to configure apache, there is a lightweight development web server.
-You can run it::
+You can run it:
 
     python runserver.py
 
 and then visit http://127.0.0.1:5000/
 
-Config
-======
+*Note*: If running under PyCharm on MacOS, ensure that your run configuration
+includes the following:
+
+* *Script:* ``/Users/timlinux/dev/python/osm-reporter/runserver.py``
+* *Environment:* ``PATH=$PATH:/Applications/Postgres.app/Contents/Versions/9.4/bin/;PYTHONUNBUFFERED=1``
+* *Working directory:* ``/Users/timlinux/dev/python/osm-reporter/``
+
+(Update these paths as needed to match your system)
+
+# Config
 
 You can optionally define a 'config' python module to override the default
 behaviour of *OSM-Reporter*.
 
-You can create the python wherever you want, and then you will need to add
+You can create the python module wherever you want, and then you will need to add
 the environment var `REPORTER_CONFIG_MODULE` to make `reporter` aware of
-it. For example::
+it. For example:
 
     export REPORTER_CONFIG_MODULE="path.to.the.module"
 
@@ -156,47 +183,49 @@ default values. For inspiration, you can have a look at
 
 *Available config*
 
-CREW :
+CREW:
 
     (list) valid OSM users names of people actively working on your data
         gathering project
 
-BBOX :
+BBOX:
 
     (str) default bbox to use for the map and the stats;
         format is: "{SW_lng},{SW_lat},{NE_lng},{NE_lat}
 
-DISPLAY_UPDATE_CONTROL :
+DISPLAY_UPDATE_CONTROL:
 
     (bool) either to display or not the "update stats" button on the map
 
-CACHE_DIR :
+CACHE_DIR:
 
     (str) path to a dir where to cache the OSM files used by the backend
 
-TAG_NAMES :
+TAG_NAMES:
 
     (list) tag names available for stats (default: ['building', 'highway'])
 
 OSM2PGSQL_OPTIONS :
     (str) options for the osm2pgsql command line
 
-Osm2pgsql
-------------
+# Osm2pgsql
 
 On some computers with less RAM than servers, you may adapt the import into postgis with osm2pgsql.
-For instance in your 'config' python module above ::
-    ``OSM2PGSQL_OPTIONS = '--cache-strategy sparse -C 1000'``
+For instance in your 'config' python module above :
+  
+    OSM2PGSQL_OPTIONS = '--cache-strategy sparse -C 1000'
 
-Tests and QA
-------------
+# Tests and QA
 
-There is a test suite available, you can run it using nose e.g.::
+There is a test suite available, you can run it using nose e.g.:
 
     PYTHONPATH=`pwd`/reporter:`pwd`:${PYTHONPATH} nosetests -v --with-id \
     --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
 
-On OSX
+On MacOS
+
+Ensure you have your template_postgis etc. set up (described further up in
+this document) and that your path includes the Postgres.app bin directory:
 
     export PYTHONPATH=`pwd`/reporter:`pwd`:$PYTHONPATH:venv/lib/python2.7/site-packages/; \
     nosetests -v --with-id  --with-xunit --verbose --cover-package=reporter reporter
@@ -206,34 +235,20 @@ Using Docker
     docker-compose build test
     docker-compose run test
 
-Jenkins
--------
+# Travis
 
-We have Continuous Integration support via our Jenkins server at
+https://travis-ci.org/kartoza/osm-reporter 
 
-http://jenkins.linfiniti.com
-
-At the above site you can see the test results for each commit that is made
-to the repository. The following jenkins shell commands were used in the
-configuration options::
-
-    #!/bin/bash
-    export OSM_REPORTER_LOGFILE='/tmp/osm-reporter-jenkins.log'
-    rm -rf venv
-    virtualenv venv
-    venv/bin/pip install -r requirements.txt
-    export PYTHONPATH=`pwd`/reporter:`pwd`:`pwd`/venv/lib/python2.7/site-packages/
-    nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
-    #rm -f pylint.log
-    pylint --output-format=parseable --reports=y --rcfile=pylintrc reporter > pylint.log
-    pep8 --repeat --ignore=E203 --exclude venv,none.py . > pep8.log
+At the above site you can see the test results for pull request that is made
+to the repository. See the ``.travis.yml`` for more details on how we 
+configure the test environment on travis.
 
 
-Sentry
-------
+
+# Sentry
 
 Sentry is a service that collects exceptions and displays aggregate reports
 for them. You can view the sentry project we have running for osm-reporter
-here: http://sentry.linfiniti.com/osm-reporter/
+here: http://sentry.kartoza.com/osm-reporter/
 
 Tim Sutton, Etienne Trimaille & Yohan Boniface

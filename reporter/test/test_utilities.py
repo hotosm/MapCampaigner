@@ -48,15 +48,15 @@ class UtilitiesTestCase(LoggedTestCase):
         contributor_list = osm_object_contributions(
             file_handle,
             tag_name="building")
-        expected_list = ast.literal_eval(file(os.path.join(
+        expected_list = ast.literal_eval(open(os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             'test_data',
             'expected_osm_building_contributions.txt'
-        ), 'rb').read())
+        ), 'rb').read().decode('utf-8'))
 
         # noinspection PyPep8Naming
         self.maxDiff = None
-        print contributor_list
+        print(contributor_list)
         self.assertListEqual(contributor_list, expected_list)
 
     def test_get_totals(self):

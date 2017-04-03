@@ -9,7 +9,7 @@ import re
 
 # import default
 # pylint: disable=W0401
-from default import *
+from reporter.config.default import *
 # pylint: enable=W0401
 
 try:
