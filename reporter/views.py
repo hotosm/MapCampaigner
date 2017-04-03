@@ -46,6 +46,8 @@ def home():
     sorted_user_list = []
     bbox = request.args.get('bbox', config.BBOX)
     tag_name = request.args.get('obj', default_tag)
+    date_from = request.args.get('date_from', None)
+    date_to = request.args.get('date_to', None)
     error = None
     try:
         coordinates = split_bbox(bbox)
@@ -59,7 +61,12 @@ def home():
             tag_name = default_tag
         try:
             feature_type = TAG_MAPPING[tag_name]
-            file_handle = get_osm_file(coordinates, feature_type, 'meta')
+            file_handle = get_osm_file(
+                    coordinates,
+                    feature_type,
+                    'meta',
+                    date_from,
+                    date_to)
         except OverpassTimeoutException:
             error = 'Timeout, try a smaller area.'
         except OverpassBadRequestException:

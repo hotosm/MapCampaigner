@@ -102,24 +102,49 @@ $(function(){
     var date_from = null;
     var date_to = null;
     var that = this;
+    var current_url = window.location.href;
 
-    $('#date-from').datepicker({
+    var captured_date_from = /date_from=([^&]+)/.exec(current_url);
+    if(captured_date_from && captured_date_from.length > 0) {
+        captured_date_from = captured_date_from[1];
+    }
+    var captured_date_to = /date_to=([^&]+)/.exec(current_url);
+    if(captured_date_to && captured_date_to.length > 0) {
+        captured_date_to = captured_date_to[1];
+    }
+    var $datepicker_from = $('#date-from');
+    var $datepicker_to = $('#date-to');
+
+    $datepicker_from.datepicker({
         autoClose: true,
         onSelect: function (fd, date) {
             if (date) {
                 date_from = date.getTime();
             }
-        }
+        },
+        todayButton: new Date()
     });
 
-    $('#date-to').datepicker({
+    if(captured_date_from) {
+        $datepicker_from.data('datepicker')
+            .selectDate(new Date(Number(captured_date_from)));
+    }
+
+    $datepicker_to.datepicker({
         autoClose: true,
         onSelect: function (fd, date) {
             if (date) {
                 date_to = date.getTime();
             }
-        }
+        },
+        todayButton: new Date()
     });
+
+
+    if(captured_date_to) {
+        $datepicker_to.data('datepicker')
+            .selectDate(new Date(Number(captured_date_to)));
+    }
 
     $('#refresh-with-date').click(function () {
         if(!date_from || !date_to) {
