@@ -7,7 +7,9 @@ db:
     - PASS=docker
 
 web:
-  image: kartoza/osm-reporter
+  #image: kartoza/osm-reporter
+  build: .
+  dockerfile: Dockerfile.dev
   hostname: web
   container_name: osmreporter_web
   environment:

@@ -87,6 +87,7 @@ before_script:
 
 script:
   - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
+  - make pep8
 
 after_script:
   -
