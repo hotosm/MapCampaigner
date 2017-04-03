@@ -23,7 +23,7 @@ def latest_xml_metadata_file(feature):
     directory = os.path.dirname(os.path.abspath(base_path))
     files = os.listdir(directory)
     resource = os.path.basename(base_path)
-    regexp = '^%s-(\d.\d)-en.xml' % resource
+    regexp = r'^%s-(\d.\d)-en.xml' % resource
 
     max_version = None
     for one_file in files:

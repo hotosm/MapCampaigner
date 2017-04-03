@@ -1,4 +1,12 @@
 # coding=utf-8
+
+"""
+Views to handle url requests. Flask main entry point is also defined here.
+
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import sys
 import optparse
 import xml
@@ -29,11 +37,6 @@ else:
     import urllib2
     # noinspection PyPep8Naming,PyUnresolvedReferences
     from urllib2 import URLError as url_error
-
-"""Views to handle url requests. Flask main entry point is also defined here.
-:copyright: (c) 2013 by Tim Sutton
-:license: GPLv3, see LICENSE for more details.
-"""
 
 
 @app.route('/')

@@ -235,14 +235,13 @@ Using Docker
     docker-compose build test
     docker-compose run test
 
-# Travis
+# Continuous integration
 
-https://travis-ci.org/kartoza/osm-reporter 
+* Current test status master: [![Build Status](https://travis-ci.org/kartoza/osm-reporter.svg?branch=master)](https://travis-ci.org/kartoza/osm-reporter) and
+[![Code Health](https://landscape.io/github/kartoza/osm-reporter/master/landscape.svg?style=flat)](https://landscape.io/github/kartoza/osm-reporter/master)
 
-At the above site you can see the test results for pull request that is made
-to the repository. See the ``.travis.yml`` for more details on how we 
-configure the test environment on travis.
-
+* Current test status develop: [![Build Status](https://travis-ci.org/kartoza/osm-reporter.svg?branch=develop)](https://travis-ci.org/kartoza/osm-reporter) and
+[![Code Health](https://landscape.io/github/kartoza/osm-reporter/develop/landscape.svg?style=flat)](https://landscape.io/github/kartoza/osm-reporter/develop)
 
 
 # Sentry

@@ -1,10 +1,13 @@
 # coding=utf-8
-from xml import sax
 
-"""Module for parsing nodes from OSM xml documents.
+"""
+Module for parsing nodes from OSM xml documents.
+
 :copyright: (c) 2013 by Tim Sutton
 :license: GPLv3, see LICENSE for more details.
 """
+
+from xml import sax
 
 
 class OsmNodeParser(sax.ContentHandler):

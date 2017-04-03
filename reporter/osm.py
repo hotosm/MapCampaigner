@@ -1,4 +1,12 @@
 # coding=utf-8
+
+"""
+Module for low level OSM file retrieval.
+
+:copyright: (c) 2013 by Tim Sutton
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import hashlib
 import time
 import os
@@ -33,11 +41,6 @@ else:
     from urllib2 import urlopen
     # noinspection PyPep8Naming,PyUnresolvedReferences
     from urllib2 import URLError as url_error
-
-"""Module for low level OSM file retrieval.
-:copyright: (c) 2013 by Tim Sutton
-:license: GPLv3, see LICENSE for more details.
-"""
 
 
 def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
@@ -363,9 +366,7 @@ def extract_shapefile(
 
     :returns: Path to zipfile that was created.
     :rtype: str
-
     """
-
     # Extract
     os.makedirs(directory_name)
     shapefile_resource_path = shapefile_resource_base_path(feature_type)
@@ -411,9 +412,11 @@ def extract_shapefile(
     copyfile(license_source_path, license_dest_path)
 
     # Now zip it up and return the path to the zip, removing the original shp
-    zipfile = zip_shp(shape_path, extra_ext=[
-        '.qml', '.keywords', '.license', '.xml'], remove_file=True)
-    LOGGER.info('Shape written to %s' % shape_path)
+    zipfile = zip_shp(
+        shape_path,
+        extra_ext=['.qml', '.keywords', '.license', '.xml'],
+        remove_file=True)
+    LOGGER.info('Shape written to {path}'.format(path=shape_path))
 
     return zipfile
 
