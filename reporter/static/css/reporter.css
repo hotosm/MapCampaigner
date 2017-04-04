@@ -40,3 +40,11 @@
 .date-wrapper {
     margin-bottom: 20px;
 }
+
+select#feature_select {
+    width: 100%;
+}
+
+hr {
+    border-top: 1px solid #edc240 !important;
+}

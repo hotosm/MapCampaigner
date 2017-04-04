@@ -1,58 +1,3 @@
-
-/* Update stats */
-L.Control.UpdateStats = L.Control.extend({
-
-    onAdd: function (map) {
-        var className = 'leaflet-control-stats',
-            container = L.DomUtil.create('div', className),
-            option,
-            choice;
-
-        L.DomEvent.disableClickPropagation(container);
-        var div = L.DomUtil.create('div', "", container);
-        var select = L.DomUtil.create('select', "", div);
-        for (var i = 0, l = this.options.choices.length; i<l; i++) {
-            option = L.DomUtil.create('option', "", select);
-            choice = this.options.choices[i];
-            option.value = option.innerHTML = choice;
-            if (choice == this.options.selected) {
-                option.selected = "selected";
-            }
-        }
-
-        L.DomEvent
-            .on(select, 'change', function (e) {
-                map.updateStatsControl.options.selected = e.target.value;
-            });
-
-        var link = L.DomUtil.create('a', "", container);
-        link.href = '#';
-        link.innerHTML = "&nbsp;";
-        link.title = "Get stats for this view";
-        var fn = function (e) {
-            var bounds = map.getBounds(),
-                bbox = bounds.toBBoxString();
-            window.location = "?bbox=" + bbox + "&obj=" + select.value;
-        };
-
-        L.DomEvent
-            .on(link, 'click', L.DomEvent.stopPropagation)
-            .on(link, 'click', L.DomEvent.preventDefault)
-            .on(link, 'click', fn, map)
-            .on(link, 'dblclick', L.DomEvent.stopPropagation);
-
-        return container;
-    }
-});
-
-L.Map.addInitHook(function () {
-    if (this.options.updateStatsControl) {
-        var options = this.options.statsControlOptions ? this.options.statsControlOptions : {};
-        this.updateStatsControl = new L.Control.UpdateStats(options);
-        this.addControl(this.updateStatsControl);
-    }
-});
-
 $(function(){
     $('.view-hm').click(function(e){
         var username = $(this).attr("data-user");
@@ -117,9 +62,12 @@ $(function(){
 
     $datepicker_from.datepicker({
         autoClose: true,
+        clearButton: true,
         onSelect: function (fd, date) {
             if (date) {
                 date_from = date.getTime();
+            } else {
+                date_from = '';
             }
         },
         todayButton: new Date()
@@ -132,9 +80,12 @@ $(function(){
 
     $datepicker_to.datepicker({
         autoClose: true,
+        clearButton: true,
         onSelect: function (fd, date) {
             if (date) {
                 date_to = date.getTime();
+            } else {
+                date_to = '';
             }
         },
         todayButton: new Date()
@@ -147,12 +98,14 @@ $(function(){
     }
 
     $('#refresh-with-date').click(function () {
-        if(!date_from || !date_to) {
+
+        if((date_from && !date_to) ||
+            (date_to && !date_from)) {
             alert('Empty date');
             return;
         }
 
-        if(date_to < date_from) {
+        if(date_to && (date_to < date_from)) {
             alert('Invalid range');
             return;
         }
@@ -163,13 +116,19 @@ $(function(){
             return;
         }
 
-        var selected = map.updateStatsControl.options.selected;
+        var selected = $('#feature_select').val();
         var bounds = map.getBounds(),
             bbox = bounds.toBBoxString();
+
+        var date_query = "";
+
+        if(date_to && date_from) {
+            date_query += '&date_from=' + date_from + '&date_to=' + date_to;
+        }
+
         window.location = "?bbox=" + bbox
             + "&obj=" + selected
-            + "&date_from=" + date_from
-            + "&date_to=" + date_to;
+            + date_query
     });
 
 });
