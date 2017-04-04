@@ -102,14 +102,17 @@ def get_osm_file(
     query = OVERPASS_QUERY_MAP[feature].format(**parameters)
 
     if date_from and date_to:
-        datetime_from = datetime.datetime.utcfromtimestamp(float(date_from)/1000.)
-        datetime_to = datetime.datetime.utcfromtimestamp(float(date_to)/1000.)
-        date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-        diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
-            date_from=datetime_from.strftime(date_format),
-            date_to=datetime_to.strftime(date_format)
-        )
-        query = diff_query + query
+        try:
+            datetime_from = datetime.datetime.utcfromtimestamp(float(date_from)/1000.)
+            datetime_to = datetime.datetime.utcfromtimestamp(float(date_to)/1000.)
+            date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+            diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
+                date_from=datetime_from.strftime(date_format),
+                date_to=datetime_to.strftime(date_format)
+            )
+            query = diff_query + query
+        except ValueError as e:
+            LOGGER.debug(e)
 
     encoded_query = quote(query)
     url_path = '%s%s' % (server_url, encoded_query)
