@@ -58,6 +58,43 @@ class OsmTestCase(LoggedTestCase):
         self.assertEqual(file_time, file_time2, message)
         LOGGER.info('....OK')
 
+    def test_get_osm_file_with_date_range(self):
+        """Check that we can get osm file with date range as query"""
+        #
+        # NOTE - INTERNET CONNECTION NEEDED FOR THIS TEST
+        #
+        url = (
+            'http://overpass-api.de/api/interpreter?data='
+            '[diff:"2012-09-14T15:00:00Z","2015-09-21T15:00:00Z"];'
+            '(node(-34.03112731086964,20.44997155666351,'
+            '-34.029571310785315,20.45501410961151);<;);out+meta;')
+        file_path = '/tmp/test_load_osm_document_with_Date.osm'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            # We test twice - once to ensure its fetched from the overpass api
+        # and once to ensure the cached file is used on second access
+        # Note: There is a small chance the second test could fail if it
+        # exactly straddles the cache expiry time.
+        try:
+            file_handle = load_osm_document(file_path, url)
+        except:
+            message = 'load_osm_document from overpass failed %s' % url
+            LOGGER.exception(message)
+            raise
+        string = file_handle.read().decode('utf-8')
+        LOGGER.info('Checking that Jacoline is in the returned document...')
+        self.assertIn('Jacoline', string)
+        file_time = os.path.getmtime(file_path)
+        #
+        # This one should be cached now....
+        #
+        load_osm_document(file_path, url)
+        file_time2 = os.path.getmtime(file_path)
+        message = 'load_osm_document cache test failed.'
+        LOGGER.info('Checking that downloaded file has a recent timestamp...')
+        self.assertEqual(file_time, file_time2, message)
+        LOGGER.info('....OK')
+
     def test_import_and_extract_shapefile(self):
         """Test the roads to shp converter."""
         zip_path = import_and_extract_shapefile('buildings', FIXTURE_PATH)

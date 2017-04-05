@@ -12,6 +12,7 @@ import time
 import os
 import re
 import sys
+import datetime
 from subprocess import call
 from shutil import copyfile
 from reporter.utilities import temp_dir, unique_filename, zip_shp, which
@@ -43,7 +44,13 @@ else:
     from urllib2 import URLError as url_error
 
 
-def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
+def get_osm_file(
+        coordinates,
+        feature='all',
+        overpass_verbosity='body',
+        date_from=None,
+        date_to=None
+    ):
     """Fetch an osm file given a bounding box using the overpass API.
 
     :param coordinates: Coordinates as a list in the form:
@@ -56,6 +63,12 @@ def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
     :param overpass_verbosity: Output verbosity in Overpass.
         It can be body, skeleton, ids_only or meta.
     :type overpass_verbosity: str
+    
+    :param date_from: First date for date range.
+    :type date_from: str
+    
+    :param date_to: Second date for date range.
+    :type date_to: str
 
     :returns: A file which has been opened on the retrieved OSM dataset.
     :rtype: file
@@ -90,6 +103,20 @@ def get_osm_file(coordinates, feature='all', overpass_verbosity='body'):
     parameters = coordinates
     parameters['print_mode'] = overpass_verbosity
     query = OVERPASS_QUERY_MAP[feature].format(**parameters)
+
+    if date_from and date_to:
+        try:
+            datetime_from = datetime.datetime.utcfromtimestamp(float(date_from)/1000.)
+            datetime_to = datetime.datetime.utcfromtimestamp(float(date_to)/1000.)
+            date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+            diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
+                date_from=datetime_from.strftime(date_format),
+                date_to=datetime_to.strftime(date_format)
+            )
+            query = diff_query + query
+        except ValueError as e:
+            LOGGER.debug(e)
+
     encoded_query = quote(query)
     url_path = '%s%s' % (server_url, encoded_query)
     safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'

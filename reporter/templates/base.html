@@ -5,24 +5,30 @@
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
     <link rel="stylesheet" href="/static/css/bootstrap.css"
           type="text/css" static="screen, projection"/>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
+    <link rel="stylesheet" href="/static/css/datepicker.min.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/leaflet.css" type="text/css">
      <!--[if lte IE 8]>
          <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
      <![endif]-->
     <link rel="stylesheet" href="/static/css/reporter.css"
           type="text/css" static="screen, projection"/>
-     <script language="javascript"
-                type="text/javascript" src="/static/js/jquery.js"></script>
+    <script language="javascript"
+                type="text/javascript" src="/static/js/jquery-3.2.0.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
     <script language="javascript"
             type="text/javascript"
             src="/static/js/jquery.flot.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/jquery.flot.pie.js"></script>
-    <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/leaflet.js"></script>
     <script src="/static/js/heatcanvas.js"></script>
     <script src="/static/js/heatcanvas-leaflet.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/reporter.js"></script>
+
      <style type="text/css">
         body {
             padding-top: 60px;
@@ -53,10 +59,44 @@
             </div>
         </div>
 
+        <div class="row date-wrapper">
+            <div class="span12" style="margin-top: -20px;">
+                <h2>Filters</h2>
+                <hr/>
+            </div>
+            <div class="span4">
+                <h4>Feature Type : </h4>
+                <select name='feature_select' id='feature_select'>
+                    {% for tag_name in available_tag_names %}
+                        <option {% if tag_name == current_tag_name %} selected {% endif %}>
+                            {{ tag_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="span3">
+                <div class="date-box">
+                    <h4>Date From : </h4><input type='text' data-language='en' id='date-from'/>
+                </div>
+            </div>
+            <div class="span3">
+                <div class="date-box">
+                    <h4>Date To : </h4><input type='text' class='datepicker-here' data-language='en' id='date-to'/>
+                </div>
+            </div>
+            <div class="span2">
+                <button type="button" class="btn btn-default" id="refresh-with-date" style="margin-top:17px; width: 100%">Refresh</button>
+            </div>
+        </div>
+
         <div class="row">
             <div class="span4">
+
+                <h2>Chart</h2>
+                <hr/>
                 <div id="chart" style="height:300px;"></div>
                 <h2>About</h2>
+                <hr/>
                 <p><img src="/static/img/kartoza-logo-300.png"/></p>
                 <p>This application was created by
                     <a href="http://kartoza.com">Kartoza</a>. The source
@@ -67,6 +107,7 @@
             </div>
             <div class="span8">
                 <h2>{{ current_tag_name|capitalize|replace('_', ' ')}} Contributors</h2>
+                <hr/>
                 <p>
                     <table class="table">
                         <thead>
@@ -153,13 +194,8 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-            map = L.map('map', {
-                updateStatsControl: {{ display_update_control }},
-                statsControlOptions: {
-                    choices: {{ available_tag_names|safe }},
-                    selected: "{{ current_tag_name }}"
-                }
-            });
+            map = L.map('map');
+            this.map = map;
             L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 18
@@ -201,14 +237,14 @@
                 for (i=0; i < d{{ loop.index }}.length; i++)
                 {
                     var pair = d{{ loop.index }}[i];
-                    console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
+                    // console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
                     var dateString = pair[0];
                     var splitString = dateString.split("-");
                     var year = parseInt(splitString[0]);
                     var month = parseInt(splitString[1]) - 1; //javascript stupidity - base 0 months
                     var day = parseInt(splitString[2]);
                     pair[0] = new Date(year, month, day).getTime();
-                    console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
+                    // console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
                     d{{ loop.index }}[i] = pair;
                 }
 
@@ -229,7 +265,6 @@
         {
           var url = '/{{ download_url }}?bbox=' + map.getBounds().toBBoxString() +
            '&qgis_version=2';
-          console.log('New url: ' + url + ' <--');
           window.location.replace(url);
         }
 
