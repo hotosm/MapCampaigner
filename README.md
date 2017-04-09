@@ -224,6 +224,31 @@ There is a test suite available, you can run it using nose e.g.:
 
 On MacOS
 
+Assumptions:
+
+* You have chrome installed
+* You have brew installed
+* You have postgres.app installed
+
+For selenium tests you need to install chromedriver:
+
+    brew install chromedriver
+
+And ensure that the chromedriver executable is in your path:
+
+    export PATH=$PATH:/usr/local/bin/chromedriver
+    
+(If you are using pycharm you could add this path to your test runner 
+configuration.)
+
+Before you run the tests, be sure to launch the chromedriver:
+
+    chromedriver
+    
+Brew installation of chromedriver will also give you notes on how to 
+run this via launchd if you do not feel inclined to start chromedriver 
+each time.
+
 Ensure you have your template_postgis etc. set up (described further up in
 this document) and that your path includes the Postgres.app bin directory:
 

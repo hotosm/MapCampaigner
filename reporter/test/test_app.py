@@ -22,7 +22,10 @@ class AppTestCase(LoggedTestCase):
     def test_home(self):
         """Test the home page works."""
         try:
-            return self.app.post('/', data=dict(), follow_redirects=True)
+            result = self.app.get(
+                '/', data=dict(), follow_redirects=True)
+            code = result.status_code
+            self.assertEquals(code, 200)
         except Exception as e:
             LOGGER.exception('Basic front page load failed.')
             raise e

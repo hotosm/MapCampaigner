@@ -4,3 +4,4 @@ pylint
 pep8
 nosexcover
 nose
+selenium

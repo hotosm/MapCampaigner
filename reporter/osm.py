@@ -28,20 +28,12 @@ from reporter.exceptions import (
     OverpassBadRequestException,
     OverpassConcurrentRequestException)
 from reporter.metadata import metadata_files
-if sys.version_info > (3, 0):
-    from urllib.request import urlopen as urlopen
-    # noinspection PyPep8Naming
-    from urllib.request import Request as request
-    from urllib.parse import quote
-    # noinspection PyPep8Naming
-    from urllib.error import HTTPError as url_error
-else:
-    # noinspection PyUnresolvedReferences,PyPep8Naming
-    from urllib2 import Request as request
-    # noinspection PyUnresolvedReferences
-    from urllib2 import urlopen
-    # noinspection PyPep8Naming,PyUnresolvedReferences
-    from urllib2 import URLError as url_error
+from urllib.request import urlopen
+# noinspection PyPep8Naming
+from urllib.request import Request
+from urllib.parse import quote
+# noinspection PyPep8Naming
+from urllib.error import HTTPError
 
 
 def get_osm_file(
@@ -49,8 +41,7 @@ def get_osm_file(
         feature='all',
         overpass_verbosity='body',
         date_from=None,
-        date_to=None
-    ):
+        date_to=None):
     """Fetch an osm file given a bounding box using the overpass API.
 
     :param coordinates: Coordinates as a list in the form:
@@ -63,10 +54,10 @@ def get_osm_file(
     :param overpass_verbosity: Output verbosity in Overpass.
         It can be body, skeleton, ids_only or meta.
     :type overpass_verbosity: str
-    
+
     :param date_from: First date for date range.
     :type date_from: str
-    
+
     :param date_to: Second date for date range.
     :type date_to: str
 
@@ -106,8 +97,10 @@ def get_osm_file(
 
     if date_from and date_to:
         try:
-            datetime_from = datetime.datetime.utcfromtimestamp(float(date_from)/1000.)
-            datetime_to = datetime.datetime.utcfromtimestamp(float(date_to)/1000.)
+            datetime_from = datetime.datetime.utcfromtimestamp(
+                float(date_from) / 1000.)
+            datetime_to = datetime.datetime.utcfromtimestamp(
+                float(date_to) / 1000.)
             date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
             diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
                 date_from=datetime_from.strftime(date_format),
@@ -175,7 +168,7 @@ def fetch_osm(file_path, url_path):
     """
     LOGGER.debug('Getting URL: %s', url_path)
     headers = {'User-Agent': 'InaSAFE'}
-    web_request = request(url_path, None, headers)
+    web_request = Request(url_path, None, headers)
     try:
         url_handle = urlopen(web_request, timeout=60)
         data = url_handle.read().decode('utf-8')
@@ -186,7 +179,7 @@ def fetch_osm(file_path, url_path):
         file_handle = open(file_path, 'wb')
         file_handle.write(data.encode('utf-8'))
         file_handle.close()
-    except url_error as e:
+    except HTTPError as e:
         if e.code == 400:
             LOGGER.exception('Bad request to Overpass')
             raise OverpassBadRequestException

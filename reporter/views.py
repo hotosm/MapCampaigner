@@ -7,7 +7,6 @@ Views to handle url requests. Flask main entry point is also defined here.
 :license: GPLv3, see LICENSE for more details.
 """
 
-import sys
 import optparse
 import xml
 from flask import request, jsonify, render_template, Response, abort
@@ -29,14 +28,8 @@ from reporter.exceptions import (
 from reporter.queries import FEATURES, TAG_MAPPING
 from reporter.static_files import static_file
 from reporter import LOGGER
-if sys.version_info > (3, 0):
-    import urllib.request as urllib2
-    # noinspection PyPep8Naming
-    from urllib.error import URLError as url_error
-else:
-    import urllib2
-    # noinspection PyPep8Naming,PyUnresolvedReferences
-    from urllib2 import URLError as url_error
+# noinspection PyPep8Naming
+from urllib.error import URLError
 
 
 @app.route('/')
@@ -65,18 +58,18 @@ def home():
         try:
             feature_type = TAG_MAPPING[tag_name]
             file_handle = get_osm_file(
-                    coordinates,
-                    feature_type,
-                    'meta',
-                    date_from,
-                    date_to)
+                coordinates,
+                feature_type,
+                'meta',
+                date_from,
+                date_to)
         except OverpassTimeoutException:
             error = 'Timeout, try a smaller area.'
         except OverpassBadRequestException:
             error = 'Bad request.'
         except OverpassConcurrentRequestException:
             error = 'Please try again later, another query is running.'
-        except url_error:
+        except URLError:
             error = 'Bad request.'
         else:
             try:
@@ -153,7 +146,7 @@ def download_feature(feature_type):
             abort(500)
         except OverpassConcurrentRequestException:
             abort(509)
-        except urllib2.URLError:
+        except URLError:
             abort(500)
 
     try:
@@ -206,7 +199,7 @@ def user_status():
         except OverpassBadRequestException:
             error = "Bad request."
             LOGGER.exception(error + str(coordinates))
-        except urllib2.URLError:
+        except URLError:
             error = "Bad request."
             LOGGER.exception(error + str(coordinates))
         else:
