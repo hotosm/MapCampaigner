@@ -2,7 +2,7 @@
 # from app import application
 # Example:
 
-from runserver import app
+from app import osm_app as app
 
 # Import CherryPy
 import cherrypy
