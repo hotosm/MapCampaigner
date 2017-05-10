@@ -2,7 +2,7 @@
 # from app import application
 # Example:
 
-from reporter import app
+from runserver import app
 
 # Import CherryPy
 import cherrypy
