@@ -3,7 +3,7 @@ from flask import request, jsonify, render_template, Response, abort
 from campaign_manager import campaign_manager
 
 
-@campaign_manager.route('/campaign_manager')
+@campaign_manager.route('/')
 def home():
     """Home page view.
 
