@@ -1,7 +1,10 @@
 import os
 # import SECRET_KEY into current namespace
 # noinspection PyUnresolvedReferences
-from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
+try:
+    from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
+except ModuleNotFoundError:
+    THE_SECRET_KEY = os.environ['SECRET_KEY']
 
 
 class Config(object):
@@ -11,7 +14,6 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = THE_SECRET_KEY
-    # SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 
 
 class ProductionConfig(Config):
