@@ -7,7 +7,7 @@ from campaign_manager import campaign_manager
 def home():
     """Home page view.
 
-    On this page a map and the report will be shown.
+    On this page a summary campaign manager view will shown.
     """
     context = dict(
         testing='hello'
