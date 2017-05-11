@@ -18,6 +18,8 @@ RUN apt-get -y install osm2pgsql
 ADD requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
 
+RUN export APP_SETTINGS="app_config.ProductionConfig"
+
 ADD server.py /server.py
 # we will use a volume rather
 #ADD reporter /reporter

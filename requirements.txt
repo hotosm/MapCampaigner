@@ -2,3 +2,4 @@ flask
 raven
 cherrypy
 flask-wtf
+Flask-SQLAlchemy
