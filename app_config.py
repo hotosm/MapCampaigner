@@ -3,12 +3,12 @@ import os
 # noinspection PyUnresolvedReferences
 try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
-except ModuleNotFoundError:
+except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
 
 
 class Config(object):
-    """Configuration environment for application. 
+    """Configuration environment for application.
     """
     DEBUG = False
     TESTING = False
