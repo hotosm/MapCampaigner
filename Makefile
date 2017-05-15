@@ -99,3 +99,18 @@ dbshell:
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)_db psql -U docker -h localhost gis
+
+
+migrate:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running db migrate"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run web python manage.py db upgrade
+
+update-migrations:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running db make migrations"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run web python manage.py db migrate
