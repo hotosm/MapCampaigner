@@ -34,7 +34,7 @@ class TestPep8(unittest.TestCase):
                 'minimum_needs_configuration.py,resources_rc.py,help_base.py,'
                 'xml_tools.py,system_tools.py,data_audit.py,'
                 'data_audit_wrapper.py',
-                'safe']
+                'safe,versions']
             # Shamelessly hardcoded path for now..TS
             path = (
                 "C:\\PROGRA~1\\QGIS2~1.14\\apps\\Python27\\scripts")

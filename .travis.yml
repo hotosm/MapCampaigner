@@ -31,6 +31,7 @@ env:
     - ON_TRAVIS=true
     - SECRET_KEY='tT\xd7\xb06\xf7\x9b\xff\x0fZL\xca\xca\x11\xefM\xacr\xfb\xdf\xca\x9b'
     - APP_SETTINGS=app_config.DevelopmentConfig
+    - DATABASE_URL=localhost
 
 # Build environment specific options - one build per top level item in include list
 matrix:
@@ -98,6 +99,7 @@ before_script:
   - echo "Databases:"
   - psql -l
   - which pgsql2shp
+  - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
 
 script:

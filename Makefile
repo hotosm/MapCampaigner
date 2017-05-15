@@ -46,7 +46,7 @@ pep8:
 	@echo "PEP8 issues"
 	@echo "-----------"
 	@pep8 --version
-	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128,E402 --exclude venv,pydev,fabfile.py . || true
+	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128,E402 --exclude venv,pydev,fabfile.py,versions . || true
 
 pylint:
 	@echo
