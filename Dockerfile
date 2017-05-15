@@ -18,13 +18,11 @@ RUN apt-get -y install osm2pgsql
 ADD requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
 
-RUN export APP_SETTINGS="app_config.ProductionConfig"
-
-ADD server.py /server.py
 # we will use a volume rather
 #ADD reporter /reporter
 
 # Open port 8080 so linked containers can see them
 EXPOSE 8080
 
+WORKDIR /home/web/osm_reporter
 CMD ["python", "server.py"]

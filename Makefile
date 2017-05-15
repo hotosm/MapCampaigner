@@ -92,3 +92,10 @@ log:
 	@echo "Showing flask logs in development mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) logs dev
+
+dbshell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)_db psql -U docker -h localhost gis
