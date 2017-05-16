@@ -31,6 +31,14 @@ from reporter import LOGGER
 # noinspection PyPep8Naming
 from urllib.error import URLError
 
+from reporter.git_utilities import save_with_git
+
+
+@app.route('/git_utilities')
+def git_utilites():
+    save_with_git()
+    return Response('')
+
 
 @app.route('/')
 def home():
