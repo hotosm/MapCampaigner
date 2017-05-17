@@ -12,7 +12,7 @@ import xml
 from flask import request, jsonify, render_template, Response, abort
 # App declared directly in __init__ as per
 # http://flask.pocoo.org/docs/patterns/packages/#larger-applications
-from reporter import app
+from reporter import reporter
 from reporter import config
 from reporter.utilities import (
     split_bbox,
@@ -32,7 +32,7 @@ from reporter import LOGGER
 from urllib.error import URLError
 
 
-@app.route('/')
+@reporter.route('/')
 def home():
     """Home page view.
 
@@ -105,7 +105,7 @@ def home():
     return render_template('base.html', **context)
 
 
-@app.route('/<feature_type>-shp')
+@reporter.route('/<feature_type>-shp')
 def download_feature(feature_type):
     """Generic request to download OSM data.
 
@@ -166,7 +166,7 @@ def download_feature(feature_type):
     return Response(f.read(), mimetype='application/zip')
 
 
-@app.route('/user')
+@reporter.route('/user')
 def user_status():
     """Get nodes for user as a json doc.
 
@@ -216,9 +216,9 @@ if __name__ == '__main__':
 
     if options.debug:
         LOGGER.info('Running in debug mode')
-        app.debug = True
+        reporter.debug = True
         # set up flask to serve static content
-        app.add_url_rule('/<path:path>', 'static_file', static_file)
+        reporter.add_url_rule('/<path:path>', 'static_file', static_file)
     else:
         LOGGER.info('Running in production mode')
-    app.run()
+    reporter.run()
