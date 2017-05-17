@@ -209,8 +209,9 @@ def user_status():
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
-    parser.add_option('-d', '--debug', dest='debug', default=False,
-                      help='turn on Flask debugging', action='store_true')
+    parser.add_option(
+        '-d', '--debug', dest='debug', default=False,
+        help='turn on Flask debugging', action='store_true')
 
     options, args = parser.parse_args()
 
