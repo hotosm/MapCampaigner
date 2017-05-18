@@ -1,0 +1,10 @@
+*.pyc
+python
+venv
+.idea
+apache/osm-reporter.apache.conf
+reporter/config/local.py
+components/
+data
+*~
+secret.py

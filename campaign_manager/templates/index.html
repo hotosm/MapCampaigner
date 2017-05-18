@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Campaign Home</title>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.3.3.7.min.css"
+          type="text/css" static="screen, projection"/>
+    <link rel="stylesheet" href="/static/css/leaflet.css" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/leaflet.css" type="text/css">
+    <!--[if lte IE 8]>
+         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+    <![endif]-->
+
+
+    <link rel="stylesheet" href="/static/css/custom-button.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/font-awesome.css" type="text/css">
+
+    <link rel="stylesheet" href="/static/css/campaign-manager-base.css"
+          type="text/css" static="screen, projection"/>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery-3.2.0.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/leaflet.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/reporter.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/osmauth.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/bootstrap.3.3.7.min.js"></script>
+</head>
+<body>
+
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">Campaign Manager</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a id='login' href="#">Login</a></li>
+                <li id="profile">
+                    <a id="profile-pic" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+
+    <div id="add-campaign">
+        <a href="campaign/create" class="custom-button" id="add-campaign-button">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <span style="margin-left: 5px;">Create New Campaign</span> </a>
+    </div>
+
+    <div id="map">
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    var map = null;
+    var locationMarker = null;
+    var auth = osmAuth({
+        oauth_secret: '{{ oauth_secret }}',
+        oauth_consumer_key: '{{ oauth_consumer_key }}',
+        auto: true
+    });
+
+
+    $(document).ready(function(){
+        var map = L.map('map').setView([0, 0], 1);
+        this.map = map;
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            maxZoom: 15
+        }).addTo(map);
+        update(map);
+
+        $('#login').click(function () {
+            login(map);
+        });
+
+        $('#logout').click(function () {
+            logout(map);
+        });
+
+    });
+
+    function login(map) {
+        auth.authenticate(function () {
+            update(map);
+        })
+    }
+
+    function logout(map) {
+        auth.logout();
+        update(map);
+    }
+
+    function update(map) {
+        if(auth.authenticated()) {
+            showDetails(map);
+        } else {
+            hideDetails(map);
+        }
+    }
+
+    function showDetails(map) {
+        $('#login').hide();
+        $('#profile').show();
+
+        var that = this;
+
+        auth.xhr({
+            method: 'GET',
+            path: '/api/0.6/user/details'
+        }, function (err, res) {
+            if(err) {
+            $('#info').html('error! try clearing your browser cache');
+                return;
+            }
+            var u = res.getElementsByTagName('user')[0];
+            var changesets = res.getElementsByTagName('changesets')[0];
+
+            console.log(u);
+
+            var o = {
+                display_name: u.getAttribute('display_name'),
+                id: u.getAttribute('id'),
+                count: changesets.getAttribute('count')
+            };
+
+            var image = (res.getElementsByTagName('img')[0]).getAttribute('href');
+
+            $('#profile-pic').append('<img src=' + image + '/>');
+            $('#profile-pic').append('<span id="profile-name"></span>'+ o.display_name + ' <span class="caret"></span>');
+
+            $('#welcome').html('Welcome ' + o.display_name + '!');
+            $('#info').html('Your ID : ' + o.id);
+
+            var location = res.getElementsByTagName('home')[0];
+
+            if(typeof location !== 'undefined') {
+                var long = location.getAttribute('lon');
+                var lat = location.getAttribute('lat');
+                var zoom = location.getAttribute('zoom');
+                that.locationMarker = L.marker([lat, long]).addTo(map);
+                map.setView([lat, long], 8);
+
+                that.locationMarker.bindPopup("Your location from osm").openPopup();
+
+            }
+        }, this);
+    }
+
+    function hideDetails(map) {
+        $('#login').show();
+        $('#profile').hide();
+        $('#profile-pic').html('');
+
+        $('#welcome').html('Welcome!');
+        $('#info').html('Please login first.');
+
+        console.log(this.locationMarker);
+
+        if(this.locationMarker) {
+            map.removeLayer(this.locationMarker);
+            map.setView([0, 0], 1);
+        }
+    }
+
+</script>
+
+</body>

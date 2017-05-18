@@ -1,0 +1,14 @@
+node,way kab_name          text    polygon
+node,way kec_name          text    polygon
+node,way kel_name          text    polygon
+node,way rt_number         text    polygon
+node,way rw_number         text    polygon
+node,way flood_prone       text    polygon
+node,way flood:rain        text    polygon
+node,way flood:send        text    polygon
+node,way flood_depth       text    polygon
+node,way flood_duration    text    polygon
+node,way flood_latest      text    polygon
+node,way fire_hazard       text    polygon
+way      way_area             real             
+node,way z_order             int4    polygon
