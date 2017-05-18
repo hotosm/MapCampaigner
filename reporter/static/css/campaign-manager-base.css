@@ -1,0 +1,73 @@
+#map {
+    height: 500px;
+}
+
+#profile {
+    display: none;
+}
+
+.jumbotron {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#profile-pic img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: -12px;
+    margin-top: -12px;
+}
+
+#profile-name {
+    margin-left: 10px;
+}
+
+.navbar-default {
+    background-color: #1496c8;
+    border-color: #337ab7;
+}
+
+.navbar-default .navbar-brand {
+    color: white;
+}
+
+.navbar-default .navbar-brand:hover {
+    color: white;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:focus,
+.navbar-default .navbar-nav>.active>a:hover {
+    color: white;
+    background-color: #1386B3;
+}
+
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.open>a:focus,
+.navbar-default .navbar-nav>.open>a:hover {
+    color: white;
+    background-color: #1386B3;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: white;
+}
+
+.navbar-default .navbar-nav>li>a:hover{
+    color: white;
+    background-color: #169ED2;
+}
+
+body {
+    padding-top: 70px;
+    font-family: 'Lato', sans-serif;
+}
+
+#add-campaign {
+    height: 70px;
+    padding-top: 15px;
+}
+
+#add-campaign-button {
+    float: right;
+}

@@ -1,6 +1,11 @@
 from flask import request, render_template, Response
 
 from campaign_manager import campaign_manager
+try:
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
+except ImportError:
+    OAUTH_CONSUMER_KEY = ''
+    OAUTH_SECRET = ''
 
 
 @campaign_manager.route('/')
@@ -10,15 +15,13 @@ def home():
     On this page a summary campaign manager view will shown.
     """
     context = dict(
-        testing='hello'
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
     )
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 
 
-# -----------------------------------------------------------------
-# Campaigner
-# -----------------------------------------------------------------
 @campaign_manager.route('/campaign/<uuid>/sidebar')
 def get_campaign_sidebar(uuid):
     from campaign_manager.models.campaign import Campaign
@@ -108,3 +111,10 @@ def edit_campaign(uuid):
 
     return render_template(
         'edit_campaign_form.html', form=form, context=context)
+
+
+@campaign_manager.route('/land.html')
+def landing_auth():
+    """OSM auth landing page.
+    """
+    return render_template('land.html')
