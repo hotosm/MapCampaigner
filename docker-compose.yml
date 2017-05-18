@@ -1,0 +1,64 @@
+db:
+  image: kartoza/postgis:9.4-2.1
+  hostname: db
+  container_name: osmreporter_db
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+web:
+  #image: kartoza/osm-reporter
+  build: .
+  dockerfile: Dockerfile
+  hostname: web
+  container_name: osmreporter_web
+  environment:
+    - PGUSER=docker
+    - PGPASSWORD=docker
+    - PGHOST=db
+    - APP_SETTINGS=app_config.ProductionConfig
+    - DATABASE_URL=postgresql://db/gis
+  ports:
+    - "64000:8080"
+  links:
+    - db:db
+  volumes:
+    - ../osm-reporter:/home/web/osm_reporter
+  restart: on-failure:5
+  user: root
+
+dev:
+  build: .
+  dockerfile: Dockerfile.dev
+  hostname: devweb
+  container_name: osmreporter_devweb
+  environment:
+    - PGUSER=docker
+    - PGPASSWORD=docker
+    - PGHOST=db
+    - APP_SETTINGS=app_config.DevelopmentConfig
+    - DATABASE_URL=postgresql://db/gis
+  ports:
+    - "64002:5000"
+  links:
+    - db:db
+  volumes:
+    - ../osm-reporter:/home/web/osm_reporter
+
+test:
+  build: .
+  dockerfile: Dockerfile.test
+  hostname: testweb
+  container_name: osmreporter_testweb
+  environment:
+    - PGUSER=docker
+    - PGPASSWORD=docker
+    - PGHOST=db
+    - APP_SETTINGS=app_config.DevelopmentConfig
+    - DATABASE_URL=postgresql://db/gis
+  ports:
+    - "64001:8080"
+  links:
+    - db:db
+  volumes:
+    - ../osm-reporter:/home/web/osm_reporter

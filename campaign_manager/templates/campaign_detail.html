@@ -1,0 +1,105 @@
+{% extends "campaign_base.html" %}
+{% block extra_head %}
+    <title>{{ name }}</title>
+{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
+    <style type="text/css">
+        label {
+            font-weight: 600;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        .container {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        #map {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            width: 200px;
+        }
+
+        #campaign-managers a {
+            margin-right: 5px;
+            cursor: pointer !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <h2>{{ name }}</h2>
+    <div class="row">
+        {# DETAIL #}
+        <div class="col-xs-6">
+            <div>
+                <label>Version : </label>{{ version }}
+            </div>
+            <div>
+                <label>Last edited by :</label> {{ edited_by }}
+            </div>
+            <div>
+                <label>Last edited at :</label> {{ edited_at }}
+            </div>
+            <div>
+                <label>Creator :</label> {{ campaign_creator }}
+            </div>
+            <div>
+                <label>Status :</label> {{ campaign_status }}
+            </div>
+            <div>
+                <label>Coverage :</label> {{ coverage }}
+            </div>
+            <div>
+                <label>Start Date :</label> {{ start_date }}
+            </div>
+            <div>
+                <label>End Date :</label> {{ campaign_status }}
+            </div>
+            <div class="campaign-managers">
+                <label>Campaign Manager :</label>
+                {% for campaign_manager in campaign_managers %}
+                    <a href="http://www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>,
+                {% endfor %}
+            </div>
+        </div>
+        {# SIDEBAR #}
+        <div class="col-xs-6">
+            {{ sidebar|safe }}
+        </div>
+    </div>
+    <div id="map"></div>
+    <button onclick="location.href='/campaign_manager/campaign/edit/{{ uuid }}'">Edit</button>
+{% endblock %}
+{% block extra_js %}
+    <script language="javascript"
+            type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+    <script>
+        var drawnItems = new L.FeatureGroup();
+        var bounds = [
+            [-34.053726, 20.411482],
+            [-34.009483, 20.467358]
+        ];
+        $(document).ready(function () {
+            update(null);
+            {# init map #}
+            map = L.map('map');
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 18
+            }).addTo(map);
+            map.fitBounds(bounds);
+            {% if geometry %}
+                drawnItems = L.geoJSON($.parseJSON('{{ geometry|safe }}'));
+                map.addLayer(drawnItems);
+                map.fitBounds(drawnItems.getBounds());
+            {% endif %}
+        });
+    </script>
+{% endblock %}

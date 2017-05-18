@@ -1,0 +1,26 @@
+node,way   access:roof          text
+node,way   addr:housename       text    linear
+node,way   addr:housenumber     text    linear
+node,way   addr:street          text    linear
+node,way   amenity              text    nocache,polygon
+node,way   building             text    polygon
+node,way   building:levels      text
+node,way   building:roof        text
+node,way   building:structure   text
+node,way   building:use         text
+node,way   building:walls       text
+node,way   capacity:persons     text
+node,way   evacuation_center    text
+node,way   kitchen:facilities   text
+node,way   leisure              text
+node,way   name                 text    linear
+node,way   office               text
+node,way   shelter_type         text
+node,way   toilet:facilities    text
+node,way   toilets:number       text
+node,way   ref                  text    linear
+node,way   religion             text    nocache
+node,way   water_source         text
+way        way_area             real
+node,way   z_order              int4    linear
+

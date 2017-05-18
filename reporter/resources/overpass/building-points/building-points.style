@@ -1,0 +1,84 @@
+node,way access               text    linear  #osm2pgsql style
+node,way access:roof          text  #JOSM preset
+node,way addr:full            text  #JOSM preset
+node,way addr:housename       text    linear  #osm2pgsql style
+node,way addr:housenumber     text    linear  #osm2pgsql style
+node,way addr:street          text    linear  #osm2pgsql style
+node,way addr:interpolation   text    linear  #osm2pgsql style
+node,way admin_level          text    linear  #osm2pgsql style
+node,way aerialway            text    linear  #osm2pgsql style
+node,way aeroway              text    polygon  #osm2pgsql style
+node,way amenity              text    nocache,polygon  #osm2pgsql style
+node,way area                 text  #osm2pgsql style
+node,way barrier              text    linear  #osm2pgsql style
+node,way bicycle              text    nocache  #osm2pgsql style
+node,way boundary             text    linear  #osm2pgsql style
+node,way brand                text    linear  #osm2pgsql style
+node,way bridge               text    linear  #osm2pgsql style
+node,way building             text    polygon  #osm2pgsql style
+node,way building:levels      text  #JOSM preset
+node,way building:roof        text  #JOSM preset
+node,way building:structure   text  #JOSM preset
+node,way building:use         text  #JOSM preset
+node,way building:walls       text  #JOSM preset
+node,way capacity:persons     text  #JOSM preset
+node     capital              text    linear  #osm2pgsql style
+node,way construction         text    linear  #osm2pgsql style
+node,way covered              text    linear  #osm2pgsql style
+node,way created_by           text    delete  #osm2pgsql style
+node,way culvert              text    linear  #osm2pgsql style
+node,way cutting              text    linear  #osm2pgsql style
+node,way denomination         text    linear  #osm2pgsql style
+node,way disused              text    linear  #osm2pgsql style
+node     ele                  text    linear  #osm2pgsql style
+node,way embankment           text    linear  #osm2pgsql style
+node,way foot                 text    linear  #osm2pgsql style
+node,way generator:source     text    linear  #osm2pgsql style
+node,way harbour              text    polygon  #osm2pgsql style
+node,way highway              text    linear  #osm2pgsql style
+node,way historic             text    polygon  #osm2pgsql style
+node,way horse                text    linear  #osm2pgsql style
+node,way intermittent         text    linear  #osm2pgsql style
+node,way junction             text    linear  #osm2pgsql style
+node,way landuse              text    polygon  #osm2pgsql style
+node,way layer                text    linear  #osm2pgsql style
+node,way leisure              text    polygon  #osm2pgsql style
+node,way lock                 text    linear  #osm2pgsql style
+node,way man_made             text    polygon  #osm2pgsql style
+node,way military             text    polygon  #osm2pgsql style
+node,way motorcar             text    linear  #osm2pgsql style
+node,way name                 text    linear  #osm2pgsql style
+node,way natural              text    polygon  #osm2pgsql style
+node,way note                 text    delete  #osm2pgsql style
+node,way office               text    polygon  #osm2pgsql style
+node,way oneway               text    linear  #osm2pgsql style
+node,way operator             text    linear  #osm2pgsql style
+node,way place                text    polygon  #osm2pgsql style
+node     poi                  text  #osm2pgsql style
+node,way population           text    linear  #osm2pgsql style
+node,way power                text    polygon  #osm2pgsql style
+node,way power_source         text    linear  #osm2pgsql style
+node,way public_transport     text    polygon  #osm2pgsql style
+node,way railway              text    linear  #osm2pgsql style
+node,way ref                  text    linear  #osm2pgsql style
+node,way religion             text    nocache  #osm2pgsql style
+node,way route                text    linear  #osm2pgsql style
+node,way service              text    linear  #osm2pgsql style
+node,way shop                 text    polygon  #osm2pgsql style
+node,way source               text    delete  #osm2pgsql style
+node,way sport                text    polygon  #osm2pgsql style
+node,way surface              text    linear  #osm2pgsql style
+node,way toll                 text    linear  #osm2pgsql style
+node,way tourism              text    polygon  #osm2pgsql style
+node,way tower:type           text    linear  #osm2pgsql style
+way      tracktype            text    linear  #osm2pgsql style
+node,way tunnel               text    linear  #osm2pgsql style
+node,way type:id              text  #JOSM preset
+node,way water                text    polygon  #osm2pgsql style
+node,way waterway             text    polygon  #osm2pgsql style
+way      way_area             real  #osm2pgsql style
+node,way wetland              text    polygon  #osm2pgsql style
+node,way width                text    linear  #osm2pgsql style
+node,way wood                 text    linear  #osm2pgsql style
+node,way z_order              int4    linear  #osm2pgsql style
+

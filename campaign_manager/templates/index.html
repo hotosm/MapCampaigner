@@ -1,0 +1,39 @@
+{% extends "campaign_base.html" %}
+{% block extra_head %}
+    <title>Campaign Home</title>
+{% endblock %}
+
+{% block content %}
+    <div id="add-campaign">
+        <a href="campaign/create" class="custom-button" id="add-campaign-button">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <span style="margin-left: 5px;">Create New Campaign</span> </a>
+    </div>
+
+    <div id="map">
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        var map = null;
+        var locationMarker = null;
+        var auth = osmAuth({
+            oauth_secret: '{{ oauth_secret }}',
+            oauth_consumer_key: '{{ oauth_consumer_key }}',
+            auto: true
+        });
+
+
+        $(document).ready(function () {
+            var map = L.map('map').setView([0, 0], 1);
+            this.map = map;
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 15
+            }).addTo(map);
+            update(map);
+        });
+
+    </script>
+{% endblock %}

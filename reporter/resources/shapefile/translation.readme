@@ -1,0 +1,17 @@
+# Translation
+*Potential IDP is deprecated*
+
+* Metadata
+  * Copy/paste the latest english version .XML
+  * Translate
+    * Boundary  `<gco:CharacterString>Boundary</gco:CharacterString>`
+    * Building points `<gco:CharacterString>Building points</gco:CharacterString>`
+    * Buildings `<gco:CharacterString>Buildings</gco:CharacterString>`
+    * Evacuation centers `title: Evacuation center`
+    * Floodprone `<gco:CharacterString>Flood Polygon</gco:CharacterString>`
+    * Roads `<gco:CharacterString>Roads</gco:CharacterString>`
+
+* QML Styles
+  * For `roads` and `evacuation-centers`: 
+    * Copy/paste .QML
+    * Translate `label` in `rules`

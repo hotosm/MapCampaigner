@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+  ServerName osm-reporter.localhost
+  ServerAdmin webmaster@localhost
+
+  WSGIDaemonProcess osm-reporter user=osm-reporter group=osm-reporter threads=5
+  processes=2 python-path=/home/web/osm-reporter/python/lib/python2.7/site-packages
+  WSGIScriptAlias / /home/web/osm-reporter/apache/osm-reporter.wsgi
+
+  WSGIProcessGroup osm-reporter
+  WSGIApplicationGroup %{GLOBAL}
+
+  <Directory "/home/web/osm-reporter/apache">
+    Order deny,allow
+    Allow from all
+  </Directory>
+
+  ErrorLog /var/log/apache2/osm-reporter.error.log
+
+  # Possible values include: debug, info, notice, warn, error, crit,
+  # alert, emerg.
+  LogLevel warn
+
+  CustomLog /var/log/apache2/osm-reporter.access.log combined
+
+</VirtualHost>
