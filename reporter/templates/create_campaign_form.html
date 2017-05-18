@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>OpenStreetMap Reporter</title>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"
+          type="text/css" static="screen, projection"/>
+    <link rel="stylesheet" href="/static/css/datepicker.min.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/leaflet.css" type="text/css">
+    <!--[if lte IE 8]>
+         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+     <![endif]-->
+    <link rel="stylesheet" href="/static/css/reporter.css"
+          type="text/css" static="screen, projection"/>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery-3.2.0.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
+    <script language="javascript"
+            type="text/javascript"
+            src="/static/js/jquery.flot.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/jquery.flot.pie.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/leaflet.js"></script>
+    <script src="/static/js/heatcanvas.js"></script>
+    <script src="/static/js/heatcanvas-leaflet.js"></script>
+    <script language="javascript"
+            type="text/javascript" src="/static/js/reporter.js"></script>
+
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .error-form {
+            color: red;
+            font-style: italic;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <form method="POST" action="/campaign_manager/campaign/create">
+        {{ form.hidden_tag() }}
+
+        {% for field in form %}
+            {% if field.name != 'submit' and field.name != 'csrf_token' %}
+                <div>
+                    {{ field.label }}
+                    {{ field() }}
+                    <br>
+                    {% for error in form['errors'][field.name] %}
+                        <div class="error-form">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <br>
+            {% endif %}
+        {% endfor %}
+        {{ form.submit }}
+    </form>
+    <script>
+        $(document).ready(function () {
+            $("#start_date").attr('data-language', 'en');
+            $("#end_date").attr('data-language', 'en');
+            $("#start_date").datepicker({
+                dateFormat: 'yyyy-mm-dd',
+                autoClose: true
+            });
+            $("#end_date").datepicker({
+                dateFormat: 'yyyy-mm-dd',
+                autoClose: true
+            });
+        });
+    </script>
+</div>
+</body>

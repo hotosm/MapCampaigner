@@ -7,3 +7,4 @@ reporter/config/local.py
 components/
 data
 *~
+secret.py

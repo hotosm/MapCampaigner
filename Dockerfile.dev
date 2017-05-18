@@ -15,13 +15,16 @@ ADD 71-apt-cacher-ng /etc/apt/apt.conf.d/71-apt-cacher-ng
 RUN apt-get -y update
 RUN apt-get -y install osm2pgsql
 
-ADD requirements-dev.txt /requirements.txt
+ADD requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
 
-ADD runserver.py /runserver.py
+ADD requirements-dev.txt /requirements-dev.txt
+RUN pip install -r requirements-dev.txt
+
 # we will use a volume rather
-#ADD reporter /reporter
+#ADD reporter /reporterd
 
 EXPOSE 5000
 
+WORKDIR /home/web/osm_reporter
 CMD ["python", "runserver.py"]

@@ -7,7 +7,7 @@
 """
 import unittest
 import logging
-from reporter.views import app
+from app import osm_app as app
 from flask_testing import LiveServerTestCase
 from reporter import setup_logger
 

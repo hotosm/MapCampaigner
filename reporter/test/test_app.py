@@ -3,7 +3,7 @@
 :copyright: (c) 2013 by Tim Sutton
 :license: GPLv3, see LICENSE for more details.
 """
-from reporter.views import app
+from app import osm_app as app
 from reporter.test.logged_unittest import LoggedTestCase
 from reporter import LOGGER
 

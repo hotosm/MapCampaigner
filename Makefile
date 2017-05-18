@@ -46,7 +46,7 @@ pep8:
 	@echo "PEP8 issues"
 	@echo "-----------"
 	@pep8 --version
-	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128,E402 --exclude venv,pydev,fabfile.py . || true
+	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128,E402 --exclude venv,pydev,fabfile.py,versions . || true
 
 pylint:
 	@echo
@@ -92,3 +92,25 @@ log:
 	@echo "Showing flask logs in development mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) logs dev
+
+dbshell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)_db psql -U docker -h localhost gis
+
+
+migrate:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running db migrate"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run web python manage.py db upgrade
+
+update-migrations:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running db make migrations"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run web python manage.py db migrate
