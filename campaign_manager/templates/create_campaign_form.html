@@ -1,0 +1,160 @@
+{% extends "campaign_base.html" %}
+{% block extra_head %}
+    {% if not version %}
+        <title>Create Campaign</title>
+    {% else %}
+        <title>Edit Campaign</title>
+    {% endif %}
+{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
+    <style type="text/css">
+        .error-form {
+            color: red;
+            font-style: italic;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        form, .container {
+            text-align: center;
+        }
+
+        input, select {
+            width: 400px;
+        }
+
+        #map {
+            margin-bottom: 30px;
+        }
+
+        #submit {
+            width: 200px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {% if version %}
+        <div>
+            <label>Version : </label>{{ version }}
+        </div>
+        <div>
+            <label>Last edited by :</label> {{ edited_by }}
+        </div>
+        <br>
+    {% endif %}
+    <form id="form" method="POST" action="{{ action }}">
+        {{ form.hidden_tag() }}
+
+        {% for field in form %}
+            {% if field.name != 'submit' and field.name != 'csrf_token' %}
+                <div>
+                    {% if field.name !='geometry' and field.name !='uploader' %}
+                        {{ field.label }}<br>
+                        {{ field() }}
+                        <br>
+                        {% for error in form['errors'][field.name] %}
+                            <div class="error-form">{{ error }}</div>
+                        {% endfor %}
+                    {% else %}
+                        {{ field() }}
+                    {% endif %}
+                </div>
+                <br>
+            {% endif %}
+        {% endfor %}
+    </form>
+    <div id="map"></div>
+    {{ form.submit }}
+{% endblock %}
+{% block extra_js %}
+    <script language="javascript"
+            type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+    <script>
+        var drawnItems = new L.FeatureGroup();
+        var bounds = [
+            [-34.053726, 20.411482],
+            [-34.009483, 20.467358]
+        ];
+        $("#form").submit(function (event) {
+            $("#uploader").val($("#profile-name").html());
+            if (!auth.authenticated() || !$("#uploader").val()) {
+                window.location.replace("/campaign_manager/not-logged-in.html");
+            }
+        });
+        $(document).ready(function () {
+            update(null);
+            if (!auth.authenticated()) {
+                window.location.replace("/campaign_manager/not-logged-in.html");
+            }
+            $("#submit").click(function () {
+                $("#form").submit();
+            });
+            $("#start_date").attr('data-language', 'en');
+            $("#end_date").attr('data-language', 'en');
+            $("#start_date").datepicker({
+                dateFormat: 'yyyy-mm-dd',
+                autoClose: true
+            });
+            $("#end_date").datepicker({
+                dateFormat: 'yyyy-mm-dd',
+                autoClose: true
+            });
+
+            {# init map #}
+            map = L.map('map');
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 18
+            }).addTo(map);
+
+            map.fitBounds(bounds);
+
+            if ($("#geometry").val()) {
+                drawnItems = L.geoJSON($.parseJSON($("#geometry").val()));
+                map.fitBounds(drawnItems.getBounds());
+            }
+            map.addLayer(drawnItems);
+            var drawControl = new L.Control.Draw({
+                draw: {
+                    polyline: false,
+                    marker: false,
+                    circle: false
+                },
+                edit: {
+                    featureGroup: drawnItems
+                },
+                remove: {
+                    featureGroup: drawnItems
+                }
+            }, this);
+            map.addControl(drawControl);
+            map.on('draw:created', saveLayer);
+            map.on('draw:edited', editLayer);
+            map.on('draw:deleted', deleteLayer);
+
+        });
+        function stringfyGeometry() {
+            var json = drawnItems.toGeoJSON();
+            $("#geometry").val(JSON.stringify(json));
+        }
+        function saveLayer(e) {
+            var layer = e.layer;
+            drawnItems.addLayer(layer);
+            stringfyGeometry();
+        }
+        function editLayer(e) {
+            var layer = e.layer;
+            stringfyGeometry();
+        }
+        function deleteLayer(e) {
+            var layers = e.layers;
+            layers.eachLayer(function (feature) {
+                drawnItems.removeLayer(feature);
+            });
+            stringfyGeometry();
+        }
+    </script>
+{% endblock %}

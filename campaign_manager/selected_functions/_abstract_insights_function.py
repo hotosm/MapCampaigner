@@ -11,6 +11,7 @@ class AbstractInsightsFunction(object):
     Abstract class insights function.
     """
     __metaclass__ = ABCMeta
+    function_name = None
     function_data = None
 
     def __init__(self, campaign):

@@ -8,3 +8,4 @@ class Version(object):
     """
     version = 0.0
     edited_by = ''
+    edited_at = ''

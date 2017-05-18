@@ -8,10 +8,11 @@ from wtforms.fields import (
     DateField,
     SelectMultipleField,
     StringField,
-    SubmitField
+    SubmitField,
+    HiddenField
 )
 from wtforms.validators import DataRequired, Optional
-from campaign_manager.settings import users
+from campaign_manager.utilities import get_osm_user
 import campaign_manager.selected_functions as selected_functions
 
 
@@ -26,7 +27,8 @@ class CampaignForm(FlaskForm):
     end_date = DateField(u'End date of campaign', validators=[Optional()])
 
     campaign_managers = SelectMultipleField(
-        u'Managers of campaign', choices=[(user, user) for user in users])
+        u'Managers of campaign',
+        choices=[(user, user) for user in get_osm_user()])
     selected_functions = SelectMultipleField(
         u'Functions for this campaign',
         choices=[
@@ -38,4 +40,6 @@ class CampaignForm(FlaskForm):
                 ]
             ]
     )
+    uploader = HiddenField(u'Uploader for this campaign')
+    geometry = HiddenField(u'Map geometry for this campaign')
     submit = SubmitField(u'Submit')

@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+import time
 import json
 import os
 import campaign_manager.selected_functions as selected_functions
@@ -8,6 +9,7 @@ import campaign_manager.selected_functions as selected_functions
 from flask import render_template
 
 from campaign_manager.models.json_model import JsonModel
+from campaign_manager.utilities import module_path
 
 
 class Campaign(JsonModel):
@@ -28,6 +30,7 @@ class Campaign(JsonModel):
     def __init__(self, uuid):
         self.uuid = uuid
         self.json_path = Campaign.get_json_file(uuid)
+        self.edited_at = time.ctime(os.path.getmtime(self.json_path))
         self.parse_json_file()
 
     def update_data(self, dict, uploader):
@@ -77,8 +80,13 @@ class Campaign(JsonModel):
                     selected_functions, selected_function_name)
                 selected_function = SelectedFunction(self)
 
+                if selected_function.function_name:
+                    function_name = selected_function.function_name
+                else:
+                    function_name = selected_function_name
+
                 context = {
-                    'selected_function_name': selected_function_name,
+                    'selected_function_name': function_name,
                     'widget': selected_function.get_ui_html()
                 }
                 campaing_ui += render_template(
@@ -92,9 +100,8 @@ class Campaign(JsonModel):
 
     @staticmethod
     def get_json_folder():
-        file_path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(
-            file_path, os.pardir, 'campaigns_data', 'campaign')
+            module_path(), 'campaigns_data', 'campaign')
 
     @staticmethod
     def serialize(dict):
@@ -128,6 +135,22 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+    @staticmethod
+    def all():
+        """Get all campaigns
+
+        :return: Campaigns that found or none
+        :rtype: [Campaign]
+        """
+        campaigns = []
+        for root, dirs, files in os.walk(Campaign.get_json_folder()):
+            for file in files:
+                try:
+                    campaigns.append(Campaign.get(os.path.splitext(file)[0]))
+                except Campaign.DoesNotExist:
+                    pass
+        return campaigns
 
     @staticmethod
     def get(uuid):

@@ -7,6 +7,8 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 
 
 class FeatureCount(AbstractInsightsFunction):
+    function_name = "Number of feature in campaign"
+
     def get_ui_html_file(self):
         """ Get ui name in templates
         :return: string name of html
