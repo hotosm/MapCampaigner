@@ -1,3 +1,4 @@
+import json
 from flask import request, render_template, Response
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
@@ -24,14 +25,15 @@ def home():
     return render_template('index.html', **context)
 
 
-@campaign_manager.route('/campaign/<uuid>/sidebar')
-def get_campaign_sidebar(uuid):
+@campaign_manager.route('/campaign/<uuid>/<insight_function>')
+def get_campaign_insight_function_data(uuid, insight_function):
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
     try:
         campaign = Campaign.get(uuid)
-        return Response(campaign.render_side_bar())
+        data = campaign.insight_function_data(insight_function)
+        return Response(json.dumps(data))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -46,7 +48,6 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['sidebar'] = campaign.render_side_bar()
         context['campaigns'] = Campaign.all()
         return render_template(
             'campaign_detail.html', **context)
