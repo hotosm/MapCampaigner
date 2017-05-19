@@ -7,6 +7,7 @@ from abc import ABCMeta
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
 from campaign_manager.utilities import module_path
+from campaign_manager.provider import get_osm_data
 
 
 class AbstractInsightsFunction(object):
@@ -55,6 +56,7 @@ class AbstractInsightsFunction(object):
         """Process this function"""
         raw_data = self._call_function_provider()
         self._function_data = self._process_data(raw_data)
+        self._function_data = self.post_process_data(self._function_data)
 
     def get_function_data(self):
         """ Return function data
@@ -107,6 +109,18 @@ class AbstractInsightsFunction(object):
                     processed_data.append(raw_data)
         return processed_data
 
+    def post_process_data(self, data):
+        """ Process data regarding output.
+        This needed for processing data for counting or grouping.
+
+        :param data: Data that received from open street map
+        :type data: dict
+
+        :return: Processed data
+        :rtype: dict
+        """
+        return data
+
     def _get_geometry(self):
         """ Get geometry of campaign.
         :return: geometry
@@ -119,11 +133,23 @@ class AbstractInsightsFunction(object):
         :return: list of required attributes
         :rtype: [str]
         """
-        dummy_data_path = os.path.join(module_path(), 'dummy_data')
-        _file = open(dummy_data_path, 'r')
+        # coordinates = self.campaign.geometry['features'][0]
+        # coordinates = coordinates['geometry']['coordinates'][0]
+        # correct_coordinates = []
+        # for coordinate in coordinates:
+        #     correct_coordinates.append(
+        #         [coordinate[1], coordinate[0]]
+        #     )
+        # return get_osm_data(self.get_feature(), correct_coordinates)
+        # ---------------------------------------------------
+        # DUMMY
+        # ---------------------------------------------------
+        json_path = os.path.join(
+            module_path(), 'dummy_data'
+        )
+        _file = open(json_path, 'r')
         content = _file.read()
-        dummy_data = json.loads(content)
-        return dummy_data
+        return json.loads(content)
 
     # -------------------------------------------------------------
     # HTML SECTION

@@ -44,6 +44,7 @@ class Campaign(JsonModel):
         """
         for key, value in data.items():
             setattr(self, key, value)
+        self.geometry = json.loads(self.geometry)
         self.version += 1
         self.edited_by = uploader
 
@@ -86,6 +87,8 @@ class Campaign(JsonModel):
         :return: data from insight function
         :rtype: dict
         """
+        if insight_function not in self.selected_functions:
+            raise Campaign.InsightsFunctionNotAssignedToCampaign
         try:
             SelectedFunction = getattr(
                 selected_functions, insight_function)
@@ -162,6 +165,7 @@ class Campaign(JsonModel):
 
         uuid = data['uuid']
         Campaign.validate(data, uuid)
+        data['geometry'] = json.loads(data['geometry'])
 
         json_str = Campaign.serialize(data)
         json_path = os.path.join(
@@ -241,3 +245,13 @@ class Campaign(JsonModel):
         def __init__(self):
             self.message = "Campaign doesn't exist"
             super(Campaign.DoesNotExist, self).__init__(self.message)
+
+    @staticmethod
+    class InsightsFunctionNotAssignedToCampaign(Exception):
+        def __init__(self):
+            self.message = "" \
+                           "This insights function not " \
+                           "assigned to this campaign"
+            super(
+                Campaign.InsightsFunctionNotAssignedToCampaign, self).__init__(
+                self.message)

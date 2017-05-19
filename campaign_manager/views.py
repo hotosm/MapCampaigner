@@ -49,6 +49,7 @@ def get_campaign(uuid):
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
         context['campaigns'] = Campaign.all()
+        context['geometry'] = json.dumps(campaign.geometry)
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
@@ -109,7 +110,7 @@ def edit_campaign(uuid):
             form.coverage.data = campaign.coverage
             form.campaign_managers.data = campaign.campaign_managers
             form.selected_functions.data = campaign.selected_functions
-            form.geometry.data = campaign.geometry
+            form.geometry.data = json.dumps(campaign.geometry)
             form.start_date.data = datetime.datetime.strptime(
                 campaign.start_date, '%Y-%m-%d')
             if campaign.end_date:

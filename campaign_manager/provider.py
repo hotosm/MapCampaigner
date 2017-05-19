@@ -53,7 +53,7 @@ def get_osm_data(feature, polygon):
 
     encoded_query = quote(query)
     url_path = '%s%s' % (server_url, encoded_query)
-
+    print(query)
     safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
     file_path = os.path.join(config.CACHE_DIR, safe_name)
     osm_document = load_osm_document(file_path, url_path)
