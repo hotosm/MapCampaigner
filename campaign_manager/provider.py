@@ -1,27 +1,32 @@
 import json
 import hashlib
 import os
+import re
+
+from urllib.parse import quote
 
 from reporter import config
-from reporter.utilities import (
-    split_bbox,
-)
+from reporter.exceptions import OverpassTimeoutException
 from reporter.osm import (
     load_osm_document
 )
-from urllib.parse import quote
-from reporter.queries import TAG_MAPPING, OVERPASS_QUERY_MAP
+from reporter.queries import TAG_MAPPING, OVERPASS_QUERY_MAP_POLYGON
+from reporter.utilities import split_polygon
 
 
-def get_osm_data(bbox, feature):
+def get_osm_data(feature, polygon):
     """Get osm data.
-    
-    :param bbox: String describing a bbox e.g. '106.78674459457397,
-        -6.141301491467023,106.80691480636597,-6.133834354201348'
 
     :param feature: The type of feature to extract:
         buildings, building-points, roads, potential-idp, boundary-[1,11]
     :type feature: str
+    
+    :param polygon: list of array describing polygon area e.g. 
+    '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
+    [29.168701171875004,-26.34265280938059]]
+    :type polygon: list
+        
+    :raises: OverpassTimeoutException
     
     :returns: A dict from retrieved OSM dataset.
     :rtype: dict
@@ -32,15 +37,16 @@ def get_osm_data(bbox, feature):
     overpass_verbosity = 'body'
 
     try:
-        coordinates = split_bbox(bbox)
+        polygon_string = split_polygon(polygon)
     except ValueError:
         error = "Invalid area"
-        coordinates = split_bbox(config.BBOX)
+        polygon_string = config.POLYGON
 
     feature_type = TAG_MAPPING[tag_name]
-    parameters = coordinates
+    parameters = dict()
     parameters['print_mode'] = overpass_verbosity
-    query = OVERPASS_QUERY_MAP[feature_type].format(**parameters)
+    parameters['polygon'] = polygon_string
+    query = OVERPASS_QUERY_MAP_POLYGON[feature_type].format(**parameters)
 
     # Query to returns json string
     query = '[out:json];' + query
@@ -53,5 +59,10 @@ def get_osm_data(bbox, feature):
     osm_document = load_osm_document(file_path, url_path)
 
     osm_data = json.loads(osm_document.read())
+
+    regex = 'runtime error:'
+    if 'remark' in osm_data:
+        if re.search(regex, osm_data['remark']):
+            raise OverpassTimeoutException
 
     return osm_data
