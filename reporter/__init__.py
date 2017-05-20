@@ -90,7 +90,9 @@ LOGGER = logging.getLogger('osm-reporter')
 reporter = Blueprint(
         'reporter',
         __name__,
-        template_folder='templates')
+        template_folder='templates',
+        static_url_path='/reporter/static',
+        static_folder='static')
 
 # app = Flask(__name__)
 # Don't import actual view methods themselves - see:

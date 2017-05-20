@@ -1,39 +1,100 @@
-{% extends "campaign_base.html" %}
-{% block extra_head %}
-    <title>Campaign Home</title>
-{% endblock %}
+{% extends 'new_base.html' %}
+
+{% block title %} Home {% endblock %}
 
 {% block content %}
-    <div id="add-campaign">
-        <a href="campaign/create" class="custom-button" id="add-campaign-button">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            <span style="margin-left: 5px;">Create New Campaign</span> </a>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                Actions
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="#">Action</a>
+                                </li>
+                                <li><a href="#">Another action</a>
+                                </li>
+                                <li><a href="#">Something else here</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div id="campaign-map"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+
+            <button type="button" class="btn btn-outline btn-primary btn-lg btn-block">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span style="margin-left: 5px;">Create New Campaign</span>
+            </button>
+
+            <div class="panel panel-default" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> My Campaign
+                </div>
+                <div class="panel-body">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4>Syrian refugee camps</h4>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">Manage</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="panel-body" style="margin-top: -30px;">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4>Instanbul mental health facility survey</h4>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">Manage</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        </div>
     </div>
 
-    <div id="map">
-    </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block footer %}
+
     <script type="text/javascript">
-        var map = null;
-        var locationMarker = null;
-        var auth = osmAuth({
-            oauth_secret: '{{ oauth_secret }}',
-            oauth_consumer_key: '{{ oauth_consumer_key }}',
-            auto: true
-        });
-
-
-        $(document).ready(function () {
-            var map = L.map('map').setView([0, 0], 1);
-            this.map = map;
-            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 15
-            }).addTo(map);
-            update(map);
-        });
-
+    $(document).ready(function () {
+        var map = L.map('campaign-map').setView([0, 0], 1);
+        this.map = map;
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            maxZoom: 15
+        }).addTo(map);
+    });
     </script>
+
 {% endblock %}

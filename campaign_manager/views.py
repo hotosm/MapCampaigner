@@ -1,6 +1,10 @@
 from flask import request, render_template, Response
+
+from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
+from reporter import LOGGER
+from reporter.static_files import static_file
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -147,3 +151,13 @@ def not_logged_in():
     """Not logged in page.
     """
     return render_template('not_authenticated.html')
+
+
+if __name__ == '__main__':
+    if Config.DEBUG:
+        campaign_manager.debug = True
+        # set up flask to serve static content
+        campaign_manager.add_url_rule('/<path:path>', 'static_file', static_file)
+    else:
+        LOGGER.info('Running in production mode')
+    campaign_manager.run()
