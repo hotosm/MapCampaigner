@@ -72,6 +72,109 @@
     <!-- Custom Theme JavaScript -->
     <script src="static/js/map-campaigner.js"></script>
 
+    <!-- jQuery Loading Overlay -->
+    <script src="static/libs/jquery-loading-overlay/loadingoverlay.js"></script>
+
+    <!-- OsmAuth JavaScript -->
+    <script type="text/javascript" src="/static/js/osmauth.js"></script>
+
+    <script type="text/javascript">
+        var map = null;
+        var locationMarker = null;
+        var auth = osmAuth({
+            oauth_secret: '{{ oauth_secret }}',
+            oauth_consumer_key: '{{ oauth_consumer_key }}',
+            auto: true
+        });
+
+        $(document).ready(function () {
+            $('#logout-menu').hide();
+
+            $('#login-menu').click(function () {
+                login(map);
+            });
+            $('#logout-menu').click(function () {
+                logout(map);
+            });
+        });
+
+        function login(map) {
+            $.LoadingOverlay("show",
+                {image : "static/resources/loading-spinner.gif"});
+            auth.authenticate(function () {
+                update(map);
+            })
+        }
+
+        function logout(map) {
+            auth.logout();
+            update(map);
+        }
+
+        function update(map) {
+            if (auth.authenticated()) {
+                showDetails(map);
+            } else {
+                hideDetails(map);
+            }
+        }
+
+        function showDetails(map) {
+            $('#login-menu').hide();
+            $('#logout-menu').show();
+
+            var that = this;
+            auth.xhr({
+                method: 'GET',
+                path: '/api/0.6/user/details'
+            }, function (err, res) {
+                if (err) {
+                    $('#info').html('error! try clearing your browser cache');
+                    return;
+                }
+                var u = res.getElementsByTagName('user')[0];
+                var changesets = res.getElementsByTagName('changesets')[0];
+
+                var o = {
+                    display_name: u.getAttribute('display_name'),
+                    id: u.getAttribute('id'),
+                    count: changesets.getAttribute('count')
+                };
+
+                $('#profile-name').html(o.display_name);
+
+                var location = res.getElementsByTagName('home')[0];
+
+                if (typeof location !== 'undefined') {
+                    var long = location.getAttribute('lon');
+                    var lat = location.getAttribute('lat');
+                    var zoom = location.getAttribute('zoom');
+                    if (map) {
+                        that.locationMarker = L.marker([lat, long]).addTo(map);
+                        map.setView([lat, long], 8);
+                        that.locationMarker.bindPopup("Your location from osm").openPopup();
+                    }
+                }
+
+                $.LoadingOverlay("hide");
+            }, this);
+        }
+
+        function hideDetails(map) {
+            $('#login-menu').show();
+            $('#logout-menu').hide();
+
+            $('#profile-name').html('<i class="fa fa-user fa-fw profile-icon"></i>');
+
+            if (map) {
+                if (this.locationMarker) {
+                    map.removeLayer(this.locationMarker);
+                    map.setView([0, 0], 1);
+                }
+            }
+        }
+    </script>
+
     {% block footer %}
     {% endblock %}
 

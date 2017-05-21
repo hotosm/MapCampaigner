@@ -87,6 +87,7 @@
 {% block footer %}
 
     <script type="text/javascript">
+
     $(document).ready(function () {
         var map = L.map('campaign-map').setView([0, 0], 1);
         this.map = map;
@@ -95,6 +96,8 @@
             maxZoom: 15
         }).addTo(map);
     });
+
+
     </script>
 
 {% endblock %}
