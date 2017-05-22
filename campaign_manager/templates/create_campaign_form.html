@@ -26,6 +26,23 @@
             width: 400px;
         }
 
+        .function-form {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .function-form select, .function-form button {
+            margin-right: 10px;
+        }
+
+        .function-form select, .function-form input {
+            width: 300px;
+        }
+
+        .function-form-row {
+            text-align: left;
+        }
+
         #map {
             margin-bottom: 30px;
         }
@@ -51,7 +68,7 @@
         {% for field in form %}
             {% if field.name != 'submit' and field.name != 'csrf_token' %}
                 <div>
-                    {% if field.name !='geometry' and field.name !='uploader' %}
+                    {% if field.name !='geometry' and field.name !='uploader' and field.name !='selected_functions' %}
                         {{ field.label }}<br>
                         {{ field() }}
                     {% else %}
@@ -66,23 +83,76 @@
             {% endif %}
         {% endfor %}
     </form>
+    <div class="error-form">{{ error }}</div>
     <div id="map"></div>
+
+    <div id="selected-functions-form">
+        {% for category in categories %}
+            <div id="{{ category }}-function" class="function-wrapper">
+                <h3>{{ category }} Functions</h3>
+                <div class="function-form">
+                </div>
+                <button id="{{ category }}-function-add" type=button onclick="addFunction(this)">Add Function</button>
+            </div>
+        {% endfor %}
+    </div>
+    <br>
     {{ form.submit }}
 {% endblock %}
 {% block extra_js %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script language="javascript"
             type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+    <script type='text/template' id='_template-function-form'>
+        <div class="function-form-row" id="function-<%=index%>">
+            <button type=button onclick="removeFunction(this)">Remove</button>
+            <select class="function-selection" onchange="functionOnSelected(this)">
+                <option value="">-------------------</option>
+                {% for key in functions %}
+                    <option value="{{ key }}">{{ key }}</option>
+                {% endfor %}
+            </select>
+            <select class="function-feature" style="display: none">
+            </select>
+            <input class="function-attributes" style="display: none">
+        </div>
+    </script>
     <script>
+        var function_index = 1;
+        var functions = {{ functions|safe }};
         var drawnItems = new L.FeatureGroup();
         var bounds = [
             [-34.053726, 20.411482],
             [-34.009483, 20.467358]
         ];
+        function get_selected_functions(category) {
+            {# functions #}
+            var functions = {};
+            var rows = $('#' + category).find('.function-form').find('.function-form-row');
+            $.each(rows, function (index, row) {
+                if ($(row).find('.function-selection').val()) {
+                    functions[$(row).attr('id')] = {
+                        'function': $(row).find('.function-selection').val(),
+                        'feature': $(row).find('.function-feature').val(),
+                        'category': category,
+                        'attributes': $(row).find('.function-attributes').val()
+                    }
+                }
+            });
+            return functions;
+        }
+
         $("#form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
             if (!auth.authenticated() || !$("#uploader").val()) {
                 window.location.replace("/campaign_manager/not-logged-in.html");
             }
+
+            {# Processing selected function #}
+            var selected_functions = {};
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
+            $("#selected_functions").val(JSON.stringify(selected_functions));
         });
         $(document).ready(function () {
             update(null);
@@ -135,6 +205,13 @@
             map.on('draw:edited', editLayer);
             map.on('draw:deleted', deleteLayer);
 
+            {# selected functions#}
+            if ($("#selected_functions").val()) {
+                var selected_functions = $.parseJSON($("#selected_functions").val());
+                $.each(selected_functions, function (key, functions) {
+                    addFunction($('#' + functions['category'] + '-add'), functions);
+                });
+            }
         });
         function stringfyGeometry() {
             var json = drawnItems.toGeoJSON();
@@ -146,7 +223,6 @@
             stringfyGeometry();
         }
         function editLayer(e) {
-            var layer = e.layer;
             stringfyGeometry();
         }
         function deleteLayer(e) {
@@ -155,6 +231,61 @@
                 drawnItems.removeLayer(feature);
             });
             stringfyGeometry();
+        }
+        function getFormElement(event, className) {
+            return $(event).closest("div").find(className);
+        }
+        function addFunction(event, data) {
+            var template = _.template($("#_template-function-form").html());
+            var html = template({index: function_index});
+            getFormElement(event, '.function-form').append(html);
+
+            var row = $('#function-' + function_index);
+            var function_selections = getFormElement(row, '.function-selection').find('option');
+            $.each(function_selections, function (index, function_selection) {
+                var wrapper_id = $(row).closest('.function-wrapper').attr('id');
+                wrapper_id = wrapper_id.replace('-function', '');
+                if ($(function_selection).val()) {
+                    var categories = functions[$(function_selection).val()]['category'];
+                    if (jQuery.inArray(wrapper_id, categories) < 0) {
+                        $(function_selection).remove();
+                    }
+                }
+            });
+
+            if (data) {
+                getFormElement(row, '.function-selection').val(data['function']);
+                functionOnSelected(getFormElement(row, '.function-selection'));
+                getFormElement(row, '.function-feature').val(data['feature']);
+                getFormElement(row, '.function-attributes').val(data['attributes']);
+            }
+            function_index += 1;
+        }
+        function functionOnSelected(event) {
+            getFormElement(event, '.function-feature').html('');
+            getFormElement(event, '.function-attributes').val('');
+            getFormElement(event, '.function-feature').hide();
+            getFormElement(event, '.function-attributes').hide();
+
+            if ($(event).val() != '') {
+                var need_feature = functions[$(event).val()]['need_feature'];
+                var need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+                var features = functions[$(event).val()]['features'];
+                if (features && need_feature == 'true') {
+                    getFormElement(event, '.function-feature').show();
+                    $.each(features, function (index, feature) {
+                        getFormElement(event, '.function-feature').append(
+                                "<option value='" + feature + "'>" + feature + "</option>"
+                        );
+                    });
+                }
+                if (need_required_attributes == 'true') {
+                    getFormElement(event, '.function-attributes').show();
+                }
+            }
+        }
+        function removeFunction(event) {
+            $(event).closest("div").remove();
         }
     </script>
 {% endblock %}
