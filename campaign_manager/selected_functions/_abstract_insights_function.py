@@ -6,7 +6,7 @@ import json
 from abc import ABCMeta
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
-from campaign_manager.utilities import module_path
+from campaign_manager.provider import get_osm_data
 
 
 class AbstractInsightsFunction(object):
@@ -20,6 +20,9 @@ class AbstractInsightsFunction(object):
     FEATURES_MAPPING = {
         'buildings': 'building',
         'roads': 'road'
+    }
+    EXTRA_MAPPING = {
+        'amenity': 'building'
     }
     _function_data = None
 
@@ -84,27 +87,19 @@ class AbstractInsightsFunction(object):
         :return: list of required attributes
         :rtype: [str]
         """
-        # coordinates = self.campaign.geometry['features'][0]
-        # coordinates = coordinates['geometry']['coordinates'][0]
-        # correct_coordinates = []
-        # for coordinate in coordinates:
-        #     correct_coordinates.append(
-        #         [coordinate[1], coordinate[0]]
-        #     )
-        # return get_osm_data(self.get_feature(), correct_coordinates)
-
-        # ---------------------------------------------------
-        # DUMMY
-        # ---------------------------------------------------
         if self.feature:
-            json_path = os.path.join(
-                module_path(), 'dummy_data'
-            )
-            _file = open(json_path, 'r')
-            content = _file.read()
-            return json.loads(content)
+            coordinates = self.campaign.geometry['features'][0]
+            coordinates = coordinates['geometry']['coordinates'][0]
+            correct_coordinates = []
+            for coordinate in coordinates:
+                correct_coordinates.append(
+                    [coordinate[1], coordinate[0]]
+                )
+            return get_osm_data(
+                self.FEATURES_MAPPING[self.feature],
+                correct_coordinates)
         else:
-            return {}
+            return []
 
     def _process_data(self, raw_datas):
         """ Get geometry of campaign.
@@ -123,7 +118,7 @@ class AbstractInsightsFunction(object):
                 return processed_data
 
             for raw_data in raw_datas['elements']:
-                if raw_data['type'] == 'relation' and 'tags' in raw_data:
+                if 'tags' in raw_data:
                     raw_attr = raw_data["tags"]
                     # just get required attr
                     if len(req_attr) > 0:
