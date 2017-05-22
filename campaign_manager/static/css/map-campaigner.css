@@ -472,3 +472,9 @@ table.dataTable thead .sorting:after {
 .page-header {
   color: #717070;
 }
+
+.alert {
+  margin-bottom: -30px;
+  margin-top: 10px;
+  border-radius: 1;
+}

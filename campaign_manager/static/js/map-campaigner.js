@@ -49,3 +49,26 @@ $(function() {
         }
     }
 });
+
+
+function showLoading() {
+    $.LoadingOverlay("show",
+        {image : "static/resources/loading-spinner.gif"});
+}
+
+function hideLoading() {
+    $.LoadingOverlay("hide");
+}
+
+function showNotifications(text, status) {
+    if($('#notification').length > 0) {
+        $('#notification').remove();
+    }
+
+    $('#first-row').prepend(
+        '<div id="notification" class="alert alert-'+status+' alert-dismissable">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+            text+
+        '</div>'
+    );
+}

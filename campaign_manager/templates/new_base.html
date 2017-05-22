@@ -46,7 +46,7 @@
 
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12" id="first-row">
                     <h1 class="page-header">{% block title %}{% endblock %}</h1>
                 </div>
                 <!-- /.col-lg-12 -->
@@ -78,9 +78,12 @@
     <!-- OsmAuth JavaScript -->
     <script type="text/javascript" src="/static/js/osmauth.js"></script>
 
+    {% block before_base_js %}
+    {% endblock %}
+
     <script type="text/javascript">
-        var map = null;
         var locationMarker = null;
+
         var auth = osmAuth({
             oauth_secret: '{{ oauth_secret }}',
             oauth_consumer_key: '{{ oauth_consumer_key }}',
@@ -88,34 +91,39 @@
         });
 
         $(document).ready(function () {
-            $('#logout-menu').hide();
-
             $('#login-menu').click(function () {
-                login(map);
+                login();
             });
             $('#logout-menu').click(function () {
-                logout(map);
+                logout();
             });
         });
 
-        function login(map) {
-            $.LoadingOverlay("show",
-                {image : "static/resources/loading-spinner.gif"});
+        function login() {
+            showLoading();
             auth.authenticate(function () {
-                update(map);
+                update();
             })
         }
 
-        function logout(map) {
+        function logout() {
             auth.logout();
-            update(map);
+            update();
         }
 
-        function update(map) {
+        function update() {
             if (auth.authenticated()) {
-                showDetails(map);
+                if(typeof this.map !== 'undefined') {
+                    showDetails(map);
+                } else {
+                    showDetails();
+                }
             } else {
-                hideDetails(map);
+                if(typeof this.map !== 'undefined') {
+                    hideDetails(map);
+                } else {
+                    hideDetails();
+                }
             }
         }
 
@@ -156,7 +164,7 @@
                     }
                 }
 
-                $.LoadingOverlay("hide");
+                hideLoading();
             }, this);
         }
 
@@ -173,9 +181,20 @@
                 }
             }
         }
+
+        update();
+
+        $('#create-campaign').click(function () {
+            if (auth.authenticated()) {
+                location.href='campaign/create';
+            } else {
+                showNotifications('You need to login first.', 'danger');
+            }
+        });
+
     </script>
 
-    {% block footer %}
+    {% block after_base_js %}
     {% endblock %}
 
 </body>

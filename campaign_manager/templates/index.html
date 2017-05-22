@@ -37,10 +37,10 @@
 
         <div class="col-lg-4">
 
-            <button type="button" class="btn btn-outline btn-primary btn-lg btn-block">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                <span style="margin-left: 5px;">Create New Campaign</span>
-            </button>
+                <button id="create-campaign" type="button" class="btn btn-outline btn-primary btn-lg btn-block">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <span style="margin-left: 5px;">Create New Campaign</span>
+                </button>
 
             <div class="panel panel-default" style="margin-top: 20px;">
                 <div class="panel-heading">
@@ -84,19 +84,16 @@
 
 {% endblock %}
 
-{% block footer %}
+{% block before_base_js %}
 
     <script type="text/javascript">
 
-    $(document).ready(function () {
-        var map = L.map('campaign-map').setView([0, 0], 1);
-        this.map = map;
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-            maxZoom: 15
-        }).addTo(map);
-    });
-
+    var map = L.map('campaign-map').setView([0, 0], 1);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
+        'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+        maxZoom: 15
+    }).addTo(map);
 
     </script>
 
