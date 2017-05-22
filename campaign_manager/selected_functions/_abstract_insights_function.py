@@ -7,7 +7,6 @@ from abc import ABCMeta
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
 from campaign_manager.utilities import module_path
-from campaign_manager.provider import get_osm_data
 
 
 class AbstractInsightsFunction(object):
@@ -15,42 +14,45 @@ class AbstractInsightsFunction(object):
     Abstract class insights function.
     """
     __metaclass__ = ABCMeta
-    function_name = None
+
+    CATEGORIES = ['coverage', 'quality', 'error', 'engagement']
+    FEATURES = ['buildings', 'roads']
+    FEATURES_MAPPING = {
+        'buildings': 'building',
+        'roads': 'road'
+    }
     _function_data = None
 
-    def __init__(self, campaign):
+    function_name = None
+    campaign = None
+
+    feature = None
+    required_attributes = {}
+    category = []
+
+    # attribute of insight function
+    need_feature = True
+    need_required_attributes = True
+
+    def __init__(self, campaign, feature=None, required_attributes=None):
         self.campaign = campaign
+        if not self.feature:
+            self.feature = feature
+        self.required_attributes = required_attributes
+        if self.required_attributes:
+            self.required_attributes = self.required_attributes. \
+                replace(' ', '').split(',')
 
-    def get_required_attributes(self):
-        """ Get required attributes for function provider.
-
-        i.e:
-        {
-            'name':None,
-            'access':'public'
-            'building':['library', 'theatre']
-        }
-
-        Note:
-        - It will return just name, building, and amenity
-        - Because name is None, it will return all name
-        - Because access is public, it will return access = public
-        - Because amenity is library and theater, it will return both of it
-
-
-        :return: dictionary of required attributes
-        :rtype: dict
+    def name(self):
+        """Name of insight functions
+        :return: string of name
         """
-        raise NotImplementedError()
-
-    def get_feature(self):
-        """ Get feature that needed for openstreetmap.
-
-        :param feature: The type of feature to extract:
-            buildings, building-points, roads, potential-idp, boundary-[1,11]
-        :type feature: str
-        """
-        raise NotImplementedError()
+        name = self.function_name
+        if self.feature:
+            name = '%s - feature:%s' % (name, self.feature)
+            if self.required_attributes:
+                name = '%s - attributes:%s' % (name, self.required_attributes)
+        return name
 
     def run(self):
         """Process this function"""
@@ -65,50 +67,6 @@ class AbstractInsightsFunction(object):
         """
         return self._function_data
 
-    def _process_data(self, raw_datas):
-        """ Get geometry of campaign.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
-
-        :return: processed data
-        :rtype: dict
-        """
-        processed_data = []
-        req_attr = self.get_required_attributes()
-        if not isinstance(req_attr, dict):
-            req_attr = {}
-        if 'elements' not in raw_datas:
-            return processed_data
-
-        for raw_data in raw_datas['elements']:
-            if raw_data['type'] == 'relation' and 'tags' in raw_data:
-                raw_attr = raw_data["tags"]
-                # just get required attr
-                if len(req_attr) > 0:
-                    is_fullfilling_requirement = True
-                    clean_data = {}
-                    # checking data
-                    for req_key, req_value in req_attr.items():
-                        # if key in attr
-                        if req_key in raw_attr:
-                            raw_value = raw_attr[req_key].lower()
-                            req_value = req_value.lower() \
-                                if req_value else req_value
-
-                            # check if has same value
-                            if req_value and raw_value != req_value:
-                                is_fullfilling_requirement = False
-                                break
-                        else:
-                            is_fullfilling_requirement = False
-                            break
-                        clean_data[req_key] = raw_value
-                    if is_fullfilling_requirement:
-                        processed_data.append(clean_data)
-                else:
-                    processed_data.append(raw_data)
-        return processed_data
-
     def post_process_data(self, data):
         """ Process data regarding output.
         This needed for processing data for counting or grouping.
@@ -120,13 +78,6 @@ class AbstractInsightsFunction(object):
         :rtype: dict
         """
         return data
-
-    def _get_geometry(self):
-        """ Get geometry of campaign.
-        :return: geometry
-        :rtype: [str]
-        """
-        return self.campaign.geometry
 
     def _call_function_provider(self):
         """ Get required attrbiutes for function provider.
@@ -141,15 +92,59 @@ class AbstractInsightsFunction(object):
         #         [coordinate[1], coordinate[0]]
         #     )
         # return get_osm_data(self.get_feature(), correct_coordinates)
+
         # ---------------------------------------------------
         # DUMMY
         # ---------------------------------------------------
-        json_path = os.path.join(
-            module_path(), 'dummy_data'
-        )
-        _file = open(json_path, 'r')
-        content = _file.read()
-        return json.loads(content)
+        if self.feature:
+            json_path = os.path.join(
+                module_path(), 'dummy_data'
+            )
+            _file = open(json_path, 'r')
+            content = _file.read()
+            return json.loads(content)
+        else:
+            return {}
+
+    def _process_data(self, raw_datas):
+        """ Get geometry of campaign.
+        :param raw_datas: Raw data that returns by function provider
+        :type raw_datas: dict
+
+        :return: processed data
+        :rtype: dict
+        """
+        processed_data = []
+        if raw_datas:
+            req_attr = self.required_attributes
+            if not isinstance(req_attr, list):
+                req_attr = []
+            if 'elements' not in raw_datas:
+                return processed_data
+
+            for raw_data in raw_datas['elements']:
+                if raw_data['type'] == 'relation' and 'tags' in raw_data:
+                    raw_attr = raw_data["tags"]
+                    # just get required attr
+                    if len(req_attr) > 0:
+                        is_fullfilling_requirement = True
+                        clean_data = {}
+                        # checking data
+                        for req_value in req_attr:
+                            # if key in attr
+                            if req_value in raw_attr:
+                                raw_value = raw_attr[req_value].lower()
+                                req_value = req_value.lower() \
+                                    if req_value else req_value
+                            else:
+                                is_fullfilling_requirement = False
+                                break
+                            clean_data[req_value] = raw_value
+                        if is_fullfilling_requirement:
+                            processed_data.append(clean_data)
+                    else:
+                        processed_data.append(raw_attr)
+        return processed_data
 
     # -------------------------------------------------------------
     # HTML SECTION

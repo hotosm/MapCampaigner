@@ -69,9 +69,8 @@
                 {% endfor %}
             </div>
         </div>
-        {# SIDEBAR #}
-        <div class="col-xs-6">
-            {{ sidebar|safe }}
+        {# SELECTED FUNCTIONS #}
+        <div id="selected-function" class="col-xs-6">
         </div>
     </div>
     <div id="map"></div>
@@ -81,6 +80,8 @@
     <script language="javascript"
             type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script>
+        var uuid = '{{ uuid }}';
+        var functions = {{ selected_functions|safe }};
         var drawnItems = new L.FeatureGroup();
         var bounds = [
             [-34.053726, 20.411482],
@@ -100,6 +101,25 @@
                 map.addLayer(drawnItems);
                 map.fitBounds(drawnItems.getBounds());
             {% endif %}
+
+            $.each(functions, function (key, insight_function) {
+                call_function(key);
+            });
         });
+        function call_function(function_id) {
+            var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    data = $.parseJSON(data);
+                    $('#selected-function').append(
+                            "<b>" + data['title'] +
+                            "</b>" +
+                            "<div>" + JSON.stringify(data['data']) +
+                            "</div>"
+                    );
+                }
+            })
+        }
     </script>
 {% endblock %}

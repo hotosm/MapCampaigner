@@ -25,7 +25,7 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     campaign_managers = []
-    selected_functions = []
+    selected_functions = {}
 
     def __init__(self, uuid):
         self.uuid = uuid
@@ -45,6 +45,7 @@ class Campaign(JsonModel):
         for key, value in data.items():
             setattr(self, key, value)
         self.geometry = json.loads(self.geometry)
+        self.selected_functions = json.loads(self.selected_functions)
         self.version += 1
         self.edited_by = uploader
 
@@ -58,6 +59,13 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+    def get_selected_functions_in_string(self):
+        """ Get selected function in string
+        :return: Get selected function in string
+        :rtype: str
+        """
+        return json.dumps(self.selected_functions).replace('None', 'null');
 
     def parse_json_file(self):
         """ Parse json file for this campaign.
@@ -78,23 +86,31 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
 
-    def insight_function_data(self, insight_function):
+    def insight_function_data(self, insight_function_id):
         """Get data from insight_function
 
-        :param insight_function: name of insight function
-        :type insight_function: str
+        :param insight_function_id: id of insight function
+        :type insight_function_id: str
 
         :return: data from insight function
         :rtype: dict
         """
-        if insight_function not in self.selected_functions:
+        if insight_function_id not in self.selected_functions:
             raise Campaign.InsightsFunctionNotAssignedToCampaign
         try:
+            function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, insight_function)
-            selected_function = SelectedFunction(self)
+                selected_functions, function['function'])
+            selected_function = SelectedFunction(
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
             selected_function.run()
-            return selected_function.get_function_data()
+            output = {
+                'title': selected_function.name(),
+                'data': selected_function.get_function_data()
+            }
+            return output
         except AttributeError as e:
             return {}
 
@@ -166,6 +182,7 @@ class Campaign(JsonModel):
         uuid = data['uuid']
         Campaign.validate(data, uuid)
         data['geometry'] = json.loads(data['geometry'])
+        data['selected_functions'] = json.loads(data['selected_functions'])
 
         json_str = Campaign.serialize(data)
         json_path = os.path.join(

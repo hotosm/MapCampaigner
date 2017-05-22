@@ -6,8 +6,10 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 )
 
 
-class GetSchool(AbstractInsightsFunction):
-    function_name = "All School in Campaign"
+class FeatureAttributeCompleteness(AbstractInsightsFunction):
+    function_name = "Get feature attribute completeness"
+    category = ['quality']
+    need_required_attributes = True
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -29,22 +31,3 @@ class GetSchool(AbstractInsightsFunction):
         :rtype: str
         """
         return ""
-
-    def get_required_attributes(self):
-        """ Get required attributes for function provider.
-        :return: list of required attributes
-        :rtype: [str]
-        """
-        return {
-            "name": None,
-            "building": 'school'
-        }
-
-    def get_feature(self):
-        """ Get feature that needed for openstreetmap.
-
-        :param feature: The type of feature to extract:
-            buildings, building-points, roads, potential-idp, boundary-[1,11]
-        :type feature: str
-        """
-        return 'building'
