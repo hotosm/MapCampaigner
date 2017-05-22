@@ -30,7 +30,7 @@ class AbstractInsightsFunction(object):
     campaign = None
 
     feature = None
-    required_attributes = {}
+    required_attributes = ""
     category = []
 
     # attribute of insight function
@@ -42,9 +42,6 @@ class AbstractInsightsFunction(object):
         if not self.feature:
             self.feature = feature
         self.required_attributes = required_attributes
-        if self.required_attributes:
-            self.required_attributes = self.required_attributes. \
-                replace(' ', '').split(',')
 
     def name(self):
         """Name of insight functions
@@ -110,10 +107,22 @@ class AbstractInsightsFunction(object):
         :rtype: dict
         """
         processed_data = []
+        required_attributes = {}
+        # parsing attributes
+        if self.required_attributes:
+            for required_attribute in self.required_attributes.split(';'):
+                attrs = required_attribute.split('=')
+                required_attributes[attrs[0].strip()] = None
+                if len(attrs) > 1:
+                    attrs[1] = attrs[1].strip()
+                    if attrs[1]:
+                        required_attributes[attrs[0].strip()] = [
+                            value.lower() for value in attrs[1].split(',')
+                            ]
+
+        # process data based on required attributes
         if raw_datas:
-            req_attr = self.required_attributes
-            if not isinstance(req_attr, list):
-                req_attr = []
+            req_attr = required_attributes
             if 'elements' not in raw_datas:
                 return processed_data
 
@@ -125,16 +134,17 @@ class AbstractInsightsFunction(object):
                         is_fullfilling_requirement = True
                         clean_data = {}
                         # checking data
-                        for req_value in req_attr:
+                        for req_key, req_value in req_attr.items():
                             # if key in attr
-                            if req_value in raw_attr:
-                                raw_value = raw_attr[req_value].lower()
-                                req_value = req_value.lower() \
-                                    if req_value else req_value
+                            if req_key in raw_attr:
+                                raw_value = raw_attr[req_key].lower()
+                                if req_value and raw_value not in req_value:
+                                    is_fullfilling_requirement = False
+                                    break
                             else:
                                 is_fullfilling_requirement = False
                                 break
-                            clean_data[req_value] = raw_value
+                            clean_data[req_key] = raw_value
                         if is_fullfilling_requirement:
                             processed_data.append(clean_data)
                     else:
