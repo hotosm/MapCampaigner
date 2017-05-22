@@ -43,10 +43,4 @@ class CountFeature(AbstractInsightsFunction):
         :rtype: dict
         """
         dict = {}
-        feature_extracted = self.FEATURES_MAPPING[self.feature]
-        for current_data in data:
-            building_type = current_data[feature_extracted]
-            if building_type not in dict:
-                dict[building_type] = 0
-            dict[building_type] += 1
-        return dict
+        return len(data)
