@@ -88,10 +88,14 @@
 
         if(!window.isAuthenticated) {
             showNotifications('You need to login first.', 'danger');
+            $('#campaign-form').hide();
+        } else {
+            $('#campaign-form').show();
         }
 
         function loginSuccess(response) {
             clearNotification();
+            $('#campaign-form').show();
         }
 
         var drawnItems = new L.FeatureGroup();

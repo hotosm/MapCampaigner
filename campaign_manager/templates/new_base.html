@@ -122,6 +122,7 @@
         }
 
         function update() {
+            window.isAuthenticated = auth.authenticated();
             if (auth.authenticated()) {
                 if(typeof this.map !== 'undefined') {
                     showDetails(map);
@@ -197,7 +198,6 @@
         }
 
         update();
-        window.isAuthenticated = auth.authenticated();
 
         function loginSuccess(res) {
         }

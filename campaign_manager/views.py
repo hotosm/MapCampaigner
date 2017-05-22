@@ -88,7 +88,7 @@ def create_campaign():
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET
     )
-    context['action'] = '/campaign_manager/campaign/create'
+    context['action'] = '/campaign_manager/create'
     context['campaigns'] = Campaign.all()
     return render_template(
         'create_campaign.html', form=form, **context)
