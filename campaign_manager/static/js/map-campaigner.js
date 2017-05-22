@@ -1,3 +1,7 @@
+// GLOBAL VARIABLE
+window.isAuthenticated = false;
+
+
 $(function() {
     $('#side-menu').metisMenu();
 });
@@ -61,9 +65,7 @@ function hideLoading() {
 }
 
 function showNotifications(text, status) {
-    if($('#notification').length > 0) {
-        $('#notification').remove();
-    }
+    clearNotification();
 
     $('#first-row').prepend(
         '<div id="notification" class="alert alert-'+status+' alert-dismissable">' +
@@ -71,4 +73,10 @@ function showNotifications(text, status) {
             text+
         '</div>'
     );
+}
+
+function clearNotification() {
+    if($('#notification').length > 0) {
+        $('#notification').remove();
+    }
 }

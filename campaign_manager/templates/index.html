@@ -44,36 +44,24 @@
 
             <div class="panel panel-default" style="margin-top: 20px;">
                 <div class="panel-heading">
-                    <i class="fa fa-list-ul" aria-hidden="true"></i> My Campaign
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> Campaigns
                 </div>
-                <div class="panel-body">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h4>Syrian refugee camps</h4>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">Manage</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
+                {% for campaign in campaigns %}
+                    <div class="panel-body">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4>{{ campaign.name }}</h4>
                             </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="panel-body" style="margin-top: -30px;">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h4>Instanbul mental health facility survey</h4>
+                            <a href="/campaign_manager/campaign/{{ campaign.uuid }}">
+                                <div class="panel-footer">
+                                    <span class="pull-left">Manage</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">Manage</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
                     </div>
-                </div>
+                {% endfor %}
             </div>
 
 
@@ -94,6 +82,14 @@
         'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
         maxZoom: 15
     }).addTo(map);
+
+    $('#create-campaign').click(function () {
+        if (window.isAuthenticated) {
+            location.href='create';
+        } else {
+            showNotifications('You need to login first.', 'danger');
+        }
+    });
 
     </script>
 

@@ -63,7 +63,7 @@ def get_campaign(uuid):
             'campaign_not_found.html', **context)
 
 
-@campaign_manager.route('/campaign/create', methods=['GET', 'POST'])
+@campaign_manager.route('/create', methods=['GET', 'POST'])
 def create_campaign():
     import uuid
     from flask import url_for, redirect
@@ -91,7 +91,7 @@ def create_campaign():
     context['action'] = '/campaign_manager/campaign/create'
     context['campaigns'] = Campaign.all()
     return render_template(
-        'create_campaign_form.html', form=form, **context)
+        'create_campaign.html', form=form, **context)
 
 
 @campaign_manager.route('/campaign/edit/<uuid>', methods=['GET', 'POST'])
@@ -139,7 +139,7 @@ def edit_campaign(uuid):
         'create_campaign_form.html', form=form, **context)
 
 
-@campaign_manager.route('/land.html')
+@campaign_manager.route('/land')
 def landing_auth():
     """OSM auth landing page.
     """

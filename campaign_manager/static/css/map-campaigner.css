@@ -476,5 +476,13 @@ table.dataTable thead .sorting:after {
 .alert {
   margin-bottom: -30px;
   margin-top: 10px;
-  border-radius: 1;
+  border-radius: 2px;
+}
+
+#campaign-form input, #campaign-form select {
+  border-radius: 2px;
+}
+
+.form-group {
+  margin-bottom: 0 !important;
 }
