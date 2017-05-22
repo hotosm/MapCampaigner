@@ -41,5 +41,7 @@ class CampaignForm(FlaskForm):
             ]
     )
     uploader = HiddenField(u'Uploader for this campaign')
-    geometry = HiddenField(u'Map geometry for this campaign')
+    geometry = HiddenField(
+        u'Map geometry for this campaign',
+        validators=[DataRequired('Geometry is needed')])
     submit = SubmitField(u'Submit')

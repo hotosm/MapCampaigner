@@ -6,8 +6,8 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 )
 
 
-class FeatureCount(AbstractInsightsFunction):
-    function_name = "Number of feature in campaign"
+class GetBuilding(AbstractInsightsFunction):
+    function_name = "All Building in Campaign"
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -35,14 +35,16 @@ class FeatureCount(AbstractInsightsFunction):
         :return: list of required attributes
         :rtype: [str]
         """
-        return ""
+        return {
+            "name": None,
+            "building": None
+        }
 
-    def process_data(self, raw_data):
-        """ Get geometry of campaign.
-        :param raw_data: Raw data that returns by function provider
-        :type raw_data: dict
+    def get_feature(self):
+        """ Get feature that needed for openstreetmap.
 
-        :return: processed data
-        :rtype: dict
+        :param feature: The type of feature to extract:
+            buildings, building-points, roads, potential-idp, boundary-[1,11]
+        :type feature: str
         """
-        return raw_data
+        return 'building'

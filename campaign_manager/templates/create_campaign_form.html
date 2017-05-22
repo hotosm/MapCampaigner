@@ -54,13 +54,13 @@
                     {% if field.name !='geometry' and field.name !='uploader' %}
                         {{ field.label }}<br>
                         {{ field() }}
-                        <br>
-                        {% for error in form['errors'][field.name] %}
-                            <div class="error-form">{{ error }}</div>
-                        {% endfor %}
                     {% else %}
                         {{ field() }}
                     {% endif %}
+                    <br>
+                    {% for error in form['errors'][field.name] %}
+                        <div class="error-form">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <br>
             {% endif %}
