@@ -191,10 +191,12 @@ class AbstractInsightsFunction(object):
             return ''
 
         html_name = html_name.replace('.html', '')
+        print(self._function_data)
         try:
             return render_template(
                 'campaign_widget/%s/%s.html' % (ui_type, html_name),
-                **self._function_data)
+                **{'data': self._function_data}
+            )
         except TemplateNotFound:
             return render_template(
                 'campaign_widget/widget_not_found.html')
