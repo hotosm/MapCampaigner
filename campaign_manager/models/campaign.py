@@ -26,6 +26,7 @@ class Campaign(JsonModel):
     end_date = None
     campaign_managers = []
     selected_functions = []
+    description = ''
 
     def __init__(self, uuid):
         self.uuid = uuid

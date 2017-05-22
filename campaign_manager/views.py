@@ -113,6 +113,7 @@ def edit_campaign(uuid):
             form.campaign_managers.data = campaign.campaign_managers
             form.selected_functions.data = campaign.selected_functions
             form.geometry.data = campaign.geometry
+            form.description.data = campaign.description
             form.start_date.data = datetime.datetime.strptime(
                 campaign.start_date, '%Y-%m-%d')
             if campaign.end_date:

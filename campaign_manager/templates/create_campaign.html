@@ -9,7 +9,6 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
@@ -26,11 +25,11 @@
                                     <div class="form-group">
                                         {% if field.name !='geometry' and field.name !='uploader' %}
                                             <label>{{ field.label }}</label>
-                                            {{ field() }}
-                                            <br>
                                             {% for error in form['errors'][field.name] %}
                                                 <div class="error-form">{{ error }}</div>
                                             {% endfor %}
+                                            {{ field() }}
+                                            <p class="help-block">{{ field.description }}</p>
                                         {% else %}
                                             {{ field() }}
                                         {% endif %}
@@ -79,9 +78,18 @@
 
     <script type="text/javascript">
 
+        var errors = {{ form['errors'] | safe}};
+        if(!isEmpty(errors)) {
+            showNotifications('Failed to create a campaign!', 'danger');
+        }
+
         $(function() {
             $('#campaign-form input').addClass('form-control');
+            $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
+
+            $('.error-form').parent().addClass('has-error');
+
             $('#submit').removeClass('form-control');
             $('#submit').addClass('btn btn-outline btn-primary submit-button btn-lg btn-block');
         });
@@ -96,6 +104,10 @@
         function loginSuccess(response) {
             clearNotification();
             $('#campaign-form').show();
+        }
+
+        function logoutSuccess() {
+            window.location.replace("/campaign_manager");
         }
 
         var drawnItems = new L.FeatureGroup();

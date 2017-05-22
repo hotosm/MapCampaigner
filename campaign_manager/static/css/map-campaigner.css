@@ -486,3 +486,8 @@ table.dataTable thead .sorting:after {
 .form-group {
   margin-bottom: 0 !important;
 }
+
+.error-form {
+  color: red;
+  margin-top: -10px;
+}

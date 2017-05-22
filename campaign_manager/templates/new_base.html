@@ -119,6 +119,7 @@
         function logout() {
             auth.logout();
             update();
+            logoutSuccess();
         }
 
         function update() {
@@ -200,6 +201,10 @@
         update();
 
         function loginSuccess(res) {
+        }
+        
+        function logoutSuccess() {
+            
         }
 
     </script>
