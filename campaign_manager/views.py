@@ -160,11 +160,12 @@ def create_campaign():
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
+    context['title'] = 'Create Campaign'
     return render_template(
         'create_campaign.html', form=form, **context)
 
 
-@campaign_manager.route('/campaign/edit/<uuid>', methods=['GET', 'POST'])
+@campaign_manager.route('/edit/<uuid>', methods=['GET', 'POST'])
 def edit_campaign(uuid):
     import datetime
     from flask import url_for, redirect
@@ -204,12 +205,13 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['action'] = '/campaign_manager/campaign/edit/%s' % uuid
+    context['action'] = '/campaign_manager/edit/%s' % uuid
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
+    context['title'] = 'Edit Campaign'
     return render_template(
-        'create_campaign_form.html', form=form, **context)
+        'create_campaign.html', form=form, **context)
 
 
 @campaign_manager.route('/land')

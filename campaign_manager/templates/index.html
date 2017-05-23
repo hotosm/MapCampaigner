@@ -121,16 +121,23 @@
                 var managers = JSON.parse($campaign.attr('data-managers').replace(/'/g, '"'));
 
                 if(containsObject(currentUser, managers)) {
-                    $campaign.removeClass('campaign-list-disabled');
+                    $campaign.show();
                 } else {
-                    $campaign.remove();
+                    $campaign.hide();
                 }
+            }
+        }
+
+        function logoutSuccess() {
+            var $campaignListElement = $('#panel-campaign').children().find('.campaign-list-disabled');
+            for(var i=0; i < $campaignListElement.length; i++) {
+                $($campaignListElement[i]).hide();
             }
         }
 
         $('.campaign-list').click(function () {
             if(!$(this).hasClass('campaign-list-disabled')) {
-                location.href='campaign/edit/' + $(this).attr('data-uuid');
+                location.href='edit/' + $(this).attr('data-uuid');
             }
         });
 
