@@ -491,3 +491,13 @@ table.dataTable thead .sorting:after {
   color: red;
   margin-top: -10px;
 }
+
+.campaign-list-disabled .panel-footer {
+  color: #bebebe;
+  border-radius: 0;
+}
+
+.campaign-list-disabled .panel-footer:hover {
+  cursor: default;
+  color: #BEBEBE;
+}

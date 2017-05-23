@@ -148,10 +148,6 @@
                 method: 'GET',
                 path: '/api/0.6/user/details'
             }, function (err, res) {
-                if(loginProcess) {
-                    loginSuccess(res);
-                    loginProcess = false;
-                }
                 if (err) {
                     $('#info').html('error! try clearing your browser cache');
                     return;
@@ -164,6 +160,8 @@
                     id: u.getAttribute('id'),
                     count: changesets.getAttribute('count')
                 };
+
+                updated(o);
 
                 $('#profile-name').html(o.display_name);
 
@@ -178,6 +176,11 @@
                         map.setView([lat, long], 8);
                         that.locationMarker.bindPopup("Your location from osm").openPopup();
                     }
+                }
+
+                if(loginProcess) {
+                    loginSuccess(o);
+                    loginProcess = false;
                 }
 
                 hideLoading();
@@ -200,11 +203,14 @@
 
         update();
 
-        function loginSuccess(res) {
+        function loginSuccess(user) {
         }
         
         function logoutSuccess() {
-            
+        }
+
+        function updated(object) {
+            // Called after finished getting details of a user
         }
 
     </script>

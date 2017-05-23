@@ -46,6 +46,7 @@
                 <div class="panel-heading">
                     <i class="fa fa-list-ul" aria-hidden="true"></i> Campaigns
                 </div>
+                <div id="panel-campaign">
                 {% for campaign in campaigns %}
                     <div class="panel-body">
                         <div class="panel panel-primary">
@@ -53,7 +54,8 @@
                                 <h4>{{ campaign.name }}</h4>
                                 <p style="font-size: 9pt;">{{ campaign.description }}</p>
                             </div>
-                            <a href="/campaign_manager/campaign/{{ campaign.uuid }}">
+                            <a href="#" class="campaign-list campaign-list-disabled"
+                               data-managers="{{ campaign.campaign_managers}}" data-uuid="{{ campaign.uuid }}">
                                 <div class="panel-footer">
                                     <span class="pull-left">Manage</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -63,6 +65,7 @@
                         </div>
                     </div>
                 {% endfor %}
+                </div>
             </div>
 
 
@@ -90,6 +93,36 @@
             showNotifications('You need to login first.', 'danger');
         }
     });
+
+    </script>
+
+{% endblock %}
+
+{% block after_base_js %}
+
+    <script type="text/javascript">
+
+        function updated(user) {
+
+            var currentUser = user.display_name;
+            var $campaignListElement = $('#panel-campaign').children().find('.campaign-list-disabled');
+
+            for(var i=0; i < $campaignListElement.length; i++) {
+
+                var $campaign = $($campaignListElement[i]);
+                var managers = JSON.parse($campaign.attr('data-managers').replace(/'/g, '"'));
+
+                if(containsObject(currentUser, managers)) {
+                    $campaign.removeClass('campaign-list-disabled');
+                }
+            }
+        }
+
+        $('.campaign-list').click(function () {
+            if(!$(this).hasClass('campaign-list-disabled')) {
+                location.href='campaign/' + $(this).attr('data-uuid');
+            }
+        });
 
     </script>
 
