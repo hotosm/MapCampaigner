@@ -49,10 +49,18 @@
                 <div id="panel-campaign">
                 {% for campaign in campaigns %}
                     <div class="panel-body">
-                        <div class="panel panel-primary">
+                        <div class="panel panel-primary" data-uuid="{{ campaign.uuid }}">
                             <div class="panel-heading">
                                 <h4>{{ campaign.name }}</h4>
-                                <p style="font-size: 9pt;">{{ campaign.description }}</p>
+                            </div>
+                            <div class="panel-body">
+                                <p style="font-size: 9pt;" class="panel-description">
+                                    {% if campaign.description %}
+                                        {{ campaign.description }}
+                                    {% else %}
+                                        No description
+                                    {% endif %}
+                                </p>
                             </div>
                             <a href="#" class="campaign-list campaign-list-disabled"
                                data-managers="{{ campaign.campaign_managers}}" data-uuid="{{ campaign.uuid }}">
@@ -79,20 +87,20 @@
 
     <script type="text/javascript">
 
-    var map = L.map('campaign-map').setView([0, 0], 1);
-    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-        'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-        maxZoom: 15
-    }).addTo(map);
+        var map = L.map('campaign-map').setView([0, 0], 1);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
+            'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            maxZoom: 15
+        }).addTo(map);
 
-    $('#create-campaign').click(function () {
-        if (window.isAuthenticated) {
-            location.href='create';
-        } else {
-            showNotifications('You need to login first.', 'danger');
-        }
-    });
+        $('#create-campaign').click(function () {
+            if (window.isAuthenticated) {
+                location.href='create';
+            } else {
+                showNotifications('You need to login first.', 'danger');
+            }
+        });
 
     </script>
 
@@ -114,14 +122,24 @@
 
                 if(containsObject(currentUser, managers)) {
                     $campaign.removeClass('campaign-list-disabled');
+                } else {
+                    $campaign.remove();
                 }
             }
         }
 
         $('.campaign-list').click(function () {
             if(!$(this).hasClass('campaign-list-disabled')) {
-                location.href='campaign/' + $(this).attr('data-uuid');
+                location.href='campaign/edit/' + $(this).attr('data-uuid');
             }
+        });
+
+        $('#panel-campaign .panel-body .panel-body').click(function(){
+            location.href='campaign/' + $(this).parent().attr('data-uuid');
+        });
+
+        $('#panel-campaign .panel-body .panel-heading').click(function(){
+            location.href='campaign/' + $(this).parent().attr('data-uuid');
         });
 
     </script>

@@ -492,16 +492,23 @@ table.dataTable thead .sorting:after {
   margin-top: -10px;
 }
 
-.campaign-list-disabled .panel-footer {
-  color: #bebebe;
-  border-radius: 0;
-}
-
-.campaign-list-disabled .panel-footer:hover {
-  cursor: default;
-  color: #BEBEBE;
+.campaign-list-disabled {
+  display: none;
 }
 
 .function-selection, .function-feature, .function-attributes {
   height: 30px !important;
+}
+
+#panel-campaign>.panel-body {
+  padding-bottom: 0;
+}
+
+#panel-campaign .panel-body .panel-body:hover{
+  background-color: rgba(60, 176, 254, 0.15);
+  cursor: pointer;
+}
+
+#panel-campaign .panel-body .panel-heading:hover{
+  cursor: pointer;
 }
