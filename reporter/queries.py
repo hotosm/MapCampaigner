@@ -90,6 +90,69 @@ POTENTIAL_IDP_OVERPASS_QUERY = (
     'out {print_mode};'
 )
 
+POTENTIAL_IDP_OVERPASS_QUERY_POLYGON = (
+    '('
+    # Amenity school
+    'node["amenity"="school"]'
+    '(poly:"{polygon}");'
+    'way["amenity"="school"]'
+    '(poly:"{polygon}");'
+    'relation["amenity"="school"]'
+    '(poly:"{polygon}");'
+
+    # Amenity hospital
+    'node["amenity"="hospital"]'
+    '(poly:"{polygon}");'
+    'way["amenity"="hospital"]'
+    '(poly:"{polygon}");'
+    'relation["amenity"="hospital"]'
+    '(poly:"{polygon}");'
+
+    # Amenity university
+    'node["amenity"="university"]'
+    '(poly:"{polygon}");'
+    'way["amenity"="university"]'
+    '(poly:"{polygon}");'
+    'relation["amenity"="university"]'
+    '(poly:"{polygon}");'
+
+    # Amenity college
+    'node["amenity"="college"]'
+    '(poly:"{polygon}");'
+    'way["amenity"="college"]'
+    '(poly:"{polygon}");'
+    'relation["amenity"="college"]'
+    '(poly:"{polygon}");'
+
+    # Amenity place of worship
+    'node["amenity"="place_of_worship"]'
+    '(poly:"{polygon}");'
+    'way["amenity"="place_of_worship"]'
+    '(poly:"{polygon}");'
+    'relation["amenity"="place_of_worship"]'
+    '(poly:"{polygon}");'
+
+    # Building public
+    'node["building"="public"]'
+    '(poly:"{polygon}");'
+    'way["building"="public"]'
+    '(poly:"{polygon}");'
+    'relation["building"="public"]'
+    '(poly:"{polygon}");'
+
+    # Leisure sport centre
+    'node["leisure"="sport_centre"]'
+    '(poly:"{polygon}");'
+    'way["leisure"="sport_centre"]'
+    '(poly:"{polygon}");'
+    'relation["leisure"="sport_centre"]'
+    '(poly:"{polygon}");'
+
+    ');'
+    '(._;>;);'
+    'out {print_mode};'
+)
+
 EVACUATION_CENTERS_OVERPASS_QUERY = (
     '('
     'node["evacuation_center"="yes"]'
@@ -102,6 +165,19 @@ EVACUATION_CENTERS_OVERPASS_QUERY = (
     '(._;>;);'
     'out {print_mode};')
 
+EVACUATION_CENTERS_OVERPASS_QUERY_POLYGON = (
+    '('
+    'node["evacuation_center"="yes"]'
+    '(poly:"{polygon}");'
+    'way["evacuation_center"="yes"]'
+    '(poly:"{polygon}");'
+    'relation["evacuation_center"="yes"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+
 BUILDINGS_OVERPASS_QUERY = (
     '('
     'node["building"]'
@@ -110,6 +186,18 @@ BUILDINGS_OVERPASS_QUERY = (
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'relation["building"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BUILDINGS_OVERPASS_QUERY_POLYGON = (
+    '('
+    'node["building"]'
+    '(poly:"{polygon}");'
+    'way["building"]'
+    '(poly:"{polygon}");'
+    'relation["building"]'
+    '(poly:"{polygon}");'
     ');'
     '(._;>;);'
     'out {print_mode};')
@@ -126,12 +214,34 @@ ROADS_OVERPASS_QUERY = (
     '(._;>;);'
     'out {print_mode};')
 
+ROADS_OVERPASS_QUERY_POLYGON = (
+    '('
+    'node["highway"]'
+    '(poly:"{polygon}");'
+    'way["highway"]'
+    '(poly:"{polygon}");'
+    'relation["highway"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
 FLOOD_PRONE_OVERPASS_QUERY = (
     '('
     'way["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
     'relation["flood_prone"="yes"]'
     '({SW_lat},{SW_lng},{NE_lat},{NE_lng});'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+FLOOD_PRONE_OVERPASS_QUERY_POLYGON = (
+    '('
+    'way["flood_prone"="yes"]'
+    '(poly:"{polygon}");'
+    'relation["flood_prone"="yes"]'
+    '(poly:"{polygon}");'
     ');'
     '(._;>;);'
     'out {print_mode};')
@@ -245,6 +355,136 @@ BOUNDARY_11_OVERPASS_QUERY = (
     ');'
     '(._;>;);'
     'out {print_mode};')
+
+BOUNDARY_1_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="1"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="1"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_2_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="2"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="2"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_3_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="3"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="3"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_4_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="4"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="4"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_5_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="5"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="5"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_6_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="6"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="6"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_7_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="7"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="7"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_8_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="8"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="8"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_9_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="9"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="9"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_10_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="10"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="10"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+BOUNDARY_11_OVERPASS_QUERY_POLYGON = (
+    '('
+    'relation["boundary"="administrative"]["admin_level"="11"]'
+    '(poly:"{polygon}");'
+    'way["boundary"="administrative"]["admin_level"="11"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};')
+
+OVERPASS_QUERY_MAP_POLYGON = {
+    'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY_POLYGON,
+    'evacuation-centers': EVACUATION_CENTERS_OVERPASS_QUERY_POLYGON,
+    'buildings': BUILDINGS_OVERPASS_QUERY_POLYGON,
+    'building-points': BUILDINGS_OVERPASS_QUERY_POLYGON,
+    'flood-prone': FLOOD_PRONE_OVERPASS_QUERY_POLYGON,
+    'roads': ROADS_OVERPASS_QUERY_POLYGON,
+    'boundary-1': BOUNDARY_1_OVERPASS_QUERY_POLYGON,
+    'boundary-2': BOUNDARY_2_OVERPASS_QUERY_POLYGON,
+    'boundary-3': BOUNDARY_3_OVERPASS_QUERY_POLYGON,
+    'boundary-4': BOUNDARY_4_OVERPASS_QUERY_POLYGON,
+    'boundary-5': BOUNDARY_5_OVERPASS_QUERY_POLYGON,
+    'boundary-6': BOUNDARY_6_OVERPASS_QUERY_POLYGON,
+    'boundary-7': BOUNDARY_7_OVERPASS_QUERY_POLYGON,
+    'boundary-8': BOUNDARY_8_OVERPASS_QUERY_POLYGON,
+    'boundary-9': BOUNDARY_9_OVERPASS_QUERY_POLYGON,
+    'boundary-10': BOUNDARY_10_OVERPASS_QUERY_POLYGON,
+    'boundary-11': BOUNDARY_11_OVERPASS_QUERY_POLYGON,
+}
 
 OVERPASS_QUERY_MAP = {
     'potential-idp': POTENTIAL_IDP_OVERPASS_QUERY,

@@ -6,8 +6,11 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 )
 
 
-class FeatureCount(AbstractInsightsFunction):
-    function_name = "Number of feature in campaign"
+class UploadShapefile(AbstractInsightsFunction):
+    function_name = "Upload Shapefile"
+    category = ['coverage']
+    need_feature = False
+    need_required_attributes = False
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -29,20 +32,3 @@ class FeatureCount(AbstractInsightsFunction):
         :rtype: str
         """
         return ""
-
-    def get_required_attributes(self):
-        """ Get required attributes for function provider.
-        :return: list of required attributes
-        :rtype: [str]
-        """
-        return ""
-
-    def process_data(self, raw_data):
-        """ Get geometry of campaign.
-        :param raw_data: Raw data that returns by function provider
-        :type raw_data: dict
-
-        :return: processed data
-        :rtype: dict
-        """
-        return raw_data

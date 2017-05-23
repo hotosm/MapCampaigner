@@ -34,24 +34,39 @@ class Campaign(JsonModel):
         self.edited_at = time.ctime(os.path.getmtime(self.json_path))
         self.parse_json_file()
 
-    def update_data(self, dict, uploader):
+    def update_data(self, data, uploader):
         """ Update data with new dict.
+
+        :param data: data that will be inserted
+        :type data: dict
+
+        :param uploader: uploader who created
+        :type uploader: str
         """
-        for key, value in dict.items():
+        for key, value in data.items():
             setattr(self, key, value)
+        self.geometry = json.loads(self.geometry)
+        self.selected_functions = json.loads(self.selected_functions)
         self.version += 1
         self.edited_by = uploader
 
         # save updated campaign to json
-        dict = self.to_dict()
-        Campaign.validate(dict, self.uuid)
-        json_str = Campaign.serialize(dict)
+        data = self.to_dict()
+        Campaign.validate(data, self.uuid)
+        json_str = Campaign.serialize(data)
         json_path = os.path.join(
             Campaign.get_json_folder(), '%s.json' % self.uuid
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+    def get_selected_functions_in_string(self):
+        """ Get selected function in string
+        :return: Get selected function in string
+        :rtype: str
+        """
+        return json.dumps(self.selected_functions).replace('None', 'null');
 
     def parse_json_file(self):
         """ Parse json file for this campaign.
@@ -72,31 +87,64 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
 
-    def render_side_bar(self):
-        """Testing for render sidebar"""
+    def insight_function_data(self, insight_function_id):
+        """Get data from insight_function
+
+        :param insight_function_id: id of insight function
+        :type insight_function_id: str
+
+        :return: data from insight function
+        :rtype: dict
+        """
+        if insight_function_id not in self.selected_functions:
+            raise Campaign.InsightsFunctionNotAssignedToCampaign
+        try:
+            function = self.selected_functions[insight_function_id]
+            SelectedFunction = getattr(
+                selected_functions, function['function'])
+            selected_function = SelectedFunction(
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
+            selected_function.run()
+            output = {
+                'title': selected_function.name(),
+                'data': selected_function.get_function_data()
+            }
+            return output
+        except AttributeError as e:
+            return {}
+
+    def render_insights_function(self, insight_function_id):
+        """Get rendered UI from insight_function
+
+        :param insight_function_id: name of insight function
+        :type insight_function_id: str
+
+        :return: rendered UI from insight function
+        :rtype: str
+        """
         campaing_ui = ''
-        for selected_function_name in self.selected_functions:
-            try:
-                SelectedFunction = getattr(
-                    selected_functions, selected_function_name)
-                selected_function = SelectedFunction(self)
+        try:
+            function = self.selected_functions[insight_function_id]
+            SelectedFunction = getattr(
+                selected_functions, function['function'])
+            selected_function = SelectedFunction(
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
+        except AttributeError as e:
+            return campaing_ui
 
-                if selected_function.function_name:
-                    function_name = selected_function.function_name
-                else:
-                    function_name = selected_function_name
-
-                context = {
-                    'selected_function_name': function_name,
-                    'widget': selected_function.get_ui_html()
-                }
-                campaing_ui += render_template(
-                    'campaign_widget/sidebar.html',
-                    **context
-                )
-            except AttributeError:
-                pass
-
+        # render UI
+        context = {
+            'selected_function_name': selected_function.name(),
+            'widget': selected_function.get_ui_html()
+        }
+        campaing_ui += render_template(
+            'campaign_widget/sidebar.html',
+            **context
+        )
         return campaing_ui
 
     @staticmethod
@@ -105,31 +153,39 @@ class Campaign(JsonModel):
             module_path(), 'campaigns_data', 'campaign')
 
     @staticmethod
-    def serialize(dict):
+    def serialize(data):
         """Serialize campaign dictionary
 
-        :key dict: dictionary
-        :type dict: dict
+        :key data: dictionary
+        :type data: dict
         """
-        dict['start_date'] = dict['start_date'].strftime('%Y-%m-%d')
-        if dict['end_date']:
-            dict['end_date'] = dict['end_date'].strftime('%Y-%m-%d')
-        json_str = json.dumps(dict)
+        data['start_date'] = data['start_date'].strftime('%Y-%m-%d')
+        if data['end_date']:
+            data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
+        json_str = json.dumps(data)
         return json_str
 
     @staticmethod
-    def create(dict, uploader):
+    def create(data, uploader):
         """Validate found dict based on campaign class.
         uuid should be same as uuid file.
+
+        :param data: data that will be inserted
+        :type data: dict
+
+        :param uploader: uploader who created
+        :type uploader: str
         """
-        dict['version'] = 1
-        dict['edited_by'] = uploader
-        dict['campaign_creator'] = uploader
+        data['version'] = 1
+        data['edited_by'] = uploader
+        data['campaign_creator'] = uploader
 
-        uuid = dict['uuid']
-        Campaign.validate(dict, uuid)
+        uuid = data['uuid']
+        Campaign.validate(data, uuid)
+        data['geometry'] = json.loads(data['geometry'])
+        data['selected_functions'] = json.loads(data['selected_functions'])
 
-        json_str = Campaign.serialize(dict)
+        json_str = Campaign.serialize(data)
         json_path = os.path.join(
             Campaign.get_json_folder(), '%s.json' % uuid
         )
@@ -183,16 +239,22 @@ class Campaign(JsonModel):
             raise Campaign.DoesNotExist()
 
     @staticmethod
-    def validate(dict, uuid):
+    def validate(data, uuid):
         """Validate found dict based on campaign class.
         uuid should be same as uuid file.
+
+        :param data: data that will be inserted
+        :type data: dict
+
+        :param uuid: UUID of campaign
+        :type uuid: str
         """
         required_attributes = [
             'uuid', 'version', 'campaign_creator', 'edited_by', 'name']
         for required_attribute in required_attributes:
-            if required_attribute not in dict:
+            if required_attribute not in data:
                 raise JsonModel.RequiredAttributeMissed(required_attribute)
-            if uuid != dict['uuid']:
+            if uuid != data['uuid']:
                 raise Exception('UUID is not same in json.')
         return True
 
@@ -201,3 +263,13 @@ class Campaign(JsonModel):
         def __init__(self):
             self.message = "Campaign doesn't exist"
             super(Campaign.DoesNotExist, self).__init__(self.message)
+
+    @staticmethod
+    class InsightsFunctionNotAssignedToCampaign(Exception):
+        def __init__(self):
+            self.message = "" \
+                           "This insights function not " \
+                           "assigned to this campaign"
+            super(
+                Campaign.InsightsFunctionNotAssignedToCampaign, self).__init__(
+                self.message)
