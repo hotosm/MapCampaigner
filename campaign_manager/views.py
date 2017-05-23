@@ -98,6 +98,39 @@ def get_selected_functions():
     return funct_dict
 
 
+@campaign_manager.route('/campaign/create', methods=['GET', 'POST'])
+def create_create_campaign():
+    import uuid
+    from flask import url_for, redirect
+    from campaign_manager.forms.campaign import CampaignForm
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    form = CampaignForm(request.form)
+    if form.validate_on_submit():
+        data = form.data
+        data.pop('csrf_token')
+        data.pop('submit')
+
+        data['uuid'] = uuid.uuid4().hex
+        Campaign.create(data, form.uploader.data)
+        return redirect(
+            url_for(
+                'campaign_manager.get_campaign',
+                uuid=data['uuid'])
+        )
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+    context['action'] = '/campaign_manager/campaign/create'
+    context['campaigns'] = Campaign.all()
+    context['categories'] = AbstractInsightsFunction.CATEGORIES
+    context['functions'] = get_selected_functions()
+    return render_template(
+        'create_campaign_form.html', form=form, **context)
+
+
 @campaign_manager.route('/create', methods=['GET', 'POST'])
 def create_campaign():
     import uuid

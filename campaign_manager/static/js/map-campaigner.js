@@ -96,3 +96,7 @@ function containsObject(obj, list) {
     }
     return false;
 }
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
