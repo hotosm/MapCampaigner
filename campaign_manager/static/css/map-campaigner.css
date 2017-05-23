@@ -512,3 +512,12 @@ table.dataTable thead .sorting:after {
 #panel-campaign .panel-body .panel-heading:hover{
   cursor: pointer;
 }
+
+.campaign-marker {
+  font-size: 12pt;
+}
+
+.campaign-marker a:hover {
+  text-decoration: none;
+  color: #005f86;
+}

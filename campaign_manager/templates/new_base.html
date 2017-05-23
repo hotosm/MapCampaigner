@@ -81,6 +81,9 @@
     <!-- OsmAuth JavaScript -->
     <script type="text/javascript" src="/campaign_manager/static/libs/osmauth.js"></script>
 
+    <!-- Leaflet Color Markers -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/leaflet-color-markers/leaflet-color-markers.js"></script>
+
     <!-- Datepicker JavaScript -->
     <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
     <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
@@ -174,7 +177,7 @@
                     if (map) {
                         that.locationMarker = L.marker([lat, long]).addTo(map);
                         map.setView([lat, long], 8);
-                        that.locationMarker.bindPopup("Your location from osm").openPopup();
+                        that.locationMarker.bindPopup("Your location from osm");
                     }
                 }
 

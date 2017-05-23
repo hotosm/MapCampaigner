@@ -4,6 +4,10 @@
 
 {% block content %}
 
+    <script type="text/javascript">
+        var allCampaignPosition = [];
+    </script>
+
     <div class="row">
         <div class="col-lg-8">
             <div class="panel panel-default">
@@ -72,6 +76,12 @@
                             </a>
                         </div>
                     </div>
+                    <script type="text/javascript">
+                        var geometry = {{ campaign.geometry | safe }};
+                        geometry.features[0]['properties']['name'] = "{{ campaign.name }}";
+                        geometry.features[0]['properties']['uuid'] = "{{ campaign.uuid }}";
+                        allCampaignPosition.push(geometry);
+                    </script>
                 {% endfor %}
                 </div>
             </div>
@@ -92,6 +102,32 @@
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 15
+        }).addTo(map);
+
+        console.log(allCampaignPosition);
+
+        L.geoJson(allCampaignPosition, {
+            onEachFeature: function (feature, layer) {
+                // Check if feature is a polygon
+                if (feature.geometry.type === 'Polygon') {
+                    // Don't stroke and do opaque fill
+                    layer.setStyle({
+                        'weight': 0.3,
+                        'fillOpacity': 0.3
+                    });
+                    // Get bounds of polygon
+                    var bounds = layer.getBounds();
+                    // Get center of bounds
+                    var center = bounds.getCenter();
+                    // Use center to put marker on map
+                    var marker = L.marker(center, {icon: orangeIcon}).addTo(map);
+                    marker.bindPopup(
+                        '<div class="campaign-marker"><a href="campaign/'+ feature['properties']['uuid'] +'"> ' +
+                        feature['properties']['name'] +
+                        '</a></div>'
+                    );
+                }
+            }
         }).addTo(map);
 
         $('#create-campaign').click(function () {
@@ -136,9 +172,7 @@
         }
 
         $('.campaign-list').click(function () {
-            if(!$(this).hasClass('campaign-list-disabled')) {
-                location.href='edit/' + $(this).attr('data-uuid');
-            }
+            location.href='edit/' + $(this).attr('data-uuid');
         });
 
         $('#panel-campaign .panel-body .panel-body').click(function(){
