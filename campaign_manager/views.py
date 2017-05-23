@@ -37,8 +37,8 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """
     try:
         campaign = Campaign.get(uuid)
-        data = campaign.insight_function_data(insight_function_id)
-        return Response(json.dumps(data))
+        rendered_html = campaign.render_insights_function(insight_function_id)
+        return Response(rendered_html)
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 

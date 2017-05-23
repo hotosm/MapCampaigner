@@ -16,7 +16,7 @@ class CountFeature(AbstractInsightsFunction):
         :return: string name of html
         :rtype: str
         """
-        return ""
+        return "piechart"
 
     def get_summary_html_file(self):
         """ Get summary name in templates
@@ -42,5 +42,19 @@ class CountFeature(AbstractInsightsFunction):
         :return: Processed data
         :rtype: dict
         """
-        dict = {}
-        return len(data)
+        output = {}
+        for current_data in data:
+            building_key = 'building'
+            if building_key not in current_data:
+                building_key = 'amenity'
+
+            try:
+                building_type = current_data[building_key]
+            except KeyError:
+                building_type = 'unknown'
+
+            if building_type not in output:
+                output[building_type] = 0
+            output[building_type] += 1
+
+        return output

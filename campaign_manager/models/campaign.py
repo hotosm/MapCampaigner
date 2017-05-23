@@ -114,36 +114,36 @@ class Campaign(JsonModel):
         except AttributeError as e:
             return {}
 
-    def render_side_bar(self, insight_function):
+    def render_insights_function(self, insight_function_id):
         """Get rendered UI from insight_function
 
-        :param insight_function: name of insight function
-        :type insight_function: str
+        :param insight_function_id: name of insight function
+        :type insight_function_id: str
 
         :return: rendered UI from insight function
         :rtype: str
         """
         campaing_ui = ''
         try:
+            function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, insight_function)
-            selected_function = SelectedFunction(self)
+                selected_functions, function['function'])
+            selected_function = SelectedFunction(
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
+        except AttributeError as e:
+            return campaing_ui
 
-            if selected_function.function_name:
-                function_name = selected_function.function_name
-            else:
-                function_name = insight_function
-
-            context = {
-                'selected_function_name': function_name,
-                'widget': selected_function.get_ui_html()
-            }
-            campaing_ui += render_template(
-                'campaign_widget/sidebar.html',
-                **context
-            )
-        except AttributeError:
-            pass
+        # render UI
+        context = {
+            'selected_function_name': selected_function.name(),
+            'widget': selected_function.get_ui_html()
+        }
+        campaing_ui += render_template(
+            'campaign_widget/sidebar.html',
+            **context
+        )
         return campaing_ui
 
     @staticmethod

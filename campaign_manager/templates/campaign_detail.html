@@ -111,13 +111,7 @@
             $.ajax({
                 url: url,
                 success: function (data) {
-                    data = $.parseJSON(data);
-                    $('#selected-function').append(
-                            "<b>" + data['title'] +
-                            "</b>" +
-                            "<div>" + JSON.stringify(data['data']) +
-                            "</div>"
-                    );
+                    $('#selected-function').append(data);
                 }
             })
         }
