@@ -500,12 +500,16 @@ table.dataTable thead .sorting:after {
   height: 30px !important;
 }
 
+#panel-campaign .panel-primary {
+  border: 0;
+}
+
 #panel-campaign>.panel-body {
   padding-bottom: 0;
 }
 
 #panel-campaign .panel-body .panel-body:hover{
-  background-color: rgba(60, 176, 254, 0.15);
+  background-color: #f7f7f7;
   cursor: pointer;
 }
 
@@ -520,4 +524,91 @@ table.dataTable thead .sorting:after {
 .campaign-marker a:hover {
   text-decoration: none;
   color: #005f86;
+}
+
+/*==================================================
+ * Panel Dashboard
+ * ===============================================*/
+
+.panel-dashboard {
+  text-align: center;
+}
+
+.panel-green.panel-dashboard>.panel-heading,
+.panel-green.panel-dashboard>.panel-body{
+  color: #5cb85c !important;
+}
+.panel-green.panel-dashboard>.panel-footer{
+  background-color: #5cb85c;
+  color: white;
+}
+
+.panel-yellow.panel-dashboard>.panel-heading,
+.panel-yellow.panel-dashboard>.panel-body{
+  color: #f0ad4e !important;
+}
+.panel-yellow.panel-dashboard>.panel-footer{
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.panel-blue.panel-dashboard>.panel-heading,
+.panel-blue.panel-dashboard>.panel-body{
+  color: #4e91f0 !important;
+}
+.panel-blue.panel-dashboard>.panel-footer{
+  background-color: #4e91f0;
+  color: white;
+}
+
+.panel-purple.panel-dashboard>.panel-heading,
+.panel-purple.panel-dashboard>.panel-body{
+  color: #817dab !important;
+}
+.panel-purple.panel-dashboard>.panel-footer{
+  background-color: #817dab;
+  color: white;
+}
+
+.panel-red.panel-dashboard>.panel-heading,
+.panel-red.panel-dashboard>.panel-body{
+  color: #e76f4a !important;
+}
+.panel-red.panel-dashboard>.panel-footer{
+  background-color: #e76f4a;
+  color: white;
+}
+
+.panel-dashboard {
+  border-width: 0;
+}
+
+.panel-dashboard .panel-heading {
+  background-color: white;
+  border-bottom: 0;
+  padding-bottom: 0;
+  font-size: 12pt;
+}
+
+.panel-dashboard .panel-body {
+  padding-top: 0;
+  padding-bottom: 5px;
+  font-size: 60px;
+  font-weight: bolder;
+}
+
+.panel-dashboard .panel-footer {
+  border-radius: 0;
+  font-size: 12pt;
+}
+
+/*==================================================
+ * Shadow for panel
+ * ===============================================*/
+.shadow-panel-1
+{
+    position:relative;
+    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
+       -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
+            box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
 }

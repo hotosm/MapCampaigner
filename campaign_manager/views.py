@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import inspect
 from flask import request, render_template, Response
@@ -57,9 +58,39 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['campaigns'] = Campaign.all()
         context['geometry'] = json.dumps(campaign.geometry)
         context['selected_functions'] = campaign.get_selected_functions_in_string()
+
+        # Calculate remaining day
+        try:
+            current = datetime.now()
+            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            remaining = end_date - current
+            context['remaining_days'] = remaining.days if remaining.days > 0 else 0
+        except TypeError:
+            context['remaining_days'] = '-'
+
+        # Start date
+        try:
+            start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
+            context['start_date_date'] = start_date.strftime('%d %b')
+            context['start_date_year'] = start_date.strftime('%Y')
+        except TypeError:
+            context['start_date_date'] = '-'
+            context['start_date_year'] = '-'
+
+        # End date
+        try:
+            start_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            context['end_date_date'] = end_date.strftime('%d %b')
+            context['end_date_year'] = end_date.strftime('%Y')
+        except TypeError:
+            context['end_date_date'] = '-'
+            context['end_date_year'] = '-'
+
+        # Participant
+        context['participants'] = len(campaign.campaign_managers)
+
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
