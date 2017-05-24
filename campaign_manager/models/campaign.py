@@ -139,7 +139,7 @@ class Campaign(JsonModel):
         # render UI
         context = {
             'selected_function_name': selected_function.name().split('-')[0],
-            'icon': 'pie-chart',
+            'icon': selected_function.icon,
             'widget': selected_function.get_ui_html()
         }
         campaing_ui += render_template(
