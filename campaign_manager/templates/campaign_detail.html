@@ -169,11 +169,17 @@
 
         var uuid = '{{ uuid }}';
         var selected_functions = {{ selected_functions | safe }};
+        var feature_collected = [];
+        var feature_collected_count = 0;
 
         $(function () {
             $('#features').LoadingOverlay("show", {image : "/campaign_manager/static/resources/loading-spinner.gif"});
             $.each(selected_functions, function (key, selected_function) {
                 get_function(key);
+                if(!containsObject(selected_function['feature'], feature_collected)) {
+                    feature_collected.push(selected_function['feature']);
+                    get_metadata(key);
+                }
             })
         });
 
@@ -199,6 +205,19 @@
                         '<div class="col-lg-6">'+
                             data+
                         '</div>');
+                }
+            });
+        }
+
+        function get_metadata(function_id) {
+            var url = '/campaign_manager/campaign/'+uuid+'/'+function_id+'/metadata';
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    var dataObj = JSON.parse(data);
+                    feature_collected_count += dataObj["collected_data_count"];
+                    $('#features').LoadingOverlay('hide');
+                    $('#features .panel-body').html(feature_collected_count);
                 }
             });
         }
