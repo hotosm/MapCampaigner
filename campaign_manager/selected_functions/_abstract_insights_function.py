@@ -24,9 +24,11 @@ class AbstractInsightsFunction(object):
     EXTRA_MAPPING = {
         'amenity': 'building'
     }
-    _function_data = None
-    _function_raw_data = None
+    _function_raw_data = None  # data exaclty from osm
+    _function_good_data = None  # cleaned data
+    _function_data = None  # data that used by others
 
+    icon = 'pie-chart'
     function_name = None
     campaign = None
 
@@ -49,6 +51,7 @@ class AbstractInsightsFunction(object):
         :return: string of name
         """
         name = self.function_name
+        print(self.feature)
         if self.feature:
             name = '%s - feature:%s' % (name, self.feature)
             if self.required_attributes:
@@ -72,7 +75,7 @@ class AbstractInsightsFunction(object):
             return {}
 
         return {
-            'collected_data_count': len(self._function_raw_data['elements']),
+            'collected_data_count': len(self._function_good_data),
             'filtered_data_count': len(self._function_data)
         }
 
@@ -122,6 +125,7 @@ class AbstractInsightsFunction(object):
         :return: processed data
         :rtype: dict
         """
+        good_data = []
         processed_data = []
         required_attributes = {}
         # parsing attributes
@@ -145,6 +149,8 @@ class AbstractInsightsFunction(object):
             for raw_data in raw_datas['elements']:
                 if 'tags' in raw_data:
                     raw_attr = raw_data["tags"]
+                    good_data.append(raw_data)
+
                     # just get required attr
                     if len(req_attr) > 0:
                         is_fullfilling_requirement = True
@@ -165,6 +171,7 @@ class AbstractInsightsFunction(object):
                             processed_data.append(clean_data)
                     else:
                         processed_data.append(raw_attr)
+        self._function_good_data = good_data
         return processed_data
 
     # -------------------------------------------------------------

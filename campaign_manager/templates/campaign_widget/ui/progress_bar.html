@@ -1,0 +1,22 @@
+<h3 class="progress-bar-indicator">{{ data.complete }}/{{ data.total }} ({{ data.percentage }} %)</h3>
+<div class="progress-bar-wrapper">
+    <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
+</div>
+<style type="text/css">
+    .progress-bar-indicator {
+        color: #AC3232;
+        margin-top: 0px;
+    }
+
+    .progress-bar-wrapper {
+        background-color: #EBEBEB;
+        border-radius: 50px;
+        height: 10px;
+    }
+
+    .progress-bar {
+        height: 10px;
+        background-color: #AC3232;
+        border-radius: 50px;
+    }
+</style>
