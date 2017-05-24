@@ -7,7 +7,8 @@ from wtforms.fields import (
     SelectMultipleField,
     StringField,
     SubmitField,
-    HiddenField
+    HiddenField,
+    TextAreaField
 )
 from wtforms.validators import DataRequired, Optional
 from campaign_manager.utilities import get_osm_user
@@ -16,9 +17,17 @@ from campaign_manager.utilities import get_osm_user
 class CampaignForm(FlaskForm):
     name = StringField(
         u'Campaign name',
-        validators=[DataRequired('Campaign name is needed')]
+        validators=[DataRequired('Campaign name is needed')],
+        description='Name for the campaign'
     )
-    campaign_status = StringField(u'Campaign status')
+    description = TextAreaField(
+        u'Campaign description',
+        description='Description for the campaign'
+    )
+    campaign_status = StringField(
+        u'Campaign status',
+        description='Status of the campaign'
+    )
     coverage = StringField(u'Coverage')
     start_date = DateField(u'Start date of campaign')
     end_date = DateField(u'End date of campaign', validators=[Optional()])

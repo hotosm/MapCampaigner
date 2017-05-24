@@ -25,7 +25,8 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     campaign_managers = []
-    selected_functions = {}
+    selected_functions = []
+    description = ''
 
     def __init__(self, uuid):
         self.uuid = uuid
@@ -137,11 +138,11 @@ class Campaign(JsonModel):
 
         # render UI
         context = {
-            'selected_function_name': selected_function.name(),
+            'selected_function_name': selected_function.name().split('-')[0],
             'widget': selected_function.get_ui_html()
         }
         campaing_ui += render_template(
-            'campaign_widget/sidebar.html',
+            'campaign_widget/insight_template.html',
             **context
         )
         return campaing_ui

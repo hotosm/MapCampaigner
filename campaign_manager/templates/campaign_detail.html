@@ -1,119 +1,226 @@
-{% extends "campaign_base.html" %}
-{% block extra_head %}
-    <title>{{ name }}</title>
-{% endblock %}
-{% block extra_css %}
-    <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
-    <style type="text/css">
-        label {
-            font-weight: 600;
-        }
+{% extends 'new_base.html' %}
 
-        h2 {
-            margin-bottom: 30px;
-        }
+{% block title %}{{ name }}{% endblock %}
 
-        .container {
-            text-align: center;
-            font-size: 16px;
-        }
 
-        #map {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
-
-        button {
-            width: 200px;
-        }
-
-        #campaign-managers a {
-            margin-right: 5px;
-            cursor: pointer !important;
-        }
-    </style>
-{% endblock %}
 {% block content %}
-    <h2>{{ name }}</h2>
-    <div class="row">
-        {# DETAIL #}
-        <div class="col-xs-6">
-            <div>
-                <label>Version : </label>{{ version }}
-            </div>
-            <div>
-                <label>Last edited by :</label> {{ edited_by }}
-            </div>
-            <div>
-                <label>Last edited at :</label> {{ edited_at }}
-            </div>
-            <div>
-                <label>Creator :</label> {{ campaign_creator }}
-            </div>
-            <div>
-                <label>Status :</label> {{ campaign_status }}
-            </div>
-            <div>
-                <label>Coverage :</label> {{ coverage }}
-            </div>
-            <div>
-                <label>Start Date :</label> {{ start_date }}
-            </div>
-            <div>
-                <label>End Date :</label> {{ campaign_status }}
-            </div>
-            <div class="campaign-managers">
-                <label>Campaign Manager :</label>
-                {% for campaign_manager in campaign_managers %}
-                    <a href="http://www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>,
-                {% endfor %}
-            </div>
-        </div>
-        {# SELECTED FUNCTIONS #}
-        <div id="selected-function" class="col-xs-6">
-        </div>
-    </div>
-    <div id="map"></div>
-    <button onclick="location.href='/campaign_manager/campaign/edit/{{ uuid }}'">Edit</button>
-{% endblock %}
-{% block extra_js %}
-    <script language="javascript"
-            type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
-    <script>
-        var uuid = '{{ uuid }}';
-        var functions = {{ selected_functions|safe }};
-        var drawnItems = new L.FeatureGroup();
-        var bounds = [
-            [-34.053726, 20.411482],
-            [-34.009483, 20.467358]
-        ];
-        $(document).ready(function () {
-            update(null);
-            {# init map #}
-            map = L.map('map');
-            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 18
-            }).addTo(map);
-            map.fitBounds(bounds);
-            {% if geometry %}
-                drawnItems = L.geoJSON($.parseJSON('{{ geometry|safe }}'));
-                map.addLayer(drawnItems);
-                map.fitBounds(drawnItems.getBounds());
-            {% endif %}
 
-            $.each(functions, function (key, insight_function) {
-                call_function(key);
-            });
+    <div class="row">
+
+        <div class="col-lg-1"></div>
+
+        <div class="col-lg-2">
+            <div class="panel panel-green panel-dashboard shadow-panel-1">
+                <div class="panel-heading">
+                    Ends In
+                </div>
+                <div class="panel-body">
+                    {{ remaining_days }}
+                </div>
+                <div class="panel-footer">
+                    Days
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div id="features" class="panel panel-yellow panel-dashboard shadow-panel-1">
+                <div class="panel-heading">
+                    Features
+                </div>
+                <div class="panel-body">
+                    0
+                </div>
+                <div class="panel-footer">
+                    Collected
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="panel panel-blue panel-dashboard shadow-panel-1">
+                <div class="panel-heading">
+                    By
+                </div>
+                <div class="panel-body">
+                    {{ participants }}
+                </div>
+                <div class="panel-footer">
+                    Participants
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="panel panel-purple panel-dashboard shadow-panel-1">
+                <div class="panel-heading">
+                    Started
+                </div>
+                <div class="panel-body panel-date">
+                    {{ start_date_date }}
+                </div>
+                <div class="panel-footer">
+                    {{ start_date_year }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="panel panel-red panel-dashboard shadow-panel-1">
+                <div class="panel-heading">
+                    Ends
+                </div>
+                <div class="panel-body panel-date">
+                    {{ end_date_date }}
+                </div>
+                <div class="panel-footer">
+                    {{ end_date_year }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-1"></div>
+
+    </div>
+
+    <hr/>
+
+    <div class="row">
+
+        <div class="col-lg-7">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
+                </div>
+                <div class="panel-body">
+                    <div id="campaign-map"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-th-list" aria-hidden="true"></i> Campaign Information
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            Name
+                            <span class="pull-right text-muted">
+                                {{ name }}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Version
+                            <span class="pull-right text-muted">
+                                {{ version }}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Last edited by
+                            <span class="pull-right text-muted">
+                                {{ edited_by }}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Creator
+                            <span class="pull-right text-muted">
+                                {{ campaign_creator }}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Status
+                            <span class="pull-right text-muted">
+                                {% if status %}
+                                    {{ status }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Coverage
+                            <span class="pull-right text-muted">
+                                {% if coverage %}
+                                    {{ coverage }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row" id="insight-row">
+    </div>
+
+{% endblock %}
+
+{% block after_base_js %}
+
+    <script src="/campaign_manager/static/libs/chartjs/Chart.bundle.min.js"></script>
+
+    <script>
+
+        var uuid = '{{ uuid }}';
+        var selected_functions = {{ selected_functions | safe }};
+        var feature_collected = [];
+        var feature_collected_count = 0;
+
+        $(function () {
+            $('#features').LoadingOverlay("show", {image : "/campaign_manager/static/resources/loading-spinner.gif"});
+            $.each(selected_functions, function (key, selected_function) {
+                get_function(key);
+                if(!containsObject(selected_function['feature'], feature_collected)) {
+                    feature_collected.push(selected_function['feature']);
+                    get_metadata(key);
+                }
+            })
         });
-        function call_function(function_id) {
+
+        var drawnItems = new L.FeatureGroup();
+        var map = L.map('campaign-map').setView([0, 0], 1);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
+            'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            maxZoom: 15
+        }).addTo(map);
+        {% if geometry %}
+            drawnItems = L.geoJSON($.parseJSON('{{ geometry|safe }}'));
+            map.addLayer(drawnItems);
+            map.fitBounds(drawnItems.getBounds());
+        {% endif %}
+    
+        function get_function(function_id) {
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
             $.ajax({
                 url: url,
                 success: function (data) {
-                    $('#selected-function').append(data);
+                    $('#insight-row').append(
+                        '<div class="col-lg-6">'+
+                            data+
+                        '</div>');
                 }
-            })
+            });
         }
+
+        function get_metadata(function_id) {
+            var url = '/campaign_manager/campaign/'+uuid+'/'+function_id+'/metadata';
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    var dataObj = JSON.parse(data);
+                    feature_collected_count += dataObj["collected_data_count"];
+                    $('#features').LoadingOverlay('hide');
+                    $('#features .panel-body').html(feature_collected_count);
+                }
+            });
+        }
+
     </script>
 {% endblock %}

@@ -1,0 +1,358 @@
+{% extends 'new_base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block extra_head %}
+
+    <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Campaign Form
+                </div>
+                <div class="panel-body" id="campaign-panel" style="display: none">
+                        <div class="row">
+                         <form id="campaign-form" method="POST" action="{{ action }}" role="form">
+                            <div class="col-lg-6" style="margin-bottom: -40px;">
+                                {{ form.hidden_tag() }}
+                                {% for field in form %}
+                                    {% if field.name != 'submit' and field.name != 'csrf_token' and field.name !='selected_functions' %}
+                                        <div class="form-group">
+                                            {% if field.name !='geometry' and field.name !='uploader' %}
+                                                <label>{{ field.label }}</label>
+                                                {% for error in form['errors'][field.name] %}
+                                                    <div class="error-form">{{ error }}</div>
+                                                {% endfor %}
+                                                {{ field() }}
+                                                <p class="help-block">{{ field.description }}</p>
+                                            {% else %}
+                                                {{ field() }}
+                                            {% endif %}
+                                        </div>
+                                        <br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <!-- /.col-lg-6 (nested) -->
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Campaign Map</label>
+                                    <div id="campaign-map"></div>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {% for category in categories %}
+                                    <div class="form-group" style="padding-bottom: 25px;">
+                                        <div id="{{ category }}-function" class="function-wrapper">
+                                            <label class="category-label">{{ category }} Functions</label>
+                                            <div class="function-form">
+                                            </div>
+                                            <button id="{{ category }}-function-add" class="btn btn-outline btn-primary"
+                                                    type=button onclick="addFunction(this)" style="margin-top: 5px;">
+                                                <i class="fa fa-plus"></i> Add Function
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {{ form.submit }}
+                            </div>
+
+                        </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+{% endblock %}
+
+{% block after_base_js %}
+
+    <style>
+
+        #map {
+            height: 400px;
+        }
+
+        .submit-button {
+            margin-top: 20px;
+        }
+
+    </style>
+
+    <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+    <script type='text/template' id='_template-function-form'>
+        <div class="well well-sm" style="margin-bottom: 5px;">
+            <div class="function-form-row row" id="function-<%=index%>">
+                <div class="col-lg-1">
+                    <button class="btn btn-danger btn-sm btn-block" type=button onclick="removeFunction(this)">
+                        <i class="fa fa-times"></i> Remove </button>
+                </div>
+                <div class="col-lg-4">
+                    <select class="form-control function-selection" onchange="functionOnSelected(this)">
+                        <option value="">-------------------</option>
+                        {% for key in functions %}
+                            <option value="{{ key }}">{{ key }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-4">
+                    <select class="form-control function-feature" style="display: none">
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <input class="form-control function-attributes" style="display: none">
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+
+        var errors = {{ form['errors'] | safe}};
+        var functions = {{ functions|safe }};
+
+        if(!isEmpty(errors)) {
+            showNotifications('Failed to create a campaign!', 'danger');
+        }
+
+        $(function() {
+
+            $("#submit").click(function () {
+                $("#campaign-form").submit();
+            });
+
+            $('#campaign-form input').addClass('form-control');
+            $('#campaign-form textarea').addClass('form-control');
+            $('#campaign-form select').addClass('form-control');
+
+            $('.error-form').parent().addClass('has-error');
+
+            $('#submit').removeClass('form-control');
+            $('#submit').addClass('btn btn-outline btn-success submit-button btn-lg btn-block');
+
+            var $categoryLabels = $('.category-label');
+            for(var i=0; i<$categoryLabels.length; i++) {
+                var $label = $($categoryLabels[i]);
+                $label.html(capitalizeFirstLetter($label.html()));
+            }
+
+            {# selected functions#}
+            if ($("#selected_functions").val()) {
+                var selected_functions = $.parseJSON($("#selected_functions").val());
+                $.each(selected_functions, function (key, functions) {
+                    addFunction($('#' + functions['category'] + '-add'), functions);
+                });
+            }
+
+        });
+
+        if(!window.isAuthenticated) {
+            window.location.replace("/campaign_manager");
+        } else {
+            $('#campaign-panel').show();
+        }
+
+        function loginSuccess(response) {
+            clearNotification();
+            $('#campaign-panel').show();
+        }
+
+        function logoutSuccess() {
+            window.location.replace("/campaign_manager");
+        }
+
+        var drawnItems = new L.FeatureGroup();
+        var bounds = [
+            [-34.053726, 20.411482],
+            [-34.009483, 20.467358]
+        ];
+
+        function get_selected_functions(category) {
+            {# functions #}
+            var functions = {};
+            var rows = $('#' + category).find('.function-form').find('.function-form-row');
+            $.each(rows, function (index, row) {
+                if ($(row).find('.function-selection').val()) {
+                    functions[$(row).attr('id')] = {
+                        'function': $(row).find('.function-selection').val(),
+                        'feature': $(row).find('.function-feature').val(),
+                        'category': category,
+                        'attributes': $(row).find('.function-attributes').val()
+                    }
+                }
+            });
+            return functions;
+        }
+
+        $("#campaign-form").submit(function (event) {
+            $("#uploader").val($("#profile-name").html());
+            if (!auth.authenticated() || !$("#uploader").val()) {
+                window.location.replace("/campaign_manager/not-logged-in.html");
+            }
+
+            // Processing selected function
+            var selected_functions = {};
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
+            console.log(selected_functions);
+            $("#selected_functions").val(JSON.stringify(selected_functions));
+        });
+
+        var campaignMap = L.map('campaign-map');
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
+            'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            maxZoom: 18
+        }).addTo(campaignMap);
+
+        $("#submit").click(function () {
+            $("#form").submit();
+        });
+        $("#start_date").attr('data-language', 'en');
+        $("#end_date").attr('data-language', 'en');
+        $("#start_date").datepicker({
+            dateFormat: 'yyyy-mm-dd',
+            autoClose: true
+        });
+        $("#end_date").datepicker({
+            dateFormat: 'yyyy-mm-dd',
+            autoClose: true
+        });
+
+        {# init map #}
+        campaignMap.fitBounds(bounds);
+
+        if ($("#geometry").val()) {
+            drawnItems = L.geoJSON($.parseJSON($("#geometry").val()));
+            campaignMap.fitBounds(drawnItems.getBounds());
+        }
+        campaignMap.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            draw: {
+                polyline: false,
+                marker: false,
+                circle: false
+            },
+            edit: {
+                featureGroup: drawnItems
+            },
+            remove: {
+                featureGroup: drawnItems
+            }
+        }, this);
+
+        campaignMap.addControl(drawControl);
+        campaignMap.on('draw:created', saveLayer);
+        campaignMap.on('draw:edited', editLayer);
+        campaignMap.on('draw:deleted', deleteLayer);
+
+        function stringfyGeometry() {
+            var json = drawnItems.toGeoJSON();
+            $("#geometry").val(JSON.stringify(json));
+        }
+
+        function saveLayer(e) {
+            var layer = e.layer;
+            drawnItems.addLayer(layer);
+            stringfyGeometry();
+        }
+
+        function editLayer(e) {
+            var layer = e.layer;
+            stringfyGeometry();
+        }
+
+        function deleteLayer(e) {
+            var layers = e.layers;
+            layers.eachLayer(function (feature) {
+                drawnItems.removeLayer(feature);
+            });
+            stringfyGeometry();
+        }
+
+        function getFormElement(event, className) {
+            return $(event).closest("div").find(className);
+        }
+
+        var function_index = 1;
+        function addFunction(event, data) {
+            var template = _.template($("#_template-function-form").html());
+            var html = template({index: function_index});
+            getFormElement(event, '.function-form').append(html);
+
+            var row = $('#function-' + function_index);
+            var function_selections = getFormElement(row, '.function-selection').find('option');
+            $.each(function_selections, function(index, function_selection) {
+                var wrapper_id = $(row).closest('.function-wrapper').attr('id');
+                wrapper_id = wrapper_id.replace('-function', '');
+                if ($(function_selection).val()) {
+                    var categories = functions[$(function_selection).val()]['category'];
+                    if (jQuery.inArray(wrapper_id, categories) < 0) {
+                        $(function_selection).remove();
+                    }
+                }
+            });
+
+            if (data) {
+                getFormElement(row, '.function-selection').val(data['function']);
+                functionOnSelected(getFormElement(row, '.function-selection'));
+                getFormElement(row, '.function-feature').val(data['feature']);
+                getFormElement(row, '.function-attributes').val(data['attributes']);
+            }
+            function_index += 1;
+        }
+
+        function functionOnSelected(event) {
+            var $event = $(event).parent().parent();
+            getFormElement($event, '.function-feature').html('');
+            getFormElement($event, '.function-attributes').val('');
+            getFormElement($event, '.function-feature').hide();
+            getFormElement($event, '.function-attributes').hide();
+
+            if ($(event).val() !== '') {
+                var need_feature = functions[$(event).val()]['need_feature'];
+                var need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+                var features = functions[$(event).val()]['features'];
+
+                if (features && need_feature === 'true') {
+                    getFormElement($event, '.function-feature').show();
+                    $.each(features, function (index, feature) {
+                        getFormElement($event, '.function-feature').append(
+                                "<option value='" + feature + "'>" + feature + "</option>"
+                        );
+                    });
+                }
+                if (need_required_attributes === 'true') {
+                    getFormElement($event, '.function-attributes').show();
+                }
+            }
+
+            var selected_functions = {};
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
+            console.log(selected_functions);
+            console.log(JSON.stringify(selected_functions));
+        }
+
+        function removeFunction(event) {
+            $(event).parent().parent().parent().remove();
+        }
+    </script>
+
+{% endblock %}
