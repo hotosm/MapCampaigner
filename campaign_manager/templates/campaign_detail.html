@@ -156,13 +156,25 @@
 
     </div>
 
+    <div class="row" id="insight-row">
+    </div>
+
 {% endblock %}
 
 {% block after_base_js %}
+
+    <script src="/campaign_manager/static/libs/chartjs/Chart.bundle.min.js"></script>
+
     <script>
+
+        var uuid = '{{ uuid }}';
+        var selected_functions = {{ selected_functions | safe }};
 
         $(function () {
             $('#features').LoadingOverlay("show", {image : "/campaign_manager/static/resources/loading-spinner.gif"});
+            $.each(selected_functions, function (key, selected_function) {
+                get_function(key);
+            })
         });
 
         var drawnItems = new L.FeatureGroup();
@@ -177,5 +189,19 @@
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
         {% endif %}
+    
+        function get_function(function_id) {
+            var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $('#insight-row').append(
+                        '<div class="col-lg-6">'+
+                            data+
+                        '</div>');
+                }
+            });
+        }
+
     </script>
 {% endblock %}
