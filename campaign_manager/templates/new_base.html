@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Map Campaigner</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/campaign_manager/static/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/campaign_manager/static/libs/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link href="/campaign_manager/static/libs/leaflet/css/leaflet.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/campaign_manager/static/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/campaign_manager/static/css/map-campaigner.css" rel="stylesheet">
+
+    <!-- Datepicker CSS -->
+    <link rel="stylesheet" href="/static/css/datepicker.min.css" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        {% include 'campaign_widget/navigation.html' %}
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12" id="first-row">
+                    <h1 class="page-header">{% block title %}{% endblock %}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/campaign_manager/static/libs/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/campaign_manager/static/libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/campaign_manager/static/libs/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Leaflet JavaScript -->
+    <script src="/campaign_manager/static/libs/leaflet/js/leaflet.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/campaign_manager/static/js/map-campaigner.js"></script>
+
+    <!-- jQuery Loading Overlay -->
+    <script src="/campaign_manager/static/libs/jquery-loading-overlay/loadingoverlay.js"></script>
+
+    <!-- OsmAuth JavaScript -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/osmauth.js"></script>
+
+    <!-- Leaflet Color Markers -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/leaflet-color-markers/leaflet-color-markers.js"></script>
+
+    <!-- Datepicker JavaScript -->
+    <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
+
+    {% block before_base_js %}
+    {% endblock %}
+
+    <script type="text/javascript">
+        var locationMarker = null;
+        var loginProcess = false;
+
+        var auth = osmAuth({
+            oauth_secret: '{{ oauth_secret }}',
+            oauth_consumer_key: '{{ oauth_consumer_key }}',
+            auto: true,
+            landing: window.location.origin + '/campaign_manager/land'
+        });
+
+        $(document).ready(function () {
+            $('#login-menu').click(function () {
+                login();
+            });
+            $('#logout-menu').click(function () {
+                logout();
+            });
+        });
+
+        function login() {
+            showLoading();
+            loginProcess = true;
+            auth.authenticate(function () {
+                update();
+            })
+        }
+
+        function logout() {
+            auth.logout();
+            update();
+            logoutSuccess();
+        }
+
+        function update() {
+            window.isAuthenticated = auth.authenticated();
+            if (auth.authenticated()) {
+                if(typeof this.map !== 'undefined') {
+                    showDetails(map);
+                } else {
+                    showDetails();
+                }
+            } else {
+                if(typeof this.map !== 'undefined') {
+                    hideDetails(map);
+                } else {
+                    hideDetails();
+                }
+            }
+        }
+
+        function showDetails(map) {
+            $('#login-menu').hide();
+            $('#logout-menu').show();
+
+            var that = this;
+            auth.xhr({
+                method: 'GET',
+                path: '/api/0.6/user/details'
+            }, function (err, res) {
+                if (err) {
+                    $('#info').html('error! try clearing your browser cache');
+                    return;
+                }
+                var u = res.getElementsByTagName('user')[0];
+                var changesets = res.getElementsByTagName('changesets')[0];
+
+                var o = {
+                    display_name: u.getAttribute('display_name'),
+                    id: u.getAttribute('id'),
+                    count: changesets.getAttribute('count')
+                };
+
+                updated(o);
+
+                $('#profile-name').html(o.display_name);
+
+                var location = res.getElementsByTagName('home')[0];
+
+                if (typeof location !== 'undefined') {
+                    var long = location.getAttribute('lon');
+                    var lat = location.getAttribute('lat');
+                    var zoom = location.getAttribute('zoom');
+                    if (map) {
+                        that.locationMarker = L.marker([lat, long]).addTo(map);
+                        map.setView([lat, long], 8);
+                        that.locationMarker.bindPopup("Your location from osm");
+                    }
+                }
+
+                if(loginProcess) {
+                    loginSuccess(o);
+                    loginProcess = false;
+                }
+
+                hideLoading();
+            }, this);
+        }
+
+        function hideDetails(map) {
+            $('#login-menu').show();
+            $('#logout-menu').hide();
+
+            $('#profile-name').html('<i class="fa fa-user fa-fw profile-icon"></i>');
+
+            if (map) {
+                if (this.locationMarker) {
+                    map.removeLayer(this.locationMarker);
+                    map.setView([0, 0], 1);
+                }
+            }
+        }
+
+        update();
+
+        function loginSuccess(user) {
+        }
+        
+        function logoutSuccess() {
+        }
+
+        function updated(object) {
+            // Called after finished getting details of a user
+        }
+
+    </script>
+
+    {% block after_base_js %}
+    {% endblock %}
+
+</body>
+
+</html>

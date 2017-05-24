@@ -114,6 +114,30 @@ def split_bbox(bbox):
     return coordinates
 
 
+def split_polygon(polygon):
+    """Split polygon array to string.
+
+    :param polygon: list of array describing polygon area e.g. 
+    '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
+    [29.168701171875004,-26.34265280938059]]
+    :type polygon: list
+
+    :returns: A string of polygon e.g. 50.7 7.1 50.7 7.12 50.71 7.11
+    :rtype: str
+    """
+
+    if len(polygon) < 3:
+        raise ValueError('At least 3 lat/lon float value pairs must be provided')
+
+    polygon_string = ''
+
+    for poly in polygon:
+        polygon_string += ' '.join(map(str, poly))
+        polygon_string += ' '
+
+    return polygon_string.strip()
+
+
 def osm_object_contributions(osm_file, tag_name):
     """Compile a summary of user contributions for the selected osm data type.
 

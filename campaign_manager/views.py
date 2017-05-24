@@ -1,6 +1,17 @@
+from datetime import datetime
+import json
+import inspect
 from flask import request, render_template, Response
+
+from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
+from reporter import LOGGER
+from reporter.static_files import static_file
+import campaign_manager.selected_functions as selected_functions
+from  campaign_manager.selected_functions._abstract_insights_function import (
+    AbstractInsightsFunction
+)
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -24,14 +35,28 @@ def home():
     return render_template('index.html', **context)
 
 
-@campaign_manager.route('/campaign/<uuid>/sidebar')
-def get_campaign_sidebar(uuid):
+@campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
+def get_campaign_insight_function_data(uuid, insight_function_id):
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
     try:
         campaign = Campaign.get(uuid)
-        return Response(campaign.render_side_bar())
+        rendered_html = campaign.render_insights_function(insight_function_id)
+        return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/<insight_function_id>/metadata')
+def get_campaign_insight_function_data_metadata(uuid, insight_function_id):
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    try:
+        campaign = Campaign.get(uuid)
+        data = campaign.insights_function_data_metadata(insight_function_id)
+        return Response(json.dumps(data))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -46,8 +71,39 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['sidebar'] = campaign.render_side_bar()
-        context['campaigns'] = Campaign.all()
+        context['geometry'] = json.dumps(campaign.geometry)
+        context['selected_functions'] = campaign.get_selected_functions_in_string()
+
+        # Calculate remaining day
+        try:
+            current = datetime.now()
+            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            remaining = end_date - current
+            context['remaining_days'] = remaining.days if remaining.days > 0 else 0
+        except TypeError:
+            context['remaining_days'] = '-'
+
+        # Start date
+        try:
+            start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
+            context['start_date_date'] = start_date.strftime('%d %b')
+            context['start_date_year'] = start_date.strftime('%Y')
+        except TypeError:
+            context['start_date_date'] = '-'
+            context['start_date_year'] = '-'
+
+        # End date
+        try:
+            start_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            context['end_date_date'] = end_date.strftime('%d %b')
+            context['end_date_year'] = end_date.strftime('%Y')
+        except TypeError:
+            context['end_date_date'] = '-'
+            context['end_date_year'] = '-'
+
+        # Participant
+        context['participants'] = len(campaign.campaign_managers)
+
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
@@ -59,8 +115,35 @@ def get_campaign(uuid):
             'campaign_not_found.html', **context)
 
 
+def get_selected_functions():
+    """ Get selected function for form
+    """
+    functions = [
+        insights_function for insights_function in [
+            m[0] for m in inspect.getmembers(
+                selected_functions, inspect.isclass)
+            ]
+        ]
+
+    funct_dict = {}
+    for insight_function in functions:
+        SelectedFunction = getattr(
+            selected_functions, insight_function)
+        selected_function = SelectedFunction(None)
+        funct_dict[insight_function] = {}
+        funct_dict[insight_function]['need_feature'] = \
+            ('%s' % selected_function.need_feature).lower()
+        if not selected_function.feature:
+            funct_dict[insight_function]['features'] = selected_function.FEATURES
+        funct_dict[insight_function]['need_required_attributes'] = \
+            ('%s' % selected_function.need_required_attributes).lower()
+        funct_dict[insight_function]['category'] = \
+            selected_function.category
+    return funct_dict
+
+
 @campaign_manager.route('/campaign/create', methods=['GET', 'POST'])
-def create_campaign():
+def create_create_campaign():
     import uuid
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
@@ -86,11 +169,47 @@ def create_campaign():
     )
     context['action'] = '/campaign_manager/campaign/create'
     context['campaigns'] = Campaign.all()
+    context['categories'] = AbstractInsightsFunction.CATEGORIES
+    context['functions'] = get_selected_functions()
     return render_template(
         'create_campaign_form.html', form=form, **context)
 
 
-@campaign_manager.route('/campaign/edit/<uuid>', methods=['GET', 'POST'])
+@campaign_manager.route('/create', methods=['GET', 'POST'])
+def create_campaign():
+    import uuid
+    from flask import url_for, redirect
+    from campaign_manager.forms.campaign import CampaignForm
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    form = CampaignForm(request.form)
+    if form.validate_on_submit():
+        data = form.data
+        data.pop('csrf_token')
+        data.pop('submit')
+
+        data['uuid'] = uuid.uuid4().hex
+        Campaign.create(data, form.uploader.data)
+        return redirect(
+            url_for(
+                'campaign_manager.get_campaign',
+                uuid=data['uuid'])
+        )
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+    context['action'] = '/campaign_manager/create'
+    context['campaigns'] = Campaign.all()
+    context['categories'] = AbstractInsightsFunction.CATEGORIES
+    context['functions'] = get_selected_functions()
+    context['title'] = 'Create Campaign'
+    return render_template(
+        'create_campaign.html', form=form, **context)
+
+
+@campaign_manager.route('/edit/<uuid>', methods=['GET', 'POST'])
 def edit_campaign(uuid):
     import datetime
     from flask import url_for, redirect
@@ -107,8 +226,9 @@ def edit_campaign(uuid):
             form.campaign_status.data = campaign.campaign_status
             form.coverage.data = campaign.coverage
             form.campaign_managers.data = campaign.campaign_managers
-            form.selected_functions.data = campaign.selected_functions
-            form.geometry.data = campaign.geometry
+            form.description.data = campaign.description
+            form.geometry.data = json.dumps(campaign.geometry)
+            form.selected_functions.data = json.dumps(campaign.selected_functions)
             form.start_date.data = datetime.datetime.strptime(
                 campaign.start_date, '%Y-%m-%d')
             if campaign.end_date:
@@ -129,13 +249,16 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['action'] = '/campaign_manager/campaign/edit/%s' % uuid
+    context['action'] = '/campaign_manager/edit/%s' % uuid
     context['campaigns'] = Campaign.all()
+    context['categories'] = AbstractInsightsFunction.CATEGORIES
+    context['functions'] = get_selected_functions()
+    context['title'] = 'Edit Campaign'
     return render_template(
-        'create_campaign_form.html', form=form, **context)
+        'create_campaign.html', form=form, **context)
 
 
-@campaign_manager.route('/land.html')
+@campaign_manager.route('/land')
 def landing_auth():
     """OSM auth landing page.
     """
@@ -147,3 +270,13 @@ def not_logged_in():
     """Not logged in page.
     """
     return render_template('not_authenticated.html')
+
+
+if __name__ == '__main__':
+    if Config.DEBUG:
+        campaign_manager.debug = True
+        # set up flask to serve static content
+        campaign_manager.add_url_rule('/<path:path>', 'static_file', static_file)
+    else:
+        LOGGER.info('Running in production mode')
+    campaign_manager.run()

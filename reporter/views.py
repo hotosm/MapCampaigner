@@ -205,21 +205,3 @@ def user_status():
         else:
             node_data = osm_nodes_by_user(file_handle, username)
             return jsonify(d=node_data)
-
-
-if __name__ == '__main__':
-    parser = optparse.OptionParser()
-    parser.add_option(
-        '-d', '--debug', dest='debug', default=False,
-        help='turn on Flask debugging', action='store_true')
-
-    options, args = parser.parse_args()
-
-    if options.debug:
-        LOGGER.info('Running in debug mode')
-        reporter.debug = True
-        # set up flask to serve static content
-        reporter.add_url_rule('/<path:path>', 'static_file', static_file)
-    else:
-        LOGGER.info('Running in production mode')
-    reporter.run()
