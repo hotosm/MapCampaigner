@@ -25,6 +25,7 @@ class AbstractInsightsFunction(object):
         'amenity': 'building'
     }
     _function_data = None
+    _function_raw_data = None
 
     function_name = None
     campaign = None
@@ -56,9 +57,24 @@ class AbstractInsightsFunction(object):
 
     def run(self):
         """Process this function"""
-        raw_data = self._call_function_provider()
-        self._function_data = self._process_data(raw_data)
+        self._function_raw_data = self._call_function_provider()
+        self._function_data = self._process_data(self._function_raw_data)
         self._function_data = self.post_process_data(self._function_data)
+
+    def metadata(self):
+        """ Return metadata of data from collected data.
+        :return: Metadata of data from collected data.
+        """
+        if not self._function_raw_data:
+            self.run()
+
+        if 'elements' not in self._function_raw_data:
+            return {}
+
+        return {
+            'collected_data_count': len(self._function_raw_data['elements']),
+            'filtered_data_count': len(self._function_data)
+        }
 
     def get_function_data(self):
         """ Return function data

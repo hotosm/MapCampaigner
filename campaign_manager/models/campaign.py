@@ -146,6 +146,27 @@ class Campaign(JsonModel):
         )
         return campaing_ui
 
+    def insights_function_data_metadata(self, insight_function_id):
+        """Get rendered UI from insight_function
+
+        :param insight_function_id: name of insight function
+        :type insight_function_id: str
+
+        :return: rendered UI from insight function
+        :rtype: str
+        """
+        try:
+            function = self.selected_functions[insight_function_id]
+            SelectedFunction = getattr(
+                selected_functions, function['function'])
+            selected_function = SelectedFunction(
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
+            return selected_function.metadata()
+        except AttributeError as e:
+            return {}
+
     @staticmethod
     def get_json_folder():
         return os.path.join(

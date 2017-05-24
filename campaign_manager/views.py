@@ -43,6 +43,19 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
         return Response('Campaign not found')
 
 
+@campaign_manager.route('/campaign/<uuid>/<insight_function_id>/metadata')
+def get_campaign_insight_function_data_metadata(uuid, insight_function_id):
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    try:
+        campaign = Campaign.get(uuid)
+        data = campaign.insights_function_data_metadata(insight_function_id)
+        return Response(json.dumps(data))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     from campaign_manager.models.campaign import Campaign
