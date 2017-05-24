@@ -15,8 +15,7 @@
                 <div class="panel-heading">
                     Campaign Form
                 </div>
-                <div class="panel-body">
-
+                <div class="panel-body" id="campaign-panel" style="display: none">
                         <div class="row">
                          <form id="campaign-form" method="POST" action="{{ action }}" role="form">
                             <div class="col-lg-6" style="margin-bottom: -40px;">
@@ -163,15 +162,14 @@
         });
 
         if(!window.isAuthenticated) {
-            showNotifications('You need to login first.', 'danger');
-            $('#campaign-form').hide();
+            window.location.replace("/campaign_manager");
         } else {
-            $('#campaign-form').show();
+            $('#campaign-panel').show();
         }
 
         function loginSuccess(response) {
             clearNotification();
-            $('#campaign-form').show();
+            $('#campaign-panel').show();
         }
 
         function logoutSuccess() {
