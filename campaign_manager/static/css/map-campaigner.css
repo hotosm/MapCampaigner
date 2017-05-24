@@ -597,6 +597,12 @@ table.dataTable thead .sorting:after {
   font-weight: bolder;
 }
 
+.panel-date {
+  font-size: 40px !important;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
 .panel-dashboard .panel-footer {
   border-radius: 0;
   font-size: 12pt;
