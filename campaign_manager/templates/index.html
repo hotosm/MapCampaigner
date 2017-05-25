@@ -65,6 +65,17 @@
                                         No description
                                     {% endif %}
                                 </p>
+                                <p class="sub-description">
+                                    {% if campaign.tags %}
+                                        Tags :
+                                        {% for tag in campaign.tags %}
+                                            <a href="/campaign_manager/tags/{{ tag }}">{{ tag }}</a>
+                                            {% if tag != campaign.tags[-1] %}
+                                                ,
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </p>
                             </div>
                             <a href="#" class="campaign-list campaign-list-disabled"
                                data-managers="{{ campaign.campaign_managers}}" data-uuid="{{ campaign.uuid }}">

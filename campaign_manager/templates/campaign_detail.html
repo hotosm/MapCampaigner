@@ -175,7 +175,7 @@
                             <span class="pull-right text-muted">
                                 {% if tags %}
                                     {% for tag in tags %}
-                                        <a>{{ tag }}</a>
+                                        <a href="/campaign_manager/tags/{{ tag }}">{{ tag }}</a>
                                         {% if tag != tags[-1] %}
                                             ,
                                         {% endif %}
