@@ -105,8 +105,8 @@
                 <div class="col-lg-4">
                     <select class="form-control function-selection" onchange="functionOnSelected(this)">
                         <option value="">-------------------</option>
-                        {% for key in functions %}
-                            <option value="{{ key }}">{{ key }}</option>
+                        {% for key, value in functions.items() %}
+                            <option value="{{ key }}">{{ value.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -292,6 +292,7 @@
 
         var function_index = 1;
         function addFunction(event, data) {
+            $(event).blur();
             var template = _.template($("#_template-function-form").html());
             var html = template({index: function_index});
             getFormElement(event, '.function-form').append(html);

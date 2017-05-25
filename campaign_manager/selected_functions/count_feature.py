@@ -7,7 +7,7 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 
 
 class CountFeature(AbstractInsightsFunction):
-    function_name = "Count feature"
+    function_name = "Showing number of feature in group"
     category = ['quality']
     need_required_attributes = False
 

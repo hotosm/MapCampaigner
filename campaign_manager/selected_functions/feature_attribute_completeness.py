@@ -7,7 +7,7 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 
 
 class FeatureAttributeCompleteness(AbstractInsightsFunction):
-    function_name = "Feature attribute completeness"
+    function_name = "Showing percentage of feature completeness"
     category = ['quality']
     need_required_attributes = True
     icon = 'percent'
@@ -45,7 +45,7 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         """
         metadata = self.metadata()
         output = {
-            'percentage': '%.4f' % (
+            'percentage': '%.1f' % (
                 (len(data) / metadata['collected_data_count']) * 100
             ),
             'complete': len(data),

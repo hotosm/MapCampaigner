@@ -25,3 +25,13 @@ def get_osm_user():
     users = [x.strip() for x in content]
     users.sort()
     return users
+
+
+def get_tags():
+    osm_user_path = os.path.join(
+        module_path(), 'tag_data.txt')
+    with open(osm_user_path) as f:
+        content = f.readlines()
+    tags = [x.strip() for x in content]
+    tags.sort()
+    return tags
