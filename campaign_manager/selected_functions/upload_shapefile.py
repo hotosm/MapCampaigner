@@ -7,7 +7,7 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 
 
 class UploadShapefile(AbstractInsightsFunction):
-    function_name = "Upload Shapefile"
+    function_name = "Upload Shapefile for creating coverage"
     category = ['coverage']
     need_feature = False
     need_required_attributes = False

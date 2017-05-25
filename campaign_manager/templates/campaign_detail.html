@@ -1,6 +1,12 @@
 {% extends 'new_base.html' %}
 
-{% block title %}{{ name }}{% endblock %}
+{% block title %}
+    {{ name }}
+    {% if description %}
+        <br>
+        <i class="sub-title">{{ description }}</i>
+    {% endif %}
+{% endblock %}
 
 
 {% block content %}
@@ -132,8 +138,8 @@
                         <div class="list-group-item">
                             Status
                             <span class="pull-right text-muted">
-                                {% if status %}
-                                    {{ status }}
+                                {% if campaign_status %}
+                                    {{ campaign_status }}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -144,6 +150,36 @@
                             <span class="pull-right text-muted">
                                 {% if coverage %}
                                     {{ coverage }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Campaign Managers
+                            <span class="pull-right text-muted">
+                                {% if campaign_managers %}
+                                    {% for campaign_manager in campaign_managers %}
+                                        <a href="www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>
+                                        {% if campaign_manager != campaign_managers[-1] %}
+                                            ,
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            Tags
+                            <span class="pull-right text-muted">
+                                {% if tags %}
+                                    {% for tag in tags %}
+                                        <a>{{ tag }}</a>
+                                        {% if tag != tags[-1] %}
+                                            ,
+                                        {% endif %}
+                                    {% endfor %}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -173,10 +209,10 @@
         var feature_collected_count = 0;
 
         $(function () {
-            $('#features').LoadingOverlay("show", {image : "/campaign_manager/static/resources/loading-spinner.gif"});
+            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
             $.each(selected_functions, function (key, selected_function) {
                 get_function(key);
-                if(!containsObject(selected_function['feature'], feature_collected)) {
+                if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
                     get_metadata(key);
                 }
@@ -195,22 +231,22 @@
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
         {% endif %}
-    
+
         function get_function(function_id) {
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
             $.ajax({
                 url: url,
                 success: function (data) {
                     $('#insight-row').append(
-                        '<div class="col-lg-4">'+
-                            data+
-                        '</div>');
+                            '<div class="col-lg-4">' +
+                            data +
+                            '</div>');
                 }
             });
         }
 
         function get_metadata(function_id) {
-            var url = '/campaign_manager/campaign/'+uuid+'/'+function_id+'/metadata';
+            var url = '/campaign_manager/campaign/' + uuid + '/' + function_id + '/metadata';
             $.ajax({
                 url: url,
                 success: function (data) {

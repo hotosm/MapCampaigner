@@ -51,11 +51,10 @@ class AbstractInsightsFunction(object):
         :return: string of name
         """
         name = self.function_name
-        print(self.feature)
         if self.feature:
-            name = '%s - feature:%s' % (name, self.feature)
+            name = '%s for %s' % (name, self.feature)
             if self.required_attributes:
-                name = '%s - attributes:%s' % (name, self.required_attributes)
+                name = '%s with attributes %s' % (name, self.required_attributes)
         return name
 
     def run(self):

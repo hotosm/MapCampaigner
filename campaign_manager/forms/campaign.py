@@ -8,10 +8,11 @@ from wtforms.fields import (
     StringField,
     SubmitField,
     HiddenField,
-    TextAreaField
+    TextAreaField,
+    RadioField
 )
 from wtforms.validators import DataRequired, Optional
-from campaign_manager.utilities import get_osm_user
+from campaign_manager.utilities import get_osm_user, get_tags
 
 
 class CampaignForm(FlaskForm):
@@ -24,9 +25,13 @@ class CampaignForm(FlaskForm):
         u'Campaign description',
         description='Description for the campaign'
     )
-    campaign_status = StringField(
+    campaign_status = RadioField(
         u'Campaign status',
-        description='Status of the campaign'
+        description='Status of the campaign',
+        choices=[
+            ('Start', 'Start'),
+            ('Finish', 'Finish')
+        ]
     )
     coverage = StringField(u'Coverage')
     start_date = DateField(u'Start date of campaign')
@@ -35,6 +40,9 @@ class CampaignForm(FlaskForm):
     campaign_managers = SelectMultipleField(
         u'Managers of campaign',
         choices=[(user, user) for user in get_osm_user()])
+    tags = SelectMultipleField(
+        u'Tags of campaign',
+        choices=[(tag, tag) for tag in get_tags()])
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',
