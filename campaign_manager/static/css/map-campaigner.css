@@ -614,6 +614,11 @@ table.dataTable thead .sorting:after {
     display: none;
 }
 
+.sub-description {
+    font-size: 10px;
+
+}
+
 .function-form-row button, .function-selection, .function-feature, .function-attributes {
     height: 32px !important;
 }

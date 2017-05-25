@@ -35,6 +35,23 @@ def home():
     return render_template('index.html', **context)
 
 
+@campaign_manager.route('/tags/<tag>')
+def campaigns_with_tag(tag):
+    """Home page view with tag.
+
+    On this page a summary campaign manager view will shown.
+    """
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+    context['campaigns'] = Campaign.all(**{
+        'tags': tag
+    })
+    # noinspection PyUnresolvedReferences
+    return render_template('index.html', **context)
+
+
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
 def get_campaign_insight_function_data(uuid, insight_function_id):
     from campaign_manager.models.campaign import Campaign
@@ -256,7 +273,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['action'] = '/campaign_manager/edit/%s' % uuid
+    context['action'] = '/campaign_manager/campaign/edit/%s' % uuid
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
