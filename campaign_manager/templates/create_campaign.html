@@ -209,6 +209,7 @@
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             console.log(selected_functions);
             $("#selected_functions").val(JSON.stringify(selected_functions));
         });
@@ -347,6 +348,7 @@
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             console.log(selected_functions);
             console.log(JSON.stringify(selected_functions));
         }

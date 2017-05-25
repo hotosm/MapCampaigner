@@ -116,6 +116,24 @@ class AbstractInsightsFunction(object):
         else:
             return []
 
+    def get_required_attributes(self):
+        """Parsing required attributes
+        """
+        required_attributes = {}
+        # parsing attributes
+        if self.required_attributes:
+            for required_attribute in self.required_attributes.split(';'):
+                attrs = required_attribute.split('=')
+                if attrs[0]:
+                    required_attributes[attrs[0].strip()] = None
+                    if len(attrs) > 1:
+                        attrs[1] = attrs[1].strip()
+                        if attrs[1]:
+                            required_attributes[attrs[0].strip()] = [
+                                value.lower() for value in attrs[1].split(',')
+                                ]
+        return required_attributes
+
     def _process_data(self, raw_datas):
         """ Get geometry of campaign.
         :param raw_datas: Raw data that returns by function provider
@@ -126,18 +144,7 @@ class AbstractInsightsFunction(object):
         """
         good_data = []
         processed_data = []
-        required_attributes = {}
-        # parsing attributes
-        if self.required_attributes:
-            for required_attribute in self.required_attributes.split(';'):
-                attrs = required_attribute.split('=')
-                required_attributes[attrs[0].strip()] = None
-                if len(attrs) > 1:
-                    attrs[1] = attrs[1].strip()
-                    if attrs[1]:
-                        required_attributes[attrs[0].strip()] = [
-                            value.lower() for value in attrs[1].split(',')
-                            ]
+        required_attributes = self.get_required_attributes()
 
         # process data based on required attributes
         if raw_datas:
@@ -148,12 +155,10 @@ class AbstractInsightsFunction(object):
             for raw_data in raw_datas['elements']:
                 if 'tags' in raw_data:
                     raw_attr = raw_data["tags"]
-                    good_data.append(raw_data)
 
                     # just get required attr
+                    is_fullfilling_requirement = True
                     if len(req_attr) > 0:
-                        is_fullfilling_requirement = True
-                        clean_data = {}
                         # checking data
                         for req_key, req_value in req_attr.items():
                             # if key in attr
@@ -165,11 +170,16 @@ class AbstractInsightsFunction(object):
                             else:
                                 is_fullfilling_requirement = False
                                 break
-                            clean_data[req_key] = raw_value
                         if is_fullfilling_requirement:
-                            processed_data.append(clean_data)
+                            processed_data.append(raw_data)
                     else:
                         processed_data.append(raw_attr)
+
+                    if is_fullfilling_requirement:
+                        raw_data['error'] = False
+                    else:
+                        raw_data['error'] = True
+                    good_data.append(raw_data)
         self._function_good_data = good_data
         return processed_data
 

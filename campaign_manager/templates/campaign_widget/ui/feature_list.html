@@ -1,0 +1,49 @@
+<table class="feature-list-table">
+    <tr>
+        <th>ID</th>
+        {% for key in data.attributes %}
+            <th>{{ key }}</th>
+        {% endfor %}
+        <th>Completeness</th>
+    </tr>
+    {% for row in data.data %}
+        <tr>
+            <td><a href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
+            {% for key in data.attributes %}
+                {% if row['tags'][key] %}
+                    <td>{{ row['tags'][key] }}</td>
+                {% elif row[key] %}
+                    <td>{{ row[key] }}</td>
+                {% else %}
+                    <td>-</td>
+                {% endif %}
+            {% endfor %}
+            {% if row['error'] %}
+                <td class="error-indicator">Error</td>
+            {% else %}
+                <td class="clean-indicator">Clean</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+</table>
+<style type="text/css">
+    .feature-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .feature-list-table td, .feature-list-table th {
+        padding-left: 5px;
+        padding-right: 5px;
+        border: 1px solid black;
+    }
+
+    .feature-list-table .error-indicator {
+        color: red;
+    }
+
+    .feature-list-table .clean-indicator {
+        color: green;
+    }
+</style>
