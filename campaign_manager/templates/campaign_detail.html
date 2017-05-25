@@ -214,7 +214,9 @@
                 get_function(key);
                 if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
-                    get_metadata(key);
+                    if(selected_function["category"] != "coverage-function") {
+                        get_metadata(key);
+                    }
                 }
             })
         });

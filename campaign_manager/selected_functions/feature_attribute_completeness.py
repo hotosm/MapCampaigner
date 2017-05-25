@@ -7,17 +7,17 @@ from campaign_manager.selected_functions._abstract_insights_function import (
 
 
 class FeatureAttributeCompleteness(AbstractInsightsFunction):
-    function_name = "Showing percentage of feature completeness"
+    function_name = "Showing feature completeness"
     category = ['quality']
     need_required_attributes = True
-    icon = 'percent'
+    icon = 'list'
 
     def get_ui_html_file(self):
         """ Get ui name in templates
         :return: string name of html
         :rtype: str
         """
-        return "progress_bar"
+        return "feature_completeness"
 
     def get_summary_html_file(self):
         """ Get summary name in templates
@@ -44,7 +44,11 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         :rtype: dict
         """
         metadata = self.metadata()
+        required_attributes = {}
+        required_attributes.update(self.get_required_attributes())
         output = {
+            'attributes': required_attributes,
+            'data': self._function_good_data,
             'percentage': '%.1f' % (
                 (len(data) / metadata['collected_data_count']) * 100
             ),
