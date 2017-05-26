@@ -257,8 +257,8 @@
             var url = '/campaign_manager/campaign/' + uuid + '/coverage';
             $.ajax({
                 url: url,
+                dataType: 'json',
                 success: function (data) {
-                    var data = JSON.parse(data);
                     if (Object.keys(data).length != 0) {
                         if (coverage_layer) {
                             that.map.removeLayer(coverage_layer);

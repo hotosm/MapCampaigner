@@ -131,8 +131,26 @@ def campaign_coverage_upload_chunk_success(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle success.
     """
+    # validate coverage
     try:
         campaign = Campaign.get(uuid)
+        coverage = campaign.get_coverage()
+        if not coverage:
+            campaign.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Shapefile is not valid.'
+            }))
+
+        try:
+            coverage['features'][0]['properties']['date']
+        except KeyError:
+            campaign.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Needs date attribute in shapefile.'
+            }))
+
         campaign.coverage = {
             'last_uploader': request.args.get('uploader', ''),
             'last_uploaded': datetime.now().strftime('%Y-%m-%d')
@@ -140,7 +158,10 @@ def campaign_coverage_upload_chunk_success(uuid):
         }
         coverage_uploader = request.args.get('uploader', '')
         campaign.save(coverage_uploader)
-        return Response(json.dumps(campaign.to_dict()))
+        return Response(json.dumps({
+            'success': True,
+            'data': campaign.coverage
+        }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
