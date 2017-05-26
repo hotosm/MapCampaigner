@@ -8,8 +8,7 @@ db:
 
 web:
   #image: kartoza/osm-reporter
-  build: .
-  dockerfile: Dockerfile
+  build: docker
   hostname: web
   container_name: osmreporter_web
   environment:
@@ -23,12 +22,12 @@ web:
   links:
     - db:db
   volumes:
-    - ../osm-reporter:/home/web/osm_reporter
+    - ../flask_project:/home/web/osm_reporter
   restart: on-failure:5
   user: root
 
 dev:
-  build: .
+  build: docker
   dockerfile: Dockerfile.dev
   hostname: devweb
   container_name: osmreporter_devweb
@@ -43,10 +42,10 @@ dev:
   links:
     - db:db
   volumes:
-    - ../osm-reporter:/home/web/osm_reporter
+    - ../flask_project:/home/web/osm_reporter
 
 test:
-  build: .
+  build: docker
   dockerfile: Dockerfile.test
   hostname: testweb
   container_name: osmreporter_testweb
@@ -61,4 +60,4 @@ test:
   links:
     - db:db
   volumes:
-    - ../osm-reporter:/home/web/osm_reporter
+    - ../flask_project:/home/web/osm_reporter
