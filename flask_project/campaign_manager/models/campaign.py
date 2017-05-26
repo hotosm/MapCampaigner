@@ -1,9 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
-import time
 import json
 import os
+import shapefile
+import time
 import campaign_manager.selected_functions as selected_functions
 
 from flask import render_template
@@ -20,7 +21,6 @@ class Campaign(JsonModel):
     name = ''
     campaign_creator = ''
     campaign_status = ''
-    coverage = ''
     geometry = None
     start_date = None
     end_date = None
@@ -67,7 +67,59 @@ class Campaign(JsonModel):
         :return: Get selected function in string
         :rtype: str
         """
-        return json.dumps(self.selected_functions).replace('None', 'null');
+        return json.dumps(self.selected_functions).replace('None', 'null')
+
+    def get_coverage_files(self):
+        """ Get coverage files
+        :return: coverage in geojson
+        :rtype: []
+        """
+        coverage_folder = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
+        output_files = []
+        for root, dirs, files in os.walk(coverage_folder):
+            for file in files:
+                output_files.append(file)
+        return output_files
+
+    def get_coverage(self):
+        """ Get coverage if found
+        :return: coverage in geojson
+        :rtype: dict
+        """
+        coverage_folder = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
+        shapefile_file = "%s/%s.shp" % (
+            coverage_folder, self.uuid
+        )
+        if not os.path.exists(shapefile_file):
+            return {}
+
+        # read the shapefile
+        reader = shapefile.Reader(shapefile_file)
+        fields = reader.fields[1:]
+        field_names = [field[0] for field in fields]
+        buffer = []
+        for sr in reader.shapeRecords():
+            atr = dict(zip(field_names, sr.record))
+            geom = sr.shape.__geo_interface__
+            buffer.append(
+                dict(type="Feature",
+                     geometry=geom,
+                     properties=atr)
+            )
+        return {
+            "type": "FeatureCollection",
+            "features": buffer
+        }
 
     def parse_json_file(self):
         """ Parse json file for this campaign.

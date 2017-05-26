@@ -1,6 +1,7 @@
-from datetime import datetime
 import json
 import inspect
+import os
+from datetime import datetime
 from flask import request, render_template, Response
 
 from app_config import Config
@@ -8,8 +9,9 @@ from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from reporter import LOGGER
 from reporter.static_files import static_file
+from campaign_manager.utilities import module_path
 import campaign_manager.selected_functions as selected_functions
-from  campaign_manager.selected_functions._abstract_insights_function import (
+from campaign_manager.selected_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
@@ -61,6 +63,77 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
         campaign = Campaign.get(uuid)
         rendered_html = campaign.render_insights_function(insight_function_id)
         return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage-upload-chunk', methods=['POST'])
+def campaign_coverage_upload_chunk(uuid):
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    try:
+        _file = request.files['file']
+        filename = _file.filename
+        filenames = os.path.splitext(filename)
+        # folder for this campaign
+        filename = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            uuid
+        )
+        if not os.path.exists(filename):
+            os.mkdir(filename)
+
+        # filename of coverage
+        filename = os.path.join(
+            filename,
+            '%s%s' % (
+                uuid,
+                filenames[1] if len(filenames) > 1 else ''
+            )
+        )
+
+        # save uploaded file
+        if 'Content-Range' in request.headers:
+            range_str = request.headers['Content-Range']
+            start_bytes = int(range_str.split(' ')[1].split('-')[0])
+            # remove old file if upload new file
+            if start_bytes == 0:
+                if os.path.exists(filename):
+                    os.remove(filename)
+
+            # append chunk to the file on disk, or create new
+            with open(filename, 'ab') as f:
+                f.seek(start_bytes)
+                f.write(_file.read())
+
+        else:
+            # this is not a chunked request, so just save the whole file
+            _file.save(filename)
+
+        # send response with appropriate mime type header
+        return Response(json.dumps({
+            "name": _file.filename,
+            "size": os.path.getsize(filename),
+            "url": 'uploads/' + _file.filename,
+            "thumbnail_url": None,
+            "delete_url": None,
+            "delete_type": None
+        }))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage')
+def get_campaign_coverage(uuid):
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+    try:
+        campaign = Campaign.get(uuid)
+        return Response(json.dumps(campaign.get_coverage()))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -214,7 +287,6 @@ def edit_campaign(uuid):
             form = CampaignForm()
             form.name.data = campaign.name
             form.campaign_status.data = campaign.campaign_status
-            form.coverage.data = campaign.coverage
             form.campaign_managers.data = campaign.campaign_managers
             form.tags.data = campaign.tags
             form.description.data = campaign.description
