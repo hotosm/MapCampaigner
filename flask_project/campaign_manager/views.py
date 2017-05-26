@@ -19,6 +19,8 @@ except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
 
+MAX_AREA_SIZE = 320000000
+
 
 @campaign_manager.route('/')
 def home():
@@ -195,6 +197,7 @@ def create_campaign():
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
+    context['maximum_area_size'] = MAX_AREA_SIZE
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -245,6 +248,7 @@ def edit_campaign(uuid):
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
+    context['maximum_area_size'] =  MAX_AREA_SIZE
     return render_template(
         'create_campaign.html', form=form, **context)
 
