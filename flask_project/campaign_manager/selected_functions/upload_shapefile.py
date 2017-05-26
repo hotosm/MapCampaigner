@@ -45,6 +45,10 @@ class UploadShapefile(AbstractInsightsFunction):
         """
         output = {
             'uuid': self.campaign.uuid,
-            'files': self.campaign.get_coverage_files()
+            'files': self.campaign.get_coverage_files(),
+            'coverage': {
+                'last_uploader': self.campaign.coverage['last_uploader'],
+                'last_uploaded': self.campaign.coverage['last_uploaded']
+            }
         }
         return output

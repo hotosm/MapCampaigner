@@ -1,5 +1,11 @@
 <form id="coverage-upload" method="post" action='/campaign_manager/campaign/{{ data.uuid }}/coverage-upload-chunk' enctype="multipart/form-data">
     <div class="coverage-uploader">
+        {% if data.coverage %}
+            <div id='coverage-last-upload' style="color: gray; margin-bottom: 10px;">
+                uploaded by <a href="www.openstreetmap.org/user/{{ data.coverage.last_uploader }}">{{ data.coverage.last_uploader }}</a>
+                at {{ data.coverage.last_uploaded }}
+            </div>
+        {% endif %}
         <div class="file-indicator">
             {% for file in data.files %}
                 <div class='file-indicator-row complete'>
@@ -63,6 +69,7 @@
                         "</div>"
                 );
             }
+            $('#coverage-last-upload').hide();
         });
         $(".file-upload").click(function () {
             if ($(".coverage-uploader #upload-button").get(0).files.length > 0) {
@@ -110,6 +117,7 @@
                     $(".coverage-uploader #upload-button").prop('disabled', false);
                     is_in_upload = false;
                     get_coverage();
+                    upload_complete();
                 }
             },
             progress: function (e, uploadData) {
@@ -119,6 +127,13 @@
                 $nameIndicator.find('.percent-indicator').html(progress + '%');
             }
         });
+        function upload_complete() {
+            $.ajax({
+                url: '/campaign_manager/campaign/' + uuid + '/coverage-upload-success?uploader=' + $("#profile-name").html(),
+                success: function (data) {
+                }
+            });
+        }
     });
 </script>
 <script>

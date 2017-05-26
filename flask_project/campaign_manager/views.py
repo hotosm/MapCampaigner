@@ -57,7 +57,7 @@ def campaigns_with_tag(tag):
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
 def get_campaign_insight_function_data(uuid, insight_function_id):
     from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
+    """Get campaign insight function data.
     """
     try:
         campaign = Campaign.get(uuid)
@@ -70,7 +70,7 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-chunk', methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
+    """Upload chunk handle.
     """
     try:
         _file = request.files['file']
@@ -122,6 +122,25 @@ def campaign_coverage_upload_chunk(uuid):
             "delete_url": None,
             "delete_type": None
         }))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
+def campaign_coverage_upload_chunk_success(uuid):
+    from campaign_manager.models.campaign import Campaign
+    """Upload chunk handle success.
+    """
+    try:
+        campaign = Campaign.get(uuid)
+        campaign.coverage = {
+            'last_uploader': request.args.get('uploader', ''),
+            'last_uploaded': datetime.now().strftime('%Y-%m-%d')
+
+        }
+        coverage_uploader = request.args.get('uploader', '')
+        campaign.save(coverage_uploader)
+        return Response(json.dumps(campaign.to_dict()))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
