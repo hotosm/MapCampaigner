@@ -48,6 +48,7 @@
         opacity: 0;
         filter: alpha(opacity=0);
         height: 100%;
+        width: 100%;
     }
 
     .file-indicator {
@@ -59,16 +60,19 @@
 </style>
 <script>
     var is_in_upload = false;
+    function added_file_indicator(filename) {
+        $(".file-indicator").append(
+                "<div class='file-indicator-row'>" +
+                filename +
+                "<span class='percent-indicator'>0%</span>" +
+                "</div>"
+        );
+    }
     $(function () {
         $(".coverage-uploader #upload-button").change(function () {
             $(".file-indicator").html("");
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
-                $(".file-indicator").append(
-                        "<div class='file-indicator-row'>" +
-                        $(this).get(0).files[i].name +
-                        "<span class='percent-indicator'>0%</span>" +
-                        "</div>"
-                );
+                added_file_indicator($(this).get(0).files[i].name);
             }
             $('#coverage-last-upload').hide();
         });
@@ -138,6 +142,7 @@
                         $('#coverage-last-upload').css('color', 'red');
                         $('#coverage-last-upload').html(data['reason']);
                     } else {
+                        $(".file-indicator").html('');
                         $('#coverage-last-upload').show();
                         $('#coverage-last-upload').css('color', 'gray');
                         $('#coverage-last-upload').html(
@@ -145,6 +150,10 @@
                                 data['data']['last_uploader'] + '">' +
                                 data['data']['last_uploader'] + '</a> at ' +
                                 data['data']['last_uploaded']);
+                        $.each(data['files'], function (index, value) {
+                            added_file_indicator(value);
+                        });
+
                     }
                 }
             });

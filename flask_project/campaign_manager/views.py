@@ -160,7 +160,8 @@ def campaign_coverage_upload_chunk_success(uuid):
         campaign.save(coverage_uploader)
         return Response(json.dumps({
             'success': True,
-            'data': campaign.coverage
+            'data': campaign.coverage,
+            'files': campaign.get_coverage_files()
         }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
