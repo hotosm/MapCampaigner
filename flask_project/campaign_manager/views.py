@@ -45,7 +45,7 @@ def campaigns_with_tag(tag):
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET
     )
-    context['campaigns'] = Campaign.all({
+    context['campaigns'] = Campaign.all(**{
         'tags': tag
     })
     # noinspection PyUnresolvedReferences
