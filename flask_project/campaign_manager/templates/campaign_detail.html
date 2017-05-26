@@ -146,16 +146,6 @@
                             </span>
                         </div>
                         <div class="list-group-item">
-                            Coverage
-                            <span class="pull-right text-muted">
-                                {% if coverage %}
-                                    {{ coverage }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
                             Campaign Managers
                             <span class="pull-right text-muted">
                                 {% if campaign_managers %}
@@ -204,6 +194,7 @@
     <script>
 
         var uuid = '{{ uuid }}';
+        var coverage_layer = null;
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
@@ -214,11 +205,12 @@
                 get_function(key);
                 if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
-                    if(selected_function["category"] != "coverage-function") {
+                    if (selected_function["category"] != "coverage-function") {
                         get_metadata(key);
                     }
                 }
             })
+            get_coverage();
         });
 
         var drawnItems = new L.FeatureGroup();
@@ -258,6 +250,30 @@
                     $('#features .panel-body').html(feature_collected_count);
                 }
             });
+        }
+
+        function get_coverage() {
+            var that = this;
+            var url = '/campaign_manager/campaign/' + uuid + '/coverage';
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    if (coverage_layer) {
+                        that.map.removeLayer(coverage_layer);
+                    }
+                    coverage_layer = L.geoJSON(JSON.parse(data), {
+                        style: {
+                            "color": "red",
+                            "weight": 1,
+                            "opacity": 1
+                        }
+                    });
+
+                    that.map.addLayer(coverage_layer);
+
+                }
+            });
+
         }
 
     </script>
