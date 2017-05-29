@@ -3,10 +3,8 @@ __date__ = '10/05/17'
 
 import json
 import os
-import shapefile
 import time
-import shutil
-import campaign_manager.selected_functions as selected_functions
+import campaign_manager.insights_functions as insights_functions
 
 from flask import render_template
 
@@ -78,72 +76,6 @@ class Campaign(JsonModel):
         """
         return json.dumps(self.selected_functions).replace('None', 'null')
 
-    def delete_coverage_files(self):
-        """Delete coverage files"""
-        coverage_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
-            'coverage',
-            self.uuid
-        )
-        if os.path.exists(coverage_folder):
-            shutil.rmtree(coverage_folder)
-
-    def get_coverage_files(self):
-        """ Get coverage files
-        :return: coverage in geojson
-        :rtype: []
-        """
-        coverage_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
-            'coverage',
-            self.uuid
-        )
-        output_files = []
-        for root, dirs, files in os.walk(coverage_folder):
-            for file in files:
-                output_files.append(file)
-        return output_files
-
-    def get_coverage(self):
-        """ Get coverage if found
-        :return: coverage in geojson
-        :rtype: dict
-        """
-        try:
-            coverage_folder = os.path.join(
-                module_path(),
-                'campaigns_data',
-                'coverage',
-                self.uuid
-            )
-            shapefile_file = "%s/%s.shp" % (
-                coverage_folder, self.uuid
-            )
-            if not os.path.exists(shapefile_file):
-                return {}
-
-            # read the shapefile
-            reader = shapefile.Reader(shapefile_file)
-            fields = reader.fields[1:]
-            field_names = [field[0] for field in fields]
-            buffer = []
-            for sr in reader.shapeRecords():
-                atr = dict(zip(field_names, sr.record))
-                geom = sr.shape.__geo_interface__
-                buffer.append(
-                    dict(type="Feature",
-                         geometry=geom,
-                         properties=atr)
-                )
-            return {
-                "type": "FeatureCollection",
-                "features": buffer
-            }
-        except shapefile.ShapefileException:
-            return {}
-
     def parse_json_file(self):
         """ Parse json file for this campaign.
 
@@ -177,7 +109,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -204,7 +136,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -236,7 +168,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -244,6 +176,21 @@ class Campaign(JsonModel):
             return selected_function.metadata()
         except AttributeError as e:
             return {}
+
+    # ----------------------------------------------------------
+    # coverage functions
+    # ----------------------------------------------------------
+    def get_coverage_folder(self):
+        """ Return coverage folder for this campaign
+        :return: path for coverage folder
+        :rtype: str
+        """
+        return os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
 
     @staticmethod
     def get_json_folder():

@@ -1,22 +1,24 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
-from campaign_manager.selected_functions._abstract_insights_function import (
-    AbstractInsightsFunction
+from campaign_manager.insights_functions._abstract_overpass_insight_function import (
+    AbstractOverpassInsightFunction
 )
 
 
-class CountFeature(AbstractInsightsFunction):
-    function_name = "Showing number of feature in group"
+class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
+    function_name = "Showing feature completeness"
     category = ['quality']
-    need_required_attributes = False
+    need_required_attributes = True
+    icon = 'list'
+    _function_good_data = None  # cleaned data
 
     def get_ui_html_file(self):
         """ Get ui name in templates
         :return: string name of html
         :rtype: str
         """
-        return "piechart"
+        return "feature_completeness"
 
     def get_summary_html_file(self):
         """ Get summary name in templates
@@ -42,19 +44,16 @@ class CountFeature(AbstractInsightsFunction):
         :return: Processed data
         :rtype: dict
         """
-        output = {}
-        for current_data in data:
-            building_key = 'building'
-            if building_key not in current_data:
-                building_key = 'amenity'
-
-            try:
-                building_type = current_data[building_key]
-            except KeyError:
-                building_type = 'unknown'
-
-            if building_type not in output:
-                output[building_type] = 0
-            output[building_type] += 1
-
+        metadata = self.metadata()
+        required_attributes = {}
+        required_attributes.update(self.get_required_attributes())
+        output = {
+            'attributes': required_attributes,
+            'data': self._function_good_data,
+            'percentage': '%.1f' % (
+                (len(data) / metadata['collected_data_count']) * 100
+            ),
+            'complete': len(data),
+            'total': metadata['collected_data_count']
+        }
         return output

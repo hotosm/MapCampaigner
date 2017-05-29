@@ -185,16 +185,16 @@
     <div class="row" id="insight-row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading"> Insight Functions </div>
+                <div class="panel-heading"> Insight Functions</div>
                 <div class="panel-body">
-                     <ul class="nav nav-tabs insight-tabs">
-                     </ul>
+                    <ul class="nav nav-tabs insight-tabs">
+                    </ul>
                     <div class="tab-content insight-content">
                     </div>
                 </div>
-             </div>
             </div>
         </div>
+    </div>
     </div>
 
 {% endblock %}
@@ -206,7 +206,6 @@
     <script>
 
         var uuid = '{{ uuid }}';
-        var coverage_layer = null;
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
@@ -222,7 +221,6 @@
                     }
                 }
             });
-            get_coverage();
         });
 
         var drawnItems = new L.FeatureGroup();
@@ -233,7 +231,12 @@
             maxZoom: 15
         }).addTo(map);
         {% if geometry %}
-            drawnItems = L.geoJSON($.parseJSON('{{ geometry|safe }}'));
+            drawnItems = L.geoJSON(
+                    $.parseJSON('{{ geometry|safe }}'), {
+                        style: {
+                            weight: 1,
+                        }
+                    });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
         {% endif %}
@@ -245,24 +248,24 @@
                 url: url,
                 success: function (data) {
                     var active = '';
-                    if(first_function) {
+                    if (first_function) {
                         active = 'active';
-                        first_function=false;
+                        first_function = false;
                     }
 
                     var $insightTitle = $(data + ".insight-title");
 
                     $('.insight-tabs').append(
-                        '<li class="'+active+'">' +
-                            '<a href="#'+function_id+'" data-toggle="tab" aria-expanded="true">'+
-                             $insightTitle.html() + '</a>' +
-                        '</li>'
+                            '<li class="' + active + '">' +
+                            '<a href="#' + function_id + '" data-toggle="tab" aria-expanded="true">' +
+                            $insightTitle.html() + '</a>' +
+                            '</li>'
                     );
 
                     $('.insight-content').append(
-                        '<div class="tab-pane fade '+active+' in" id="'+function_id+'">'+
+                            '<div class="tab-pane fade ' + active + ' in" id="' + function_id + '">' +
                             data +
-                        '</div>'
+                            '</div>'
                     );
 
                 }
@@ -281,31 +284,26 @@
                 }
             });
         }
+        function highlightFeature(e) {
+            var layer = e.target;
 
-        function get_coverage() {
-            var that = this;
-            var url = '/campaign_manager/campaign/' + uuid + '/coverage';
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                success: function (data) {
-                    if (Object.keys(data).length != 0) {
-                        if (coverage_layer) {
-                            that.map.removeLayer(coverage_layer);
-                        }
-                        coverage_layer = L.geoJSON(data, {
-                            style: {
-                                "color": "red",
-                                "weight": 1,
-                                "opacity": 1
-                            }
-                        });
-
-                        that.map.addLayer(coverage_layer);
-                    }
-                }
+            layer.setStyle({
+                weight: 3,
+                dashArray: '3',
+                fillOpacity: 1
             });
 
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            coverage_info.update(layer.feature.properties);
+        }
+        function resetHighlight(e) {
+            coverage_layer.resetStyle(e.target);
+            coverage_info.update();
+        }
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
         }
 
     </script>
