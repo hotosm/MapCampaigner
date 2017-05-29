@@ -35,7 +35,7 @@ class CampaignForm(FlaskForm):
     )
     coverage = StringField(u'Coverage')
     start_date = DateField(u'Start date of campaign')
-    end_date = DateField(u'End date of campaign', validators=[Optional()])
+    end_date = DateField(u'End date of campaign')
 
     campaign_managers = SelectMultipleField(
         u'Managers of campaign',

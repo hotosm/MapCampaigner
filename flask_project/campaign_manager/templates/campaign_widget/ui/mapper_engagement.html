@@ -1,0 +1,94 @@
+<div class="row">
+    <div class="col-lg-12">
+        <table class="map-engagement-table display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Way Count</th>
+                    <th>Node Count</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entry in data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.ways }}</td>
+                    <td>{{ entry.nodes }}</td>
+                    <td>{{ entry.start }}</td>
+                    <td>{{ entry.end }}</td>
+                    <td>
+                        <div class="overview-timeline" id="overview{{ loop.index }}"#}
+                              style="margin-left:20px;
+                                     margin-top:20px;
+                                     height:80px"></div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style type="text/css">
+    .map-engagement-table {
+        width: 100%;
+    }
+</style>
+
+<script type="text/javascript" src="/static/js/jquery.flot.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('.map-engagement-table').DataTable({
+            "columnDefs": [
+                { "width": "40%", "targets": 6 }
+            ]
+        });
+
+        {# Pie chart for all users #}
+        var myData = [
+            {%  for entry in data %}
+            {
+                label: "{{entry.name}}",
+                data: {{ entry.ways }},
+                crew: {{ entry.crew|lower }}
+            },
+            {%  endfor %}];
+
+        {# User timeline charts #}
+        {% for entry in data %}
+            var d{{ loop.index }} = {{ entry.timeline|safe }};
+            for (i=0; i < d{{ loop.index }}.length; i++)
+            {
+                var pair = d{{ loop.index }}[i];
+                // console.log(i + "/" + d{{ loop.index }}.length + ":" + pair);
+                var dateString = pair[0];
+                var splitString = dateString.split("-");
+                var year = parseInt(splitString[0]);
+                var month = parseInt(splitString[1]) - 1; //javascript stupidity - base 0 months
+                var day = parseInt(splitString[2]);
+                pair[0] = new Date(year, month, day).getTime();
+                d{{ loop.index }}[i] = pair;
+            }
+
+            var overview{{ loop.index }} = $.plot($("#overview{{ loop.index }}"), [d{{ loop.index }}], {
+                series: {
+                    lines: { show: true, lineWidth: 1 },
+                    shadowSize: 0
+                },
+                xaxis: { mode: "time", timeformat: "%d-%m" },
+                yaxis: { min: 0, autoscaleMargin: 0.1 }
+            });
+            {# Do this last to prevent flot rendering artifacts. #}
+            //$('.details-row').hide();
+
+        {% endfor %}
+
+        var waysPerDaysInfo = 'data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on top"';
+    });
+</script>

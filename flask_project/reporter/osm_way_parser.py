@@ -32,6 +32,7 @@ class OsmParser(xml.sax.ContentHandler):
         self.wayCountDict = {}
         self.nodeCountDict = {}
         self.userDayCountDict = {}
+        self.ignoreOld = False
 
     def startElement(self, name, attributes):
         """Callback for when an element start is encountered.
@@ -43,6 +44,12 @@ class OsmParser(xml.sax.ContentHandler):
                 the attributes of the element.
         :type attributes: dict
         """
+        if name == 'old':
+            self.ignoreOld = True
+
+        if self.ignoreOld:
+            return
+
         if name == 'way':
             self.inWay = True
             self.wayCount += 1
@@ -77,6 +84,9 @@ class OsmParser(xml.sax.ContentHandler):
         :param name: The name of the element that has ended.
         :type name: str
         """
+        if name == 'old':
+            self.ignoreOld = False
+
         if name == 'way':
             if self.found:
                 # Its a target object so update it and node counts

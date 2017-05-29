@@ -223,7 +223,6 @@ class AbstractInsightsFunction(object):
             return ''
 
         html_name = html_name.replace('.html', '')
-        print(self._function_data)
         try:
             return render_template(
                 'campaign_widget/%s/%s.html' % (ui_type, html_name),
