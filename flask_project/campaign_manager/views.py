@@ -10,8 +10,8 @@ from campaign_manager.models.campaign import Campaign
 from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.utilities import module_path
-import campaign_manager.selected_functions as selected_functions
-from campaign_manager.selected_functions._abstract_insights_function import (
+import campaign_manager.insights_functions as insights_functions
+from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
@@ -130,15 +130,19 @@ def campaign_coverage_upload_chunk(uuid):
 
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
 def campaign_coverage_upload_chunk_success(uuid):
-    from campaign_manager.models.campaign import Campaign
     """Upload chunk handle success.
     """
+    from campaign_manager.models.campaign import Campaign
+    from campaign_manager.insights_functions.upload_coverage import (
+        UploadCoverage
+    )
     # validate coverage
     try:
         campaign = Campaign.get(uuid)
-        coverage = campaign.get_coverage()
+        coverage_function = UploadCoverage(campaign)
+        coverage = coverage_function.get_function_raw_data()
         if not coverage:
-            campaign.delete_coverage_files()
+            coverage_function.delete_coverage_files()
             return Response(json.dumps({
                 'success': False,
                 'reason': 'Shapefile is not valid.'
@@ -147,7 +151,7 @@ def campaign_coverage_upload_chunk_success(uuid):
         try:
             coverage['features'][0]['properties']['date']
         except KeyError:
-            campaign.delete_coverage_files()
+            coverage_function.delete_coverage_files()
             return Response(json.dumps({
                 'success': False,
                 'reason': 'Needs date attribute in shapefile.'
@@ -155,7 +159,8 @@ def campaign_coverage_upload_chunk_success(uuid):
 
         campaign.coverage = {
             'last_uploader': request.args.get('uploader', ''),
-            'last_uploaded': datetime.now().strftime('%Y-%m-%d')
+            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
+            'geojson': coverage
 
         }
         coverage_uploader = request.args.get('uploader', '')
@@ -163,20 +168,8 @@ def campaign_coverage_upload_chunk_success(uuid):
         return Response(json.dumps({
             'success': True,
             'data': campaign.coverage,
-            'files': campaign.get_coverage_files()
+            'files': coverage_function.get_coverage_files()
         }))
-    except Campaign.DoesNotExist:
-        return Response('Campaign not found')
-
-
-@campaign_manager.route('/campaign/<uuid>/coverage')
-def get_campaign_coverage(uuid):
-    from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
-    """
-    try:
-        campaign = Campaign.get(uuid)
-        return Response(json.dumps(campaign.get_coverage()))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -255,14 +248,14 @@ def get_selected_functions():
     functions = [
         insights_function for insights_function in [
             m[0] for m in inspect.getmembers(
-                selected_functions, inspect.isclass)
+                insights_functions, inspect.isclass)
             ]
         ]
 
     funct_dict = {}
     for insight_function in functions:
         SelectedFunction = getattr(
-            selected_functions, insight_function)
+            insights_functions, insight_function)
         selected_function = SelectedFunction(None)
 
         function_name = selected_function.name()
@@ -361,7 +354,7 @@ def edit_campaign(uuid):
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
-    context['maximum_area_size'] =  MAX_AREA_SIZE
+    context['maximum_area_size'] = MAX_AREA_SIZE
     return render_template(
         'create_campaign.html', form=form, **context)
 

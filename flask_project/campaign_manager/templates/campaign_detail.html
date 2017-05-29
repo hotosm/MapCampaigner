@@ -210,10 +210,6 @@
         var feature_collected = [];
         var feature_collected_count = 0;
 
-        var coverage_layer = null;
-        var coverage_info = null;
-        var coverage_legend = null;
-
         $(function () {
             $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
             $.each(selected_functions, function (key, selected_function) {
@@ -222,8 +218,6 @@
                     feature_collected.push(selected_function['feature']);
                     if (selected_function["category"] != "coverage-function") {
                         get_metadata(key);
-                    } else {
-                        get_coverage();
                     }
                 }
             });
@@ -310,102 +304,6 @@
         }
         function zoomToFeature(e) {
             map.fitBounds(e.target.getBounds());
-        }
-        function get_coverage() {
-            var that = this;
-            var url = '/campaign_manager/campaign/' + uuid + '/coverage';
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                success: function (data) {
-                    if (Object.keys(data).length != 0) {
-                        if (coverage_layer) {
-                            that.map.removeLayer(coverage_layer);
-                            that.map.removeLayer(coverage_info);
-                            that.map.removeLayer(coverage_legend);
-                        }
-
-                        var today = new Date();
-                        var style = {
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            dashArray: '3',
-                            fillOpacity: 0.8
-                        };
-                        var older_color = "#5CB85C";
-                        var future_color = "#E76F4A";
-
-                        {# create layer #}
-                        coverage_layer = L.geoJSON(data, {
-                            style: function (feature) {
-                                var property_date = new Date(feature.properties.date);
-                                if (property_date < today) {
-                                    style['fillColor'] = older_color;
-                                    return style;
-                                } else {
-                                    style['fillColor'] = future_color;
-                                    return style;
-                                }
-                            },
-                            onEachFeature: function (feature, layer) {
-                                layer.on({
-                                    mouseover: highlightFeature,
-                                    mouseout: resetHighlight,
-                                    click: zoomToFeature
-                                });
-                            },
-                            filter: function (feature) {
-                                if (!feature.properties.date) return false;
-                                return true;
-                            }
-                        });
-                        that.map.addLayer(coverage_layer);
-
-                        {# create legend #}
-                        coverage_legend = L.control(
-                                {position: 'bottomright'}
-                        );
-                        coverage_legend.onAdd = function () {
-                            var div = L.DomUtil.create('div', 'info legend');
-                            div.innerHTML += '<div><i style="background:' + older_color + '"></i>Mapped<br></div>';
-                            div.innerHTML += '<div><i style="background:' + future_color + '"></i>Not yet<br></div>';
-                            return div;
-                        };
-                        coverage_legend.addTo(that.map);
-
-                        {# create info #}
-                        coverage_info = L.control(
-                                {position: 'topright'}
-                        );
-                        coverage_info.onAdd = function () {
-                            this._div = L.DomUtil.create('div', 'info');
-                            $(this._div).hide();
-                            this.update();
-                            return this._div;
-                        };
-                        coverage_info.update = function (properties) {
-                            $(this._div).hide();
-                            if (properties) {
-                                $(this._div).show();
-                                var html = '<h4>Area detail</h4>';
-                                html += '<list-group>';
-                                $.each(properties, function (key, property) {
-                                    html += '<div class="list-group-item">' + key.toLowerCase() +
-                                            '<span class="pull-right text-muted">' + capitalizeFirstLetter(property.toLowerCase()) +
-                                            '</span>' +
-                                            '</div>';
-                                });
-                                html += '</list-group>';
-                                $(this._div).html(html);
-                            }
-                        };
-
-                        coverage_info.addTo(that.map);
-                    }
-                }
-            });
-
         }
 
     </script>

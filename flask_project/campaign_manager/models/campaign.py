@@ -3,10 +3,8 @@ __date__ = '10/05/17'
 
 import json
 import os
-import shapefile
 import time
-import shutil
-import campaign_manager.selected_functions as selected_functions
+import campaign_manager.insights_functions as insights_functions
 
 from flask import render_template
 
@@ -111,7 +109,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -138,7 +136,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -170,7 +168,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -193,61 +191,6 @@ class Campaign(JsonModel):
             'coverage',
             self.uuid
         )
-
-    def delete_coverage_files(self):
-        """Delete coverage files"""
-        coverage_folder = self.get_coverage_folder()
-        if os.path.exists(coverage_folder):
-            shutil.rmtree(coverage_folder)
-
-    def get_coverage_files(self):
-        """ Get coverage files
-        :return: coverage in geojson
-        :rtype: []
-        """
-        coverage_folder = self.get_coverage_folder()
-        output_files = []
-        for root, dirs, files in os.walk(coverage_folder):
-            for file in files:
-                output_files.append(file)
-        return output_files
-
-    def get_coverage(self):
-        """ Get coverage if found
-        :return: coverage in geojson
-        :rtype: dict
-        """
-        try:
-            coverage_folder = self.get_coverage_folder()
-            shapefile_file = "%s/%s.shp" % (
-                coverage_folder, self.uuid
-            )
-            if not os.path.exists(shapefile_file):
-                return {}
-
-            # read the shapefile
-            reader = shapefile.Reader(shapefile_file)
-            fields = reader.fields[1:]
-            field_names = [field[0] for field in fields]
-            buffer = []
-            for sr in reader.shapeRecords():
-                atr = dict(zip(field_names, sr.record))
-                geom = sr.shape.__geo_interface__
-                feature = dict(
-                    type="Feature",
-                    geometry=geom,
-                    properties=atr)
-                buffer.append(feature)
-                if 'date' in feature['properties'] and \
-                        feature['properties']['date']:
-                    feature['properties']['date'] = \
-                        feature['properties']['date'].strftime('%Y-%m-%d')
-            return {
-                "type": "FeatureCollection",
-                "features": buffer
-            }
-        except shapefile.ShapefileException:
-            return {}
 
     @staticmethod
     def get_json_folder():
