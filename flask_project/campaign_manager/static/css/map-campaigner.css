@@ -561,8 +561,9 @@ body {
     margin-right: 5px;
 }
 
-#campaign_status label {
-    margin-top: -10px;
+#campaign_status li label {
+    position: absolute;
+    margin-top: 10px !important;
 }
 
 #campaign-form input, #campaign-form select {
@@ -726,3 +727,12 @@ body {
 .file-indicator-row.complete {
     color: green;
 }
+
+.btn.disabled:hover {
+    background-color: white;
+}
+
+.btn-outline.disabled:hover {
+    color: #5cb85c;
+}
+
