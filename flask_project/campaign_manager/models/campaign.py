@@ -78,72 +78,6 @@ class Campaign(JsonModel):
         """
         return json.dumps(self.selected_functions).replace('None', 'null')
 
-    def delete_coverage_files(self):
-        """Delete coverage files"""
-        coverage_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
-            'coverage',
-            self.uuid
-        )
-        if os.path.exists(coverage_folder):
-            shutil.rmtree(coverage_folder)
-
-    def get_coverage_files(self):
-        """ Get coverage files
-        :return: coverage in geojson
-        :rtype: []
-        """
-        coverage_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
-            'coverage',
-            self.uuid
-        )
-        output_files = []
-        for root, dirs, files in os.walk(coverage_folder):
-            for file in files:
-                output_files.append(file)
-        return output_files
-
-    def get_coverage(self):
-        """ Get coverage if found
-        :return: coverage in geojson
-        :rtype: dict
-        """
-        try:
-            coverage_folder = os.path.join(
-                module_path(),
-                'campaigns_data',
-                'coverage',
-                self.uuid
-            )
-            shapefile_file = "%s/%s.shp" % (
-                coverage_folder, self.uuid
-            )
-            if not os.path.exists(shapefile_file):
-                return {}
-
-            # read the shapefile
-            reader = shapefile.Reader(shapefile_file)
-            fields = reader.fields[1:]
-            field_names = [field[0] for field in fields]
-            buffer = []
-            for sr in reader.shapeRecords():
-                atr = dict(zip(field_names, sr.record))
-                geom = sr.shape.__geo_interface__
-                buffer.append(
-                    dict(type="Feature",
-                         geometry=geom,
-                         properties=atr)
-                )
-            return {
-                "type": "FeatureCollection",
-                "features": buffer
-            }
-        except shapefile.ShapefileException:
-            return {}
-
     def parse_json_file(self):
         """ Parse json file for this campaign.
 
@@ -243,6 +177,76 @@ class Campaign(JsonModel):
                 required_attributes=function['attributes'])
             return selected_function.metadata()
         except AttributeError as e:
+            return {}
+
+    # ----------------------------------------------------------
+    # coverage functions
+    # ----------------------------------------------------------
+    def get_coverage_folder(self):
+        """ Return coverage folder for this campaign
+        :return: path for coverage folder
+        :rtype: str
+        """
+        return os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
+
+    def delete_coverage_files(self):
+        """Delete coverage files"""
+        coverage_folder = self.get_coverage_folder()
+        if os.path.exists(coverage_folder):
+            shutil.rmtree(coverage_folder)
+
+    def get_coverage_files(self):
+        """ Get coverage files
+        :return: coverage in geojson
+        :rtype: []
+        """
+        coverage_folder = self.get_coverage_folder()
+        output_files = []
+        for root, dirs, files in os.walk(coverage_folder):
+            for file in files:
+                output_files.append(file)
+        return output_files
+
+    def get_coverage(self):
+        """ Get coverage if found
+        :return: coverage in geojson
+        :rtype: dict
+        """
+        try:
+            coverage_folder = self.get_coverage_folder()
+            shapefile_file = "%s/%s.shp" % (
+                coverage_folder, self.uuid
+            )
+            if not os.path.exists(shapefile_file):
+                return {}
+
+            # read the shapefile
+            reader = shapefile.Reader(shapefile_file)
+            fields = reader.fields[1:]
+            field_names = [field[0] for field in fields]
+            buffer = []
+            for sr in reader.shapeRecords():
+                atr = dict(zip(field_names, sr.record))
+                geom = sr.shape.__geo_interface__
+                feature = dict(
+                    type="Feature",
+                    geometry=geom,
+                    properties=atr)
+                buffer.append(feature)
+                if 'date' in feature['properties'] and \
+                        feature['properties']['date']:
+                    feature['properties']['date'] = \
+                        feature['properties']['date'].strftime('%Y-%m-%d')
+            return {
+                "type": "FeatureCollection",
+                "features": buffer
+            }
+        except shapefile.ShapefileException:
             return {}
 
     @staticmethod

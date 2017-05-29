@@ -736,3 +736,41 @@ body {
     color: #5cb85c;
 }
 
+.legend {
+    line-height: 18px;
+    color: #555;
+    background-color: white;
+}
+
+.legend i {
+    width: 28px;
+    height: 14px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.legend div {
+    margin-bottom: 3px;
+}
+
+.info {
+    padding: 10px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.info h4 {
+    text-align: center;
+}
+
+.info .list-group-item {
+    padding: 5px 5px !important;
+}
+
+.info .pull-right {
+    margin-left: 10px !important;
+}
