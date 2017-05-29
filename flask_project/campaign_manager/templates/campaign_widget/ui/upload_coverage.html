@@ -24,8 +24,8 @@
 
     </div>
 </form>
-<script src="/campaign_manager/static/libs/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-<script src="/campaign_manager/static/libs/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
+<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
 <style type="text/css">
     .coverage-uploader button {
         width: 50%;
@@ -60,11 +60,17 @@
 </style>
 <script>
     var is_in_upload = false;
-    function added_file_indicator(filename) {
+    function added_file_indicator(filename, complete) {
+        var complete_class = '';
+        var percent = '0%';
+        if (complete) {
+            complete_class = 'complete';
+            percent = '100%';
+        }
         $(".file-indicator").append(
-                "<div class='file-indicator-row'>" +
+                "<div class='file-indicator-row " + complete_class + "'>" +
                 filename +
-                "<span class='percent-indicator'>0%</span>" +
+                "<span class='percent-indicator'>" + percent + "</span>" +
                 "</div>"
         );
     }
@@ -142,6 +148,7 @@
                         $('#coverage-last-upload').css('color', 'red');
                         $('#coverage-last-upload').html(data['reason']);
                     } else {
+                        console.log(data);
                         $(".file-indicator").html('');
                         $('#coverage-last-upload').show();
                         $('#coverage-last-upload').css('color', 'gray');
@@ -151,7 +158,7 @@
                                 data['data']['last_uploader'] + '</a> at ' +
                                 data['data']['last_uploaded']);
                         $.each(data['files'], function (index, value) {
-                            added_file_indicator(value);
+                            added_file_indicator(value, true);
                         });
 
                     }
