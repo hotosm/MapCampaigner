@@ -561,8 +561,9 @@ body {
     margin-right: 5px;
 }
 
-#campaign_status label {
-    margin-top: -10px;
+#campaign_status li label {
+    position: absolute;
+    margin-top: 10px !important;
 }
 
 #campaign-form input, #campaign-form select {
@@ -717,5 +718,14 @@ body {
     -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
+}
+
+
+.btn.disabled:hover {
+    background-color: white;
+}
+
+.btn-outline.disabled:hover{
+    color: #5cb85c;
 }
 

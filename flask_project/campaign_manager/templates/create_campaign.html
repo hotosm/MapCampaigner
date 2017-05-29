@@ -123,6 +123,25 @@
 
     <script type="text/javascript">
 
+        //------------------ EVENT ------------------//
+
+        function loginSuccess(response) {
+            clearNotification();
+            $('#campaign-panel').show();
+        }
+
+        function logoutSuccess() {
+            window.location.replace("/campaign_manager");
+        }
+
+        if(!window.isAuthenticated) {
+            window.location.replace("/campaign_manager");
+        } else {
+            $('#campaign-panel').show();
+        }
+
+        //------------------ FORM ------------------//
+
         var errors = {{ form['errors'] | safe}};
         var functions = {{ functions|safe }};
 
@@ -133,7 +152,9 @@
         $(function() {
 
             $("#submit").click(function () {
-                $("#campaign-form").submit();
+                if(!$('#submit').hasClass('disabled')) {
+                    $("#campaign-form").submit();
+                }
             });
 
             $('#campaign-form input').addClass('form-control');
@@ -161,27 +182,6 @@
 
         });
 
-        if(!window.isAuthenticated) {
-            window.location.replace("/campaign_manager");
-        } else {
-            $('#campaign-panel').show();
-        }
-
-        function loginSuccess(response) {
-            clearNotification();
-            $('#campaign-panel').show();
-        }
-
-        function logoutSuccess() {
-            window.location.replace("/campaign_manager");
-        }
-
-        var drawnItems = new L.FeatureGroup();
-        var bounds = [
-            [-34.053726, 20.411482],
-            [-34.009483, 20.467358]
-        ];
-
         function get_selected_functions(category) {
             {# functions #}
             var functions = {};
@@ -199,6 +199,14 @@
             return functions;
         }
 
+        //------------------ MAP ------------------//
+
+        var drawnItems = new L.FeatureGroup();
+        var bounds = [
+            [-34.053726, 20.411482],
+            [-34.009483, 20.467358]
+        ];
+
         $("#campaign-form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
             if (!auth.authenticated() || !$("#uploader").val()) {
@@ -210,7 +218,6 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            console.log(selected_functions);
             $("#selected_functions").val(JSON.stringify(selected_functions));
         });
 
@@ -224,6 +231,7 @@
         $("#submit").click(function () {
             $("#form").submit();
         });
+
         $("#start_date").attr('data-language', 'en');
         $("#end_date").attr('data-language', 'en');
         $("#start_date").datepicker({
@@ -235,7 +243,6 @@
             autoClose: true
         });
 
-        {# init map #}
         campaignMap.fitBounds(bounds);
 
         if ($("#geometry").val()) {
@@ -268,14 +275,31 @@
             $("#geometry").val(JSON.stringify(json));
         }
 
+        var maxAreaSize = {{ maximum_area_size }};
+        function getAreaSize() {
+            var totalAreaSize = 0;
+            drawnItems.eachLayer(function (layer) {
+               totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+            });
+            console.log(totalAreaSize);
+            if(totalAreaSize > maxAreaSize) {
+                showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
+                $("#submit").addClass('disabled');
+            } else {
+                $("#submit").removeClass('disabled');
+            }
+        }
+
         function saveLayer(e) {
             var layer = e.layer;
             drawnItems.addLayer(layer);
+            getAreaSize();
             stringfyGeometry();
         }
 
         function editLayer(e) {
-            var layer = e.layer;
+            var layers = e.layers;
+            getAreaSize();
             stringfyGeometry();
         }
 
@@ -284,6 +308,7 @@
             layers.eachLayer(function (feature) {
                 drawnItems.removeLayer(feature);
             });
+            getAreaSize();
             stringfyGeometry();
         }
 
@@ -349,8 +374,6 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            console.log(selected_functions);
-            console.log(JSON.stringify(selected_functions));
         }
 
         function removeFunction(event) {
