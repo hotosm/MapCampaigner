@@ -1,0 +1,181 @@
+<form id="coverage-upload" method="post" action='/campaign_manager/campaign/{{ data.uuid }}/coverage-upload-chunk' enctype="multipart/form-data">
+    <div class="coverage-uploader">
+        <div id='coverage-last-upload' style="color: gray; margin-bottom: 10px;">
+            {% if data.coverage %}
+                uploaded by <a href="www.openstreetmap.org/user/{{ data.coverage.last_uploader }}">{{ data.coverage.last_uploader }}</a>
+                at {{ data.coverage.last_uploaded }}
+            {% endif %}
+        </div>
+        <div class="file-indicator">
+            {% for file in data.files %}
+                <div class='file-indicator-row complete'>
+                    {{ file }}
+                    <span class='percent-indicator'>100%</span>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="btn-group" style="width: 100%">
+            <button class="add-file btn btn-outline btn-primary btn-lg">
+                <span>Add file(s)</span>
+                <input id="upload-button" name="file" type="file" class="upload" multiple/>
+            </button>
+            <button class="file-upload btn btn-outline btn-primary btn-lg">Upload</button>
+        </div>
+
+    </div>
+</form>
+<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
+<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
+<style type="text/css">
+    .coverage-uploader button {
+        width: 50%;
+    }
+
+    .add-file {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .add-file input.upload {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        height: 100%;
+        width: 100%;
+    }
+
+    .file-indicator {
+        font-style: italic;
+        color: gray;
+        margin-bottom: 10px;
+    }
+
+</style>
+<script>
+    var is_in_upload = false;
+    function added_file_indicator(filename, complete) {
+        var complete_class = '';
+        var percent = '0%';
+        if (complete) {
+            complete_class = 'complete';
+            percent = '100%';
+        }
+        $(".file-indicator").append(
+                "<div class='file-indicator-row " + complete_class + "'>" +
+                filename +
+                "<span class='percent-indicator'>" + percent + "</span>" +
+                "</div>"
+        );
+    }
+    $(function () {
+        $(".coverage-uploader #upload-button").change(function () {
+            $(".file-indicator").html("");
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                added_file_indicator($(this).get(0).files[i].name);
+            }
+            $('#coverage-last-upload').hide();
+        });
+        $(".file-upload").click(function () {
+            if ($(".coverage-uploader #upload-button").get(0).files.length > 0) {
+                $(this).prop('disabled', true);
+                $(".coverage-uploader .add-file").prop('disabled', true);
+                $(".coverage-uploader #upload-button").css('cursor', 'not-allowed');
+                $(".coverage-uploader #upload-button").prop('disabled', true);
+            } else {
+                return false;
+            }
+        });
+
+        {# upload file #}
+        var upload_url = '/campaign_manager/campaign/' + '{{ data.uuid }}' + '/coverage-upload-chunk';
+        $('#coverage-upload').fileupload({
+            url: upload_url,
+            dataType: 'json',
+            maxRetries: 100,
+            retryTimeout: 500000,
+            maxChunkSize: 100000, // 100 KB
+            add: function (e, uploadData) {
+                $(".file-upload").on('click', function () {
+                    uploadData.submit();
+                });
+                is_in_upload = true;
+            },
+            fail: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+            },
+            done: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+                var $nameIndicator = $(".file-indicator").find("div:contains('" + filename + "')");
+                $nameIndicator.addClass('complete');
+                $nameIndicator.find('.percent-indicator').html('100%');
+                var all_complete = true;
+                $('.file-indicator').find('.file-indicator-row').each(function (index, element) {
+                    if (!$(element).hasClass('complete')) {
+                        all_complete = false;
+                    }
+                });
+                if (all_complete) {
+                    $(".file-upload").prop('disabled', false);
+                    $(".coverage-uploader .add-file").prop('disabled', false);
+                    $(".coverage-uploader #upload-button").css('cursor', 'pointer');
+                    $(".coverage-uploader #upload-button").prop('disabled', false);
+                    is_in_upload = false;
+                    upload_complete();
+                    get_coverage();
+                }
+            },
+            progress: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+                var $nameIndicator = $(".file-indicator").find("div:contains('" + filename + "')");
+                var progress = parseInt(uploadData.loaded / uploadData.total * 100, 10);
+                $nameIndicator.find('.percent-indicator').html(progress + '%');
+            }
+        });
+        function upload_complete() {
+            $.ajax({
+                url: '/campaign_manager/campaign/' + uuid + '/coverage-upload-success?uploader=' + $("#profile-name").html(),
+                dataType: 'json',
+                success: function (data) {
+                    if (!data['success']) {
+                        $('#coverage-last-upload').show();
+                        $('#coverage-last-upload').css('color', 'red');
+                        $('#coverage-last-upload').html(data['reason']);
+                    } else {
+                        console.log(data);
+                        $(".file-indicator").html('');
+                        $('#coverage-last-upload').show();
+                        $('#coverage-last-upload').css('color', 'gray');
+                        $('#coverage-last-upload').html(
+                                'uploaded by <a href="www.openstreetmap.org/user/' +
+                                data['data']['last_uploader'] + '">' +
+                                data['data']['last_uploader'] + '</a> at ' +
+                                data['data']['last_uploaded']);
+                        $.each(data['files'], function (index, value) {
+                            added_file_indicator(value, true);
+                        });
+
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    {# browser event #}
+    window.onbeforeunload = function (e) {
+        if (is_in_upload) {
+            e = e || window.event;
+            if (e) {
+                e.returnValue = 'Sure?';
+            }
+            return 'Sure?';
+        }
+    };
+</script>

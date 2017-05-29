@@ -1,9 +1,11 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
-import time
 import json
 import os
+import shapefile
+import time
+import shutil
 import campaign_manager.selected_functions as selected_functions
 
 from flask import render_template
@@ -20,7 +22,7 @@ class Campaign(JsonModel):
     name = ''
     campaign_creator = ''
     campaign_status = ''
-    coverage = ''
+    coverage = {}
     geometry = None
     start_date = None
     end_date = None
@@ -35,6 +37,25 @@ class Campaign(JsonModel):
         self.edited_at = time.ctime(os.path.getmtime(self.json_path))
         self.parse_json_file()
 
+    def save(self, uploader):
+        """Save current campaign
+
+        :param uploader: uploader who created
+        :type uploader: str
+        """
+        self.version += 1
+        self.edited_by = uploader
+        # save updated campaign to json
+        data = self.to_dict()
+        Campaign.validate(data, self.uuid)
+        json_str = Campaign.serialize(data)
+        json_path = os.path.join(
+            Campaign.get_json_folder(), '%s.json' % self.uuid
+        )
+        _file = open(json_path, 'w+')
+        _file.write(json_str)
+        _file.close()
+
     def update_data(self, data, uploader):
         """ Update data with new dict.
 
@@ -48,26 +69,80 @@ class Campaign(JsonModel):
             setattr(self, key, value)
         self.geometry = json.loads(self.geometry)
         self.selected_functions = json.loads(self.selected_functions)
-        self.version += 1
-        self.edited_by = uploader
-
-        # save updated campaign to json
-        data = self.to_dict()
-        Campaign.validate(data, self.uuid)
-        json_str = Campaign.serialize(data)
-        json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % self.uuid
-        )
-        _file = open(json_path, 'w+')
-        _file.write(json_str)
-        _file.close()
+        self.save(uploader)
 
     def get_selected_functions_in_string(self):
         """ Get selected function in string
         :return: Get selected function in string
         :rtype: str
         """
-        return json.dumps(self.selected_functions).replace('None', 'null');
+        return json.dumps(self.selected_functions).replace('None', 'null')
+
+    def delete_coverage_files(self):
+        """Delete coverage files"""
+        coverage_folder = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
+        if os.path.exists(coverage_folder):
+            shutil.rmtree(coverage_folder)
+
+    def get_coverage_files(self):
+        """ Get coverage files
+        :return: coverage in geojson
+        :rtype: []
+        """
+        coverage_folder = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
+        output_files = []
+        for root, dirs, files in os.walk(coverage_folder):
+            for file in files:
+                output_files.append(file)
+        return output_files
+
+    def get_coverage(self):
+        """ Get coverage if found
+        :return: coverage in geojson
+        :rtype: dict
+        """
+        try:
+            coverage_folder = os.path.join(
+                module_path(),
+                'campaigns_data',
+                'coverage',
+                self.uuid
+            )
+            shapefile_file = "%s/%s.shp" % (
+                coverage_folder, self.uuid
+            )
+            if not os.path.exists(shapefile_file):
+                return {}
+
+            # read the shapefile
+            reader = shapefile.Reader(shapefile_file)
+            fields = reader.fields[1:]
+            field_names = [field[0] for field in fields]
+            buffer = []
+            for sr in reader.shapeRecords():
+                atr = dict(zip(field_names, sr.record))
+                geom = sr.shape.__geo_interface__
+                buffer.append(
+                    dict(type="Feature",
+                         geometry=geom,
+                         properties=atr)
+                )
+            return {
+                "type": "FeatureCollection",
+                "features": buffer
+            }
+        except shapefile.ShapefileException:
+            return {}
 
     def parse_json_file(self):
         """ Parse json file for this campaign.
@@ -182,9 +257,15 @@ class Campaign(JsonModel):
         :key data: dictionary
         :type data: dict
         """
-        data['start_date'] = data['start_date'].strftime('%Y-%m-%d')
-        if data['end_date']:
-            data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
+        try:
+            data['start_date'] = data['start_date'].strftime('%Y-%m-%d')
+        except AttributeError:
+            pass
+        try:
+            if data['end_date']:
+                data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
+        except AttributeError:
+            pass
         json_str = json.dumps(data)
         return json_str
 

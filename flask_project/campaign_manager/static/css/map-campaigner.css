@@ -589,7 +589,7 @@ body {
 }
 
 .sub-description {
-    font-size: 10px;
+    font-size: 12px;
 
 }
 
@@ -720,12 +720,19 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
 }
 
+.file-indicator-row .percent-indicator {
+    float: right;
+}
+
+.file-indicator-row.complete {
+    color: green;
+}
 
 .btn.disabled:hover {
     background-color: white;
 }
 
-.btn-outline.disabled:hover{
+.btn-outline.disabled:hover {
     color: #5cb85c;
 }
 
