@@ -7,3 +7,5 @@ Flask-SQLAlchemy
 Flask-Migrate
 flask-admin
 pyshp
+beautifulsoup4
+PyGeoj
