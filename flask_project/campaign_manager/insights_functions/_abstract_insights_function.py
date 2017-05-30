@@ -37,6 +37,8 @@ class AbstractInsightsFunction(object):
     need_feature = True
     need_required_attributes = True
 
+    manager_only = False
+
     def __init__(self, campaign, feature=None, required_attributes=None, additional_data={}):
         self.campaign = campaign
         if not self.feature:
