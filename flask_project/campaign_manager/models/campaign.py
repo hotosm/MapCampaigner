@@ -1,8 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+import copy
 import json
 import os
+import pygeoj
 import time
 import campaign_manager.insights_functions as insights_functions
 
@@ -123,11 +125,14 @@ class Campaign(JsonModel):
         except AttributeError as e:
             return {}
 
-    def render_insights_function(self, insight_function_id):
+    def render_insights_function(self, insight_function_id, additional_data={}):
         """Get rendered UI from insight_function
 
         :param insight_function_id: name of insight function
         :type insight_function_id: str
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
 
         :return: rendered UI from insight function
         :rtype: str
@@ -137,10 +142,13 @@ class Campaign(JsonModel):
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
                 insights_functions, function['function'])
+            additional_data['function_id'] = insight_function_id
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
-                required_attributes=function['attributes'])
+                required_attributes=function['attributes'],
+                additional_data=additional_data
+            )
         except AttributeError as e:
             return campaing_ui
 
@@ -177,7 +185,36 @@ class Campaign(JsonModel):
         except AttributeError as e:
             return {}
 
-    # ----------------------------------------------------------
+    def corrected_coordinates(self):
+        """ Corrected geometry of campaign.
+        :return: corrected coordinated
+        :rtype: [str]
+        """
+        coordinates = self.geometry['features'][0]
+        coordinates = coordinates['geometry']['coordinates'][0]
+        correct_coordinates = []
+        for coordinate in coordinates:
+            correct_coordinates.append(
+                [coordinate[1], coordinate[0]]
+            )
+        return correct_coordinates
+
+    def get_bbox(self):
+        """ Corrected geometry of campaign.
+        :return: corrected coordinated
+        :rtype: [str]
+        """
+        if not self.geometry:
+            return []
+
+        geometry = copy.deepcopy(self.geometry)
+        geometry['features'][0]['geometry']['coordinates'][0] = \
+            self.corrected_coordinates()
+        geojson = pygeoj.load(data=geometry)
+        return geojson.bbox
+
+        # ----------------------------------------------------------
+
     # coverage functions
     # ----------------------------------------------------------
     def get_coverage_folder(self):

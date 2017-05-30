@@ -1,0 +1,70 @@
+<div class="osmch-error">
+    <i style="color: gray">This data was created based from bbox of geometry of campaign. So there are some data that outside of geometry.</i>
+    <br><br>
+    <table class="feature-list-table">
+        <thead>
+        <tr>
+            {% for key in data.data[0] %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data.data %}
+            <tr>
+                {% for key, value in row.items() %}
+                    {{ value|safe }}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-muted text-pagination">
+        Page {{ data.current_page }} of {{ data.max_page }}
+    </p>
+    <ul class="pager">
+        {% if data.current_page > 1 %}
+            <li>
+                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ data.function_id }}?page={{ data.previous_page }}">
+                    ← Previous
+                </a>
+            </li>
+        {% endif %}
+        {% if data.current_page != data.max_page %}
+            <li>
+                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ data.function_id }}?page={{ data.next_page }}">
+                    Next →
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+<style type="text/css">
+    .text-pagination {
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+<script>
+    var function_id = "{{ data.function_id }}";
+    $(document).ready(function () {
+        $('.osmch-error .feature-list-table').DataTable({
+            "filter": false,
+            "pageLength": 15,
+            "paging": false,
+            "info": false
+        });
+        $(".pager-button").click(function (event) {
+            var $content = $('#' + function_id);
+            event.preventDefault();
+            $content.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $.ajax({
+                url: $(event.target).attr('href'),
+                success: function (data) {
+                    $content.LoadingOverlay('hide');
+                    $content.html(data);
+                }
+            });
+        })
+    });
+</script>

@@ -56,14 +56,37 @@ def campaigns_with_tag(tag):
     return render_template('index.html', **context)
 
 
+def clean_argument(args):
+    """Clean argument that is ImmutableMultiDict to dict
+    and clean it's value
+    :param args: Argument from request
+    :type args: ImmutableMultiDict
+
+    :type: clean argument
+    :rtype: dict
+    """
+
+    arguments = dict(args)
+    clean_arguments = {}
+    for key, value in arguments.items():
+        if len(value) == 1:
+            value = value[0]
+        clean_arguments[key] = value
+    return clean_arguments
+
+
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
 def get_campaign_insight_function_data(uuid, insight_function_id):
     from campaign_manager.models.campaign import Campaign
     """Get campaign insight function data.
     """
     try:
+
         campaign = Campaign.get(uuid)
-        rendered_html = campaign.render_insights_function(insight_function_id)
+        rendered_html = campaign.render_insights_function(
+            insight_function_id,
+            additional_data=clean_argument(request.args)
+        )
         return Response(rendered_html)
     except Campaign.DoesNotExist:
         return Response('Campaign not found')

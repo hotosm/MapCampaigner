@@ -16,8 +16,11 @@ class UploadCoverage(AbstractInsightsFunction):
     need_feature = False
     need_required_attributes = False
 
-    def initiate(self):
+    def initiate(self, additional_data):
         """ Initiate function
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
         """
         if self.campaign:
             self.run()
