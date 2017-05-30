@@ -69,6 +69,7 @@ class OsmParser(xml.sax.ContentHandler):
                 date_timestamp = calendar.timegm(datetime.datetime.strptime(
                         date_part, '%Y-%m-%d').timetuple()) * 1000
                 if not self.dateStart <= date_timestamp <= self.dateEnd:
+                    self.inWay = False
                     return
 
             self.inWay = True
