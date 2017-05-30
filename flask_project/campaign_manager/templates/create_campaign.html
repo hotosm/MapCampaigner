@@ -97,13 +97,17 @@
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
-            <div class="function-form-row row" id="function-<%=index%>">
+            <div class="function-form-row row tooltip-help" id="function-<%=index%>">
                 <div class="col-lg-1">
-                    <button class="btn btn-danger btn-sm btn-block" type=button onclick="removeFunction(this)">
+                    <button class="btn btn-danger btn-sm btn-block" data-toggle="tooltip" data-placement="top"
+                            data-original-title="Remove this function"
+                            type=button onclick="removeFunction(this)">
                         <i class="fa fa-minus"></i></button>
                 </div>
                 <div class="col-lg-4">
-                    <select class="form-control function-selection" onchange="functionOnSelected(this)">
+                    <select class="form-control function-selection" data-toggle="tooltip" data-placement="top"
+                            data-original-title="Select insight function"
+                            onchange="functionOnSelected(this)">
                         <option value="">-------------------</option>
                         {% for key, value in functions.items() %}
                             <option value="{{ key }}">{{ value.name }}</option>
@@ -111,11 +115,15 @@
                     </select>
                 </div>
                 <div class="col-lg-4">
-                    <select class="form-control function-feature" style="display: none">
+                    <select class="form-control  function-feature"  data-toggle="tooltip" data-placement="top"
+                            data-original-title="Select type of feature to extract"
+                            style="display: none">
                     </select>
                 </div>
                 <div class="col-lg-3">
-                    <input class="form-control function-attributes" style="display: none">
+                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Additional attributes for this function"
+                           style="display: none">
                 </div>
             </div>
         </div>
@@ -150,6 +158,11 @@
         }
 
         $(function() {
+
+            $(document).tooltip({
+                selector: "[data-toggle=tooltip]",
+                container: "body"
+            });
 
             $("#submit").click(function () {
                 if(!$('#submit').hasClass('disabled')) {
