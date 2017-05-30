@@ -1,10 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
-import time
 import json
 import os
-import campaign_manager.selected_functions as selected_functions
+import time
+import campaign_manager.insights_functions as insights_functions
 
 from flask import render_template
 
@@ -20,7 +20,7 @@ class Campaign(JsonModel):
     name = ''
     campaign_creator = ''
     campaign_status = ''
-    coverage = ''
+    coverage = {}
     geometry = None
     start_date = None
     end_date = None
@@ -35,6 +35,25 @@ class Campaign(JsonModel):
         self.edited_at = time.ctime(os.path.getmtime(self.json_path))
         self.parse_json_file()
 
+    def save(self, uploader):
+        """Save current campaign
+
+        :param uploader: uploader who created
+        :type uploader: str
+        """
+        self.version += 1
+        self.edited_by = uploader
+        # save updated campaign to json
+        data = self.to_dict()
+        Campaign.validate(data, self.uuid)
+        json_str = Campaign.serialize(data)
+        json_path = os.path.join(
+            Campaign.get_json_folder(), '%s.json' % self.uuid
+        )
+        _file = open(json_path, 'w+')
+        _file.write(json_str)
+        _file.close()
+
     def update_data(self, data, uploader):
         """ Update data with new dict.
 
@@ -48,26 +67,14 @@ class Campaign(JsonModel):
             setattr(self, key, value)
         self.geometry = json.loads(self.geometry)
         self.selected_functions = json.loads(self.selected_functions)
-        self.version += 1
-        self.edited_by = uploader
-
-        # save updated campaign to json
-        data = self.to_dict()
-        Campaign.validate(data, self.uuid)
-        json_str = Campaign.serialize(data)
-        json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % self.uuid
-        )
-        _file = open(json_path, 'w+')
-        _file.write(json_str)
-        _file.close()
+        self.save(uploader)
 
     def get_selected_functions_in_string(self):
         """ Get selected function in string
         :return: Get selected function in string
         :rtype: str
         """
-        return json.dumps(self.selected_functions).replace('None', 'null');
+        return json.dumps(self.selected_functions).replace('None', 'null')
 
     def parse_json_file(self):
         """ Parse json file for this campaign.
@@ -102,7 +109,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -129,7 +136,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -161,7 +168,7 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                selected_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],
@@ -169,6 +176,21 @@ class Campaign(JsonModel):
             return selected_function.metadata()
         except AttributeError as e:
             return {}
+
+    # ----------------------------------------------------------
+    # coverage functions
+    # ----------------------------------------------------------
+    def get_coverage_folder(self):
+        """ Return coverage folder for this campaign
+        :return: path for coverage folder
+        :rtype: str
+        """
+        return os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            self.uuid
+        )
 
     @staticmethod
     def get_json_folder():
@@ -182,9 +204,15 @@ class Campaign(JsonModel):
         :key data: dictionary
         :type data: dict
         """
-        data['start_date'] = data['start_date'].strftime('%Y-%m-%d')
-        if data['end_date']:
-            data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
+        try:
+            data['start_date'] = data['start_date'].strftime('%Y-%m-%d')
+        except AttributeError:
+            pass
+        try:
+            if data['end_date']:
+                data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
+        except AttributeError:
+            pass
         json_str = json.dumps(data)
         return json_str
 

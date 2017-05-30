@@ -33,7 +33,6 @@ class CampaignForm(FlaskForm):
             ('Finish', 'Finish')
         ]
     )
-    coverage = StringField(u'Coverage')
     start_date = DateField(u'Start date of campaign')
     end_date = DateField(u'End date of campaign')
 

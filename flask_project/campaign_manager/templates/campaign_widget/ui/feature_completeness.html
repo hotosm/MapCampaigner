@@ -17,9 +17,11 @@
         <tbody>
             {% for row in data.data %}
                 <tr>
-                    <td><a href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
+                    <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
                     {% for key in data.attributes %}
-                        {% if row['tags'][key] %}
+                        {% if not row['tags'] %}
+                            <td>-</td>
+                        {% elif row['tags'][key] %}
                             <td>{{ row['tags'][key] }}</td>
                         {% elif row[key] %}
                             <td>{{ row[key] }}</td>

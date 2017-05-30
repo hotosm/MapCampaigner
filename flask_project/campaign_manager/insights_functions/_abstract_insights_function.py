@@ -1,12 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
-import os
-import json
 from abc import ABCMeta
+
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
-from campaign_manager.provider import get_osm_data
 
 
 class AbstractInsightsFunction(object):
@@ -25,7 +23,6 @@ class AbstractInsightsFunction(object):
         'amenity': 'building'
     }
     _function_raw_data = None  # data exaclty from osm
-    _function_good_data = None  # cleaned data
     _function_data = None  # data that used by others
 
     icon = 'pie-chart'
@@ -45,6 +42,12 @@ class AbstractInsightsFunction(object):
         if not self.feature:
             self.feature = feature
         self.required_attributes = required_attributes
+        self.initiate()
+
+    def initiate(self):
+        """ Initiate function
+        """
+        pass
 
     def name(self):
         """Name of insight functions
@@ -59,8 +62,8 @@ class AbstractInsightsFunction(object):
 
     def run(self):
         """Process this function"""
-        self._function_raw_data = self._call_function_provider()
-        self._function_data = self._process_data(self._function_raw_data)
+        self._function_raw_data = self.get_data_from_provider()
+        self._function_data = self.process_data(self._function_raw_data)
         self._function_data = self.post_process_data(self._function_data)
 
     def metadata(self):
@@ -70,11 +73,8 @@ class AbstractInsightsFunction(object):
         if not self._function_raw_data:
             self.run()
 
-        if 'elements' not in self._function_raw_data:
-            return {}
-
         return {
-            'collected_data_count': len(self._function_good_data),
+            'collected_data_count': len(self._function_raw_data),
             'filtered_data_count': len(self._function_data)
         }
 
@@ -84,6 +84,30 @@ class AbstractInsightsFunction(object):
         :rtype: dict
         """
         return self._function_data
+
+    def get_function_raw_data(self):
+        """ Return function raw data
+        :return: function raw data
+        :rtype: dict
+        """
+        return self._function_raw_data
+
+    def get_data_from_provider(self):
+        """ Get data provider function
+        :return: data from provider
+        :rtype: dict
+        """
+        raise NotImplementedError()
+
+    def process_data(self, raw_datas):
+        """ Get geometry of campaign.
+        :param raw_datas: Raw data that returns by function provider
+        :type raw_datas: dict
+
+        :return: processed data
+        :rtype: dict
+        """
+        raise NotImplementedError()
 
     def post_process_data(self, data):
         """ Process data regarding output.
@@ -97,24 +121,19 @@ class AbstractInsightsFunction(object):
         """
         return data
 
-    def _call_function_provider(self):
-        """ Get required attrbiutes for function provider.
-        :return: list of required attributes
+    def corrected_coordinates(self):
+        """ Corrected geometry of campaign.
+        :return: corrected coordinated
         :rtype: [str]
         """
-        if self.feature:
-            coordinates = self.campaign.geometry['features'][0]
-            coordinates = coordinates['geometry']['coordinates'][0]
-            correct_coordinates = []
-            for coordinate in coordinates:
-                correct_coordinates.append(
-                    [coordinate[1], coordinate[0]]
-                )
-            return get_osm_data(
-                self.FEATURES_MAPPING[self.feature],
-                correct_coordinates)
-        else:
-            return []
+        coordinates = self.campaign.geometry['features'][0]
+        coordinates = coordinates['geometry']['coordinates'][0]
+        correct_coordinates = []
+        for coordinate in coordinates:
+            correct_coordinates.append(
+                [coordinate[1], coordinate[0]]
+            )
+        return correct_coordinates
 
     def get_required_attributes(self):
         """Parsing required attributes
@@ -133,55 +152,6 @@ class AbstractInsightsFunction(object):
                                 value.lower() for value in attrs[1].split(',')
                                 ]
         return required_attributes
-
-    def _process_data(self, raw_datas):
-        """ Get geometry of campaign.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
-
-        :return: processed data
-        :rtype: dict
-        """
-        good_data = []
-        processed_data = []
-        required_attributes = self.get_required_attributes()
-
-        # process data based on required attributes
-        if raw_datas:
-            req_attr = required_attributes
-            if 'elements' not in raw_datas:
-                return processed_data
-
-            for raw_data in raw_datas['elements']:
-                if 'tags' in raw_data:
-                    raw_attr = raw_data["tags"]
-
-                    # just get required attr
-                    is_fullfilling_requirement = True
-                    if len(req_attr) > 0:
-                        # checking data
-                        for req_key, req_value in req_attr.items():
-                            # if key in attr
-                            if req_key in raw_attr:
-                                raw_value = raw_attr[req_key].lower()
-                                if req_value and raw_value not in req_value:
-                                    is_fullfilling_requirement = False
-                                    break
-                            else:
-                                is_fullfilling_requirement = False
-                                break
-                        if is_fullfilling_requirement:
-                            processed_data.append(raw_data)
-                    else:
-                        processed_data.append(raw_attr)
-
-                    if is_fullfilling_requirement:
-                        raw_data['error'] = False
-                    else:
-                        raw_data['error'] = True
-                    good_data.append(raw_data)
-        self._function_good_data = good_data
-        return processed_data
 
     # -------------------------------------------------------------
     # HTML SECTION

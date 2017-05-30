@@ -146,16 +146,6 @@
                             </span>
                         </div>
                         <div class="list-group-item">
-                            Coverage
-                            <span class="pull-right text-muted">
-                                {% if coverage %}
-                                    {{ coverage }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
                             Campaign Managers
                             <span class="pull-right text-muted">
                                 {% if campaign_managers %}
@@ -195,16 +185,16 @@
     <div class="row" id="insight-row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading"> Insight Functions </div>
+                <div class="panel-heading"> Insight Functions</div>
                 <div class="panel-body">
-                     <ul class="nav nav-tabs insight-tabs">
-                     </ul>
+                    <ul class="nav nav-tabs insight-tabs">
+                    </ul>
                     <div class="tab-content insight-content">
                     </div>
                 </div>
-             </div>
             </div>
         </div>
+    </div>
     </div>
 
 {% endblock %}
@@ -226,11 +216,11 @@
                 get_function(key);
                 if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
-                    if(selected_function["category"] != "coverage-function") {
+                    if (selected_function["category"] != "coverage-function") {
                         get_metadata(key);
                     }
                 }
-            })
+            });
         });
 
         var drawnItems = new L.FeatureGroup();
@@ -241,7 +231,12 @@
             maxZoom: 15
         }).addTo(map);
         {% if geometry %}
-            drawnItems = L.geoJSON($.parseJSON('{{ geometry|safe }}'));
+            drawnItems = L.geoJSON(
+                    $.parseJSON('{{ geometry|safe }}'), {
+                        style: {
+                            weight: 1,
+                        }
+                    });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
         {% endif %}
@@ -253,24 +248,24 @@
                 url: url,
                 success: function (data) {
                     var active = '';
-                    if(first_function) {
+                    if (first_function) {
                         active = 'active';
-                        first_function=false;
+                        first_function = false;
                     }
 
                     var $insightTitle = $(data + ".insight-title");
 
                     $('.insight-tabs').append(
-                        '<li class="'+active+'">' +
-                            '<a href="#'+function_id+'" data-toggle="tab" aria-expanded="true">'+
-                             $insightTitle.html() + '</a>' +
-                        '</li>'
+                            '<li class="' + active + '">' +
+                            '<a href="#' + function_id + '" data-toggle="tab" aria-expanded="true">' +
+                            $insightTitle.html() + '</a>' +
+                            '</li>'
                     );
 
                     $('.insight-content').append(
-                        '<div class="tab-pane fade '+active+' in" id="'+function_id+'">'+
+                            '<div class="tab-pane fade ' + active + ' in" id="' + function_id + '">' +
                             data +
-                        '</div>'
+                            '</div>'
                     );
 
                 }
@@ -288,6 +283,27 @@
                     $('#features .panel-body').html(feature_collected_count);
                 }
             });
+        }
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 3,
+                dashArray: '3',
+                fillOpacity: 1
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            coverage_info.update(layer.feature.properties);
+        }
+        function resetHighlight(e) {
+            coverage_layer.resetStyle(e.target);
+            coverage_info.update();
+        }
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
         }
 
     </script>

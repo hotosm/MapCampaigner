@@ -1,6 +1,7 @@
-from datetime import datetime
 import json
 import inspect
+import os
+from datetime import datetime
 from flask import request, render_template, Response
 
 from app_config import Config
@@ -8,8 +9,9 @@ from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from reporter import LOGGER
 from reporter.static_files import static_file
-import campaign_manager.selected_functions as selected_functions
-from  campaign_manager.selected_functions._abstract_insights_function import (
+from campaign_manager.utilities import module_path
+import campaign_manager.insights_functions as insights_functions
+from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
@@ -18,6 +20,8 @@ try:
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+
+MAX_AREA_SIZE = 320000000
 
 
 @campaign_manager.route('/')
@@ -55,12 +59,117 @@ def campaigns_with_tag(tag):
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
 def get_campaign_insight_function_data(uuid, insight_function_id):
     from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
+    """Get campaign insight function data.
     """
     try:
         campaign = Campaign.get(uuid)
         rendered_html = campaign.render_insights_function(insight_function_id)
         return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage-upload-chunk', methods=['POST'])
+def campaign_coverage_upload_chunk(uuid):
+    from campaign_manager.models.campaign import Campaign
+    """Upload chunk handle.
+    """
+    try:
+        _file = request.files['file']
+        filename = _file.filename
+        filenames = os.path.splitext(filename)
+        # folder for this campaign
+        filename = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'coverage',
+            uuid
+        )
+        if not os.path.exists(filename):
+            os.mkdir(filename)
+
+        # filename of coverage
+        filename = os.path.join(
+            filename,
+            '%s%s' % (
+                uuid,
+                filenames[1] if len(filenames) > 1 else ''
+            )
+        )
+
+        # save uploaded file
+        if 'Content-Range' in request.headers:
+            range_str = request.headers['Content-Range']
+            start_bytes = int(range_str.split(' ')[1].split('-')[0])
+            # remove old file if upload new file
+            if start_bytes == 0:
+                if os.path.exists(filename):
+                    os.remove(filename)
+
+            # append chunk to the file on disk, or create new
+            with open(filename, 'ab') as f:
+                f.seek(start_bytes)
+                f.write(_file.read())
+
+        else:
+            # this is not a chunked request, so just save the whole file
+            _file.save(filename)
+
+        # send response with appropriate mime type header
+        return Response(json.dumps({
+            "name": _file.filename,
+            "size": os.path.getsize(filename),
+            "url": 'uploads/' + _file.filename,
+            "thumbnail_url": None,
+            "delete_url": None,
+            "delete_type": None
+        }))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
+def campaign_coverage_upload_chunk_success(uuid):
+    """Upload chunk handle success.
+    """
+    from campaign_manager.models.campaign import Campaign
+    from campaign_manager.insights_functions.upload_coverage import (
+        UploadCoverage
+    )
+    # validate coverage
+    try:
+        campaign = Campaign.get(uuid)
+        coverage_function = UploadCoverage(campaign)
+        coverage = coverage_function.get_function_raw_data()
+        if not coverage:
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Shapefile is not valid.'
+            }))
+
+        try:
+            coverage['features'][0]['properties']['date']
+        except KeyError:
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Needs date attribute in shapefile.'
+            }))
+
+        campaign.coverage = {
+            'last_uploader': request.args.get('uploader', ''),
+            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
+            'geojson': coverage
+
+        }
+        coverage_uploader = request.args.get('uploader', '')
+        campaign.save(coverage_uploader)
+        return Response(json.dumps({
+            'success': True,
+            'data': campaign.coverage,
+            'files': coverage_function.get_coverage_files()
+        }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -139,14 +248,14 @@ def get_selected_functions():
     functions = [
         insights_function for insights_function in [
             m[0] for m in inspect.getmembers(
-                selected_functions, inspect.isclass)
+                insights_functions, inspect.isclass)
             ]
         ]
 
     funct_dict = {}
     for insight_function in functions:
         SelectedFunction = getattr(
-            selected_functions, insight_function)
+            insights_functions, insight_function)
         selected_function = SelectedFunction(None)
 
         function_name = selected_function.name()
@@ -195,6 +304,7 @@ def create_campaign():
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
+    context['maximum_area_size'] = MAX_AREA_SIZE
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -214,7 +324,6 @@ def edit_campaign(uuid):
             form = CampaignForm()
             form.name.data = campaign.name
             form.campaign_status.data = campaign.campaign_status
-            form.coverage.data = campaign.coverage
             form.campaign_managers.data = campaign.campaign_managers
             form.tags.data = campaign.tags
             form.description.data = campaign.description
@@ -245,6 +354,7 @@ def edit_campaign(uuid):
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
+    context['maximum_area_size'] = MAX_AREA_SIZE
     return render_template(
         'create_campaign.html', form=form, **context)
 

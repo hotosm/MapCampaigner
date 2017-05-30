@@ -2,7 +2,7 @@ import datetime
 import xml
 import calendar
 from urllib.error import URLError
-from campaign_manager.selected_functions._abstract_insights_function import (
+from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 from reporter.exceptions import (

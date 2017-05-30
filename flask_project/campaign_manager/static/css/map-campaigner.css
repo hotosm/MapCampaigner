@@ -561,8 +561,9 @@ body {
     margin-right: 5px;
 }
 
-#campaign_status label {
-    margin-top: -10px;
+#campaign_status li label {
+    position: absolute;
+    margin-top: 10px !important;
 }
 
 #campaign-form input, #campaign-form select {
@@ -588,7 +589,7 @@ body {
 }
 
 .sub-description {
-    font-size: 10px;
+    font-size: 12px;
 
 }
 
@@ -719,3 +720,57 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1);
 }
 
+.file-indicator-row .percent-indicator {
+    float: right;
+}
+
+.file-indicator-row.complete {
+    color: green;
+}
+
+.btn.disabled:hover {
+    background-color: white;
+}
+
+.btn-outline.disabled:hover {
+    color: #5cb85c;
+}
+
+.legend {
+    line-height: 18px;
+    color: #555;
+    background-color: white;
+}
+
+.legend i {
+    width: 28px;
+    height: 14px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.legend div {
+    margin-bottom: 3px;
+}
+
+.info {
+    padding: 10px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.info h4 {
+    text-align: center;
+}
+
+.info .list-group-item {
+    padding: 5px 5px !important;
+}
+
+.info .pull-right {
+    margin-left: 10px !important;
+}
