@@ -16,7 +16,7 @@
             {% for entry in data %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ entry.name }}</td>
+                    <td><a href="http://www.openstreetmap.org/user/{{ entry.name }}" target="_blank">{{ entry.name }}</a></td>
                     <td>{{ entry.ways }}</td>
                     <td>{{ entry.nodes }}</td>
                     <td>{{ entry.start }}</td>
@@ -25,7 +25,7 @@
                         <div class="overview-timeline" id="overview{{ loop.index }}"#}
                               style="margin-left:20px;
                                      margin-top:20px;
-                                     height:80px"></div>
+                                     height:80px; width: 500px;"></div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -44,11 +44,7 @@
 
 <script type="text/javascript">
     $(function () {
-        $('.map-engagement-table').DataTable({
-            "columnDefs": [
-                { "width": "40%", "targets": 6 }
-            ]
-        });
+        $.fn.dataTable.moment( 'DD-MM-YYYY' );
 
         {# Pie chart for all users #}
         var myData = [
@@ -81,13 +77,21 @@
                     lines: { show: true, lineWidth: 1 },
                     shadowSize: 0
                 },
-                xaxis: { mode: "time", timeformat: "%d-%m" },
+                xaxis: { mode: "time", timeformat: "%d/%m/%y" },
                 yaxis: { min: 0, autoscaleMargin: 0.1 }
             });
             {# Do this last to prevent flot rendering artifacts. #}
             //$('.details-row').hide();
 
         {% endfor %}
+
+        $('.map-engagement-table').DataTable({
+            "columnDefs": [
+                { "width": "40%", "targets": 6 },
+                { "width": "5%", "targets": 2 },
+                { "width": "5%", "targets": 3 }
+            ]
+        });
 
         var waysPerDaysInfo = 'data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on top"';
     });
