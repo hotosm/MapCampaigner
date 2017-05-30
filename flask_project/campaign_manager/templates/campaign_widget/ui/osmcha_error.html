@@ -13,7 +13,34 @@
         {% for row in data.data %}
             <tr>
                 {% for key, value in row.items() %}
-                    {{ value|safe }}
+                    <td>
+                        {% if key == 'ID' %}
+                            <a href='https://osmcha.mapbox.com/{{ value }}'>{{ value }}</a>
+                        {% elif key == 'User' %}
+                            <a href='https://osmcha.mapbox.com/?usernames={{ value }}'>{{ value }}</a>
+                        {% elif key == 'Count' %}
+                            <span class='label label-success'>{{ value.success }}</span>
+                            <span class='label label-warning'>{{ value.warning }}</span>
+                            <span class='label label-danger'>{{ value.danger }}</span>
+                        {% elif key == 'Verified' %}
+                            {% if value.status %}
+                                <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                {% if value.thumbs_up %}
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-thumbs-down"></span>
+                                {% endif %}
+                                {% if value.verifier %}
+                                    <a href='https://osmcha.mapbox.com/?checked_by={{ value.verifier }}'>{{ value.verifier }}</a>
+                                {% endif %}
+
+                            {% else %}
+                                <span aria-hidden='true' class='glyphicon glyphicon-remove text-danger'></span>
+                            {% endif %}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -43,6 +70,10 @@
     .text-pagination {
         text-align: center;
         margin-top: 10px;
+    }
+
+    .feature-list-table a {
+        cursor: pointer;
     }
 </style>
 <script>

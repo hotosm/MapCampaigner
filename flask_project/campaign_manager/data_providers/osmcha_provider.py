@@ -65,13 +65,47 @@ class OsmchaProvider(AbstractDataProvider):
                 cells = row.findAll("td")
                 json = {}
                 for index, value in enumerate(headers):
-                    json[value] = cells[index]
+                    cell = cells[index]
+                    # for verified one
+                    if value == 'Verified':
+                        json[value] = {}
+                        # check verifiying status
+                        status = cell.find("span", {'class', 'glyphicon-remove'})
+                        if status:
+                            json[value]['status'] = False
+                        else:
+                            json[value]['status'] = True
+                        # check is ok or not
+                        json[value]['thumbs_up'] = False
+                        ok = cell.find("span", {'class', 'glyphicon-thumbs-up'})
+                        if ok:
+                            json[value]['thumbs_up'] = True
+                        # check is verifier
+                        json[value]['verifier'] = None
+                        verifier = cell.find("a")
+                        if verifier:
+                            json[value]['verifier'] = verifier.string.replace('\n', '').strip()
+
+                    elif value == 'Count':
+                        # for span like count
+                        json[value] = {}
+                        json[value]['success'] = cell.find("span", {'class', 'label-success'}).string
+                        json[value]['warning'] = cell.find("span", {'class', 'label-warning'}).string
+                        json[value]['danger'] = cell.find("span", {'class', 'label-danger'}).string
+                    else:
+                        # check <a> tag
+                        link_value = cell.find("a")
+                        json[value] = cell.string
+                        if link_value:
+                            json[value] = link_value.string
+                        if json[value]:
+                            json[value] = json[value].replace('\n', '').strip()
                 data.append(json)
 
         pagination = html.find("p", {'class', 'text-pagination'})
         max_page = pagination.string.strip().split('of')[1]
         max_page = max_page.strip()
-
+        print()
         return {
             'max_page': max_page,
             'previous_page': int(page) - 1,
