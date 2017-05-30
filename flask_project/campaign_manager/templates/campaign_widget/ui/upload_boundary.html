@@ -1,0 +1,167 @@
+<form id="boundary-upload" method="post" action='/campaign_manager/campaign/{{ uuid }}/boundary-upload-chunk' enctype="multipart/form-data">
+    <div class="boundary-uploader">
+        <div id='boundary-last-upload' style="color: gray; margin-bottom: 10px;">
+        </div>
+        <div class="file-indicator">
+        </div>
+        <div class="btn-group" style="width: 100%">
+            <button class="add-file btn btn-outline btn-primary btn-lg">
+                <span>Add file(s)</span>
+                <input id="upload-button" name="file" type="file" class="upload" multiple/>
+            </button>
+            <button class="file-upload btn btn-outline btn-primary btn-lg">Upload</button>
+        </div>
+
+    </div>
+</form>
+<style type="text/css">
+    .boundary-uploader button {
+        width: 50%;
+    }
+
+    .add-file {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .add-file input.upload {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        height: 100%;
+        width: 100%;
+    }
+
+    .file-indicator {
+        font-style: italic;
+        color: gray;
+        margin-bottom: 10px;
+    }
+
+</style>
+<script>
+    var is_in_upload = false;
+    var boundary_layer = null;
+    var boundary_info = null;
+    var boundary_legend = null;
+    var $boundary = $("#boundary-upload ");
+    function added_file_indicator(filename, complete) {
+        var complete_class = '';
+        var percent = '0%';
+        if (complete) {
+            complete_class = 'complete';
+            percent = '100%';
+        }
+        $boundary.find(".file-indicator").append(
+                "<div class='file-indicator-row " + complete_class + "'>" +
+                filename +
+                "<span class='percent-indicator'>" + percent + "</span>" +
+                "</div>"
+        );
+    }
+    $(function () {
+        $boundary.find(".file-upload").prop('disabled', true);
+        $boundary.find("#upload-button").change(function () {
+            $boundary.find(".file-indicator").html("");
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                added_file_indicator($(this).get(0).files[i].name);
+            }
+            $boundary.find('#boundary-last-upload').hide();
+            $boundary.find(".file-upload").prop('disabled', false);
+        });
+        $boundary.find(".file-upload").click(function () {
+            if (is_in_upload && $boundary.find('.file-indicator-row ').length > 0) {
+                $(this).prop('disabled', true);
+                $boundary.find(".boundary-uploader .add-file").prop('disabled', true);
+                $boundary.find(".boundary-uploader #upload-button").css('cursor', 'not-allowed');
+                $boundary.find(".boundary-uploader #upload-button").prop('disabled', true);
+            } else {
+                return false;
+            }
+        });
+
+        {# upload file #}
+        var upload_url = '/campaign_manager/campaign/' + '{{ uuid }}' + '/boundary-upload-chunk';
+        $('#boundary-upload').fileupload({
+            url: upload_url,
+            dataType: 'json',
+            maxRetries: 100,
+            retryTimeout: 500000,
+            maxChunkSize: 100000, // 100 KB
+            add: function (e, uploadData) {
+                $boundary.find(".file-upload").on('click', function () {
+                    uploadData.submit();
+                });
+                is_in_upload = true;
+            },
+            fail: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+            },
+            done: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+                var $nameIndicator = $boundary.find(".file-indicator").find("div:contains('" + filename + "')");
+                $nameIndicator.addClass('complete');
+                $nameIndicator.find('.percent-indicator').html('100%');
+                var all_complete = true;
+                $boundary.find('.file-indicator').find('.file-indicator-row').each(function (index, element) {
+                    if (!$(element).hasClass('complete')) {
+                        all_complete = false;
+                    }
+                });
+                if (all_complete) {
+                    $boundary.find(".add-file").prop('disabled', false);
+                    $boundary.find("#upload-button").css('cursor', 'pointer');
+                    $boundary.find("#upload-button").prop('disabled', false);
+                    is_in_upload = false;
+                    upload_complete();
+                }
+            },
+            progress: function (e, uploadData) {
+                var filename = uploadData.files[0].name;
+                var $nameIndicator = $boundary.find(".file-indicator").find("div:contains('" + filename + "')");
+                var progress = parseInt(uploadData.loaded / uploadData.total * 100, 10);
+                $nameIndicator.find('.percent-indicator').html(progress + '%');
+            }
+        });
+    });
+    function rerender_boundary(geojson) {
+        drawnItems.clearLayers();
+        drawnItems.addData(geojson);
+        map.fitBounds(drawnItems.getBounds());
+    }
+    function upload_complete() {
+        $.ajax({
+            url: '/campaign_manager/campaign/' + uuid + '/boundary-upload-success?uploader=' + $("#profile-name").html(),
+            dataType: 'json',
+            success: function (data) {
+                if (!data['success']) {
+                    $boundary.find('#boundary-last-upload').show();
+                    $boundary.find('#boundary-last-upload').css('color', 'red');
+                    $boundary.find('#boundary-last-upload').html(data['reason']);
+                } else {
+                    $boundary.find(".file-indicator").html('');
+                    rerender_boundary(data['data']);
+                }
+            }
+        });
+    }
+</script>
+<script>
+    {# browser event #}
+    window.onbeforeunload = function (e) {
+        if (is_in_upload) {
+            e = e || window.event;
+            if (e) {
+                e.returnValue = 'Sure?';
+            }
+            return 'Sure?';
+        }
+    };
+</script>
