@@ -78,7 +78,6 @@ def campaign_boundary_upload_chunk_success(uuid):
     from campaign_manager.models.campaign import Campaign
     # validate coverage
     try:
-        campaign = Campaign.get(uuid)
         # folder for this campaign
         folder = os.path.join(
             temporary_folder(),
@@ -116,14 +115,11 @@ def campaign_boundary_upload_chunk_success(uuid):
                 'reason': 'Shapefile is not valid.'
             }))
 
-        campaign.geometry = geojson
-        boundary_uploader = request.args.get('uploader', '')
-        campaign.save(boundary_uploader)
         if os.path.exists(folder):
             shutil.rmtree(folder)
         return Response(json.dumps({
             'success': True,
-            'data': campaign.geometry,
+            'data': geojson,
         }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
@@ -405,6 +401,7 @@ def create_campaign():
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
+    context['uuid'] = uuid.uuid4().hex
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -455,6 +452,7 @@ def edit_campaign(uuid):
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
+    context['uuid'] = uuid
     return render_template(
         'create_campaign.html', form=form, **context)
 

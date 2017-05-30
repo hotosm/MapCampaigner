@@ -48,6 +48,7 @@
 
 </style>
 <script>
+    var uuid = "{{ uuid }}";
     var is_in_upload = false;
     var boundary_layer = null;
     var boundary_info = null;
@@ -116,7 +117,7 @@
                         all_complete = false;
                     }
                 });
-                if (all_complete) {
+                if (is_in_upload && all_complete) {
                     $boundary.find(".add-file").prop('disabled', false);
                     $boundary.find("#upload-button").css('cursor', 'pointer');
                     $boundary.find("#upload-button").prop('disabled', false);
@@ -135,11 +136,12 @@
     function rerender_boundary(geojson) {
         drawnItems.clearLayers();
         drawnItems.addData(geojson);
-        map.fitBounds(drawnItems.getBounds());
+        campaignMap.fitBounds(drawnItems.getBounds());
+        stringfyGeometry();
     }
     function upload_complete() {
         $.ajax({
-            url: '/campaign_manager/campaign/' + uuid + '/boundary-upload-success?uploader=' + $("#profile-name").html(),
+            url: '/campaign_manager/campaign/' + uuid + '/boundary-upload-success',
             dataType: 'json',
             success: function (data) {
                 if (!data['success']) {
