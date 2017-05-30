@@ -84,7 +84,10 @@ class MapperEngagement(AbstractInsightsFunction):
             else:
                 try:
                     sorted_user_list = osm_object_contributions(
-                        file_handle, TAG_MAPPING_REVERSE[self.feature])
+                        file_handle,
+                        TAG_MAPPING_REVERSE[self.feature],
+                        start_date,
+                        end_date)
                 except xml.sax.SAXParseException:
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
