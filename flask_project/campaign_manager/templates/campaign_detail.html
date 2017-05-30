@@ -247,6 +247,9 @@
             $.ajax({
                 url: url,
                 success: function (data) {
+                    if(function_id === 'function-3') {
+                        console.log(data);
+                    }
                     var active = '';
                     if (first_function) {
                         active = 'active';

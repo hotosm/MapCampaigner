@@ -24,7 +24,8 @@
                     <td>
                         <div class="overview-timeline" id="overview{{ loop.index }}"#}
                               style="margin-left:20px;
-                                     margin-top:20px;
+                                     margin-top:10px;
+                                     margin-bottom:10px;
                                      height:80px; width: 500px;"></div>
                     </td>
                 </tr>
@@ -37,6 +38,10 @@
 <style type="text/css">
     .map-engagement-table {
         width: 100%;
+    }
+
+    .yAxis .tickLabel {
+        left: -20px;
     }
 </style>
 
@@ -77,7 +82,7 @@
                     lines: { show: true, lineWidth: 1 },
                     shadowSize: 0
                 },
-                xaxis: { mode: "time", timeformat: "%d/%m/%y" },
+                xaxis: { mode: "time", timeformat: "%d/%m" },
                 yaxis: { min: 0, autoscaleMargin: 0.1 }
             });
             {# Do this last to prevent flot rendering artifacts. #}

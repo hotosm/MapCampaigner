@@ -20,7 +20,6 @@ from reporter.osm import get_osm_file
 class MapperEngagement(AbstractInsightsFunction):
     function_name = "Show length of mapper engagement"
     category = ['engagement']
-    need_feature = True
     need_required_attributes = False
 
     def get_ui_html_file(self):
@@ -44,7 +43,7 @@ class MapperEngagement(AbstractInsightsFunction):
         """
         return ""
 
-    def _call_function_provider(self):
+    def get_data_from_provider(self):
         """ Get required attrbiutes for function provider.
         :return: list of required attributes
         :rtype: [str]
@@ -98,7 +97,7 @@ class MapperEngagement(AbstractInsightsFunction):
 
     def run(self):
         """Process this function"""
-        self._function_raw_data = self._call_function_provider()
+        self._function_raw_data = self.get_data_from_provider()
         self._function_data = self.post_process_data(self._function_raw_data)
 
     def post_process_data(self, data):
