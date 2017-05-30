@@ -14,14 +14,14 @@
                 </div>
             {% endfor %}
         </div>
+        <div style="color: gray; font-style: italic; text-align: center; margin-bottom: 10px">Multiselect .dbf, .shp, .shx for minimum files.</div>
         <div class="btn-group" style="width: 100%">
             <button class="add-file btn btn-outline btn-primary btn-lg">
                 <span>Add file(s)</span>
-                <input id="upload-button" name="file" type="file" class="upload" multiple/>
+                <input id="upload-button" name="file" type="file" class="upload" accept=".dbf,.prj,.qpj,.shp,.shx" multiple/>
             </button>
             <button class="file-upload btn btn-outline btn-primary btn-lg">Upload</button>
         </div>
-
     </div>
 </form>
 <style type="text/css">
@@ -109,6 +109,7 @@
             maxRetries: 100,
             retryTimeout: 500000,
             maxChunkSize: 100000, // 100 KB
+            acceptFileTypes: /(\.|\/)(dbf|prj|qpj|shp|shx)$/i,
             add: function (e, uploadData) {
                 $coverage.find(".file-upload").on('click', function () {
                     uploadData.submit();
