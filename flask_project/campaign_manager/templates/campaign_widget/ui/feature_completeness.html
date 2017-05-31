@@ -3,7 +3,7 @@
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
-    <div class="see-detail" onclick="see_completeness_details(this)">see detail</div>
+    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features</div>
     <table class="feature-list-table">
         <thead>
             <tr>
@@ -11,30 +11,26 @@
                 {% for key in data.attributes %}
                     <th>{{ key }}</th>
                 {% endfor %}
-                <th>Completeness</th>
             </tr>
         </thead>
         <tbody>
             {% for row in data.data %}
-                <tr>
-                    <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
-                    {% for key in data.attributes %}
-                        {% if not row['tags'] %}
-                            <td>-</td>
-                        {% elif row['tags'][key] %}
-                            <td>{{ row['tags'][key] }}</td>
-                        {% elif row[key] %}
-                            <td>{{ row[key] }}</td>
-                        {% else %}
-                            <td>-</td>
-                        {% endif %}
-                    {% endfor %}
-                    {% if row['error'] %}
-                        <td class="error-indicator">Incomplete</td>
-                    {% else %}
-                        <td class="clean-indicator">Complete</td>
-                    {% endif %}
-                </tr>
+                {% if row['error'] %}
+                    <tr>
+                        <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
+                        {% for key in data.attributes %}
+                            {% if not row['tags'] %}
+                                <td>-</td>
+                            {% elif row['tags'][key] %}
+                                <td>{{ row['tags'][key] }}</td>
+                            {% elif row[key] %}
+                                <td>{{ row[key] }}</td>
+                            {% else %}
+                                <td>-</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
@@ -43,7 +39,6 @@
     .see-detail {
         width: 100%;
         text-align: center;
-        color: gray;
         cursor: pointer;
         margin: 10px;
     }
@@ -94,10 +89,10 @@
     });
     function see_completeness_details(event) {
         if (!$(event).closest(".completness").find(".dataTables_wrapper").is(":visible")) {
-            $(event).html("Hide detail");
+            $(event).html('<i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features');
             $(event).closest(".completness").find(".dataTables_wrapper").show();
         } else {
-            $(event).html("See detail");
+            $(event).html('<i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features');
             $(event).closest(".completness").find(".dataTables_wrapper").hide();
         }
     }

@@ -159,6 +159,7 @@
             }, function (err, res) {
                 if (err) {
                     $('#info').html('error! try clearing your browser cache');
+                    loginError();
                     return;
                 }
                 var u = res.getElementsByTagName('user')[0];
@@ -187,15 +188,12 @@
                     }
                 }
 
-                if(loginProcess) {
-                    loginSuccess(o);
-                    loginProcess = false;
-                }
+                loginSuccess(o);
+                loginProcess = false;
 
                 hideLoading();
             }, this);
         }
-
         function hideDetails(map) {
             $('#login-menu').show();
             $('#logout-menu').hide();
@@ -208,11 +206,15 @@
                     map.setView([0, 0], 1);
                 }
             }
+            loginError();
         }
 
         update();
 
         function loginSuccess(user) {
+        }
+
+        function loginError(user) {
         }
 
         function logoutSuccess() {
