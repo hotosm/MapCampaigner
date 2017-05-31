@@ -211,12 +211,14 @@
         var feature_collected_count = 0;
 
         $(function () {
-            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            if(selected_functions.length > 0) {
+                $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            }
             $.each(selected_functions, function (key, selected_function) {
                 get_function(key);
                 if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
-                    if (selected_function["category"] != "coverage-function") {
+                    if (selected_function["category"] !== "coverage-function") {
                         get_metadata(key);
                     }
                 }
