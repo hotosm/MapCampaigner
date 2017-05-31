@@ -3,7 +3,9 @@ __date__ = '16/05/17'
 
 import os
 from utilities import absolute_path
+import time
 
+from reporter.osm import fetch_osm
 
 def module_path(*args):
     """Get an absolute path for a file that is relative to the root.
@@ -35,3 +37,29 @@ def get_tags():
     tags = [x.strip() for x in content]
     tags.sort()
     return tags
+
+
+def load_osm_document_cached(file_path, url_path):
+    """Load an cached osm document, update the results if 15 minutes old.
+
+    :type file_path: basestring
+    :param file_path: The path on the filesystem
+
+    :param url_path: Path of the file
+    :type url_path: str
+
+    :returns: A file object for the the downloaded file.
+    :rtype: file
+    """
+    elapsed_seconds = 0
+    limit_seconds = 900 # 15 minutes
+    if os.path.exists(file_path):
+        current_time = time.time()  # in unix epoch
+        file_time = os.path.getmtime(file_path)  # in unix epoch
+        elapsed_seconds = current_time - file_time
+        if elapsed_seconds > limit_seconds:
+            os.remove(file_path)
+    if elapsed_seconds > limit_seconds or not os.path.exists(file_path):
+        fetch_osm(file_path, url_path)
+    file_handle = open(file_path, 'rb')
+    return file_handle
