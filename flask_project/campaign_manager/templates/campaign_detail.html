@@ -179,7 +179,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="row" id="insight-row">
@@ -203,24 +202,57 @@
 
     <script src="/campaign_manager/static/libs/chartjs/Chart.bundle.min.js"></script>
 
-    <script>
+    <script type="text/javascript">
 
         var uuid = '{{ uuid }}';
+        var managers = {{ campaign_managers|safe }};
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
 
-        $(function () {
-            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+        function render_selected_functions(username) {
+
+            $('.insight-tabs').html('');
+            $('.insight-content').html('');
             $.each(selected_functions, function (key, selected_function) {
-                get_function(key);
-                if (!containsObject(selected_function['feature'], feature_collected)) {
-                    feature_collected.push(selected_function['feature']);
-                    if (selected_function["category"] != "coverage-function") {
-                        get_metadata(key);
+                var allow_function = true;
+                if (selected_function['manager_only']) {
+                    if ($.inArray(username, managers) === -1) {
+                        allow_function = false;
+                    }
+                }
+                if (allow_function) {
+                    get_function(key);
+                    if (!containsObject(selected_function['feature'], feature_collected)) {
+                        feature_collected.push(selected_function['feature']);
+                        if (selected_function["category"] != "coverage-function") {
+                            get_metadata(key);
+                        }
                     }
                 }
             });
+        }
+        //------------------ EVENT ------------------//
+
+        function loginSuccess(user) {
+            render_selected_functions(user.display_name);
+        }
+
+        function loginError() {
+            render_selected_functions('');
+        }
+
+        function logoutSuccess() {
+            render_selected_functions('');
+        }
+
+        $(function () {
+            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+
+            window.isAuthenticated = auth.authenticated();
+            if (!auth.authenticated()) {
+                update();
+            }
         });
 
         var drawnItems = new L.FeatureGroup();
@@ -247,6 +279,9 @@
             $.ajax({
                 url: url,
                 success: function (data) {
+                    var href = "#" + function_id
+                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
+                    $('.insight-content').find('#' + function_id).remove();
                     var active = '';
                     if (first_function) {
                         active = 'active';
@@ -257,7 +292,7 @@
 
                     $('.insight-tabs').append(
                             '<li class="' + active + '">' +
-                            '<a href="#' + function_id + '" data-toggle="tab" aria-expanded="true">' +
+                            '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
                             $insightTitle.html() + '</a>' +
                             '</li>'
                     );
@@ -267,6 +302,7 @@
                             data +
                             '</div>'
                     );
+                    $('.insight-tabs').find('a')[0].click();
 
                 }
             });

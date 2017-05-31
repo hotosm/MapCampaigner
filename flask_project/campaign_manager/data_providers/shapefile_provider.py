@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/05/17'
 
 import shapefile
+import struct
 from campaign_manager.data_providers._abstract_data_provider import (
     AbstractDataProvider
 )
@@ -38,5 +39,8 @@ class ShapefileProvider(AbstractDataProvider):
                 "type": "FeatureCollection",
                 "features": buffer
             }
-        except shapefile.ShapefileException:
+        except (
+                shapefile.ShapefileException,
+                struct.error
+        ):
             return {}

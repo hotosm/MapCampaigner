@@ -1,0 +1,101 @@
+<div class="osmch-error">
+    <i style="color: gray">This data was created based from bbox of geometry of campaign. So there are some data that outside of geometry.</i>
+    <br><br>
+    <table class="feature-list-table">
+        <thead>
+        <tr>
+            {% for key in data.data[0] %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data.data %}
+            <tr>
+                {% for key, value in row.items() %}
+                    <td>
+                        {% if key == 'ID' %}
+                            <a href='https://osmcha.mapbox.com/{{ value }}'>{{ value }}</a>
+                        {% elif key == 'User' %}
+                            <a href='https://osmcha.mapbox.com/?usernames={{ value }}'>{{ value }}</a>
+                        {% elif key == 'Count' %}
+                            <span class='label label-success'>{{ value.success }}</span>
+                            <span class='label label-warning'>{{ value.warning }}</span>
+                            <span class='label label-danger'>{{ value.danger }}</span>
+                        {% elif key == 'Verified' %}
+                            {% if value.status %}
+                                <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                {% if value.thumbs_up %}
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-thumbs-down"></span>
+                                {% endif %}
+                                {% if value.verifier %}
+                                    <a href='https://osmcha.mapbox.com/?checked_by={{ value.verifier }}'>{{ value.verifier }}</a>
+                                {% endif %}
+
+                            {% else %}
+                                <span aria-hidden='true' class='glyphicon glyphicon-remove text-danger'></span>
+                            {% endif %}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-muted text-pagination">
+        Page {{ data.current_page }} of {{ data.max_page }}
+    </p>
+    <ul class="pager">
+        {% if data.current_page > 1 %}
+            <li>
+                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ data.function_id }}?page={{ data.previous_page }}">
+                    ← Previous
+                </a>
+            </li>
+        {% endif %}
+        {% if data.current_page != data.max_page %}
+            <li>
+                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ data.function_id }}?page={{ data.next_page }}">
+                    Next →
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+<style type="text/css">
+    .text-pagination {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .feature-list-table a {
+        cursor: pointer;
+    }
+</style>
+<script>
+    var function_id = "{{ data.function_id }}";
+    $(document).ready(function () {
+        $('.osmch-error .feature-list-table').DataTable({
+            "filter": false,
+            "pageLength": 15,
+            "paging": false,
+            "info": false
+        });
+        $(".pager-button").click(function (event) {
+            var $content = $('#' + function_id);
+            event.preventDefault();
+            $content.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $.ajax({
+                url: $(event.target).attr('href'),
+                success: function (data) {
+                    $content.LoadingOverlay('hide');
+                    $content.html(data);
+                }
+            });
+        })
+    });
+</script>

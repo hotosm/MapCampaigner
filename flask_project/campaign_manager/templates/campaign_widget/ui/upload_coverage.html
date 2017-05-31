@@ -14,18 +14,16 @@
                 </div>
             {% endfor %}
         </div>
+        <div style="color: gray; font-style: italic; text-align: center; margin-bottom: 10px">Multiselect .dbf, .shp, .shx for minimum files.</div>
         <div class="btn-group" style="width: 100%">
             <button class="add-file btn btn-outline btn-primary btn-lg">
                 <span>Add file(s)</span>
-                <input id="upload-button" name="file" type="file" class="upload" multiple/>
+                <input id="upload-button" name="file" type="file" class="upload" accept=".dbf,.prj,.qpj,.shp,.shx" multiple/>
             </button>
             <button class="file-upload btn btn-outline btn-primary btn-lg">Upload</button>
         </div>
-
     </div>
 </form>
-<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
-<script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
 <style type="text/css">
     .coverage-uploader button {
         width: 50%;
@@ -67,14 +65,15 @@
     var coverage_layer = null;
     var coverage_info = null;
     var coverage_legend = null;
-    function added_file_indicator(filename, complete) {
+    var $coverage = $("#coverage-upload ");
+    function add_coverage_file_indicator(filename, complete) {
         var complete_class = '';
         var percent = '0%';
         if (complete) {
             complete_class = 'complete';
             percent = '100%';
         }
-        $(".file-indicator").append(
+        $coverage.find(".file-indicator").append(
                 "<div class='file-indicator-row " + complete_class + "'>" +
                 filename +
                 "<span class='percent-indicator'>" + percent + "</span>" +
@@ -82,19 +81,21 @@
         );
     }
     $(function () {
-        $(".coverage-uploader #upload-button").change(function () {
-            $(".file-indicator").html("");
+        $coverage.find(".file-upload").prop('disabled', true);
+        $coverage.find("#upload-button").change(function () {
+            $coverage.find(".file-indicator").html("");
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
-                added_file_indicator($(this).get(0).files[i].name);
+                add_coverage_file_indicator($(this).get(0).files[i].name);
             }
-            $('#coverage-last-upload').hide();
+            $coverage.find('#coverage-last-upload').hide();
+            $coverage.find(".file-upload").prop('disabled', false);
         });
-        $(".file-upload").click(function () {
-            if (is_in_upload && $('.file-indicator').find('.file-indicator-row ').length > 0) {
+        $coverage.find(".file-upload").click(function () {
+            if (is_in_upload && $coverage.find('.file-indicator-row ').length > 0) {
                 $(this).prop('disabled', true);
-                $(".coverage-uploader .add-file").prop('disabled', true);
-                $(".coverage-uploader #upload-button").css('cursor', 'not-allowed');
-                $(".coverage-uploader #upload-button").prop('disabled', true);
+                $coverage.find(".coverage-uploader .add-file").prop('disabled', true);
+                $coverage.find(".coverage-uploader #upload-button").css('cursor', 'not-allowed');
+                $coverage.find(".coverage-uploader #upload-button").prop('disabled', true);
             } else {
                 return false;
             }
@@ -108,8 +109,9 @@
             maxRetries: 100,
             retryTimeout: 500000,
             maxChunkSize: 100000, // 100 KB
+            acceptFileTypes: /(\.|\/)(dbf|prj|qpj|shp|shx)$/i,
             add: function (e, uploadData) {
-                $(".file-upload").on('click', function () {
+                $coverage.find(".file-upload").on('click', function () {
                     uploadData.submit();
                 });
                 is_in_upload = true;
@@ -119,53 +121,52 @@
             },
             done: function (e, uploadData) {
                 var filename = uploadData.files[0].name;
-                var $nameIndicator = $(".file-indicator").find("div:contains('" + filename + "')");
+                var $nameIndicator = $coverage.find(".file-indicator").find("div:contains('" + filename + "')");
                 $nameIndicator.addClass('complete');
                 $nameIndicator.find('.percent-indicator').html('100%');
                 var all_complete = true;
-                $('.file-indicator').find('.file-indicator-row').each(function (index, element) {
+                $coverage.find('.file-indicator').find('.file-indicator-row').each(function (index, element) {
                     if (!$(element).hasClass('complete')) {
                         all_complete = false;
                     }
                 });
                 if (all_complete) {
-                    $(".file-upload").prop('disabled', false);
-                    $(".coverage-uploader .add-file").prop('disabled', false);
-                    $(".coverage-uploader #upload-button").css('cursor', 'pointer');
-                    $(".coverage-uploader #upload-button").prop('disabled', false);
+                    $coverage.find(".add-file").prop('disabled', false);
+                    $coverage.find("#upload-button").css('cursor', 'pointer');
+                    $coverage.find("#upload-button").prop('disabled', false);
                     is_in_upload = false;
-                    upload_complete();
+                    coverage_upload_complete();
                 }
             },
             progress: function (e, uploadData) {
                 var filename = uploadData.files[0].name;
-                var $nameIndicator = $(".file-indicator").find("div:contains('" + filename + "')");
+                var $nameIndicator = $coverage.find(".file-indicator").find("div:contains('" + filename + "')");
                 var progress = parseInt(uploadData.loaded / uploadData.total * 100, 10);
                 $nameIndicator.find('.percent-indicator').html(progress + '%');
             }
         });
         get_coverage();
     });
-    function upload_complete() {
+    function coverage_upload_complete() {
         $.ajax({
             url: '/campaign_manager/campaign/' + uuid + '/coverage-upload-success?uploader=' + $("#profile-name").html(),
             dataType: 'json',
             success: function (data) {
                 if (!data['success']) {
-                    $('#coverage-last-upload').show();
-                    $('#coverage-last-upload').css('color', 'red');
-                    $('#coverage-last-upload').html(data['reason']);
+                    $coverage.find('#coverage-last-upload').show();
+                    $coverage.find('#coverage-last-upload').css('color', 'red');
+                    $coverage.find('#coverage-last-upload').html(data['reason']);
                 } else {
-                    $(".file-indicator").html('');
-                    $('#coverage-last-upload').show();
-                    $('#coverage-last-upload').css('color', 'gray');
-                    $('#coverage-last-upload').html(
+                    $coverage.find(".file-indicator").html('');
+                    $coverage.find('#coverage-last-upload').show();
+                    $coverage.find('#coverage-last-upload').css('color', 'gray');
+                    $coverage.find('#coverage-last-upload').html(
                             'uploaded by <a href="www.openstreetmap.org/user/' +
                             data['data']['last_uploader'] + '">' +
                             data['data']['last_uploader'] + '</a> at ' +
                             data['data']['last_uploaded']);
                     $.each(data['files'], function (index, value) {
-                        added_file_indicator(value, true);
+                        add_coverage_file_indicator(value, true);
                     });
                     coverage_geojson = data['data']['geojson'];
                     get_coverage();
@@ -181,8 +182,8 @@
         if (Object.keys(coverage_geojson).length != 0) {
             if (coverage_layer) {
                 that.map.removeLayer(coverage_layer);
-                that.map.removeLayer(coverage_info);
-                that.map.removeLayer(coverage_legend);
+                that.map.removeControl(coverage_info);
+                that.map.removeControl(coverage_legend);
             }
 
             var today = new Date();
@@ -232,7 +233,7 @@
                 div.innerHTML += '<div><i style="background:' + future_color + '"></i>Not yet<br></div>';
                 return div;
             };
-            coverage_legend.addTo(that.map);
+            that.map.addControl(coverage_legend);
 
             {# create info #}
             coverage_info = L.control(
@@ -260,8 +261,7 @@
                     $(this._div).html(html);
                 }
             };
-
-            coverage_info.addTo(that.map);
+            that.map.addControl(coverage_info);
         }
     }
 </script>

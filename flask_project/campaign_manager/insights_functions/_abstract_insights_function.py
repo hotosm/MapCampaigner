@@ -2,7 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 from abc import ABCMeta
-
+import pygeoj
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
 
@@ -37,15 +37,20 @@ class AbstractInsightsFunction(object):
     need_feature = True
     need_required_attributes = True
 
-    def __init__(self, campaign, feature=None, required_attributes=None):
+    manager_only = False
+
+    def __init__(self, campaign, feature=None, required_attributes=None, additional_data={}):
         self.campaign = campaign
         if not self.feature:
             self.feature = feature
         self.required_attributes = required_attributes
-        self.initiate()
+        self.initiate(additional_data)
 
-    def initiate(self):
+    def initiate(self, additional_data):
         """ Initiate function
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
         """
         pass
 
@@ -120,20 +125,6 @@ class AbstractInsightsFunction(object):
         :rtype: dict
         """
         return data
-
-    def corrected_coordinates(self):
-        """ Corrected geometry of campaign.
-        :return: corrected coordinated
-        :rtype: [str]
-        """
-        coordinates = self.campaign.geometry['features'][0]
-        coordinates = coordinates['geometry']['coordinates'][0]
-        correct_coordinates = []
-        for coordinate in coordinates:
-            correct_coordinates.append(
-                [coordinate[1], coordinate[0]]
-            )
-        return correct_coordinates
 
     def get_required_attributes(self):
         """Parsing required attributes
