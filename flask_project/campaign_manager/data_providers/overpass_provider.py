@@ -7,13 +7,13 @@ from urllib.parse import quote
 
 from reporter import config
 from reporter.exceptions import OverpassTimeoutException
-from reporter.osm import (
-    load_osm_document
-)
 from reporter.queries import TAG_MAPPING, OVERPASS_QUERY_MAP_POLYGON
 from reporter.utilities import split_polygon
 from campaign_manager.data_providers._abstract_data_provider import (
     AbstractDataProvider
+)
+from campaign_manager.utilities import (
+    load_osm_document_cached
 )
 
 
@@ -61,7 +61,7 @@ class OverpassProvider(AbstractDataProvider):
         url_path = '%s%s' % (server_url, encoded_query)
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
         file_path = os.path.join(config.CACHE_DIR, safe_name)
-        osm_document = load_osm_document(file_path, url_path)
+        osm_document = load_osm_document_cached(file_path, url_path)
 
         osm_data = json.loads(osm_document.read())
 
