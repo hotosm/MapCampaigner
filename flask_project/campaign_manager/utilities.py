@@ -17,6 +17,17 @@ def module_path(*args):
     return os.path.join(absolute_path(), 'campaign_manager')
 
 
+def temporary_folder():
+    """Get an absolute path for temp folder which
+    is relative to the root."""
+
+    return os.path.join(
+        module_path(),
+        'campaigns_data',
+        'temp'
+    )
+
+
 def get_osm_user():
     osm_user_path = os.path.join(
         module_path(), 'osm_user.txt')

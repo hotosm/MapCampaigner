@@ -1,6 +1,8 @@
 import json
 import inspect
 import os
+import shapefile
+import shutil
 from datetime import datetime
 from flask import request, render_template, Response
 
@@ -9,7 +11,7 @@ from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from reporter import LOGGER
 from reporter.static_files import static_file
-from campaign_manager.utilities import module_path
+from campaign_manager.utilities import module_path, temporary_folder
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -92,6 +94,146 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
         return Response('Campaign not found')
 
 
+def check_geojson_is_polygon(geojson):
+    """Checking geojson is polygon"""
+    types = ["Polygon", "MultiPolygon"]
+    for feature in geojson['features']:
+        if feature['geometry']['type'] not in types:
+            return False
+    return True
+
+
+@campaign_manager.route('/campaign/<uuid>/boundary-upload-success')
+def campaign_boundary_upload_chunk_success(uuid):
+    """Upload chunk handle success.
+    """
+    from campaign_manager.models.campaign import Campaign
+    from campaign_manager.data_providers.shapefile_provider import ShapefileProvider
+    # validate coverage
+    try:
+        # folder for this campaign
+        folder = os.path.join(
+            temporary_folder(),
+            uuid
+        )
+        shapefile_file = "%s/%s.shp" % (
+            folder, uuid
+        )
+        geojson = ShapefileProvider().get_data(shapefile_file)
+        if not geojson:
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Shapefile is not valid.'
+            }))
+        if not check_geojson_is_polygon(geojson):
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'It is not in polygon/multipolygon type.'
+            }))
+
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        return Response(json.dumps({
+            'success': True,
+            'data': geojson,
+        }))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
+def campaign_coverage_upload_chunk_success(uuid):
+    """Upload chunk handle success.
+    """
+    from campaign_manager.models.campaign import Campaign
+    from campaign_manager.insights_functions.upload_coverage import (
+        UploadCoverage
+    )
+    # validate coverage
+    try:
+        campaign = Campaign.get(uuid)
+        coverage_function = UploadCoverage(campaign)
+        coverage = coverage_function.get_function_raw_data()
+        if not coverage:
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Shapefile is not valid.'
+            }))
+        if not check_geojson_is_polygon(coverage):
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'It is not in polygon/multipolygon type.'
+            }))
+
+        try:
+            coverage['features'][0]['properties']['date']
+        except KeyError:
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'Needs date attribute in shapefile.'
+            }))
+
+        campaign.coverage = {
+            'last_uploader': request.args.get('uploader', ''),
+            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
+            'geojson': coverage
+
+        }
+        coverage_uploader = request.args.get('uploader', '')
+        campaign.save(coverage_uploader)
+        return Response(json.dumps({
+            'success': True,
+            'data': campaign.coverage,
+            'files': coverage_function.get_coverage_files()
+        }))
+    except Campaign.DoesNotExist:
+        return Response('Campaign not found')
+
+
+def upload_chunk(_file, filename):
+    """Upload chunk file for specific folder.
+    :param _file: file to be saved
+
+    :param filename:filename path to be saved
+    :type filename: src
+    """
+
+    # save uploaded file
+    if 'Content-Range' in request.headers:
+        range_str = request.headers['Content-Range']
+        start_bytes = int(range_str.split(' ')[1].split('-')[0])
+        # remove old file if upload new file
+        if start_bytes == 0:
+            if os.path.exists(filename):
+                os.remove(filename)
+
+        # append chunk to the file on disk, or create new
+        with open(filename, 'ab') as f:
+            f.seek(start_bytes)
+            f.write(_file.read())
+
+    else:
+        # this is not a chunked request, so just save the whole file
+        _file.save(filename)
+
+    # send response with appropriate mime type header
+    return Response(json.dumps({
+        "name": _file.filename,
+        "size": os.path.getsize(filename),
+        "url": 'uploads/' + _file.filename,
+        "thumbnail_url": None,
+        "delete_url": None,
+        "delete_type": None
+    }))
+
+
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-chunk', methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
@@ -119,80 +261,37 @@ def campaign_coverage_upload_chunk(uuid):
                 filenames[1] if len(filenames) > 1 else ''
             )
         )
-
-        # save uploaded file
-        if 'Content-Range' in request.headers:
-            range_str = request.headers['Content-Range']
-            start_bytes = int(range_str.split(' ')[1].split('-')[0])
-            # remove old file if upload new file
-            if start_bytes == 0:
-                if os.path.exists(filename):
-                    os.remove(filename)
-
-            # append chunk to the file on disk, or create new
-            with open(filename, 'ab') as f:
-                f.seek(start_bytes)
-                f.write(_file.read())
-
-        else:
-            # this is not a chunked request, so just save the whole file
-            _file.save(filename)
-
-        # send response with appropriate mime type header
-        return Response(json.dumps({
-            "name": _file.filename,
-            "size": os.path.getsize(filename),
-            "url": 'uploads/' + _file.filename,
-            "thumbnail_url": None,
-            "delete_url": None,
-            "delete_type": None
-        }))
+        return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
 
-@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
-def campaign_coverage_upload_chunk_success(uuid):
-    """Upload chunk handle success.
-    """
+@campaign_manager.route('/campaign/<uuid>/boundary-upload-chunk', methods=['POST'])
+def campaign_boundary_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
-    from campaign_manager.insights_functions.upload_coverage import (
-        UploadCoverage
-    )
-    # validate coverage
+    """Upload chunk handle.
+    """
     try:
-        campaign = Campaign.get(uuid)
-        coverage_function = UploadCoverage(campaign)
-        coverage = coverage_function.get_function_raw_data()
-        if not coverage:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Shapefile is not valid.'
-            }))
+        _file = request.files['file']
+        filename = _file.filename
+        filenames = os.path.splitext(filename)
+        # folder for this campaign
+        filename = os.path.join(
+            temporary_folder(),
+            uuid
+        )
+        if not os.path.exists(filename):
+            os.mkdir(filename)
 
-        try:
-            coverage['features'][0]['properties']['date']
-        except KeyError:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Needs date attribute in shapefile.'
-            }))
-
-        campaign.coverage = {
-            'last_uploader': request.args.get('uploader', ''),
-            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
-            'geojson': coverage
-
-        }
-        coverage_uploader = request.args.get('uploader', '')
-        campaign.save(coverage_uploader)
-        return Response(json.dumps({
-            'success': True,
-            'data': campaign.coverage,
-            'files': coverage_function.get_coverage_files()
-        }))
+        # filename of coverage
+        filename = os.path.join(
+            filename,
+            '%s%s' % (
+                uuid,
+                filenames[1] if len(filenames) > 1 else ''
+            )
+        )
+        return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
 
@@ -328,6 +427,7 @@ def create_campaign():
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
+    context['uuid'] = uuid.uuid4().hex
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -378,6 +478,7 @@ def edit_campaign(uuid):
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
+    context['uuid'] = uuid
     return render_template(
         'create_campaign.html', form=form, **context)
 
