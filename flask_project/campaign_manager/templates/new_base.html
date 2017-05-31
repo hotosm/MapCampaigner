@@ -107,8 +107,6 @@
             auto: true,
             landing: window.location.origin + '/campaign_manager/land'
         });
-        var profile_updated = function(profile_name) {
-        };
 
         $(document).ready(function () {
             $('#login-menu').click(function () {
@@ -161,7 +159,7 @@
             }, function (err, res) {
                 if (err) {
                     $('#info').html('error! try clearing your browser cache');
-                    profile_updated('');
+                    loginError();
                     return;
                 }
                 var u = res.getElementsByTagName('user')[0];
@@ -190,13 +188,10 @@
                     }
                 }
 
-                if(loginProcess) {
-                    loginSuccess(o);
-                    loginProcess = false;
-                }
+                loginSuccess(o);
+                loginProcess = false;
 
                 hideLoading();
-                profile_updated(o.display_name);
             }, this);
         }
         function hideDetails(map) {
@@ -211,12 +206,15 @@
                     map.setView([0, 0], 1);
                 }
             }
-            profile_updated('');
+            loginError();
         }
 
         update();
 
         function loginSuccess(user) {
+        }
+
+        function loginError(user) {
         }
 
         function logoutSuccess() {
