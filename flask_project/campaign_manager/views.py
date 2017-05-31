@@ -71,11 +71,21 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
         return Response('Campaign not found')
 
 
+def check_geojson_is_polygon(geojson):
+    """Checking geojson is polygon"""
+    types = ["Polygon", "MultiPolygon"]
+    for feature in geojson['features']:
+        if feature['geometry']['type'] not in types:
+            return False
+    return True
+
+
 @campaign_manager.route('/campaign/<uuid>/boundary-upload-success')
 def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
     from campaign_manager.models.campaign import Campaign
+    from campaign_manager.data_providers.shapefile_provider import ShapefileProvider
     # validate coverage
     try:
         # folder for this campaign
@@ -86,33 +96,20 @@ def campaign_boundary_upload_chunk_success(uuid):
         shapefile_file = "%s/%s.shp" % (
             folder, uuid
         )
-
-        geojson = {}
-        try:
-            # read the shapefile
-            reader = shapefile.Reader(shapefile_file)
-            fields = reader.fields[1:]
-            buffer = []
-            for sr in reader.shapeRecords():
-                geom = sr.shape.__geo_interface__
-                feature = dict(
-                    type="Feature",
-                    geometry=geom,
-                    properties={})
-                buffer.append(feature)
-            geojson = {
-                "type": "FeatureCollection",
-                "features": buffer
-            }
-        except shapefile.ShapefileException:
-            pass
-
+        geojson = ShapefileProvider().get_data(shapefile_file)
         if not geojson:
             if os.path.exists(folder):
                 shutil.rmtree(folder)
             return Response(json.dumps({
                 'success': False,
                 'reason': 'Shapefile is not valid.'
+            }))
+        if not check_geojson_is_polygon(geojson):
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'It is not in polygon/multipolygon type.'
             }))
 
         if os.path.exists(folder):
@@ -143,6 +140,12 @@ def campaign_coverage_upload_chunk_success(uuid):
             return Response(json.dumps({
                 'success': False,
                 'reason': 'Shapefile is not valid.'
+            }))
+        if not check_geojson_is_polygon(coverage):
+            coverage_function.delete_coverage_files()
+            return Response(json.dumps({
+                'success': False,
+                'reason': 'It is not in polygon/multipolygon type.'
             }))
 
         try:
