@@ -211,7 +211,6 @@
         var feature_collected_count = 0;
 
         function render_selected_functions(username) {
-
             $('.insight-tabs').html('');
             $('.insight-content').html('');
             $.each(selected_functions, function (key, selected_function) {
@@ -225,7 +224,7 @@
                     get_function(key);
                     if (!containsObject(selected_function['feature'], feature_collected)) {
                         feature_collected.push(selected_function['feature']);
-                        if (selected_function["category"] != "coverage-function") {
+                        if (selected_function["category"] !== "coverage-function") {
                             get_metadata(key);
                         }
                     }
@@ -247,8 +246,6 @@
         }
 
         $(function () {
-            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
-
             window.isAuthenticated = auth.authenticated();
             if (!auth.authenticated()) {
                 update();
@@ -309,7 +306,10 @@
         }
 
         function get_metadata(function_id) {
+            console.log(function_id);
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id + '/metadata';
+            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+
             $.ajax({
                 url: url,
                 success: function (data) {
