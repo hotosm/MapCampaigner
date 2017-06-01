@@ -1,15 +1,14 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+import bisect
 import copy
 import json
 import os
 import pygeoj
 import time
-import campaign_manager.insights_functions as insights_functions
-
 from flask import render_template
-
+import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.utilities import module_path
 
@@ -265,21 +264,24 @@ class Campaign(JsonModel):
         :return: Campaigns that found or none
         :rtype: [Campaign]
         """
+        name_list = []
         campaigns = []
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    campaign_dict = campaign.to_dict()
                     allowed = True
                     if kwargs:
+                        campaign_dict = campaign.to_dict()
                         for key, value in kwargs.items():
                             if key not in campaign_dict:
                                 allowed = False
                             elif value not in campaign_dict[key]:
                                 allowed = False
                     if allowed:
-                        campaigns.append(campaign)
+                        position = bisect.bisect(name_list, campaign.name)
+                        bisect.insort(name_list, campaign.name)
+                        campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
         return campaigns
