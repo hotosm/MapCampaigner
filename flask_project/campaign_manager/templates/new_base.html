@@ -108,7 +108,13 @@
             oauth_secret: '{{ oauth_secret }}',
             oauth_consumer_key: '{{ oauth_consumer_key }}',
             auto: true,
-            landing: window.location.origin + '/campaign_manager/land'
+            landing: window.location.origin + '/campaign_manager/land',
+            loading: function () {
+                showLoading();
+            },
+            done: function () {
+                hideLoading();
+            }
         });
 
         $(document).ready(function () {
@@ -121,7 +127,6 @@
         });
 
         function login() {
-            showLoading();
             loginProcess = true;
             auth.authenticate(function () {
                 update();
@@ -162,6 +167,7 @@
             }, function (err, res) {
                 if (err) {
                     $('#info').html('error! try clearing your browser cache');
+                    hideLoading();
                     loginError();
                     return;
                 }
@@ -194,7 +200,6 @@
                 loginSuccess(o);
                 loginProcess = false;
 
-                hideLoading();
             }, this);
         }
         function hideDetails(map) {
