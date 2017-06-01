@@ -162,6 +162,19 @@
             maxZoom: 15
         }).addTo(map);
 
+        // Get user location
+        navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
+
+        function successGetBrowserLocation(position) {
+            var zoom = 10;
+            var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
+            map.setView(userLocation, zoom);
+        }
+
+        function errorGetBrowserLocation() {
+            console.log('Error get browser location');
+        }
+
         $.each(allCampaignPosition, function(index, campaign){
             var campaignLayer = L.geoJson(campaign, {
                 onEachFeature: function (feature, layer) {
