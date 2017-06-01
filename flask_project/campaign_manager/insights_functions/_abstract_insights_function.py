@@ -37,11 +37,15 @@ class AbstractInsightsFunction(object):
     need_feature = True
     need_required_attributes = True
 
+    manager_only = False
+
     def __init__(self, campaign, feature=None, required_attributes=None, additional_data={}):
         self.campaign = campaign
         if not self.feature:
             self.feature = feature
         self.required_attributes = required_attributes
+        if 'function_id' in additional_data:
+            self.function_id = additional_data['function_id']
         self.initiate(additional_data)
 
     def initiate(self, additional_data):
@@ -185,7 +189,10 @@ class AbstractInsightsFunction(object):
         try:
             return render_template(
                 'campaign_widget/%s/%s.html' % (ui_type, html_name),
-                **{'data': self._function_data}
+                **{
+                    'data': self._function_data,
+                    'function_id': self.function_id
+                }
             )
         except TemplateNotFound:
             return render_template(

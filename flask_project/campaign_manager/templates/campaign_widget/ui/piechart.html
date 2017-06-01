@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row piechart-wrapper">
     <div class="col-lg-4"></div>
     <div class="col-lg-4">
         <canvas class="pieChart"></canvas>
@@ -7,7 +7,8 @@
 </div>
 
 <script type="text/javascript">
-
+    var function_id = "{{ function_id }}";
+    var $wrapper = $('#{{ function_id }}');
     var chart_data = {
         labels: [],
         datasets: [{
@@ -19,39 +20,45 @@
 
     {% for key, value in data.items() %}
         {% if key != 'yes' %}
-        chart_data['labels'].push(capitalizeFirstLetter('{{ key }}'));
-        chart_data['datasets'][0]['data'].push('{{ value }}');
-        chart_data['datasets'][0]['backgroundColor'].push(getRandomColor());
+            chart_data['labels'].push(capitalizeFirstLetter('{{ key }}'));
+            chart_data['datasets'][0]['data'].push('{{ value }}');
+            chart_data['datasets'][0]['backgroundColor'].push(getRandomColor());
         {% endif %}
     {% endfor %}
-
-    var ctx = $(".pieChart");
-    var options = {};
-    var chart_data_example = {
-        labels: [
-            "Red",
-            "Blue",
-            "Yellow"
-        ],
-        datasets: [
-            {
-                data: [300, 50, 100],
-                backgroundColor: [
-                    "#FF6384",
-                    "#36A2EB",
-                    "#FFCE56"
-                ],
-                hoverBackgroundColor: [
-                    "#FF6384",
-                    "#36A2EB",
-                    "#FFCE56"
-                ]
-            }]
+    if (chart_data['labels'].length != 0) {
+        var ctx = $wrapper.find(".pieChart");
+        var options = {};
+        var chart_data_example = {
+            labels: [
+                "Red",
+                "Blue",
+                "Yellow"
+            ],
+            datasets: [
+                {
+                    data: [300, 50, 100],
+                    backgroundColor: [
+                        "#FF6384",
+                        "#36A2EB",
+                        "#FFCE56"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#36A2EB",
+                        "#FFCE56"
+                    ]
+                }]
         };
-    // And for a doughnut chart
-    var myDoughnutChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: chart_data,
-        options: options
-    });
+        // And for a doughnut chart
+        var myDoughnutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: chart_data,
+            options: options
+        });
+    } else {
+        $wrapper.find('.piechart-wrapper').addClass('error');
+        $wrapper.find('.piechart-wrapper').html(
+                '<div id="notification" class="alert alert-danger alert-dismissable">No chart can be rendered.</div>'
+        )
+    }
 </script>

@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+import bisect
 import copy
 import json
 import os
@@ -8,9 +9,7 @@ import pygeoj
 import time
 from shapely import geometry as shapely_geometry
 import campaign_manager.insights_functions as insights_functions
-
 from flask import render_template
-
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.utilities import module_path
 
@@ -77,6 +76,11 @@ class Campaign(JsonModel):
         :return: Get selected function in string
         :rtype: str
         """
+        for key, value in self.selected_functions.items():
+            SelectedFunction = getattr(
+                insights_functions, value['function'])
+            selected_function = SelectedFunction(self)
+            value['manager_only'] = selected_function.manager_only
         return json.dumps(self.selected_functions).replace('None', 'null')
 
     def parse_json_file(self):
@@ -97,34 +101,6 @@ class Campaign(JsonModel):
                         setattr(self, key, value)
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
-
-    def insight_function_data(self, insight_function_id):
-        """Get data from insight_function
-
-        :param insight_function_id: id of insight function
-        :type insight_function_id: str
-
-        :return: data from insight function
-        :rtype: dict
-        """
-        if insight_function_id not in self.selected_functions:
-            raise Campaign.InsightsFunctionNotAssignedToCampaign
-        try:
-            function = self.selected_functions[insight_function_id]
-            SelectedFunction = getattr(
-                insights_functions, function['function'])
-            selected_function = SelectedFunction(
-                self,
-                feature=function['feature'],
-                required_attributes=function['attributes'])
-            selected_function.run()
-            output = {
-                'title': selected_function.name(),
-                'data': selected_function.get_function_data()
-            }
-            return output
-        except AttributeError as e:
-            return {}
 
     def render_insights_function(self, insight_function_id, additional_data={}):
         """Get rendered UI from insight_function
@@ -288,21 +264,24 @@ class Campaign(JsonModel):
         :return: Campaigns that found or none
         :rtype: [Campaign]
         """
+        name_list = []
         campaigns = []
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    campaign_dict = campaign.to_dict()
                     allowed = True
                     if kwargs:
+                        campaign_dict = campaign.to_dict()
                         for key, value in kwargs.items():
                             if key not in campaign_dict:
                                 allowed = False
                             elif value not in campaign_dict[key]:
                                 allowed = False
                     if allowed:
-                        campaigns.append(campaign)
+                        position = bisect.bisect(name_list, campaign.name)
+                        bisect.insort(name_list, campaign.name)
+                        campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
         return campaigns

@@ -3,19 +3,19 @@
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
-    <div class="see-detail" onclick="see_completeness_details(this)">see detail</div>
+    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features</div>
     <table class="feature-list-table">
         <thead>
-            <tr>
-                <th>ID</th>
-                {% for key in data.attributes %}
-                    <th>{{ key }}</th>
-                {% endfor %}
-                <th>Completeness</th>
-            </tr>
+        <tr>
+            <th>ID</th>
+            {% for key in data.attributes %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
         </thead>
         <tbody>
-            {% for row in data.data %}
+        {% for row in data.data %}
+            {% if row['error'] %}
                 <tr>
                     <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
                     {% for key in data.attributes %}
@@ -29,13 +29,9 @@
                             <td>-</td>
                         {% endif %}
                     {% endfor %}
-                    {% if row['error'] %}
-                        <td class="error-indicator">Incomplete</td>
-                    {% else %}
-                        <td class="clean-indicator">Complete</td>
-                    {% endif %}
                 </tr>
-            {% endfor %}
+            {% endif %}
+        {% endfor %}
         </tbody>
     </table>
 </div>
@@ -43,7 +39,6 @@
     .see-detail {
         width: 100%;
         text-align: center;
-        color: gray;
         cursor: pointer;
         margin: 10px;
     }
@@ -89,15 +84,18 @@
 
 </style>
 <script>
+    var function_id = "{{ function_id }}";
+    var $wrapper = $('#{{ function_id }}');
     $(document).ready(function () {
-        $('.feature-list-table').DataTable();
+        $wrapper.find('.feature-list-table').DataTable();
+        $wrapper.find('.dataTables_wrapper').show();
     });
     function see_completeness_details(event) {
         if (!$(event).closest(".completness").find(".dataTables_wrapper").is(":visible")) {
-            $(event).html("Hide detail");
+            $(event).html('<i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features');
             $(event).closest(".completness").find(".dataTables_wrapper").show();
         } else {
-            $(event).html("See detail");
+            $(event).html('<i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features');
             $(event).closest(".completness").find(".dataTables_wrapper").hide();
         }
     }

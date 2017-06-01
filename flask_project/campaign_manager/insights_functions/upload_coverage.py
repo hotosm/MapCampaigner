@@ -15,6 +15,7 @@ class UploadCoverage(AbstractInsightsFunction):
     category = ['coverage']
     need_feature = False
     need_required_attributes = False
+    manager_only = True
 
     def initiate(self, additional_data):
         """ Initiate function
