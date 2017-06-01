@@ -54,13 +54,25 @@ def campaigns_with_tag(tag):
 
     On this page a summary campaign manager view will shown.
     """
+    coordinate = request.args.get('coordinate', None)
+
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        user_coordinate=coordinate
     )
-    context['campaigns'] = Campaign.all(**{
-        'tags': tag
-    })
+
+    if coordinate:
+        # Get nearest campaigns
+        context['campaigns'] = Campaign.nearest_campaigns(
+                coordinate,
+                **{'tags': tag}
+        )
+    else:
+        context['campaigns'] = Campaign.all(**{
+            'tags': tag
+        })
+
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 

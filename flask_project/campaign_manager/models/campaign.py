@@ -308,7 +308,7 @@ class Campaign(JsonModel):
         return campaigns
 
     @staticmethod
-    def nearest_campaigns(coordinate):
+    def nearest_campaigns(coordinate, **kwargs):
         """Return nearest campaigns based on coordinate
 
         :param coordinate: lat, long coordinate string
@@ -326,7 +326,16 @@ class Campaign(JsonModel):
                     #
                     polygon = shapely_geometry.Polygon(campaign.corrected_coordinates())
                     if circle_buffer.contains(polygon):
-                        campaigns.append(campaign)
+                        campaign_dict = campaign.to_dict()
+                        allowed = True
+                        if kwargs:
+                            for key, value in kwargs.items():
+                                if key not in campaign_dict:
+                                    allowed = False
+                                elif value not in campaign_dict[key]:
+                                    allowed = False
+                        if allowed:
+                            campaigns.append(campaign)
                 except Campaign.DoesNotExist:
                     pass
 
