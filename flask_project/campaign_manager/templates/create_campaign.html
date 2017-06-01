@@ -139,6 +139,9 @@
         function loginSuccess(response) {
             clearNotification();
             $('#campaign-panel').show();
+
+            // Set default campaign manager
+            $('#campaign_managers').val(response.display_name);
         }
 
         function logoutSuccess() {
