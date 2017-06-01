@@ -38,7 +38,8 @@ class CampaignForm(FlaskForm):
 
     campaign_managers = SelectMultipleField(
         u'Managers of campaign',
-        choices=[(user, user) for user in get_osm_user()])
+        choices=[(user, user) for user in get_osm_user()],
+        validators=[DataRequired('Campaign manager is needed')])
     tags = SelectMultipleField(
         u'Tags of campaign',
         choices=[(tag, tag) for tag in get_tags()])
