@@ -7,8 +7,9 @@ import json
 import os
 import pygeoj
 import time
-from flask import render_template
+from shapely import geometry as shapely_geometry
 import campaign_manager.insights_functions as insights_functions
+from flask import render_template
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.utilities import module_path
 
@@ -189,8 +190,7 @@ class Campaign(JsonModel):
         geojson = pygeoj.load(data=geometry)
         return geojson.bbox
 
-        # ----------------------------------------------------------
-
+    # ----------------------------------------------------------
     # coverage functions
     # ----------------------------------------------------------
     def get_coverage_folder(self):
@@ -284,6 +284,40 @@ class Campaign(JsonModel):
                         campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
+        return campaigns
+
+    @staticmethod
+    def nearest_campaigns(coordinate, **kwargs):
+        """Return nearest campaigns based on coordinate
+
+        :param coordinate: lat, long coordinate string
+        :type coordinate: str
+        """
+        campaigns = []
+        point = shapely_geometry.Point([float(x) for x in coordinate.split(',')])
+        distance = 3
+        circle_buffer = point.buffer(distance)
+
+        for root, dirs, files in os.walk(Campaign.get_json_folder()):
+            for file in files:
+                try:
+                    campaign = Campaign.get(os.path.splitext(file)[0])
+                    #
+                    polygon = shapely_geometry.Polygon(campaign.corrected_coordinates())
+                    if circle_buffer.contains(polygon):
+                        campaign_dict = campaign.to_dict()
+                        allowed = True
+                        if kwargs:
+                            for key, value in kwargs.items():
+                                if key not in campaign_dict:
+                                    allowed = False
+                                elif value not in campaign_dict[key]:
+                                    allowed = False
+                        if allowed:
+                            campaigns.append(campaign)
+                except Campaign.DoesNotExist:
+                    pass
+
         return campaigns
 
     @staticmethod

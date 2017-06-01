@@ -9,3 +9,4 @@ flask-admin
 pyshp
 beautifulsoup4
 PyGeoj
+shapely
