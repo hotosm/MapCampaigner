@@ -40,6 +40,17 @@
                     <div id="campaign-map"></div>
                 </div>
             </div>
+
+            <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg btn-block">
+                <i class="fa fa-globe" aria-hidden="true"></i>
+                <span style="margin-left: 5px;">All Campaigns</span>
+            </button>
+
+            <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg btn-block">
+                <i class="fa fa-globe" aria-hidden="true"></i>
+                <span style="margin-left: 5px;">Nearest Campaigns</span>
+            </button>
+
         </div>
 
         <div class="col-lg-6">
@@ -152,6 +163,10 @@
             margin-bottom: 2px;
         }
 
+        #all-campaigns, #nearest-campaigns {
+            display: none;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -200,20 +215,37 @@
             clearMap();
             clearTable();
             getCampaigns(url, currentUser);
+            {% if not all %}
+                $('#all-campaigns').show();
+            {% else %}
+                $('#nearest-campaigns').show();
+            {% endif %}
         }
 
         $('.remove-tag').click(function () {
             location.href='/campaign_manager'
         })
 
+        $('#all-campaigns').click(function () {
+            location.href='/campaign_manager/all'
+        })
+
+        $('#nearest-campaigns').click(function () {
+            location.href='/campaign_manager'
+        })
+
         function logoutSuccess() {
-            var $campaignListElement = $('#panel-campaign').children().find('.campaign-list-disabled');
-            for(var i=0; i < $campaignListElement.length; i++) {
-                $($campaignListElement[i]).hide();
-            }
+            {% if all %}
+                location.href='/campaign_manager'
+            {% endif %}
+            $('#all-campaigns').hide();
+            $('#nearest-campaigns').hide();
         }
 
         if(!auth.authenticated()) {
+            {% if all %}
+                location.href='/campaign_manager'
+            {% endif %}
             getBrowserLocation();
         }
 
@@ -260,6 +292,9 @@
             if(!url) {
                 url = "/campaign_manager/campaigns";
             }
+            {% if all %}
+                url = "/campaign_manager/campaigns";
+            {% endif %}
             if(tag) {
                 url += '/'+tag;
             }
@@ -318,6 +353,10 @@
                         );
                     });
                     $('#panel-campaign').LoadingOverlay("hide");
+
+                    {% if all %}
+                        map.fitBounds(mapLayers.getBounds());
+                    {% endif %}
                 }
             });
         }

@@ -42,6 +42,23 @@ def home():
     return render_template('index.html', **context)
 
 
+@campaign_manager.route('/all')
+def home_all():
+    """Home page view.
+
+    On this page a summary campaign manager view will shown with all campaigns.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        all=True
+    )
+
+    # noinspection PyUnresolvedReferences
+    return render_template('index.html', **context)
+
+
 @campaign_manager.route('/tags/<tag>')
 def campaigns_with_tag(tag):
     """Home page view with tag.
