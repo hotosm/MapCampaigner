@@ -30,12 +30,12 @@ class Campaign(JsonModel):
     selected_functions = []
     tags = []
     description = ''
+    _content_json = None
 
     def __init__(self, uuid):
         self.uuid = uuid
         self.json_path = Campaign.get_json_file(uuid)
         self.edited_at = time.ctime(os.path.getmtime(self.json_path))
-        self.content_json = None
         self.parse_json_file()
 
     def save(self, uploader):
@@ -96,13 +96,17 @@ class Campaign(JsonModel):
                 content = _file.read()
                 content_json = json.loads(content)
                 Campaign.validate(content_json, self.uuid)
-                self.content_json = content_json
+                self._content_json = content_json
                 attributes = self.get_attributes()
                 for key, value in content_json.items():
                     if key in attributes:
                         setattr(self, key, value)
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
+
+    def json(self):
+        """Returns campaign as json format."""
+        return self._content_json
 
     def render_insights_function(self, insight_function_id, additional_data={}):
         """Get rendered UI from insight_function

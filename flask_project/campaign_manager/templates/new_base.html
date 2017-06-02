@@ -174,18 +174,19 @@
                 }
                 var u = res.getElementsByTagName('user')[0];
                 var changesets = res.getElementsByTagName('changesets')[0];
+                var location = res.getElementsByTagName('home')[0];
 
                 var o = {
                     display_name: u.getAttribute('display_name'),
                     id: u.getAttribute('id'),
-                    count: changesets.getAttribute('count')
+                    count: changesets.getAttribute('count'),
+                    lon: location.getAttribute('lon'),
+                    lat: location.getAttribute('lat')
                 };
 
                 updated(o);
 
                 $('#profile-name').html(o.display_name);
-
-                var location = res.getElementsByTagName('home')[0];
 
                 if (typeof location !== 'undefined') {
                     var long = location.getAttribute('lon');
@@ -223,7 +224,7 @@
         function loginSuccess(user) {
         }
 
-        function loginError(user) {
+        function loginError() {
         }
 
         function logoutSuccess() {
