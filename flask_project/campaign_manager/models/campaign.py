@@ -35,6 +35,7 @@ class Campaign(JsonModel):
         self.uuid = uuid
         self.json_path = Campaign.get_json_file(uuid)
         self.edited_at = time.ctime(os.path.getmtime(self.json_path))
+        self.content_json = None
         self.parse_json_file()
 
     def save(self, uploader):
@@ -95,6 +96,7 @@ class Campaign(JsonModel):
                 content = _file.read()
                 content_json = json.loads(content)
                 Campaign.validate(content_json, self.uuid)
+                self.content_json = content_json
                 attributes = self.get_attributes()
                 for key, value in content_json.items():
                     if key in attributes:
