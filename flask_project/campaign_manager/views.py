@@ -442,7 +442,8 @@ def create_campaign():
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET
     )
-    context['action'] = '/campaign_manager/create'
+    context['url'] = '/campaign_manager/create'
+    context['action'] = 'create'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
@@ -493,7 +494,8 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['action'] = '/campaign_manager/edit/%s' % uuid
+    context['url'] = '/campaign_manager/edit/%s' % uuid
+    context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()

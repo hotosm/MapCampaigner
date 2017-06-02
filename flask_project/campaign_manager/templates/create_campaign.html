@@ -18,7 +18,7 @@
                 <div class="panel-body" id="campaign-panel" style="display: none">
                     <div class="row">
                         <div class="col-lg-6" style="margin-bottom: -40px;">
-                            <form id="campaign-form" method="POST" action="{{ action }}" role="form">
+                            <form id="campaign-form" method="POST" action="{{ url }}" role="form">
                                 {{ form.hidden_tag() }}
                                 {% for field in form %}
                                     {% if field.name != 'submit' and field.name != 'csrf_token' and field.name !='selected_functions' %}
@@ -140,8 +140,10 @@
             clearNotification();
             $('#campaign-panel').show();
 
-            // Set default campaign manager
-            $('#campaign_managers').val(response.display_name);
+            {% if action == 'create' %}
+                // Set default campaign manager
+                $('#campaign_managers').val(response.display_name);
+            {% endif %}
         }
 
         function logoutSuccess() {
@@ -248,7 +250,9 @@
         }).addTo(campaignMap);
 
         // Get user location
-        navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
+        {% if action == 'create' %}
+            navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
+        {% endif %}
 
         function successGetBrowserLocation(position) {
             var zoom = 10;
@@ -313,7 +317,6 @@
             drawnItems.eachLayer(function (layer) {
                 totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
             });
-            console.log(totalAreaSize);
             if (totalAreaSize > maxAreaSize) {
                 showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
                 $("#submit").addClass('disabled');
