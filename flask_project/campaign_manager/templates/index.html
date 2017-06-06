@@ -235,6 +235,8 @@
         })
 
         function logoutSuccess() {
+            clearMap();
+            clearTable();
             {% if all %}
                 location.href='/campaign_manager'
             {% endif %}
