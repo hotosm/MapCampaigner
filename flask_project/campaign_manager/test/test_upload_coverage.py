@@ -11,7 +11,6 @@ class UploadCoverageTestCase(unittest.TestCase):
     def setUp(self):
         """Constructor."""
         self.campaign = CampaignObjectTest()
-        self.uuid = self.campaign.uuid
         self.upload_coverage = UploadCoverage(campaign=self.campaign)
 
     def tearDown(self):
@@ -47,27 +46,29 @@ class UploadCoverageTestCase(unittest.TestCase):
         self.assertEquals(shapefile_file['type'], 'FeatureCollection')
 
     def test_process_data(self):
-        process_data = UploadCoverage.process_data(
-            self, raw_datas={('data1', 1234), ('data2', 2345)})
+        process_data = self.upload_coverage.process_data(
+            raw_datas={('data1', 1234), ('data2', 2345)})
         self.assertEquals(process_data, {('data1', 1234), ('data2', 2345)})
 
     def test_get_coverage_files(self):
         output_files = self.upload_coverage.get_coverage_files()
         expected_output_files = \
-            ['%s.dbf' % self.uuid, '%s.prj' % self.uuid, '%s.shp' % self.uuid,
-             '%s.qpj' % self.uuid, '%s.shx' % self.uuid]
+            ['%s.dbf' % self.campaign.uuid, '%s.prj' % self.campaign.uuid,
+             '%s.shp' % self.campaign.uuid, '%s.qpj' % self.campaign.uuid,
+             '%s.shx' % self.campaign.uuid]
         self.assertIsNotNone(output_files)
         self.assertEquals(output_files, expected_output_files)
 
     def test_post_process_data(self):
         post_output = self.upload_coverage.post_process_data(data={})
         expected_output_files = \
-            ['%s.dbf' % self.uuid, '%s.prj' % self.uuid, '%s.shp' % self.uuid,
-             '%s.qpj' % self.uuid, '%s.shx' % self.uuid]
+            ['%s.dbf' % self.campaign.uuid, '%s.prj' % self.campaign.uuid,
+             '%s.shp' % self.campaign.uuid, '%s.qpj' % self.campaign.uuid,
+             '%s.shx' % self.campaign.uuid]
         expected_coverage = \
             {'last_uploader': 'anita',
              'last_uploaded': '2017-06-06', 'geojson': '{}'}
         self.assertIsNotNone(post_output)
-        self.assertEquals(post_output['uuid'], self.uuid)
+        self.assertEquals(post_output['uuid'], self.campaign.uuid)
         self.assertEquals(post_output['files'], expected_output_files)
         self.assertEquals(post_output['coverage'], expected_coverage)
