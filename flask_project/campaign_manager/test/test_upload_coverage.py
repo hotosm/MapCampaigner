@@ -19,22 +19,24 @@ class UploadCoverageTestCase(unittest.TestCase):
         pass
 
     def test_initiate(self):
-        self.UploadCoverageTest = \
+        upload_coverage_test = \
             self.upload_coverage.initiate(additional_data={})
-        self.assertIsNotNone(self, self.UploadCoverageTest)
+        self.assertIsNotNone(self, upload_coverage_test)
 
     def test_get_ui_html_file(self):
         ui_html = self.upload_coverage.get_ui_html_file()
         self.assertEquals(ui_html, 'upload_coverage')
 
     def test_get_summary_html_file(self):
-        self.upload_coverage.get_summary_html_file = mock.MagicMock(return_value='html summary test')
+        self.upload_coverage.get_summary_html_file = \
+            mock.MagicMock(return_value='html summary test')
         summary_result = self.upload_coverage.get_summary_html_file
         self.assertIsNotNone(summary_result)
         self.assertEquals(summary_result.return_value, 'html summary test')
 
     def test_details_html_file(self):
-        self.upload_coverage.get_details_html_file = mock.MagicMock(return_value='html details test')
+        self.upload_coverage.get_details_html_file = \
+            mock.MagicMock(return_value='html details test')
         details_result = self.upload_coverage.get_details_html_file
         self.assertIsNotNone(details_result)
         self.assertEquals(details_result.return_value, 'html details test')
