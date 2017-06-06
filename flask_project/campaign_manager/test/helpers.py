@@ -2,22 +2,24 @@
 
 import os
 from campaign_manager.utilities import module_path
-from campaign_manager.models.json_model import JsonModel
+from campaign_manager.models.campaign import Campaign
 
 
-class CampaignObjectTest(JsonModel):
-    uuid = 'testcampaign'
-    name = 'test'
-    campaign_creator = 'anita'
-    campaign_status = 'start'
-    coverage = {"last_uploader": "anita", "last_uploaded": "2017-06-06"}
-    geometry = None
-    start_date = None
-    end_date = None
-    campaign_managers = []
-    selected_functions = []
-    tags = []
-    description = 'campaign object test'
+class CampaignObjectTest(Campaign):
+
+    def __init__(self):
+        self.uuid = 'testcampaign'
+        self.name = 'test'
+        self.campaign_creator = 'anita'
+        self.campaign_status = 'start'
+        self.coverage = {"last_uploader": "anita", "last_uploaded": "2017-06-06"}
+        self.geometry = None
+        self.start_date = None
+        self.end_date = None
+        self.campaign_managers = []
+        self.selected_functions = []
+        self.tags = []
+        self.description = 'campaign object test'
 
     def get_coverage_folder(self):
         """ Return coverage folder for this campaign
