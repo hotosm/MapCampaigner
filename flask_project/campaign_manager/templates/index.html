@@ -298,6 +298,10 @@
             if(tag) {
                 url += '/'+tag;
             }
+
+            // Clear campaign list in navbar
+            $('.campaign-list-navbar').html('');
+
             $.ajax(url, {
                 success: function(campaigns){
                     $.each(campaigns, function (index, campaign) {
@@ -325,6 +329,11 @@
                             '<span class="tag">'+tags+'</span>',
                             action_button
                         ]).draw( false );
+
+                        // Add to navigation bar
+                        $('.campaign-list-navbar').append('<li>'+
+                            '<a href="/campaign_manager/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
+                        '</li>');
 
                         // Add campaign layer
                         var campaignLayer = L.geoJson(campaign['geometry'], {
