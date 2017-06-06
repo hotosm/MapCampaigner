@@ -1,5 +1,34 @@
 {% extends 'new_base.html' %}
 
+{% block header_content %}
+        <div class="row home-header">
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-home btn-lg btn-block">Participate</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info">
+                <span class="header-number">15</span> Active Campaigns
+            </div>
+
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info crimson">
+                <span class="header-number">20</span> Participants
+            </div>
+
+        </div>
+{% endblock %}
+
 {% block title %} Home
     {% if tag %}
     <span class="label-tag label label-default">
