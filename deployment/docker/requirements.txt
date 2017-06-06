@@ -10,3 +10,4 @@ pyshp
 beautifulsoup4
 PyGeoj
 shapely
+flask-restful==0.3.6

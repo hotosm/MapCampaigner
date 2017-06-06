@@ -32,19 +32,28 @@ def home():
 
     On this page a summary campaign manager view will shown.
     """
-    coordinate = request.args.get('coordinate', None)
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+
+    # noinspection PyUnresolvedReferences
+    return render_template('index.html', **context)
+
+
+@campaign_manager.route('/all')
+def home_all():
+    """Home page view.
+
+    On this page a summary campaign manager view will shown with all campaigns.
+    """
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        user_coordinate=coordinate
+        all=True
     )
-
-    if coordinate:
-        # Get nearest campaigns
-        context['campaigns'] = Campaign.nearest_campaigns(coordinate)
-    else:
-        context['campaigns'] = Campaign.all()
 
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
@@ -56,24 +65,12 @@ def campaigns_with_tag(tag):
 
     On this page a summary campaign manager view will shown.
     """
-    coordinate = request.args.get('coordinate', None)
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        user_coordinate=coordinate
+        tag=tag
     )
-
-    if coordinate:
-        # Get nearest campaigns
-        context['campaigns'] = Campaign.nearest_campaigns(
-                coordinate,
-                **{'tags': tag}
-        )
-    else:
-        context['campaigns'] = Campaign.all(**{
-            'tags': tag
-        })
 
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)

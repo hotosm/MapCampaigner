@@ -42,7 +42,7 @@
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-list-ul fa-fw"></i> Campaigns<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
+                    <ul class="nav nav-second-level campaign-list-navbar">
                         {% for campaign in campaigns %}
                         <li>
                             <a href="/campaign_manager/campaign/{{ campaign.uuid }}">{{ campaign.name }}</a>
