@@ -602,6 +602,16 @@ body {
     margin-top: -10px;
 }
 
+.btn.campaign-list {
+    background-color: #a3a3a3 !important;
+    color: white;
+    border-radius: 10px;
+}
+
+.campaign-list.btn:hover {
+    background-color: #878787 !important;
+}
+
 .campaign-list-disabled {
     display: none;
 }
@@ -864,6 +874,17 @@ body {
     font-weight: lighter;
 }
 
+.campaign-td a{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 600;
+    color: #666666 !important;
+}
+
+.tag a {
+    color: #46828f;
+}
+
 #campaign-table_length {
     color: #898989;
     font-weight: 100 !important;
@@ -931,5 +952,13 @@ footer p a:hover {
     .home-header .btn {
         margin-bottom: 10px;
     }
+}
 
+.label-participants {
+    background-color: #ac3232;
+    color: whitesmoke;
+    font-size: 10pt;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 8px !important;
 }

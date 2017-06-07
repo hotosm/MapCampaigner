@@ -24,7 +24,7 @@
                 <span class="v-separator"></span>
             </div>
             <div class="col-lg-2 header-info crimson">
-                <span class="header-number">0</span> <span class="header-number-text">participants</span>
+                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
             </div>
 
         </div>
@@ -63,6 +63,9 @@
                                 </th>
                                 <th>
                                     TAGS
+                                </th>
+                                <th>
+                                    PARTICIPANTS
                                 </th>
                                 <th>
                                     ACTION
@@ -321,6 +324,8 @@
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
 
+            var participants = [];
+
             $.ajax(url, {
                 success: function(campaigns){
                     $('#active-campaign-number').html(campaigns.length);
@@ -338,15 +343,22 @@
                         }
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
-                            action_button = '<button type="button" href="#" class="btn btn-outline btn-info campaign-list"'+
+                            action_button = '<button type="button" href="#" class="campaign-list btn"'+
                                                 'onclick="location.href=\'/campaign_manager/edit/'+campaign['uuid']+'\'">'+
-                                                '<span class="pull-left">Manage</span>'+
+                                                '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
                                              '</button>'
                         }
 
+                        $.each(campaign['campaign_managers'], function (index, manager) {
+                            if($.inArray(manager, participants)==-1) {
+                                participants.push(manager);
+                            }
+                        })
+
                         table.row.add([
-                            '<a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a>',
+                            '<span class="campaign-td"><a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
                             '<span class="tag">'+tags+'</span>',
+                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
                             action_button
                         ]).draw( false );
 
@@ -381,6 +393,9 @@
                             '</a></div>'
                         );
                     });
+
+                    $('#participants-number').html(participants.length);
+
                     $('#panel-campaign').LoadingOverlay("hide");
 
                     {% if all %}
