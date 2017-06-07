@@ -787,6 +787,8 @@ body {
     min-height: 76px;
     padding: 15px 80px;
     background-color: #eaeaea;
+    border-bottom: 1px solid #e1e1e1;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-home {
@@ -829,7 +831,15 @@ body {
     height: 46px;
     line-height: 46px;
     white-space: nowrap;
-    font-size: 30pt;
+    font-size: 35pt;
+}
+
+.header-number-text {
+    padding-top: 5px;
+    padding-left: 5px;
+    height: 100px;
+    width: 50px;
+    position: absolute;
 }
 
 .panel-custom {

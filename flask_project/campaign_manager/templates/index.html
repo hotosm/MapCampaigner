@@ -16,14 +16,15 @@
                 <span class="v-separator"></span>
             </div>
             <div class="col-lg-2 header-info">
-                <span class="header-number">15</span> Active Campaigns
+                <span class="header-number" id="active-campaign-number">0</span>
+                <span class="header-number-text">active campaigns</span>
             </div>
 
             <div class="col-lg-1">
                 <span class="v-separator"></span>
             </div>
             <div class="col-lg-2 header-info crimson">
-                <span class="header-number">20</span> Participants
+                <span class="header-number">20</span> <span class="header-number-text">participants</span>
             </div>
 
         </div>
@@ -160,7 +161,7 @@
 
     <script type="text/javascript">
 
-        var map = L.map('campaign-map').setView([0, 0], 1);
+        var map = L.map('campaign-map').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
@@ -195,6 +196,30 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+        var homeHeaderTop = $('.home-header').offset().top;
+
+        $(window).scroll(function() {
+            var currentScroll = $(window).scrollTop();
+
+            if(currentScroll >= homeHeaderTop) {
+                $('.home-header').css({
+                    position: 'fixed',
+                    top: '0',
+                    width: '100%',
+                    'z-index': '9999'
+                })
+                $('.panel-custom').css({
+                    'margin-top':'78px'
+                });
+            } else {
+                $('.home-header').css({
+                    position: 'static'
+                })
+                $('.panel-custom').css({
+                    'margin-top':'0'
+                });
+            }
+        });
 
         function updated(user) {
             var currentUser = user.display_name;
@@ -298,6 +323,7 @@
 
             $.ajax(url, {
                 success: function(campaigns){
+                    $('#active-campaign-number').html(campaigns.length);
                     $.each(campaigns, function (index, campaign) {
                         var tags = '';
                         var action_button = '';
