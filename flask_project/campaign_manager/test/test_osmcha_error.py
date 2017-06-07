@@ -41,15 +41,17 @@ class OsmchaErrorTestCase(unittest.TestCase):
         self.assertEquals(details_result.return_value, 'html details test')
 
     def test_get_data_from_provider(self):
+        self.osmcha_error.get_data_from_provider = mock.MagicMock(
+            return_value={'max_page': '7', 'previous_page': '0',
+                          'current_page': '1', 'next_page': '2',
+                          'data': 'available'})
         bbox_data = self.osmcha_error.get_data_from_provider()
         self.assertIsNotNone(bbox_data)
-        self.assertIsNotNone(bbox_data['max_page'])
-        self.assertIsNotNone(bbox_data['previous_page'])
-        self.assertIsNotNone(bbox_data['current_page'])
-        self.assertIsNotNone(bbox_data['next_page'])
-        self.assertIsNotNone(bbox_data['data'])
-        self.assertEquals(
-            bbox_data['current_page'], self.osmcha_error.current_page)
+        self.assertEquals(bbox_data['max_page'], '7')
+        self.assertEquals(bbox_data['previous_page'], '0')
+        self.assertEquals(bbox_data['current_page'], '1')
+        self.assertEquals(bbox_data['next_page'], '2')
+        self.assertEquals(bbox_data['data'], 'available')
 
     def test_process_data(self):
         raw_data = self.osmcha_error.process_data(
