@@ -774,3 +774,7 @@ body {
 .info .pull-right {
     margin-left: 10px !important;
 }
+
+.add-file.btn {
+    width: 50%;
+}
