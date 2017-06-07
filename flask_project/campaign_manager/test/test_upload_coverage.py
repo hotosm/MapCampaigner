@@ -90,9 +90,10 @@ class UploadCoverageTestCase(unittest.TestCase):
             'testcampaign',
             'testcampaign.shp'
         )
-        # Data is loaded directly using shapefile
-        read_uploaded_data = ShapefileProvider().get_data(uploaded_shapefile)
-        # Data is loaded using insight function
+        shapefile_provider = ShapefileProvider()
+        # Data is loaded directly using shapefile.
+        read_uploaded_data = shapefile_provider.get_data(uploaded_shapefile)
+        # Data is loaded using insight function.
         data_from_insightfunction = \
             self.upload_coverage.get_data_from_provider()
         self.assertIsNotNone(read_uploaded_data)
