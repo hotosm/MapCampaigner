@@ -1,8 +1,12 @@
 # coding=utf-8
+import os
 import unittest
 from unittest import mock
 from campaign_manager.insights_functions.upload_coverage import UploadCoverage
 from campaign_manager.test.helpers import CampaignObjectTest
+from campaign_manager.data_providers.shapefile_provider import \
+    ShapefileProvider
+from campaign_manager.utilities import module_path
 
 
 class UploadCoverageTestCase(unittest.TestCase):
@@ -72,3 +76,25 @@ class UploadCoverageTestCase(unittest.TestCase):
         self.assertEquals(post_output['uuid'], self.campaign.uuid)
         self.assertEquals(post_output['files'], expected_output_files)
         self.assertEquals(post_output['coverage'], expected_coverage)
+
+    def test_compare_shapefile(self):
+        """Test to compare data from shapefile that is loaded directly
+        using shapefile and that is loaded using insight function.
+
+        """
+        uploaded_shapefile = os.path.join(
+            module_path(),
+            'test',
+            'test_data',
+            'coverage',
+            'testcampaign',
+            'testcampaign.shp'
+        )
+        # Data is loaded directly using shapefile
+        read_uploaded_data = ShapefileProvider().get_data(uploaded_shapefile)
+        # Data is loaded using insight function
+        data_from_insightfunction = \
+            self.upload_coverage.get_data_from_provider()
+        self.assertIsNotNone(read_uploaded_data)
+        self.assertIsNotNone(data_from_insightfunction)
+        self.assertEquals(read_uploaded_data, data_from_insightfunction)
