@@ -962,3 +962,20 @@ footer p a:hover {
     padding-right: 15px;
     border-radius: 8px !important;
 }
+
+#all-campaigns, #nearest-campaigns {
+    position: absolute;
+    right: 0;
+    margin-right: 30px;
+    margin-top: -20px;
+    border-radius: 30px;
+    z-index: 888;
+    font-size: 11pt;
+    color: #46828f;
+    border-color: #46828f;
+}
+
+#all-campaigns:hover, #nearest-campaigns:hover{
+    background-color: #46828f !important;
+    color: white;
+}
