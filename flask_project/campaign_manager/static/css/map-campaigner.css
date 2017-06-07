@@ -4,7 +4,7 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 body {
-    background-color: #fbfbfb;
+    background-color: #f7f7f7;
     height: 100%;
     font-family: 'Oxygen', sans-serif;
 }
@@ -31,13 +31,13 @@ body {
 #page-wrapper {
     padding:  0 15px;
     min-height: 600px;
-    background-color: white;
+    background-color: #f7f7f7;
 }
 
 @media (min-width: 768px) {
     #page-wrapper {
         position: inherit;
-        margin: 0 0 0 0;
+        margin: 20px 0 0 0;
         padding: 0 80px;
         border-left: 1px solid #e7e7e7;
     }
@@ -529,7 +529,8 @@ body {
 }
 
 #campaign-map {
-    height: 512px;
+    height: 400px;
+    margin-top: 4px;
 }
 
 .sidebar-nav a, .navbar-top-links a {
@@ -829,4 +830,62 @@ body {
     line-height: 46px;
     white-space: nowrap;
     font-size: 30pt;
+}
+
+.panel-custom {
+    border: 1px solid #e7e7e7;
+    border-radius: 12px !important;
+}
+
+#campaign-table th {
+    color: #919191;
+    font-size: 10pt;
+    font-weight: lighter;
+}
+
+#campaign-table_length {
+    color: #898989;
+    font-weight: 100 !important;
+}
+
+#campaign-table_filter {
+    color: #898989;
+}
+
+
+footer {
+    height: 100px;
+    background-color: #e7e7e7;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align:center;
+}
+
+footer p {
+    padding-top: 25px;
+    color: #756e6e;
+}
+
+footer p .fa{
+    font-size: 14pt;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+footer p a {
+    color: #46828f;
+}
+
+footer p a:hover {
+    color: #3b6a77;
+}
+
+@media (max-width: 480px) {
+    footer p {
+        font-size: 12pt;
+        padding-top: 0;
+        color: #756e6e;
+    }
+
 }

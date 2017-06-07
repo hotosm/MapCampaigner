@@ -68,7 +68,7 @@ function showNotifications(text, status) {
     clearNotification();
 
     $('#first-row').prepend(
-        '<div id="notification" class="alert alert-'+status+' alert-dismissable">' +
+        '<div id="notification" class="alert alert-'+status+' alert-dismissable" style="margin-bottom: 10px; margin-top: 0;">' +
             '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
             text+
         '</div>'

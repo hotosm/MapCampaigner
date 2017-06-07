@@ -1,11 +1,11 @@
 {% extends 'new_base.html' %}
 
 {% block header_content %}
-        <div class="row home-header">
+        <div class="home-header">
             <div class="col-lg-6">
                 <div class="row">
                     <div class="col-md-6">
-                        <button class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
                     </div>
                     <div class="col-md-6">
                         <button class="btn btn-home btn-lg btn-block">Participate</button>
@@ -29,46 +29,10 @@
         </div>
 {% endblock %}
 
-{% block title %} Home
-    {% if tag %}
-    <span class="label-tag label label-default">
-    <span>{{ tag }}</span>
-        <a><i class="remove-tag fa fa-times"></i></a>
-    </span>
-    {% endif %}
-{% endblock %}
-
 {% block content %}
 
     <div class="row">
-        <div class="col-lg-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
-                    <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div id="campaign-map"></div>
-                </div>
-            </div>
+        <div class="col-lg-12">
 
             <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg btn-block">
                 <i class="fa fa-globe" aria-hidden="true"></i>
@@ -82,29 +46,25 @@
 
         </div>
 
-        <div class="col-lg-6">
-                <button id="create-campaign" type="button" class="btn btn-outline btn-primary btn-lg btn-block">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                    <span style="margin-left: 5px;">Create New Campaign</span>
-                </button>
-
-            <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="col-lg-12">
+            <div class="panel panel-custom">
                 <div class="panel-heading">
-                    <i class="fa fa-list-ul" aria-hidden="true"></i> Campaigns
+                    <div id="campaign-map"></div>
                 </div>
                 <div id="panel-campaign">
                     <div class="panel-body">
+                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
                     <table id="campaign-table">
                         <thead>
                             <tr>
                                 <th>
-                                    Name
+                                    NAME
                                 </th>
                                 <th>
-                                    Tags
+                                    TAGS
                                 </th>
                                 <th>
-                                    Action
+                                    ACTION
                                 </th>
                             </tr>
                         </thead>
@@ -223,7 +183,10 @@
 
     <script type="text/javascript">
 
-        var table = $('#campaign-table').DataTable();
+        var table = $('#campaign-table').DataTable({
+            "lengthChange": false
+        });
+        $('.dataTables_filter').addClass('pull-left');
         var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
