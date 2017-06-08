@@ -196,6 +196,9 @@
         //------------------ EVENT ------------------//
 
         function loginSuccess(user) {
+        }
+
+        function updated(user) {
             render_selected_functions(user.display_name);
             var managers = {{ campaign_managers | safe }};
             // Shows manage button if current user is one of the manager
