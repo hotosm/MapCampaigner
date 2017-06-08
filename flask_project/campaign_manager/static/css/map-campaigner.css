@@ -975,7 +975,11 @@ footer p a:hover {
     border-color: #46828f;
 }
 
-#all-campaigns:hover, #nearest-campaigns:hover{
+#all-campaigns:hover, #nearest-campaigns:hover {
     background-color: #46828f !important;
     color: white;
+}
+
+.add-file.btn {
+    width: 50%;
 }

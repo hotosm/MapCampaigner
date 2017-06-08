@@ -79,7 +79,7 @@
                     <div id="campaign-map-detail"></div>
 
                     <div class="insight-function-panel">
-                        <ul class="nav nav-tabs insight-tabs">
+                        <ul class="nav nav-tabs insight-tabs" style="display: none;">
                         </ul>
                         <div class="tab-content insight-content">
                         </div>
@@ -109,7 +109,13 @@
             $('.insight-tabs').html('');
             $('.insight-content').html('');
             var index = 0;
-            console.log(selected_functions);
+
+            if(Object.keys(selected_functions).length === 0) {
+                $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
+            } else {
+                $('.insight-tabs').show();
+            }
+
             $.each(selected_functions, function (key, selected_function) {
                 var allow_function = true;
                 if (selected_function['manager_only']) {
