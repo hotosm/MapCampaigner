@@ -93,3 +93,21 @@
 .insight-function-panel a {
     color: #46828f;
 }
+
+.btn-manage {
+    background-color: #ac3232;
+    display: none;
+    border: 0;
+    font-weight: bold;
+    border-radius: 15px;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+.btn-manage:hover {
+    background-color: #992c2c;
+}
+
+.btn-manage:active {
+    background-color: #832424 !important;
+}
