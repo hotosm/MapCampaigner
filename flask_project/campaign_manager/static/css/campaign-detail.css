@@ -111,3 +111,7 @@
 .btn-manage:active {
     background-color: #832424 !important;
 }
+
+.insight-function-panel {
+    min-height: 200px;
+}

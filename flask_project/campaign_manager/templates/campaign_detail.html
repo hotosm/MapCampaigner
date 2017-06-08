@@ -108,6 +108,8 @@
         function render_selected_functions(username) {
             $('.insight-tabs').html('');
             $('.insight-content').html('');
+            var index = 0;
+            console.log(selected_functions);
             $.each(selected_functions, function (key, selected_function) {
                 var allow_function = true;
                 if (selected_function['manager_only']) {
@@ -116,6 +118,24 @@
                     }
                 }
                 if (allow_function) {
+                    var href = "#" + key;
+                    var active = '';
+                    if(index===0){
+                        active = 'active';
+                    }
+                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
+                    $('.insight-tabs').append(
+                        '<li class="' + active + '">' +
+                        '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
+                            selected_function['name'] + '</a>' +
+                        '</li>'
+                    );
+                    $('.insight-content').find('#' + key).remove();
+                    $('.insight-content').append(
+                        '<div class="tab-pane fade ' + active + ' in" id="' + key + '">' +
+                            '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>'+
+                        '</div>'
+                    );
                     get_function(key);
                     if (!containsObject(selected_function['feature'], feature_collected)) {
                         feature_collected.push(selected_function['feature']);
@@ -123,6 +143,7 @@
                             get_metadata(key);
                         }
                     }
+                    index++;
                 }
             });
         }
@@ -219,31 +240,15 @@
             $.ajax({
                 url: url,
                 success: function (data) {
-                    var href = "#" + function_id
-                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
-                    $('.insight-content').find('#' + function_id).remove();
                     var active = '';
-                    if (first_function) {
+                    if (first_function) {$('.btn-manage').show();
                         active = 'active';
                         first_function = false;
                     }
 
-                    var $insightTitle = $(data + ".insight-title");
-
-                    $('.insight-tabs').append(
-                            '<li class="' + active + '">' +
-                            '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
-                            $insightTitle.html() + '</a>' +
-                            '</li>'
+                    $('#'+function_id).html(
+                        data
                     );
-
-                    $('.insight-content').append(
-                            '<div class="tab-pane fade ' + active + ' in" id="' + function_id + '">' +
-                            data +
-                            '</div>'
-                    );
-                    $('.insight-tabs').find('a')[0].click();
-
                 }
             });
         }
