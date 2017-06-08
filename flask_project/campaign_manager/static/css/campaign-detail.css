@@ -1,0 +1,113 @@
+.detail-campaign-name {
+    font-weight: bold;
+}
+
+.detail-tag {
+    color: white;
+    font-weight: lighter;
+    background: #4ea5b2;
+    border-radius: 3px 0 0 3px;
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    padding: 0 20px 0 15px;
+    position: relative;
+    margin: 0 10px 10px 0;
+    text-decoration: none;
+    -webkit-transition: color 0.2s;
+}
+
+.detail-tag::after {
+    background: #f7f7f7;
+    border-bottom: 13px solid transparent;
+    border-left: 10px solid #4ea5b2;
+    border-top: 13px solid transparent;
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.detail-panel-information {
+    border-radius: 10px !important;
+}
+
+.detail-campaign-status {
+    font-size: 12pt;
+}
+
+.detail-campaign-timeline {
+    padding-top: 15px;
+    font-weight: lighter;
+    font-size: 11pt;
+}
+
+.detail-creator-info a {
+    color: #46828f;
+}
+
+.detail-campaign-status i {
+    margin-right: 5px;
+}
+
+.detail-progress {
+    padding-top: 40px;
+}
+
+.progress {
+    border-radius: 10px;
+    background-color: #ebebeb;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    background-color: #77a1aa;
+}
+
+.running {
+    color: #46828f;
+}
+
+.finished {
+    color: #ac3232;
+}
+
+.grey-italic {
+    color: #898989;
+    font-style: italic;
+}
+
+.detail-creator-info {
+    font-size: 11pt;
+}
+
+.insight-function-panel {
+    margin-top: 20px;
+}
+
+#campaign-map-detail {
+    height: 500px;
+    margin-top: 4px;
+}
+
+.insight-function-panel a {
+    color: #46828f;
+}
+
+.btn-manage {
+    background-color: #ac3232;
+    display: none;
+    border: 0;
+    font-weight: bold;
+    border-radius: 15px;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+.btn-manage:hover {
+    background-color: #992c2c;
+}
+
+.btn-manage:active {
+    background-color: #832424 !important;
+}

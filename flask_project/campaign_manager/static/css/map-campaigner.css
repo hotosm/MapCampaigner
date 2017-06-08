@@ -4,13 +4,30 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 body {
-    background-color: #fbfbfb;
+    background-color: #f7f7f7;
     height: 100%;
     font-family: 'Oxygen', sans-serif;
 }
 
 .navbar-default {
-    background-color: #fbfbfb;
+    background-color: #ffffff;
+    padding: 5px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    color: #ac3232 !important;
+    font-weight: 900;
+}
+
+.navbar-nav a {
+    font-size: 12pt;
+    color: black !important;
+    font-weight: 300 !important;
+}
+
+.navbar-nav a:hover {
+    color: #ac3232 !important;
 }
 
 #wrapper {
@@ -22,16 +39,16 @@ body {
 }
 
 #page-wrapper {
-    padding: 0 15px;
+    padding:  0 15px;
     min-height: 600px;
-    background-color: white;
+    background-color: #f7f7f7;
 }
 
 @media (min-width: 768px) {
     #page-wrapper {
         position: inherit;
-        margin: 0 0 0 250px;
-        padding: 0 30px;
+        margin: 20px 0 0 0;
+        padding: 0 80px;
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -522,11 +539,12 @@ body {
 }
 
 #campaign-map {
-    height: 512px;
+    height: 400px;
+    margin-top: 4px;
 }
 
 .sidebar-nav a, .navbar-top-links a {
-    color: #FF5722 !important;
+    color: black !important;
 }
 
 .panel, .panel-heading {
@@ -582,6 +600,16 @@ body {
 .error-form {
     color: red;
     margin-top: -10px;
+}
+
+.btn.campaign-list {
+    background-color: #a3a3a3 !important;
+    color: white;
+    border-radius: 10px;
+}
+
+.campaign-list.btn:hover {
+    background-color: #878787 !important;
 }
 
 .campaign-list-disabled {
@@ -773,6 +801,183 @@ body {
 
 .info .pull-right {
     margin-left: 10px !important;
+}
+
+.home-header {
+    min-height: 76px;
+    padding: 15px 80px;
+    background-color: #eaeaea;
+    border-bottom: 1px solid #e1e1e1;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+
+.btn-home {
+    background-color: #46828f;
+    color: #ffffff;
+    font-weight: 900;
+    border-radius: 20px !important;
+}
+
+.btn-home:hover {
+    background-color: #5ca7b7;
+    color: #ffffff;
+}
+
+
+@media (min-width: 1222px) {
+    .v-separator
+    {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 75px;
+        border-right: 1px solid #fafafa;
+        border-left: 1px solid #b4b4b4;
+        margin-bottom: -40px;
+        margin-top: -15px;
+    }
+}
+
+.header-info {
+    color: #46828f;
+    font-weight: 900;
+}
+
+.crimson {
+    color: #ac3232;
+}
+
+.header-number {
+    height: 46px;
+    line-height: 46px;
+    white-space: nowrap;
+    font-size: 35pt;
+}
+
+.header-number-text {
+    padding-top: 5px;
+    padding-left: 5px;
+    height: 100px;
+    width: 50px;
+    position: absolute;
+}
+
+.panel-custom {
+    border: 1px solid #e7e7e7;
+    border-radius: 12px !important;
+}
+
+#campaign-table th {
+    color: #919191;
+    font-size: 10pt;
+    font-weight: lighter;
+}
+
+.campaign-td a{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 600;
+    color: #666666 !important;
+}
+
+.tag a {
+    color: #46828f;
+}
+
+#campaign-table_length {
+    color: #898989;
+    font-weight: 100 !important;
+}
+
+#campaign-table_filter {
+    color: #898989;
+}
+
+
+footer {
+    height: 100px;
+    background-color: #e7e7e7;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align:center;
+}
+
+footer p {
+    padding-top: 25px;
+    color: #756e6e;
+}
+
+footer p .fa{
+    font-size: 14pt;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+footer p a {
+    color: #46828f;
+}
+
+footer p a:hover {
+    color: #3b6a77;
+}
+
+@media (max-width: 480px) {
+    .footer-text {
+        display: none;
+    }
+    footer p {
+        padding-top: 0;
+    }
+    footer {
+        height: 60px;
+    }
+
+    .home-header .btn {
+        font-size: 8pt;
+    }
+
+    .home-header .header-info {
+        display: none;
+    }
+
+    .home-header {
+        height: 110px;
+    }
+
+}
+
+@media (max-width: 1006px) {
+    .home-header .btn {
+        margin-bottom: 10px;
+    }
+}
+
+.label-participants {
+    background-color: #ac3232;
+    color: whitesmoke;
+    font-size: 10pt;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 8px !important;
+}
+
+#all-campaigns, #nearest-campaigns {
+    position: absolute;
+    right: 0;
+    margin-right: 30px;
+    margin-top: -20px;
+    border-radius: 30px;
+    z-index: 888;
+    font-size: 11pt;
+    color: #46828f;
+    border-color: #46828f;
+}
+
+#all-campaigns:hover, #nearest-campaigns:hover {
+    background-color: #46828f !important;
+    color: white;
 }
 
 .add-file.btn {

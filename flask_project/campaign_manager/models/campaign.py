@@ -80,8 +80,12 @@ class Campaign(JsonModel):
         for key, value in self.selected_functions.items():
             SelectedFunction = getattr(
                 insights_functions, value['function'])
-            selected_function = SelectedFunction(self)
+            selected_function = SelectedFunction(
+                    self,
+                    feature=value['feature'],
+                    required_attributes=value['attributes'])
             value['manager_only'] = selected_function.manager_only
+            value['name'] = selected_function.name()
         return json.dumps(self.selected_functions).replace('None', 'null')
 
     def parse_json_file(self):

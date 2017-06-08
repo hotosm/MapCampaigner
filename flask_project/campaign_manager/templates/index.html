@@ -1,81 +1,72 @@
 {% extends 'new_base.html' %}
 
-{% block title %} Home
-    {% if tag %}
-    <span class="label-tag label label-default">
-    <span>{{ tag }}</span>
-        <a><i class="remove-tag fa fa-times"></i></a>
-    </span>
-    {% endif %}
+{% block header_content %}
+        <div class="home-header">
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-home btn-lg btn-block">Participate</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info">
+                <span class="header-number" id="active-campaign-number">0</span>
+                <span class="header-number-text">active campaigns</span>
+            </div>
+
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info crimson">
+                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
+            </div>
+
+        </div>
 {% endblock %}
 
 {% block content %}
 
     <div class="row">
-        <div class="col-lg-6">
-            <div class="panel panel-default">
+        <div class="col-lg-12">
+            <div class="panel panel-custom">
                 <div class="panel-heading">
-                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
-                    <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body">
                     <div id="campaign-map"></div>
-                </div>
-            </div>
-
-            <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg btn-block">
-                <i class="fa fa-globe" aria-hidden="true"></i>
-                <span style="margin-left: 5px;">All Campaigns</span>
-            </button>
-
-            <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg btn-block">
-                <i class="fa fa-globe" aria-hidden="true"></i>
-                <span style="margin-left: 5px;">Nearest Campaigns</span>
-            </button>
-
-        </div>
-
-        <div class="col-lg-6">
-                <button id="create-campaign" type="button" class="btn btn-outline btn-primary btn-lg btn-block">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                    <span style="margin-left: 5px;">Create New Campaign</span>
-                </button>
-
-            <div class="panel panel-default" style="margin-top: 20px;">
-                <div class="panel-heading">
-                    <i class="fa fa-list-ul" aria-hidden="true"></i> Campaigns
                 </div>
                 <div id="panel-campaign">
                     <div class="panel-body">
+                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
+
+                    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
+                        <i class="fa fa-globe" aria-hidden="true"></i>
+                        <span style="margin-left: 5px;">All Campaigns</span>
+                    </button>
+
+                    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
+                        <i class="fa fa-globe" aria-hidden="true"></i>
+                        <span style="margin-left: 5px;">Nearest Campaigns</span>
+                    </button>
+
+
                     <table id="campaign-table">
                         <thead>
                             <tr>
                                 <th>
-                                    Name
+                                    NAME
                                 </th>
                                 <th>
-                                    Tags
+                                    TAGS
                                 </th>
                                 <th>
-                                    Action
+                                    PARTICIPANTS
+                                </th>
+                                <th>
+                                    ACTION
                                 </th>
                             </tr>
                         </thead>
@@ -171,7 +162,7 @@
 
     <script type="text/javascript">
 
-        var map = L.map('campaign-map').setView([0, 0], 1);
+        var map = L.map('campaign-map').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
@@ -194,7 +185,10 @@
 
     <script type="text/javascript">
 
-        var table = $('#campaign-table').DataTable();
+        var table = $('#campaign-table').DataTable({
+            "lengthChange": false
+        });
+        $('.dataTables_filter').addClass('pull-left');
         var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
@@ -203,6 +197,30 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+        var homeHeaderTop = $('.home-header').offset().top;
+
+        $(window).scroll(function() {
+            var currentScroll = $(window).scrollTop();
+
+            if(currentScroll >= homeHeaderTop) {
+                $('.home-header').css({
+                    position: 'fixed',
+                    top: '0',
+                    width: '100%',
+                    'z-index': '9999'
+                })
+                $('#first-row').css({
+                    'margin-top':'78px'
+                });
+            } else {
+                $('.home-header').css({
+                    position: 'static'
+                })
+                $('#first-row').css({
+                    'margin-top':'0'
+                });
+            }
+        });
 
         function updated(user) {
             var currentUser = user.display_name;
@@ -304,8 +322,11 @@
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
 
+            var participants = [];
+
             $.ajax(url, {
                 success: function(campaigns){
+                    $('#active-campaign-number').html(campaigns.length);
                     $.each(campaigns, function (index, campaign) {
                         var tags = '';
                         var action_button = '';
@@ -320,15 +341,22 @@
                         }
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
-                            action_button = '<button type="button" href="#" class="btn btn-outline btn-info campaign-list"'+
+                            action_button = '<button type="button" href="#" class="campaign-list btn"'+
                                                 'onclick="location.href=\'/campaign_manager/edit/'+campaign['uuid']+'\'">'+
-                                                '<span class="pull-left">Manage</span>'+
+                                                '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
                                              '</button>'
                         }
 
+                        $.each(campaign['campaign_managers'], function (index, manager) {
+                            if($.inArray(manager, participants)==-1) {
+                                participants.push(manager);
+                            }
+                        })
+
                         table.row.add([
-                            '<a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a>',
+                            '<span class="campaign-td"><a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
                             '<span class="tag">'+tags+'</span>',
+                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
                             action_button
                         ]).draw( false );
 
@@ -363,6 +391,9 @@
                             '</a></div>'
                         );
                     });
+
+                    $('#participants-number').html(participants.length);
+
                     $('#panel-campaign').LoadingOverlay("hide");
 
                     {% if all %}
