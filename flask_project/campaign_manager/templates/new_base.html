@@ -184,11 +184,8 @@
                     display_name: u.getAttribute('display_name'),
                     id: u.getAttribute('id'),
                     count: changesets.getAttribute('count'),
-                    lon: location.getAttribute('lon'),
-                    lat: location.getAttribute('lat')
                 };
 
-                updated(o);
 
                 $('#profile-name').html(o.display_name);
 
@@ -196,6 +193,8 @@
                     var long = location.getAttribute('lon');
                     var lat = location.getAttribute('lat');
                     var zoom = location.getAttribute('zoom');
+                    o['lon'] = long;
+                    o['lat'] = lat;
                     if (map) {
                         that.locationMarker = L.marker([lat, long]).addTo(map);
                         map.setView([lat, long], 8);
@@ -203,8 +202,12 @@
                     }
                 }
 
-                loginSuccess(o);
-                loginProcess = false;
+                updated(o);
+
+                if(loginProcess) {
+                    loginSuccess(o);
+                    loginProcess = false;
+                }
 
             }, this);
         }
