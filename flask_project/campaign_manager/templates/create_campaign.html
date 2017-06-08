@@ -1,9 +1,9 @@
 {% extends 'new_base.html' %}
 
-{% block title %} {{ title }} {% endblock %}
-
 {% block extra_head %}
 
+    <!-- Custom CSS -->
+    <link href="/campaign_manager/static/css/create-campaign.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
 
 {% endblock %}
@@ -11,11 +11,50 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Campaign Form
-                </div>
-                <div class="panel-body" id="campaign-panel" style="display: none">
+            <h3 class="cc-title">Create Campaign</h3>
+            <div class="panel panel-default cc-panel">
+                <div class="panel-body cc" id="campaign-panel" style="display: none">
+                    <div class="cc-steps">
+                        <div class="cc-progress">
+                            <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
+                        </div>
+                        <div class="cc-step active" data-step="1">
+                            <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
+                            <p>General Information</p>
+                        </div>
+                        <div class="cc-step" data-step="2">
+                            <div class="cc-step-icon"><i class="fa fa-map"></i></div>
+                            <p>Campaign Map</p>
+                        </div>
+                        <div class="cc-step" data-step="3">
+                            <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
+                            <p>Coverage Function</p>
+                        </div>
+                        <div class="cc-step" data-step="4">
+                            <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
+                            <p>Quality Function</p>
+                        </div>
+                        <div class="cc-step" data-step="5">
+                            <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
+                            <p>Error Function</p>
+                        </div>
+                        <div class="cc-step" data-step="6">
+                            <div class="cc-step-icon"><i class="fa fa-link"></i></div>
+                            <p>Engagement Function</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <button class="pull-left btn btn-info" id="prev-form">< Prev</button>
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form.submit }}
+                        </div>
+                        <div class="col-lg-4">
+                            <button class="pull-right btn btn-info" id="next-form">Next ></button>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-lg-6" style="margin-bottom: -40px;">
                             <form id="campaign-form" method="POST" action="{{ url }}" role="form">
@@ -66,8 +105,8 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                            {{ form.submit }}
                         </div>
+
 
                     </div>
                     <!-- /.row (nested) -->
@@ -133,6 +172,71 @@
     </script>
 
     <script type="text/javascript">
+
+        //------------------ BUTTONS ------------------//
+        function scrollToClass(element_class, removed_height) {
+            var scrollTo = $(element_class).offset().top - removed_height;
+            if($(window).scrollTop() !== scrollTo) {
+                $('html, body').stop().animate({scrollTop: scrollTo}, 0);
+            }
+        }
+
+        function barProgress(progressLine, direction) {
+            var numberOfSteps = progressLine.data('number-of-steps');
+            var nowValue = progressLine.data('now-value');
+            var newValue = 0;
+            if(direction === 'right') {
+                newValue = nowValue + ( 100 / numberOfSteps );
+            }
+            else if(direction === 'left') {
+                newValue = nowValue - ( 100 / numberOfSteps );
+            }
+            if(newValue < 0) return;
+            progressLine.attr('style', 'width: ' + newValue + '%;').data('now-value', newValue);
+        }
+
+        $('#next-form').click(function(){
+            var nextStep = true;
+            var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+            var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+
+            var currentStep = currentActiveStep.data('step');
+            var totalSteps = progressLine.data('number-of-steps');
+
+            if(currentStep === totalSteps) return;
+
+            if(nextStep) {
+                // change icons
+                currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
+                // progress bar
+                barProgress(progressLine, 'right');
+                // show next step
+                $(this).next().fadeIn();
+                // scroll window to beginning of the form
+    			scrollToClass( $('.cc-title'), 20 );
+            }
+        });
+
+        $('#prev-form').click(function(){
+            // navigation steps / progress steps
+    	    var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+    	    var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+
+            var currentStep = currentActiveStep.data('step');
+
+            if(currentStep === 1) return;
+
+           // $(this).parents('fieldset').fadeOut(400, function() {
+                // change icons
+                currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active');
+                // progress bar
+                barProgress(progressLine, 'left');
+                // show previous step
+                $(this).prev().fadeIn();
+                // scroll window to beginning of the form
+                scrollToClass( $('.cc-title'), 20 );
+            //});
+        });
 
         //------------------ EVENT ------------------//
 
