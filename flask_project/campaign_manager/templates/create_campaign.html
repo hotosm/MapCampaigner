@@ -14,102 +14,154 @@
             <h3 class="cc-title">Create Campaign</h3>
             <div class="panel panel-default cc-panel">
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
-                    <div class="cc-steps">
-                        <div class="cc-progress">
-                            <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
-                        </div>
-                        <div class="cc-step active" data-step="1">
-                            <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
-                            <p>General Information</p>
-                        </div>
-                        <div class="cc-step" data-step="2">
-                            <div class="cc-step-icon"><i class="fa fa-map"></i></div>
-                            <p>Campaign Map</p>
-                        </div>
-                        <div class="cc-step" data-step="3">
-                            <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
-                            <p>Coverage Function</p>
-                        </div>
-                        <div class="cc-step" data-step="4">
-                            <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
-                            <p>Quality Function</p>
-                        </div>
-                        <div class="cc-step" data-step="5">
-                            <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
-                            <p>Error Function</p>
-                        </div>
-                        <div class="cc-step" data-step="6">
-                            <div class="cc-step-icon"><i class="fa fa-link"></i></div>
-                            <p>Engagement Function</p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <button class="pull-left btn btn-info" id="prev-form">< Prev</button>
-                        </div>
-                        <div class="col-lg-4">
-                            {{ form.submit }}
-                        </div>
-                        <div class="col-lg-4">
-                            <button class="pull-right btn btn-info" id="next-form">Next ></button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6" style="margin-bottom: -40px;">
-                            <form id="campaign-form" method="POST" action="{{ url }}" role="form">
-                                {{ form.hidden_tag() }}
-                                {% for field in form %}
-                                    {% if field.name != 'submit' and field.name != 'csrf_token' and field.name !='selected_functions' %}
-                                        <div class="form-group">
-                                            {% if field.name !='geometry' and field.name !='uploader' %}
-                                                <label>{{ field.label }}</label>
-                                                {% for error in form['errors'][field.name] %}
-                                                    <div class="error-form">{{ error }}</div>
-                                                {% endfor %}
-                                                {{ field() }}
-                                                <p class="help-block">{{ field.description }}</p>
-                                            {% else %}
-                                                {{ field() }}
-                                            {% endif %}
-                                        </div>
-                                        <br>
-                                    {% endif %}
-                                {% endfor %}
-                            </form>
-                        </div>
-                        <!-- /.col-lg-6 (nested) -->
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label>Campaign Map</label>
-                                <div id="campaign-map"></div>
-                                <br>
-                                <label>Update boundary by shp</label>
-                                {% include 'campaign_widget/ui/upload_boundary.html' %}
+                    <form id="campaign-form" method="POST" action="{{ url }}" role="form">
+                        {{ form.hidden_tag() }}
+                        <div class="cc-steps">
+                            <div class="cc-progress">
+                                <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
+                            </div>
+                            <div class="cc-step active" data-step="1">
+                                <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
+                                <p>General Information</p>
+                            </div>
+                            <div class="cc-step" data-step="2">
+                                <div class="cc-step-icon"><i class="fa fa-map"></i></div>
+                                <p>Campaign Map</p>
+                            </div>
+                            <div class="cc-step" data-step="3">
+                                <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
+                                <p>Coverage Function</p>
+                            </div>
+                            <div class="cc-step" data-step="4">
+                                <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
+                                <p>Quality Function</p>
+                            </div>
+                            <div class="cc-step" data-step="5">
+                                <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
+                                <p>Error Function</p>
+                            </div>
+                            <div class="cc-step" data-step="6">
+                                <div class="cc-step-icon"><i class="fa fa-link"></i></div>
+                                <p>Engagement Function</p>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-lg-12">
-                            {% for category in categories %}
-                                <div class="form-group" style="padding-bottom: 25px;">
-                                    <div id="{{ category }}-function" class="function-wrapper">
-                                        <label class="category-label">{{ category }} Functions</label>
-                                        <div class="function-form">
+                        <fieldset id="fieldset-1" data-fieldset-step="1">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="name">Campaign name</label>
+                                        <input id="name" name="name" type="text" value="">
+                                        <p class="help-block">Name for the campaign</p>
+                                    </div>
+                                    <br/>
+                                    <div class="form-group">
+                                        <label for="description">Campaign description</label>
+                                        <textarea id="description" name="description" style="height: 200px;"></textarea>
+                                        <p class="help-block">Description for the campaign</p>
+                                    </div>
+                                    <br/>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="end_date">Start date of campaign</label>
+                                                {{ form.end_date }}
+                                                <p class="help-block"></p>
+                                            </div>
                                         </div>
-                                        <button id="{{ category }}-function-add" class="btn btn-outline btn-primary"
-                                                type=button onclick="addFunction(this)" style="margin-top: 5px;">
-                                            <i class="fa fa-plus"></i> Add Function
-                                        </button>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="start_date">End date of campaign</label>
+                                                {{ form.start_date }}
+                                                <p class="help-block"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <div class="form-group">
+                                        <label for="campaign_status">Campaign status</label>
+                                        {{ form.campaign_status }}
+                                        <p class="help-block">Status of the campaign</p>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
+                            </div>
+                            <div class="row" style="margin-bottom: -12px;">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="campaign_managers">Managers of campaign</label>
+                                        {{ form.campaign_managers }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="tags">Tags of campaign</label>
+                                        {{ form.tags }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cc-buttons">
+                                <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
+                            </div>
+                        </fieldset>
 
+                        <fieldset id="fieldset-2" data-fieldset-step="2">
+                            <div class="row">
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-8">
+                                    <div class="form-group">
+                                        <label>Campaign Map</label>
+                                        <div id="campaign-map"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Update boundary by shp</label>
+                                        {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cc-buttons">
+                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </fieldset>
 
-                    </div>
-                    <!-- /.row (nested) -->
+                        {% for category in categories %}
+                            <fieldset id="fieldset-{{ loop.index + 2 }}" data-fieldset-step="{{ loop.index + 2 }}">
+                                <div class="row insight-functions">
+                                    <div class="col-lg-12">
+                                        <div class="form-group" style="padding-bottom: 25px;">
+                                            <div id="{{ category }}-function" class="function-wrapper">
+                                                <label class="category-label">{{ category }} Functions</label>
+                                                <div class="function-form">
+                                                </div>
+                                                <button id="{{ category }}-function-add" class="btn btn-outline btn-primary"
+                                                        type=button onclick="addFunction(this)" style="margin-top: 5px;">
+                                                    <i class="fa fa-plus"></i> Add Function
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cc-buttons">
+                                    <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                    <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                </div>
+                            </fieldset>
+                        {% endfor %}
+
+{#                        <div class="row">#}
+{#                            <div class="col-lg-4">#}
+{#                                {{ form.submit }}#}
+{#                            </div>#}
+{#                        </div>#}
+                        <!-- /.row (nested) -->
+                    </form>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -195,10 +247,12 @@
             progressLine.attr('style', 'width: ' + newValue + '%;').data('now-value', newValue);
         }
 
-        $('#next-form').click(function(){
+        $('.btn-next').click(function(){
             var nextStep = true;
             var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
             var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+            var parentFieldset = $(this).parents('fieldset');
+            var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
             var currentStep = currentActiveStep.data('step');
             var totalSteps = progressLine.data('number-of-steps');
@@ -206,36 +260,51 @@
             if(currentStep === totalSteps) return;
 
             if(nextStep) {
-                // change icons
-                currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
-                // progress bar
-                barProgress(progressLine, 'right');
-                // show next step
-                $(this).next().fadeIn();
-                // scroll window to beginning of the form
-    			scrollToClass( $('.cc-title'), 20 );
+                $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
+                    // change icons
+                    currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
+                    // progress bar
+                    barProgress(progressLine, 'right');
+                    // show next step
+                    $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).fadeIn();
+
+                    if(parentFieldset.next().data('fieldset-step') === 2) {
+                        campaignMap._onResize();
+                        campaignMap.setView([0, 0], 2);
+                    }
+
+                    // scroll window to beginning of the form
+                    scrollToClass( $('.cc-title'), 20 );
+    			});
             }
         });
 
-        $('#prev-form').click(function(){
+        $('.btn-prev').click(function(){
             // navigation steps / progress steps
     	    var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
     	    var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+            var parentFieldset = $(this).parents('fieldset');
+    	    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
             var currentStep = currentActiveStep.data('step');
 
             if(currentStep === 1) return;
 
-           // $(this).parents('fieldset').fadeOut(400, function() {
+            $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
                 // change icons
                 currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active');
                 // progress bar
                 barProgress(progressLine, 'left');
                 // show previous step
-                $(this).prev().fadeIn();
+                $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).fadeIn();
+
+                if($(this).prev().data('fieldset-step') === 2) {
+                    campaignMap._onResize();
+                    campaignMap.setView([0, 0], 2);
+                }
                 // scroll window to beginning of the form
                 scrollToClass( $('.cc-title'), 20 );
-            //});
+            });
         });
 
         //------------------ EVENT ------------------//
@@ -304,6 +373,8 @@
                     addFunction($('#' + functions['category'] + '-add'), functions);
                 });
             }
+
+            $('.cc fieldset:first').fadeIn('slow');
 
         });
 

@@ -2,6 +2,9 @@
     border-radius: 10px !important;
 }
 
+#campaign-panel {
+    padding: 40px !important;
+}
 
 .cc-title {
     text-align: center;
@@ -75,4 +78,40 @@
 
 #next-form {
     margin-right: 15px;
+}
+
+.form-group>label {
+    font-weight: 900;
+    font-size: 11pt;
+}
+
+.cc fieldset {
+    display: none;
+}
+
+.cc-buttons {
+    margin-top: 50px !important;
+}
+
+.btn-next, .btn-prev {
+    color: white;
+    background-color: #ac3232;
+    border: 0;
+    font-weight: bold;
+    border-radius: 15px;
+    width: 180px;
+}
+
+.btn-next:hover, .btn-prev:hover {
+    color: white;
+    background-color: #992c2c;
+}
+
+.btn-next:active, .btn-prev:active {
+    color: white;
+    background-color: #832424 !important;
+}
+
+.insight-functions {
+    min-height: 100px;
 }
