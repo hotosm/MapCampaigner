@@ -247,8 +247,6 @@
             var parentFieldset = $(this).parents('fieldset');
             var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
-            $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-
             var currentStep = currentActiveStep.data('step');
             var totalSteps = progressLine.data('number-of-steps');
 
@@ -260,6 +258,7 @@
             scrollToClass( $('#wrapper'), 20 );
 
             if(nextStep) {
+                $(parentFieldset).children().find('button').attr('disabled', 'disabled');
                 $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
                     // change icons
                     currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
@@ -289,13 +288,12 @@
             var parentFieldset = $(this).parents('fieldset');
     	    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
-    	    $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-
             var currentStep = currentActiveStep.data('step');
 
             if(currentStep === 1) return;
 
             $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
+    	        $(parentFieldset).children().find('button').attr('disabled', 'disabled');
                 // change icons
                 currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active');
                 // progress bar
