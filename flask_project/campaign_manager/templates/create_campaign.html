@@ -14,8 +14,6 @@
             <h3 class="cc-title">Create Campaign</h3>
             <div class="panel panel-default cc-panel">
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
-                    <form id="campaign-form" method="POST" action="{{ url }}" role="form">
-                        {{ form.hidden_tag() }}
                         <div class="cc-steps">
                             <div class="cc-progress">
                                 <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
@@ -46,68 +44,71 @@
                             </div>
                         </div>
 
-                        <fieldset id="fieldset-1" data-fieldset-step="1">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="name">Campaign name</label>
-                                        <input id="name" name="name" type="text" value="">
-                                        <p class="help-block">Name for the campaign</p>
+                        <form id="campaign-form" method="POST" action="{{ url }}" role="form">
+                            {{ form.hidden_tag() }}
+                            <fieldset id="fieldset-1" data-fieldset-step="1">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group required-form">
+                                            <label for="name">Campaign name</label>
+                                            {{ form.name }}
+                                            <p class="help-block">Name for the campaign</p>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <label for="description">Campaign description</label>
+                                            <textarea id="description" name="description" style="height: 200px;"></textarea>
+                                            <p class="help-block">Description for the campaign</p>
+                                        </div>
+                                        <br/>
                                     </div>
-                                    <br/>
-                                    <div class="form-group">
-                                        <label for="description">Campaign description</label>
-                                        <textarea id="description" name="description" style="height: 200px;"></textarea>
-                                        <p class="help-block">Description for the campaign</p>
-                                    </div>
-                                    <br/>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="end_date">Start date of campaign</label>
-                                                {{ form.end_date }}
-                                                <p class="help-block"></p>
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label for="start_date">Start date of campaign</label>
+                                                    {{ form.start_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label for="end_date">End date of campaign</label>
+                                                    {{ form.end_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="start_date">End date of campaign</label>
-                                                {{ form.start_date }}
-                                                <p class="help-block"></p>
-                                            </div>
+                                        <br/>
+                                        <br/>
+                                        <div class="form-group">
+                                            <label for="campaign_status">Campaign status</label>
+                                            {{ form.campaign_status }}
+                                            <p class="help-block">Status of the campaign</p>
                                         </div>
                                     </div>
-                                    <br/>
-                                    <br/>
-                                    <div class="form-group">
-                                        <label for="campaign_status">Campaign status</label>
-                                        {{ form.campaign_status }}
-                                        <p class="help-block">Status of the campaign</p>
+                                </div>
+                                <div class="row" style="margin-bottom: -12px;">
+                                    <div class="col-lg-6">
+                                        <div class="form-group required-form">
+                                            <label for="campaign_managers">Managers of campaign</label>
+                                            {{ form.campaign_managers }}
+                                            <p class="help-block"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="tags">Tags of campaign</label>
+                                            {{ form.tags }}
+                                            <p class="help-block"></p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row" style="margin-bottom: -12px;">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="campaign_managers">Managers of campaign</label>
-                                        {{ form.campaign_managers }}
-                                        <p class="help-block"></p>
-                                    </div>
+                                <div class="cc-buttons">
+                                    <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="tags">Tags of campaign</label>
-                                        {{ form.tags }}
-                                        <p class="help-block"></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
-                            </div>
-                        </fieldset>
+                            </fieldset>
+                        </form>
 
                         <fieldset id="fieldset-2" data-fieldset-step="2">
                             <div class="row">
@@ -154,14 +155,7 @@
                                 </div>
                             </fieldset>
                         {% endfor %}
-
-{#                        <div class="row">#}
-{#                            <div class="col-lg-4">#}
-{#                                {{ form.submit }}#}
-{#                            </div>#}
-{#                        </div>#}
                         <!-- /.row (nested) -->
-                    </form>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -259,6 +253,11 @@
 
             if(currentStep === totalSteps) return;
 
+            nextStep = checkSteps(currentStep);
+
+            // scroll window to beginning of the form
+            scrollToClass( $('.cc-title'), 20 );
+
             if(nextStep) {
                 $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
                     // change icons
@@ -272,9 +271,6 @@
                         campaignMap._onResize();
                         campaignMap.setView([0, 0], 2);
                     }
-
-                    // scroll window to beginning of the form
-                    scrollToClass( $('.cc-title'), 20 );
     			});
             }
         });
@@ -309,14 +305,16 @@
 
         //------------------ EVENT ------------------//
 
-        function loginSuccess(response) {
-            clearNotification();
+        function updated(response) {
             $('#campaign-panel').show();
-
             {% if action == 'create' %}
                 // Set default campaign manager
                 $('#campaign_managers').val(response.display_name);
             {% endif %}
+        }
+
+        function loginSuccess(response) {
+            clearNotification();
         }
 
         function logoutSuccess() {
@@ -336,6 +334,51 @@
 
         if (!isEmpty(errors)) {
             showNotifications('Failed to create a campaign!', 'danger');
+        }
+
+        function checkSteps(step) {
+            if(step === 1) {
+                return checkStep1();
+            }
+            return false;
+        }
+
+        function checkStep1() {
+            var valid = true;
+
+            var required_forms = $('#fieldset-1').find('.required-form');
+
+            $.each(required_forms, function (index, value) {
+                var input_form = $(value).find('input');
+                var select_form = $(value).find('select');
+
+                if(input_form.length > 0) {
+                    input_form.removeClass('error');
+
+                    input_form.click(function(){
+                        $(this).removeClass('error');
+                        $(this).attr('placeholder', '');
+                    });
+
+                    if(input_form.val() === '') {
+                        input_form.addClass('error');
+                        input_form.attr('placeholder', 'This field is required');
+                        valid = false;
+                    }
+                } else if(select_form.length > 0) {
+                    select_form.removeClass('error');
+
+                    select_form.click(function(){
+                        $(this).removeClass('error');
+                    });
+
+                    if(select_form.val().length === 0) {
+                        select_form.addClass('error');
+                    }
+                }
+            });
+
+            return valid;
         }
 
         $(function () {

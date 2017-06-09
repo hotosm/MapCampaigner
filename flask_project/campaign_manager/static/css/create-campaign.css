@@ -115,3 +115,11 @@
 .insight-functions {
     min-height: 100px;
 }
+
+.error {
+    border-color: #ac3232;
+}
+
+.error::placeholder {
+    color: #ac3232;
+}
