@@ -159,7 +159,9 @@
                                             <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                                         </div>
                                         <div class="col-lg-4">
+                                            {% if loop.index < categories|length %}
                                             <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -245,6 +247,8 @@
             var parentFieldset = $(this).parents('fieldset');
             var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
+            $(parentFieldset).children().find('button').attr('disabled', 'disabled');
+
             var currentStep = currentActiveStep.data('step');
             var totalSteps = progressLine.data('number-of-steps');
 
@@ -264,6 +268,7 @@
 
                     // show next step
                     $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).fadeIn();
+                    $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).children().find('button').removeAttr('disabled');
 
                     if(currentFieldsetNumber+1 === 2) {
                         campaignMap.invalidateSize();
@@ -284,6 +289,8 @@
             var parentFieldset = $(this).parents('fieldset');
     	    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
 
+    	    $(parentFieldset).children().find('button').attr('disabled', 'disabled');
+
             var currentStep = currentActiveStep.data('step');
 
             if(currentStep === 1) return;
@@ -293,8 +300,10 @@
                 currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active');
                 // progress bar
                 barProgress(progressLine, 'left');
+
                 // show previous step
                 $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).fadeIn();
+                $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).children().find('button').removeAttr('disabled');
 
                 // scroll window to beginning of the form
                 scrollToClass( $('#wrapper'), 20 );
