@@ -114,7 +114,7 @@
                             <div class="row">
                                 <!-- /.col-lg-6 (nested) -->
                                 <div class="col-lg-8">
-                                    <div class="form-group">
+                                    <div class="form-group map-wrapper" data-error="">
                                         <label>Campaign Map</label>
                                         <div id="campaign-map"></div>
                                     </div>
@@ -256,7 +256,7 @@
             nextStep = checkSteps(currentStep);
 
             // scroll window to beginning of the form
-            scrollToClass( $('.cc-title'), 20 );
+            scrollToClass( $('#wrapper'), 20 );
 
             if(nextStep) {
                 $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
@@ -264,12 +264,12 @@
                     currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
                     // progress bar
                     barProgress(progressLine, 'right');
+
                     // show next step
                     $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).fadeIn();
 
-                    if(parentFieldset.next().data('fieldset-step') === 2) {
+                    if(currentFieldsetNumber+1 === 2) {
                         campaignMap._onResize();
-                        campaignMap.setView([0, 0], 2);
                     }
     			});
             }
@@ -294,12 +294,8 @@
                 // show previous step
                 $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).fadeIn();
 
-                if($(this).prev().data('fieldset-step') === 2) {
-                    campaignMap._onResize();
-                    campaignMap.setView([0, 0], 2);
-                }
                 // scroll window to beginning of the form
-                scrollToClass( $('.cc-title'), 20 );
+                scrollToClass( $('#wrapper'), 20 );
             });
         });
 
@@ -339,6 +335,8 @@
         function checkSteps(step) {
             if(step === 1) {
                 return checkStep1();
+            } else if(step === 2) {
+                return checkStep2();
             }
             return false;
         }
@@ -377,6 +375,26 @@
                     }
                 }
             });
+
+            return valid;
+        }
+
+        function checkStep2() {
+            var valid = true;
+            var mapErrorNotification = $('.map-wrapper').data('error');
+
+            clearNotification();
+
+            if(mapErrorNotification !== '') {
+                showNotifications(mapErrorNotification, 'danger');
+                valid = false;
+            }
+
+            // Check drawn item
+            if(drawnItems.getLayers().length === 0) {
+                showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
+                valid = false;
+            }
 
             return valid;
         }
@@ -537,9 +555,9 @@
             });
             if (totalAreaSize > maxAreaSize) {
                 showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
-                $("#submit").addClass('disabled');
+                $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
             } else {
-                $("#submit").removeClass('disabled');
+                $('.map-wrapper').data('error', '');
             }
         }
 
