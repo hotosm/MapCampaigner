@@ -155,3 +155,7 @@
 .error-form {
     margin-top: 2px;
 }
+
+#description {
+    height: 200px;
+}
