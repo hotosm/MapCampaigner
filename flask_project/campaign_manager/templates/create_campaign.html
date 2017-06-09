@@ -81,8 +81,9 @@
                                         </div>
                                         <br/>
                                         <br/>
-                                        <div class="form-group">
+                                        <div class="form-group required-form">
                                             <label for="campaign_status">Campaign status</label>
+{#                                            <div class="error-form">This field is required</div>#}
                                             {{ form.campaign_status }}
                                             <p class="help-block">Status of the campaign</p>
                                         </div>
@@ -141,7 +142,7 @@
                                                 <label class="category-label">{{ category }} Functions</label>
                                                 <div class="function-form">
                                                 </div>
-                                                <button id="{{ category }}-function-add" class="btn btn-outline btn-primary"
+                                                <button id="{{ category }}-function-add" class="btn btn-outline btn-add-coverage"
                                                         type=button onclick="addFunction(this)" style="margin-top: 5px;">
                                                     <i class="fa fa-plus"></i> Add Function
                                                 </button>
@@ -150,8 +151,17 @@
                                     </div>
                                 </div>
                                 <div class="cc-buttons">
-                                    <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
-                                    <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                        </div>
+                                    </div>
                                 </div>
                             </fieldset>
                         {% endfor %}
@@ -168,18 +178,6 @@
 
 {% block after_base_js %}
 
-    <style>
-
-        #map {
-            height: 400px;
-        }
-
-        .submit-button {
-            margin-top: 20px;
-        }
-
-    </style>
-
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
@@ -187,8 +185,7 @@
         <div class="well well-sm" style="margin-bottom: 5px;">
             <div class="function-form-row row tooltip-help" id="function-<%=index%>">
                 <div class="col-lg-1">
-                    <button class="btn btn-danger btn-sm btn-block" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Remove this function"
+                    <button class="btn btn-danger btn-sm btn-block"
                             type=button onclick="removeFunction(this)">
                         <i class="fa fa-minus"></i></button>
                 </div>
@@ -269,7 +266,12 @@
                     $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).fadeIn();
 
                     if(currentFieldsetNumber+1 === 2) {
-                        campaignMap._onResize();
+                        campaignMap.invalidateSize();
+                        if(drawnItems.getLayers().length > 0) {
+                            campaignMap.fitBounds(drawnItems.getBounds());
+                        } else {
+                            campaignMap.setView([0, 0], 2);
+                        }
                     }
     			});
             }
@@ -338,7 +340,7 @@
             } else if(step === 2) {
                 return checkStep2();
             }
-            return false;
+            return true;
         }
 
         function checkStep1() {
@@ -347,7 +349,8 @@
             var required_forms = $('#fieldset-1').find('.required-form');
 
             $.each(required_forms, function (index, value) {
-                var input_form = $(value).find('input');
+                var input_form = $(value).find("[type=text]");
+                var radio_form = $(value).find("[type=radio]");
                 var select_form = $(value).find('select');
 
                 if(input_form.length > 0) {
@@ -372,6 +375,22 @@
 
                     if(select_form.val().length === 0) {
                         select_form.addClass('error');
+                        valid = false;
+                    }
+                } else if(radio_form.length > 0) {
+                    var radio_checked = false;
+                    for(var i=0; i<radio_form.length;i++) {
+                        if(!$(radio_form[i]).is(":checked")) {
+                            valid = false;
+                        } else {
+                            radio_checked = true;
+                            break;
+                        }
+                }
+                    var error = radio_form.parent().parent().find('.error-form');
+                    $(error).remove();
+                    if(!radio_checked){
+                        radio_form.parent().parent().prepend('<div class="error-form">This field is required</div>');
                     }
                 }
             });
@@ -406,8 +425,8 @@
                 container: "body"
             });
 
-            $("#submit").click(function () {
-                if (!$('#submit').hasClass('disabled')) {
+            $(".submit-button").click(function () {
+                if (!$('.submit-button').hasClass('disabled')) {
                     $("#campaign-form").submit();
                 }
             });
@@ -415,11 +434,6 @@
             $('#campaign-form input').addClass('form-control');
             $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
-
-            $('.error-form').parent().addClass('has-error');
-
-            $('#submit').removeClass('form-control');
-            $('#submit').addClass('btn btn-outline btn-success submit-button btn-lg btn-block');
 
             var $categoryLabels = $('.category-label');
             for (var i = 0; i < $categoryLabels.length; i++) {
