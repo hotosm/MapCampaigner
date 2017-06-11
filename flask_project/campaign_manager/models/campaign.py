@@ -112,7 +112,10 @@ class Campaign(JsonModel):
         """Returns campaign as json format."""
         return self._content_json
 
-    def render_insights_function(self, insight_function_id, additional_data={}):
+    def render_insights_function(
+            self,
+            insight_function_id,
+            additional_data={}):
         """Get rendered UI from insight_function
 
         :param insight_function_id: name of insight function
@@ -304,7 +307,8 @@ class Campaign(JsonModel):
         :type coordinate: str
         """
         campaigns = []
-        point = shapely_geometry.Point([float(x) for x in coordinate.split(',')])
+        point = shapely_geometry.Point(
+                [float(x) for x in coordinate.split(',')])
         distance = 3
         circle_buffer = point.buffer(distance)
 
@@ -313,7 +317,8 @@ class Campaign(JsonModel):
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
                     #
-                    polygon = shapely_geometry.Polygon(campaign.corrected_coordinates())
+                    polygon = shapely_geometry.Polygon(
+                            campaign.corrected_coordinates())
                     if circle_buffer.contains(polygon):
                         campaign_dict = campaign.to_dict()
                         allowed = True

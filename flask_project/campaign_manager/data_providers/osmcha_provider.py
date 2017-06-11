@@ -70,28 +70,39 @@ class OsmchaProvider(AbstractDataProvider):
                     if value == 'Verified':
                         json[value] = {}
                         # check verifiying status
-                        status = cell.find("span", {'class', 'glyphicon-remove'})
+                        status = cell.find(
+                                "span",
+                                {'class', 'glyphicon-remove'})
                         if status:
                             json[value]['status'] = False
                         else:
                             json[value]['status'] = True
                         # check is ok or not
                         json[value]['thumbs_up'] = False
-                        ok = cell.find("span", {'class', 'glyphicon-thumbs-up'})
+                        ok = cell.find(
+                                "span",
+                                {'class', 'glyphicon-thumbs-up'})
                         if ok:
                             json[value]['thumbs_up'] = True
                         # check is verifier
                         json[value]['verifier'] = None
                         verifier = cell.find("a")
                         if verifier:
-                            json[value]['verifier'] = verifier.string.replace('\n', '').strip()
+                            json[value]['verifier'] = verifier.string.replace(
+                                    '\n', '').strip()
 
                     elif value == 'Count':
                         # for span like count
                         json[value] = {}
-                        json[value]['success'] = cell.find("span", {'class', 'label-success'}).string
-                        json[value]['warning'] = cell.find("span", {'class', 'label-warning'}).string
-                        json[value]['danger'] = cell.find("span", {'class', 'label-danger'}).string
+                        json[value]['success'] = cell.find(
+                                "span",
+                                {'class', 'label-success'}).string
+                        json[value]['warning'] = cell.find(
+                                "span",
+                                {'class', 'label-warning'}).string
+                        json[value]['danger'] = cell.find(
+                                "span",
+                                {'class', 'label-danger'}).string
                     else:
                         # check <a> tag
                         link_value = cell.find("a")

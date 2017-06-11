@@ -41,4 +41,4 @@ class FeatureAttributeCompletenessTestCase(unittest.TestCase):
         self.feature_completeness.post_process_data = \
             mock.MagicMock(return_value='processed data')
         output = self.feature_completeness.post_process_data()
-        self.assertEquals(output,'processed data')
+        self.assertEquals(output, 'processed data')

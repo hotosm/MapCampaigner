@@ -1,9 +1,9 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
-from campaign_manager.insights_functions._abstract_overpass_insight_function import (
-    AbstractOverpassInsightFunction
-)
+from campaign_manager.insights_functions._abstract_overpass_insight_function \
+    import (
+        AbstractOverpassInsightFunction)
 
 
 class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
