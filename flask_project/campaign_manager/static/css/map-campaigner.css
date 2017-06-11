@@ -894,45 +894,7 @@ body {
     color: #898989;
 }
 
-
-footer {
-    height: 100px;
-    background-color: #e7e7e7;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    text-align:center;
-}
-
-footer p {
-    padding-top: 25px;
-    color: #756e6e;
-}
-
-footer p .fa{
-    font-size: 14pt;
-    padding-left: 10px;
-    padding-top: 10px;
-}
-
-footer p a {
-    color: #46828f;
-}
-
-footer p a:hover {
-    color: #3b6a77;
-}
-
 @media (max-width: 480px) {
-    .footer-text {
-        display: none;
-    }
-    footer p {
-        padding-top: 0;
-    }
-    footer {
-        height: 60px;
-    }
 
     .home-header .btn {
         font-size: 8pt;
@@ -982,4 +944,76 @@ footer p a:hover {
 
 .add-file.btn {
     width: 50%;
+}
+
+.footer-basic-centered{
+	background-color: #e7e7e7;
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+	font-size: 10pt;
+	padding-top: 20px;
+    padding-bottom: 15px;
+	margin-top: 80px;
+}
+
+.footer-basic-centered .footer-company-motto{
+	color:  #756e6e;
+	font-size: 10pt;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-company-name{
+	color:  #756e6e;
+	font-size: 10pt;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-links{
+	list-style: none;
+	font-weight: bold;
+	color:  #46828f;
+    font-size: 14pt;
+	padding: 8px 0 8px;
+	margin: 0;
+}
+
+.footer-links a {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.footer-basic-centered .footer-links a{
+	display:inline-block;
+	text-decoration: none;
+	color: inherit;
+}
+
+.footer-company-name img {
+    margin-top: -5px;
+    padding-left: 5px;
+}
+
+@media (max-width: 600px) {
+
+	.footer-basic-centered{
+		padding: 35px;
+	}
+
+	.footer-basic-centered .footer-company-motto{
+		font-size: 10pt;
+	}
+
+	.footer-basic-centered .footer-company-name{
+		font-size: 10pt;
+	}
+
+	.footer-basic-centered .footer-links{
+		font-size: 14px;
+		padding: 25px 0 20px;
+	}
+
+	.footer-basic-centered .footer-links a{
+		line-height: 1.8;
+	}
 }
