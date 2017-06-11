@@ -25,7 +25,7 @@ class CampaignNearestList(Resource):
     """Show a list of nearest campaigns"""
     def get(self, coordinate):
         """Get all nearest campaigns.
-        
+
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str.
         """
@@ -46,7 +46,7 @@ class CampaignNearestWithTagList(Resource):
 
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str
-        
+
         :param tag: tag to filter
         :type tag: str
         """
@@ -66,7 +66,7 @@ class CampaignTagList(Resource):
 
     def get(self, tag):
         """Get all campaigns.
-        
+
         :param tag: tag to filter
         :type tag: str
         """
@@ -85,5 +85,6 @@ class CampaignTagList(Resource):
 api.add_resource(CampaignList, '/campaigns')
 api.add_resource(CampaignTagList, '/campaigns/<string:tag>')
 api.add_resource(CampaignNearestList, '/nearest_campaigns/<string:coordinate>')
-api.add_resource(CampaignNearestWithTagList, '/nearest_campaigns/<string:coordinate>/<string:tag>')
-
+api.add_resource(
+        CampaignNearestWithTagList,
+        '/nearest_campaigns/<string:coordinate>/<string:tag>')

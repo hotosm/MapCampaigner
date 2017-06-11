@@ -21,7 +21,8 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :rtype: dict
         """
         return OverpassProvider().get_data(
-            self.FEATURES_MAPPING[self.feature], self.campaign.corrected_coordinates()
+            self.FEATURES_MAPPING[self.feature],
+            self.campaign.corrected_coordinates()
         )
 
     def process_data(self, raw_datas):

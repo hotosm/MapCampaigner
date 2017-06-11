@@ -4,6 +4,7 @@ from unittest import mock
 from campaign_manager.insights_functions.osmcha_error import OsmchaError
 from campaign_manager.test.helpers import CampaignObjectTest
 
+
 class OsmchaErrorTestCase(unittest.TestCase):
     """Test insight function to show osmcha error."""
 
