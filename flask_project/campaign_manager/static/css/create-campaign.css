@@ -1,0 +1,161 @@
+.cc-panel {
+    border-radius: 10px !important;
+}
+
+#campaign-panel {
+    padding: 40px !important;
+}
+
+.cc-title {
+    text-align: center;
+    color: #565656;
+    font-weight: bold;
+    padding-bottom: 20px;
+    margin-top: 10px;
+}
+
+.cc-steps {
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.cc-progress {
+    position: absolute;
+    top: 24px; left: 0;
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    background: #c5c5c5;
+    margin-top: -5px;
+}
+
+.cc-progress-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    border-radius: 10px;
+    background: #46828f;
+}
+
+.cc-step {
+    position: relative;
+    float: left;
+    width: 16.66%;
+    padding: 0 5px;
+}
+
+.cc-step-icon {
+	display: inline-block; width: 40px; height: 40px; margin-top: 4px; background: #c5c5c5;
+	font-size: 16px; color: #fff; line-height: 40px;
+	-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;
+}
+.cc-step.activated .cc-step-icon {
+	background: #46828f; border: 1px solid #46828f; color: #fff; line-height: 38px;
+}
+.cc-step.active .cc-step-icon {
+	width: 48px; height: 48px; margin-top: 0; background: #46828f; font-size: 22px; line-height: 48px;
+}
+
+.cc-step p {
+    padding-top: 10px;
+    font-weight: bold;
+    color: #ccc;
+}
+.cc-step.activated p {
+    color: #46828f;
+}
+.cc-step.active p {
+    color: #46828f;
+}
+
+#prev-form {
+    margin-left: 15px;
+}
+
+#next-form {
+    margin-right: 15px;
+}
+
+.form-group>label {
+    font-weight: 900;
+    font-size: 11pt;
+}
+
+.cc fieldset {
+    display: none;
+}
+
+.cc-buttons {
+    margin-top: 50px !important;
+}
+
+.btn-next, .btn-prev, .submit-button {
+    color: white;
+    background-color: #ac3232;
+    border: 0;
+    font-weight: bold;
+    border-radius: 15px;
+    width: 180px;
+}
+
+.btn-next:hover, .btn-prev:hover{
+    color: white;
+    background-color: #992c2c;
+}
+
+.btn-next:active, .btn-prev:active{
+    color: white;
+    background-color: #832424 !important;
+}
+
+.submit-button {
+    background-color: #46828f !important;
+    display: table;
+    margin: 0 auto;
+}
+
+.submit-button:hover {
+    color: white;
+    background-color: #355f6c !important;
+}
+
+.submit-button:active {
+    color: white;
+    background-color: #2c4c59 !important;
+}
+
+.insight-functions {
+    min-height: 100px;
+}
+
+.error {
+    border-color: #ac3232;
+}
+
+.error::placeholder {
+    color: #ac3232;
+}
+
+.btn-add-coverage {
+    width: 150px;
+    border-color: #46828f;
+    color: #46828f;
+    border-radius: 15px;
+}
+
+.btn-add-coverage:hover {
+    color: white;
+    background-color: #46828f;
+}
+
+.error-form {
+    margin-top: 2px;
+}
+
+#description {
+    height: 200px;
+}
