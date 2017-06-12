@@ -496,6 +496,7 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
         });
 
@@ -666,6 +667,7 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
         }
 
         function removeFunction(event) {

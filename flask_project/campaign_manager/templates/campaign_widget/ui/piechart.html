@@ -25,6 +25,7 @@
             chart_data['datasets'][0]['backgroundColor'].push(getRandomColor());
         {% endif %}
     {% endfor %}
+    
     if (chart_data['labels'].length !== 0) {
         var ctx = $wrapper.find(".pieChart");
         var options = {};
