@@ -1,15 +1,15 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+import bisect
 import copy
 import json
 import os
 import pygeoj
 import time
+from shapely import geometry as shapely_geometry
 import campaign_manager.insights_functions as insights_functions
-
 from flask import render_template
-
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.utilities import module_path
 
@@ -30,6 +30,7 @@ class Campaign(JsonModel):
     selected_functions = []
     tags = []
     description = ''
+    _content_json = None
 
     def __init__(self, uuid):
         self.uuid = uuid
@@ -79,8 +80,12 @@ class Campaign(JsonModel):
         for key, value in self.selected_functions.items():
             SelectedFunction = getattr(
                 insights_functions, value['function'])
-            selected_function = SelectedFunction(self)
+            selected_function = SelectedFunction(
+                    self,
+                    feature=value['feature'],
+                    required_attributes=value['attributes'])
             value['manager_only'] = selected_function.manager_only
+            value['name'] = selected_function.name()
         return json.dumps(self.selected_functions).replace('None', 'null')
 
     def parse_json_file(self):
@@ -95,6 +100,7 @@ class Campaign(JsonModel):
                 content = _file.read()
                 content_json = json.loads(content)
                 Campaign.validate(content_json, self.uuid)
+                self._content_json = content_json
                 attributes = self.get_attributes()
                 for key, value in content_json.items():
                     if key in attributes:
@@ -102,7 +108,14 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
 
-    def render_insights_function(self, insight_function_id, additional_data={}):
+    def json(self):
+        """Returns campaign as json format."""
+        return self._content_json
+
+    def render_insights_function(
+            self,
+            insight_function_id,
+            additional_data={}):
         """Get rendered UI from insight_function
 
         :param insight_function_id: name of insight function
@@ -190,8 +203,7 @@ class Campaign(JsonModel):
         geojson = pygeoj.load(data=geometry)
         return geojson.bbox
 
-        # ----------------------------------------------------------
-
+    # ----------------------------------------------------------
     # coverage functions
     # ----------------------------------------------------------
     def get_coverage_folder(self):
@@ -265,23 +277,62 @@ class Campaign(JsonModel):
         :return: Campaigns that found or none
         :rtype: [Campaign]
         """
+        name_list = []
         campaigns = []
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    campaign_dict = campaign.to_dict()
                     allowed = True
                     if kwargs:
+                        campaign_dict = campaign.to_dict()
                         for key, value in kwargs.items():
                             if key not in campaign_dict:
                                 allowed = False
                             elif value not in campaign_dict[key]:
                                 allowed = False
                     if allowed:
-                        campaigns.append(campaign)
+                        position = bisect.bisect(name_list, campaign.name)
+                        bisect.insort(name_list, campaign.name)
+                        campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
+        return campaigns
+
+    @staticmethod
+    def nearest_campaigns(coordinate, **kwargs):
+        """Return nearest campaigns based on coordinate
+
+        :param coordinate: lat, long coordinate string
+        :type coordinate: str
+        """
+        campaigns = []
+        point = shapely_geometry.Point(
+                [float(x) for x in coordinate.split(',')])
+        distance = 3
+        circle_buffer = point.buffer(distance)
+
+        for root, dirs, files in os.walk(Campaign.get_json_folder()):
+            for file in files:
+                try:
+                    campaign = Campaign.get(os.path.splitext(file)[0])
+                    #
+                    polygon = shapely_geometry.Polygon(
+                            campaign.corrected_coordinates())
+                    if circle_buffer.contains(polygon):
+                        campaign_dict = campaign.to_dict()
+                        allowed = True
+                        if kwargs:
+                            for key, value in kwargs.items():
+                                if key not in campaign_dict:
+                                    allowed = False
+                                elif value not in campaign_dict[key]:
+                                    allowed = False
+                        if allowed:
+                            campaigns.append(campaign)
+                except Campaign.DoesNotExist:
+                    pass
+
         return campaigns
 
     @staticmethod

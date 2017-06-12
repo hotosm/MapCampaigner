@@ -1,153 +1,56 @@
 {% extends 'new_base.html' %}
 
-{% block title %}
-    {{ name }}
-    {% if description %}
-        <br>
-        <i class="sub-title">{{ description }}</i>
-    {% endif %}
+{% block header_content %}
+
+    <!-- Custom CSS -->
+    <link href="/campaign_manager/static/css/campaign-detail.css" rel="stylesheet">
+
 {% endblock %}
 
 
 {% block content %}
 
     <div class="row">
-
-        <div class="col-lg-1"></div>
-
-        <div class="col-lg-2">
-            <div class="panel panel-green panel-dashboard shadow-panel-1">
-                <div class="panel-heading">
-                    Ends In
-                </div>
-                <div class="panel-body">
-                    {{ remaining_days }}
-                </div>
-                <div class="panel-footer">
-                    Days
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-2">
-            <div id="features" class="panel panel-yellow panel-dashboard shadow-panel-1">
-                <div class="panel-heading">
-                    Features
-                </div>
-                <div class="panel-body">
-                    0
-                </div>
-                <div class="panel-footer">
-                    Collected
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-2">
-            <div class="panel panel-blue panel-dashboard shadow-panel-1">
-                <div class="panel-heading">
-                    By
-                </div>
-                <div class="panel-body">
-                    {{ participants }}
-                </div>
-                <div class="panel-footer">
-                    Participants
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-2">
-            <div class="panel panel-purple panel-dashboard shadow-panel-1">
-                <div class="panel-heading">
-                    Started
-                </div>
-                <div class="panel-body panel-date">
-                    {{ start_date_date }}
-                </div>
-                <div class="panel-footer">
-                    {{ start_date_year }}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-2">
-            <div class="panel panel-red panel-dashboard shadow-panel-1">
-                <div class="panel-heading">
-                    Ends
-                </div>
-                <div class="panel-body panel-date">
-                    {{ end_date_date }}
-                </div>
-                <div class="panel-footer">
-                    {{ end_date_year }}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-1"></div>
-
-    </div>
-
-    <hr/>
-
-    <div class="row">
-
         <div class="col-lg-7">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
-                </div>
-                <div class="panel-body">
-                    <div id="campaign-map"></div>
-                </div>
-            </div>
+            <h3 class="detail-campaign-name">{{ name }}</h3>
+            {% for tag in tags %}
+                <label class="detail-tag"> {{ tag }} </label>
+            {% endfor %}
+            <p>
+                {% if description %}
+                    {{ description }}
+                {% else %}
+                    <span class="grey-italic">No description</span>
+                {% endif %}
+            </p>
         </div>
-
         <div class="col-lg-5">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-th-list" aria-hidden="true"></i> Campaign Information
-                </div>
+             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            Name
-                            <span class="pull-right text-muted">
-                                {{ name }}
-                            </span>
+                    <div class="detail-campaign-status running">
+                        <i class="fa fa-circle" aria-hidden="true"></i> <label>Running</label>
+                    </div>
+                    <div class="detail-campaign-timeline">
+                        <span class="pull-left">
+                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Started</span> : {{ start_date_date }} {{ start_date_year }}
+                        </span>
+                        <span class="pull-right">
+                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Ends</span> : {{ end_date_date }} {{ end_date_year }}
+                        </span>
+                    </div>
+                    <div class="detail-progress">
+                        <div class="progress">
+                          <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                          </div>
                         </div>
-                        <div class="list-group-item">
-                            Version
-                            <span class="pull-right text-muted">
-                                {{ version }}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
-                            Last edited by
-                            <span class="pull-right text-muted">
-                                {{ edited_by }}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
-                            Creator
-                            <span class="pull-right text-muted">
-                                {{ campaign_creator }}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
-                            Status
-                            <span class="pull-right text-muted">
-                                {% if campaign_status %}
-                                    {{ campaign_status }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="list-group-item">
-                            Campaign Managers
-                            <span class="pull-right text-muted">
+                    </div>
+                    <div class="detail-creator-info">
+                        <p>
+                            <span class="grey-italic">Creator : </span>
+                            {{ campaign_creator }}</p>
+                        <p>
+                            <span class="grey-italic">Campaign Manager : </span>
+                            <span class="text-muted">
                                 {% if campaign_managers %}
                                     {% for campaign_manager in campaign_managers %}
                                         <a href="http://www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>
@@ -159,21 +62,26 @@
                                     -
                                 {% endif %}
                             </span>
-                        </div>
-                        <div class="list-group-item">
-                            Tags
-                            <span class="pull-right text-muted">
-                                {% if tags %}
-                                    {% for tag in tags %}
-                                        <a href="/campaign_manager/tags/{{ tag }}">{{ tag }}</a>
-                                        {% if tag != tags[-1] %}
-                                            ,
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </span>
+                        </p>
+                    </div>
+                    <div class="detail-button-wrapper">
+                        <button class="btn btn-info btn-manage pull-right" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default detail-panel-information">
+                <div class="panel-body">
+                    <div id="campaign-map-detail"></div>
+
+                    <div class="insight-function-panel">
+                        <ul class="nav nav-tabs insight-tabs" style="display: none;">
+                        </ul>
+                        <div class="tab-content insight-content">
                         </div>
                     </div>
                 </div>
@@ -181,19 +89,6 @@
         </div>
     </div>
 
-    <div class="row" id="insight-row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading"> Insight Functions</div>
-                <div class="panel-body">
-                    <ul class="nav nav-tabs insight-tabs">
-                    </ul>
-                    <div class="tab-content insight-content">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     </div>
 
 {% endblock %}
@@ -211,9 +106,16 @@
         var feature_collected_count = 0;
 
         function render_selected_functions(username) {
-
             $('.insight-tabs').html('');
             $('.insight-content').html('');
+            var index = 0;
+
+            if(Object.keys(selected_functions).length === 0) {
+                $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
+            } else {
+                $('.insight-tabs').show();
+            }
+
             $.each(selected_functions, function (key, selected_function) {
                 var allow_function = true;
                 if (selected_function['manager_only']) {
@@ -222,20 +124,87 @@
                     }
                 }
                 if (allow_function) {
+                    var href = "#" + key;
+                    var active = '';
+                    if(index===0){
+                        active = 'active';
+                    }
+                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
+                    $('.insight-tabs').append(
+                        '<li class="' + active + '">' +
+                        '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
+                            selected_function['name'] + '</a>' +
+                        '</li>'
+                    );
+                    $('.insight-content').find('#' + key).remove();
+                    $('.insight-content').append(
+                        '<div class="tab-pane fade ' + active + ' in" id="' + key + '">' +
+                            '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>'+
+                        '</div>'
+                    );
                     get_function(key);
                     if (!containsObject(selected_function['feature'], feature_collected)) {
                         feature_collected.push(selected_function['feature']);
-                        if (selected_function["category"] != "coverage-function") {
+                        if (selected_function["category"] !== "coverage-function") {
                             get_metadata(key);
                         }
                     }
+                    index++;
                 }
             });
         }
+        
+        function calculateProgress() {
+
+            var start_date = "{{ start_date }}";
+            var end_date = "{{ end_date }}";
+
+            if(start_date==='None' || end_date==='None') {
+                $('.detail-campaign-status label').html('-');
+                return;
+            }
+
+            start_date = moment(start_date, 'YYYY-MM-DD', true);
+            end_date = moment(end_date, 'YYYY-MM-DD', true);
+
+            var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
+
+            if(campaign_range < 0) {
+                console.log('Invalid Date');
+                $('.detail-campaign-status label').html('-');
+                return;
+            }
+
+            var remaining_days = end_date.diff(moment(), 'days') + 1;
+
+            var progress = 0;
+
+            if(remaining_days <= 0) {
+                progress = 100;
+                $('.detail-campaign-status').removeClass('running');
+                $('.detail-campaign-status').addClass('finished');
+                $('.detail-campaign-status label').html('Finished');
+            } else {
+                progress = remaining_days/campaign_range * 100;
+            }
+
+            $('#campaign-progress').css({
+                'width': progress+'%'
+            })
+        }
+
         //------------------ EVENT ------------------//
 
         function loginSuccess(user) {
+        }
+
+        function updated(user) {
             render_selected_functions(user.display_name);
+            var managers = {{ campaign_managers | safe }};
+            // Shows manage button if current user is one of the manager
+            if($.inArray(user.display_name, managers) > -1) {
+                $('.btn-manage').show();
+            }
         }
 
         function loginError() {
@@ -243,21 +212,22 @@
         }
 
         function logoutSuccess() {
+            $('.btn-manage').hide();
             render_selected_functions('');
         }
 
         $(function () {
-            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
-
             window.isAuthenticated = auth.authenticated();
             if (!auth.authenticated()) {
                 update();
             }
+
+            calculateProgress();
         });
 
         var drawnItems = new L.FeatureGroup();
-        var map = L.map('campaign-map').setView([0, 0], 1);
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        var map = L.map('campaign-map-detail').setView([0, 0], 1);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 15
@@ -279,37 +249,24 @@
             $.ajax({
                 url: url,
                 success: function (data) {
-                    var href = "#" + function_id
-                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
-                    $('.insight-content').find('#' + function_id).remove();
                     var active = '';
-                    if (first_function) {
+                    if (first_function) {$('.btn-manage').show();
                         active = 'active';
                         first_function = false;
                     }
 
-                    var $insightTitle = $(data + ".insight-title");
-
-                    $('.insight-tabs').append(
-                            '<li class="' + active + '">' +
-                            '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
-                            $insightTitle.html() + '</a>' +
-                            '</li>'
+                    $('#'+function_id).html(
+                        data
                     );
-
-                    $('.insight-content').append(
-                            '<div class="tab-pane fade ' + active + ' in" id="' + function_id + '">' +
-                            data +
-                            '</div>'
-                    );
-                    $('.insight-tabs').find('a')[0].click();
-
                 }
             });
         }
 
         function get_metadata(function_id) {
+            console.log(function_id);
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id + '/metadata';
+            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+
             $.ajax({
                 url: url,
                 success: function (data) {

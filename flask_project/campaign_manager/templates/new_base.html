@@ -47,16 +47,17 @@
 
 </head>
 
-<body>
+<body id="wrap">
 
     <div id="wrapper">
 
         {% include 'campaign_widget/navigation.html' %}
 
+        {% block header_content %}{% endblock %}
+
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12" id="first-row">
-                    <h1 class="page-header">{% block title %}{% endblock %}</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -97,6 +98,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/datetime-moment.js"></script>
 
+    <!-- Moment Javascript -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/moment.js"></script>
+
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
 
@@ -111,7 +115,14 @@
             oauth_secret: '{{ oauth_secret }}',
             oauth_consumer_key: '{{ oauth_consumer_key }}',
             auto: true,
-            landing: window.location.origin + '/campaign_manager/land'
+            landing: window.location.origin + '/campaign_manager/land',
+            loading: function () {
+                showLoading();
+            },
+            done: function () {
+                hideLoading();
+            },
+            url: 'https://www.openstreetmap.org'
         });
 
         $(document).ready(function () {
@@ -124,7 +135,6 @@
         });
 
         function login() {
-            showLoading();
             loginProcess = true;
             auth.authenticate(function () {
                 update();
@@ -165,28 +175,29 @@
             }, function (err, res) {
                 if (err) {
                     $('#info').html('error! try clearing your browser cache');
+                    hideLoading();
                     loginError();
                     return;
                 }
                 var u = res.getElementsByTagName('user')[0];
                 var changesets = res.getElementsByTagName('changesets')[0];
+                var location = res.getElementsByTagName('home')[0];
 
                 var o = {
                     display_name: u.getAttribute('display_name'),
                     id: u.getAttribute('id'),
-                    count: changesets.getAttribute('count')
+                    count: changesets.getAttribute('count'),
                 };
 
-                updated(o);
 
                 $('#profile-name').html(o.display_name);
-
-                var location = res.getElementsByTagName('home')[0];
 
                 if (typeof location !== 'undefined') {
                     var long = location.getAttribute('lon');
                     var lat = location.getAttribute('lat');
                     var zoom = location.getAttribute('zoom');
+                    o['lon'] = long;
+                    o['lat'] = lat;
                     if (map) {
                         that.locationMarker = L.marker([lat, long]).addTo(map);
                         map.setView([lat, long], 8);
@@ -194,10 +205,13 @@
                     }
                 }
 
-                loginSuccess(o);
-                loginProcess = false;
+                updated(o);
 
-                hideLoading();
+                if(loginProcess) {
+                    loginSuccess(o);
+                    loginProcess = false;
+                }
+
             }, this);
         }
         function hideDetails(map) {
@@ -220,7 +234,7 @@
         function loginSuccess(user) {
         }
 
-        function loginError(user) {
+        function loginError() {
         }
 
         function logoutSuccess() {
@@ -236,5 +250,22 @@
     {% endblock %}
 
 </body>
+<footer class="footer-basic-centered">
 
+    <p class="footer-company-motto">
+        HOT is a worldwide nonprofit organization, registered in the United States [501(c)(3)] with offices in Washinton D.C., USA and Jakarta, Indonesia.
+    </p>
+
+    <p class="footer-links">
+        <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+        <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+        <a href="#"><i class="fa fa-youtube-play" aria-hidden="true"></i></a>
+    </p>
+
+    <p class="footer-company-name">
+        Built by <a href="http://www.kartoza.com">Kartoza (Pty) Ltd.</a> <img src="/campaign_manager/static/img/kartoza-logo.png"/>
+        <a href="https://github.com/hotosm/field-campaigner"> Available on GitHub! </a>
+    </p>
+
+</footer>
 </html>

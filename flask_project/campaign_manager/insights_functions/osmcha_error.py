@@ -27,8 +27,6 @@ class OsmchaError(AbstractInsightsFunction):
         """
         if 'page' in additional_data:
             self.current_page = int(additional_data['page'])
-        if 'function_id' in additional_data:
-            self.function_id = additional_data['function_id']
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -76,5 +74,4 @@ class OsmchaError(AbstractInsightsFunction):
         :rtype: dict
         """
         raw_datas['uuid'] = self.campaign.uuid
-        raw_datas['function_id'] = self.function_id
         return raw_datas

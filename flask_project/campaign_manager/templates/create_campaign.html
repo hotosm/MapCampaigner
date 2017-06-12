@@ -1,9 +1,9 @@
 {% extends 'new_base.html' %}
 
-{% block title %} {{ title }} {% endblock %}
-
 {% block extra_head %}
 
+    <!-- Custom CSS -->
+    <link href="/campaign_manager/static/css/create-campaign.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
 
 {% endblock %}
@@ -11,66 +11,163 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Campaign Form
-                </div>
-                <div class="panel-body" id="campaign-panel" style="display: none">
-                    <div class="row">
-                        <div class="col-lg-6" style="margin-bottom: -40px;">
-                            <form id="campaign-form" method="POST" action="{{ action }}" role="form">
-                                {{ form.hidden_tag() }}
-                                {% for field in form %}
-                                    {% if field.name != 'submit' and field.name != 'csrf_token' and field.name !='selected_functions' %}
-                                        <div class="form-group">
-                                            {% if field.name !='geometry' and field.name !='uploader' %}
-                                                <label>{{ field.label }}</label>
-                                                {% for error in form['errors'][field.name] %}
-                                                    <div class="error-form">{{ error }}</div>
-                                                {% endfor %}
-                                                {{ field() }}
-                                                <p class="help-block">{{ field.description }}</p>
-                                            {% else %}
-                                                {{ field() }}
-                                            {% endif %}
-                                        </div>
-                                        <br>
-                                    {% endif %}
-                                {% endfor %}
-                            </form>
-                        </div>
-                        <!-- /.col-lg-6 (nested) -->
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label>Campaign Map</label>
-                                <div id="campaign-map"></div>
-                                <br>
-                                <label>Update boundary by shp</label>
-                                {% include 'campaign_widget/ui/upload_boundary.html' %}
+            <h3 class="cc-title">Create Campaign</h3>
+            <div class="panel panel-default cc-panel">
+                <div class="panel-body cc" id="campaign-panel" style="display: none">
+                        <div class="cc-steps">
+                            <div class="cc-progress">
+                                <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
+                            </div>
+                            <div class="cc-step active" data-step="1">
+                                <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
+                                <p>General Information</p>
+                            </div>
+                            <div class="cc-step" data-step="2">
+                                <div class="cc-step-icon"><i class="fa fa-map"></i></div>
+                                <p>Campaign Map</p>
+                            </div>
+                            <div class="cc-step" data-step="3">
+                                <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
+                                <p>Coverage Function</p>
+                            </div>
+                            <div class="cc-step" data-step="4">
+                                <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
+                                <p>Quality Function</p>
+                            </div>
+                            <div class="cc-step" data-step="5">
+                                <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
+                                <p>Error Function</p>
+                            </div>
+                            <div class="cc-step" data-step="6">
+                                <div class="cc-step-icon"><i class="fa fa-link"></i></div>
+                                <p>Engagement Function</p>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-lg-12">
-                            {% for category in categories %}
-                                <div class="form-group" style="padding-bottom: 25px;">
-                                    <div id="{{ category }}-function" class="function-wrapper">
-                                        <label class="category-label">{{ category }} Functions</label>
-                                        <div class="function-form">
+                        <form id="campaign-form" method="POST" action="{{ url }}" role="form">
+                            {{ form.hidden_tag() }}
+                            <fieldset id="fieldset-1" data-fieldset-step="1">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group required-form">
+                                            <label for="name">Campaign name</label>
+                                            {{ form.name }}
+                                            <p class="help-block">Name for the campaign</p>
                                         </div>
-                                        <button id="{{ category }}-function-add" class="btn btn-outline btn-primary"
-                                                type=button onclick="addFunction(this)" style="margin-top: 5px;">
-                                            <i class="fa fa-plus"></i> Add Function
-                                        </button>
+                                        <br/>
+                                        <div class="form-group">
+                                            <label for="description">Campaign description</label>
+                                            {{ form.description }}
+                                            <p class="help-block">Description for the campaign</p>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label for="start_date">Start date of campaign</label>
+                                                    {{ form.start_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label for="end_date">End date of campaign</label>
+                                                    {{ form.end_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <br/>
+                                        <div class="form-group required-form">
+                                            <label for="campaign_status">Campaign status</label>
+{#                                            <div class="error-form">This field is required</div>#}
+                                            {{ form.campaign_status }}
+                                            <p class="help-block">Status of the campaign</p>
+                                        </div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                            {{ form.submit }}
-                        </div>
+                                <div class="row" style="margin-bottom: -12px;">
+                                    <div class="col-lg-6">
+                                        <div class="form-group required-form">
+                                            <label for="campaign_managers">Managers of campaign</label>
+                                            {{ form.campaign_managers }}
+                                            <p class="help-block"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="tags">Tags of campaign</label>
+                                            {{ form.tags }}
+                                            <p class="help-block"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cc-buttons">
+                                    <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
+                                </div>
+                            </fieldset>
+                        </form>
 
-                    </div>
-                    <!-- /.row (nested) -->
+                        <fieldset id="fieldset-2" data-fieldset-step="2">
+                            <div class="row">
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-8">
+                                    <div class="form-group map-wrapper" data-error="">
+                                        <label>Campaign Map</label>
+                                        <div id="campaign-map"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Update boundary by shp</label>
+                                        {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cc-buttons">
+                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </fieldset>
+
+                        {% for category in categories %}
+                            <fieldset id="fieldset-{{ loop.index + 2 }}" data-fieldset-step="{{ loop.index + 2 }}">
+                                <div class="row insight-functions">
+                                    <div class="col-lg-12">
+                                        <div class="form-group" style="padding-bottom: 25px;">
+                                            <div id="{{ category }}-function" class="function-wrapper">
+                                                <label class="category-label">{{ category }} Functions</label>
+                                                <div class="function-form">
+                                                </div>
+                                                <button id="{{ category }}-function-add" class="btn btn-outline btn-add-coverage"
+                                                        type=button onclick="addFunction(this)" style="margin-top: 5px;">
+                                                    <i class="fa fa-plus"></i> Add Function
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cc-buttons">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {% if loop.index < categories|length %}
+                                            <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        {% endfor %}
+                        <!-- /.row (nested) -->
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -83,18 +180,6 @@
 
 {% block after_base_js %}
 
-    <style>
-
-        #map {
-            height: 400px;
-        }
-
-        .submit-button {
-            margin-top: 20px;
-        }
-
-    </style>
-
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
@@ -102,8 +187,7 @@
         <div class="well well-sm" style="margin-bottom: 5px;">
             <div class="function-form-row row tooltip-help" id="function-<%=index%>">
                 <div class="col-lg-1">
-                    <button class="btn btn-danger btn-sm btn-block" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Remove this function"
+                    <button class="btn btn-danger btn-sm btn-block"
                             type=button onclick="removeFunction(this)">
                         <i class="fa fa-minus"></i></button>
                 </div>
@@ -134,11 +218,108 @@
 
     <script type="text/javascript">
 
+        //------------------ BUTTONS ------------------//
+        function scrollToClass(element_class, removed_height) {
+            var scrollTo = $(element_class).offset().top - removed_height;
+            if($(window).scrollTop() !== scrollTo) {
+                $('html, body').stop().animate({scrollTop: scrollTo}, 0);
+            }
+        }
+
+        function barProgress(progressLine, direction) {
+            var numberOfSteps = progressLine.data('number-of-steps');
+            var nowValue = progressLine.data('now-value');
+            var newValue = 0;
+            if(direction === 'right') {
+                newValue = nowValue + ( 100 / numberOfSteps );
+            }
+            else if(direction === 'left') {
+                newValue = nowValue - ( 100 / numberOfSteps );
+            }
+            if(newValue < 0) return;
+            progressLine.attr('style', 'width: ' + newValue + '%;').data('now-value', newValue);
+        }
+
+        $('.btn-next').click(function(){
+            var nextStep = true;
+            var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+            var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+            var parentFieldset = $(this).parents('fieldset');
+            var currentFieldsetNumber = parentFieldset.data('fieldset-step');
+
+            var currentStep = currentActiveStep.data('step');
+            var totalSteps = progressLine.data('number-of-steps');
+
+            if(currentStep === totalSteps) return;
+
+            nextStep = checkSteps(currentStep);
+
+            // scroll window to beginning of the form
+            scrollToClass( $('#wrapper'), 20 );
+
+            if(nextStep) {
+                $(parentFieldset).children().find('button').attr('disabled', 'disabled');
+                $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
+                    // change icons
+                    currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
+                    // progress bar
+                    barProgress(progressLine, 'right');
+
+                    // show next step
+                    $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).fadeIn();
+                    $('#fieldset-'+(parseInt(currentFieldsetNumber)+1)).children().find('button').removeAttr('disabled');
+
+                    if(currentFieldsetNumber+1 === 2) {
+                        campaignMap.invalidateSize();
+                        if(drawnItems.getLayers().length > 0) {
+                            campaignMap.fitBounds(drawnItems.getBounds());
+                        } else {
+                            campaignMap.setView([0, 0], 2);
+                        }
+                    }
+    			});
+            }
+        });
+
+        $('.btn-prev').click(function(){
+            // navigation steps / progress steps
+    	    var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+    	    var progressLine = $(this).parents('.cc').find('.cc-progress-line');
+            var parentFieldset = $(this).parents('fieldset');
+    	    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
+
+            var currentStep = currentActiveStep.data('step');
+
+            if(currentStep === 1) return;
+
+            $('#fieldset-'+currentFieldsetNumber).fadeOut(400, function() {
+    	        $(parentFieldset).children().find('button').attr('disabled', 'disabled');
+                // change icons
+                currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active');
+                // progress bar
+                barProgress(progressLine, 'left');
+
+                // show previous step
+                $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).fadeIn();
+                $('#fieldset-'+(parseInt(currentFieldsetNumber)-1)).children().find('button').removeAttr('disabled');
+
+                // scroll window to beginning of the form
+                scrollToClass( $('#wrapper'), 20 );
+            });
+        });
+
         //------------------ EVENT ------------------//
+
+        function updated(response) {
+            $('#campaign-panel').show();
+            {% if action == 'create' %}
+                // Set default campaign manager
+                $('#campaign_managers').val(response.display_name);
+            {% endif %}
+        }
 
         function loginSuccess(response) {
             clearNotification();
-            $('#campaign-panel').show();
         }
 
         function logoutSuccess() {
@@ -160,6 +341,90 @@
             showNotifications('Failed to create a campaign!', 'danger');
         }
 
+        function checkSteps(step) {
+            if(step === 1) {
+                return checkStep1();
+            } else if(step === 2) {
+                return checkStep2();
+            }
+            return true;
+        }
+
+        function checkStep1() {
+            var valid = true;
+
+            var required_forms = $('#fieldset-1').find('.required-form');
+
+            $.each(required_forms, function (index, value) {
+                var input_form = $(value).find("[type=text]");
+                var radio_form = $(value).find("[type=radio]");
+                var select_form = $(value).find('select');
+
+                if(input_form.length > 0) {
+                    input_form.removeClass('error');
+
+                    input_form.click(function(){
+                        $(this).removeClass('error');
+                        $(this).attr('placeholder', '');
+                    });
+
+                    if(input_form.val() === '') {
+                        input_form.addClass('error');
+                        input_form.attr('placeholder', 'This field is required');
+                        valid = false;
+                    }
+                } else if(select_form.length > 0) {
+                    select_form.removeClass('error');
+
+                    select_form.click(function(){
+                        $(this).removeClass('error');
+                    });
+
+                    if(select_form.val().length === 0) {
+                        select_form.addClass('error');
+                        valid = false;
+                    }
+                } else if(radio_form.length > 0) {
+                    var radio_checked = false;
+                    for(var i=0; i<radio_form.length;i++) {
+                        if(!$(radio_form[i]).is(":checked")) {
+                            valid = false;
+                        } else {
+                            radio_checked = true;
+                            break;
+                        }
+                }
+                    var error = radio_form.parent().parent().find('.error-form');
+                    $(error).remove();
+                    if(!radio_checked){
+                        radio_form.parent().parent().prepend('<div class="error-form">This field is required</div>');
+                    }
+                }
+            });
+
+            return valid;
+        }
+
+        function checkStep2() {
+            var valid = true;
+            var mapErrorNotification = $('.map-wrapper').data('error');
+
+            clearNotification();
+
+            if(mapErrorNotification !== '') {
+                showNotifications(mapErrorNotification, 'danger');
+                valid = false;
+            }
+
+            // Check drawn item
+            if(drawnItems.getLayers().length === 0) {
+                showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
+                valid = false;
+            }
+
+            return valid;
+        }
+
         $(function () {
 
             $(document).tooltip({
@@ -167,8 +432,8 @@
                 container: "body"
             });
 
-            $("#submit").click(function () {
-                if (!$('#submit').hasClass('disabled')) {
+            $(".submit-button").click(function () {
+                if (!$('.submit-button').hasClass('disabled')) {
                     $("#campaign-form").submit();
                 }
             });
@@ -176,11 +441,6 @@
             $('#campaign-form input').addClass('form-control');
             $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
-
-            $('.error-form').parent().addClass('has-error');
-
-            $('#submit').removeClass('form-control');
-            $('#submit').addClass('btn btn-outline btn-success submit-button btn-lg btn-block');
 
             var $categoryLabels = $('.category-label');
             for (var i = 0; i < $categoryLabels.length; i++) {
@@ -195,6 +455,8 @@
                     addFunction($('#' + functions['category'] + '-add'), functions);
                 });
             }
+
+            $('.cc fieldset:first').fadeIn('slow');
 
         });
 
@@ -239,11 +501,26 @@
         });
 
         var campaignMap = L.map('campaign-map');
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
             'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 18
         }).addTo(campaignMap);
+
+        // Get user location
+        {% if action == 'create' %}
+            navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
+        {% endif %}
+
+        function successGetBrowserLocation(position) {
+            var zoom = 10;
+            var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
+            campaignMap.setView(userLocation, zoom);
+        }
+
+        function errorGetBrowserLocation() {
+            console.log('Error get browser location');
+        }
 
         $("#submit").click(function () {
             $("#form").submit();
@@ -298,12 +575,11 @@
             drawnItems.eachLayer(function (layer) {
                 totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
             });
-            console.log(totalAreaSize);
             if (totalAreaSize > maxAreaSize) {
                 showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
-                $("#submit").addClass('disabled');
+                $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
             } else {
-                $("#submit").removeClass('disabled');
+                $('.map-wrapper').data('error', '');
             }
         }
 

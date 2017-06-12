@@ -7,7 +7,9 @@ import shutil
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
-from campaign_manager.data_providers.shapefile_provider import ShapefileProvider
+from campaign_manager.data_providers.shapefile_provider import (
+    ShapefileProvider
+)
 
 
 class UploadCoverage(AbstractInsightsFunction):

@@ -32,11 +32,29 @@ def home():
 
     On this page a summary campaign manager view will shown.
     """
+
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET
     )
-    context['campaigns'] = Campaign.all()
+
+    # noinspection PyUnresolvedReferences
+    return render_template('index.html', **context)
+
+
+@campaign_manager.route('/all')
+def home_all():
+    """Home page view.
+
+    On this page a summary campaign manager view will shown with all campaigns.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        all=True
+    )
+
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 
@@ -47,13 +65,13 @@ def campaigns_with_tag(tag):
 
     On this page a summary campaign manager view will shown.
     """
+
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        tag=tag
     )
-    context['campaigns'] = Campaign.all(**{
-        'tags': tag
-    })
+
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 
@@ -108,7 +126,8 @@ def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
     from campaign_manager.models.campaign import Campaign
-    from campaign_manager.data_providers.shapefile_provider import ShapefileProvider
+    from campaign_manager.data_providers.shapefile_provider import \
+        ShapefileProvider
     # validate coverage
     try:
         # folder for this campaign
@@ -234,7 +253,9 @@ def upload_chunk(_file, filename):
     }))
 
 
-@campaign_manager.route('/campaign/<uuid>/coverage-upload-chunk', methods=['POST'])
+@campaign_manager.route(
+        '/campaign/<uuid>/coverage-upload-chunk',
+        methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -266,7 +287,9 @@ def campaign_coverage_upload_chunk(uuid):
         return Response('Campaign not found')
 
 
-@campaign_manager.route('/campaign/<uuid>/boundary-upload-chunk', methods=['POST'])
+@campaign_manager.route(
+        '/campaign/<uuid>/boundary-upload-chunk',
+        methods=['POST'])
 def campaign_boundary_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -321,14 +344,16 @@ def get_campaign(uuid):
         context['oauth_secret'] = OAUTH_SECRET
         context['geometry'] = json.dumps(campaign.geometry)
         context['campaigns'] = Campaign.all()
-        context['selected_functions'] = campaign.get_selected_functions_in_string()
+        context['selected_functions'] = \
+            campaign.get_selected_functions_in_string()
 
         # Calculate remaining day
         try:
             current = datetime.now()
             end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
             remaining = end_date - current
-            context['remaining_days'] = remaining.days if remaining.days > 0 else 0
+            context['remaining_days'] = remaining.days if \
+                remaining.days > 0 else 0
         except TypeError:
             context['remaining_days'] = '-'
 
@@ -421,7 +446,8 @@ def create_campaign():
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET
     )
-    context['action'] = '/campaign_manager/create'
+    context['url'] = '/campaign_manager/create'
+    context['action'] = 'create'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
@@ -451,7 +477,8 @@ def edit_campaign(uuid):
             form.tags.data = campaign.tags
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
-            form.selected_functions.data = json.dumps(campaign.selected_functions)
+            form.selected_functions.data = json.dumps(
+                    campaign.selected_functions)
             form.start_date.data = datetime.datetime.strptime(
                 campaign.start_date, '%Y-%m-%d')
             if campaign.end_date:
@@ -472,7 +499,8 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['action'] = '/campaign_manager/edit/%s' % uuid
+    context['url'] = '/campaign_manager/edit/%s' % uuid
+    context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
@@ -501,7 +529,10 @@ if __name__ == '__main__':
     if Config.DEBUG:
         campaign_manager.debug = True
         # set up flask to serve static content
-        campaign_manager.add_url_rule('/<path:path>', 'static_file', static_file)
+        campaign_manager.add_url_rule(
+                '/<path:path>',
+                'static_file',
+                static_file)
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()

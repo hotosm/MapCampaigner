@@ -33,12 +33,16 @@ class CampaignForm(FlaskForm):
             ('Finish', 'Finish')
         ]
     )
-    start_date = DateField(u'Start date of campaign')
-    end_date = DateField(u'End date of campaign')
+
+    start_date = DateField(
+            u'Start date of campaign')
+    end_date = DateField(
+            u'End date of campaign')
 
     campaign_managers = SelectMultipleField(
         u'Managers of campaign',
-        choices=[(user, user) for user in get_osm_user()])
+        choices=[(user, user) for user in get_osm_user()],
+        validators=[DataRequired('Campaign manager is needed')])
     tags = SelectMultipleField(
         u'Tags of campaign',
         choices=[(tag, tag) for tag in get_tags()])

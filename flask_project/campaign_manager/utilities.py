@@ -7,6 +7,7 @@ import time
 
 from reporter.osm import fetch_osm
 
+
 def module_path(*args):
     """Get an absolute path for a file that is relative to the root.
 
@@ -63,7 +64,7 @@ def load_osm_document_cached(file_path, url_path):
     :rtype: file
     """
     elapsed_seconds = 0
-    limit_seconds = 900 # 15 minutes
+    limit_seconds = 900  # 15 minutes
     if os.path.exists(file_path):
         current_time = time.time()  # in unix epoch
         file_time = os.path.getmtime(file_path)  # in unix epoch

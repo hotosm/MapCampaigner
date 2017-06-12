@@ -16,10 +16,10 @@
         </div>
         <div style="color: gray; font-style: italic; text-align: center; margin-bottom: 10px">Multiselect .dbf, .shp, .shx for minimum files.</div>
         <div class="btn-group" style="width: 100%">
-            <button class="add-file btn btn-outline btn-primary btn-lg">
+            <div class="add-file btn btn-outline btn-primary btn-lg">
                 <span>Add file(s)</span>
                 <input id="upload-button" name="file" type="file" class="upload" accept=".dbf,.prj,.qpj,.shp,.shx" multiple/>
-            </button>
+            </div>
             <button class="file-upload btn btn-outline btn-primary btn-lg">Upload</button>
         </div>
     </div>
@@ -81,6 +81,9 @@
         );
     }
     $(function () {
+        $('#coverage-upload').submit(function (e) {
+            e.preventDefault();
+        });
         $coverage.find(".file-upload").prop('disabled', true);
         $coverage.find("#upload-button").change(function () {
             $coverage.find(".file-indicator").html("");

@@ -117,7 +117,7 @@ def split_bbox(bbox):
 def split_polygon(polygon):
     """Split polygon array to string.
 
-    :param polygon: list of array describing polygon area e.g. 
+    :param polygon: list of array describing polygon area e.g.
     '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
     [29.168701171875004,-26.34265280938059]]
     :type polygon: list
@@ -127,7 +127,8 @@ def split_polygon(polygon):
     """
 
     if len(polygon) < 3:
-        raise ValueError('At least 3 lat/lon float value pairs must be provided')
+        raise ValueError(
+                'At least 3 lat/lon float value pairs must be provided')
 
     polygon_string = ''
 

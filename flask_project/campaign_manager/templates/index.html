@@ -1,103 +1,76 @@
 {% extends 'new_base.html' %}
 
-{% block title %} Home {% endblock %}
+{% block header_content %}
+        <div class="home-header">
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-home btn-lg btn-block">Participate</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info">
+                <span class="header-number" id="active-campaign-number">0</span>
+                <span class="header-number-text">active campaigns</span>
+            </div>
+
+            <div class="col-lg-1">
+                <span class="v-separator"></span>
+            </div>
+            <div class="col-lg-2 header-info crimson">
+                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
+            </div>
+
+        </div>
+{% endblock %}
 
 {% block content %}
 
-    <script type="text/javascript">
-        var allCampaignPosition = [];
-    </script>
-
     <div class="row">
-        <div class="col-lg-6">
-            <div class="panel panel-default">
+        <div class="col-lg-12">
+            <div class="panel panel-custom">
                 <div class="panel-heading">
-                    <i class="fa fa-map-o" aria-hidden="true"></i> Campaign Map
-                    <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body">
                     <div id="campaign-map"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-
-                <button id="create-campaign" type="button" class="btn btn-outline btn-primary btn-lg btn-block">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                    <span style="margin-left: 5px;">Create New Campaign</span>
-                </button>
-
-            <div class="panel panel-default" style="margin-top: 20px;">
-                <div class="panel-heading">
-                    <i class="fa fa-list-ul" aria-hidden="true"></i> Campaigns
                 </div>
                 <div id="panel-campaign">
                     <div class="panel-body">
+                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
+
+                    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
+                        <i class="fa fa-globe" aria-hidden="true"></i>
+                        <span style="margin-left: 5px;">All Campaigns</span>
+                    </button>
+
+                    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
+                        <i class="fa fa-globe" aria-hidden="true"></i>
+                        <span style="margin-left: 5px;">Nearest Campaigns</span>
+                    </button>
+
+
                     <table id="campaign-table">
                         <thead>
                             <tr>
                                 <th>
-                                    Name
+                                    NAME
                                 </th>
                                 <th>
-                                    Tags
+                                    TAGS
                                 </th>
                                 <th>
-                                    Action
+                                    PARTICIPANTS
+                                </th>
+                                <th>
+                                    ACTION
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for campaign in campaigns %}
-                                <tr>
-                                    <td>
-                                        <a href="campaign/{{ campaign.uuid }}">{{ campaign.name }}</a>
-                                    </td>
-                                    <td class="tag">
-                                        {% if campaign.tags %}
-                                            {% for tag in campaign.tags %}
-                                                <a href="/campaign_manager/tags/{{ tag }}">{{ tag }}</a>
-                                                {% if tag != campaign.tags[-1] %}
-                                                    ,
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <button type="button" href="#" class="btn btn-outline btn-info campaign-list campaign-list-disabled"
-                                           data-managers="{{ campaign.campaign_managers}}" data-uuid="{{ campaign.uuid }}">
-                                                <span class="pull-left">Manage</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <script type="text/javascript">
-                                    var geometry = {{ campaign.geometry | safe }};
-                                    geometry.features[0]['properties']['name'] = "{{ campaign.name }}";
-                                    geometry.features[0]['properties']['uuid'] = "{{ campaign.uuid }}";
-                                    allCampaignPosition.push(geometry);
-                                </script>
-                            {% endfor %}
                         </tbody>
                     </table>
                     </div>
@@ -114,7 +87,6 @@
 {% block before_base_js %}
 
     <style type="text/css">
-
 
         #campaign-table, #campaign-table_wrapper {
             font-size: 10pt;
@@ -151,44 +123,55 @@
             background-color: rgba(59, 132, 172, 0.13) !important;
         }
 
+        .label-tag {
+            font-size: 12pt;
+            position: absolute;
+            margin-left: 8px;
+            margin-top: 12px;
+        }
+
+        .label-tag a {
+            color: #bbb;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .label-tag a:hover {
+            opacity: 1.0
+        }
+
+        .label-tag .remove-tag {
+            vertical-align: bottom;
+            top: 0;
+        }
+
+        .label-tag a {
+            margin: 0 0 0 .3em;
+        }
+
+        .label-tag a .glyphicon-white {
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        #all-campaigns, #nearest-campaigns {
+            display: none;
+        }
+
     </style>
 
     <script type="text/javascript">
 
-        var map = L.map('campaign-map').setView([0, 0], 1);
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        var map = L.map('campaign-map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 15
         }).addTo(map);
 
-        L.geoJson(allCampaignPosition, {
-            onEachFeature: function (feature, layer) {
-                // Check if feature is a polygon
-                if (feature.geometry.type === 'Polygon') {
-                    // Don't stroke and do opaque fill
-                    layer.setStyle({
-                        'weight': 0.3,
-                        'fillOpacity': 0.3
-                    });
-                    // Get bounds of polygon
-                    var bounds = layer.getBounds();
-                    // Get center of bounds
-                    var center = bounds.getCenter();
-                    // Use center to put marker on map
-                    var marker = L.marker(center, {icon: orangeIcon}).addTo(map);
-                    marker.bindPopup(
-                        '<div class="campaign-marker"><a href="campaign/'+ feature['properties']['uuid'] +'"> ' +
-                        feature['properties']['name'] +
-                        '</a></div>'
-                    );
-                }
-            }
-        }).addTo(map);
-
         $('#create-campaign').click(function () {
             if (window.isAuthenticated) {
-                location.href='create';
+                location.href='/campaign_manager/create';
             } else {
                 showNotifications('You need to login first.', 'danger');
             }
@@ -202,46 +185,223 @@
 
     <script type="text/javascript">
 
-        $(function () {
-            $('#campaign-table').DataTable();
+        var table = $('#campaign-table').DataTable({
+            "lengthChange": false
+        });
+        $('.dataTables_filter').addClass('pull-left');
+        var userCoordinate = '';
+        var mapLayers = new L.FeatureGroup();
+        var mapMarkers = new L.FeatureGroup();
+        var tag = "{{ tag }}";
+        map.addLayer(mapMarkers);
+        map.addLayer(mapLayers);
+
+        //---------------- EVENT ------------------//
+        var homeHeaderTop = $('.home-header').offset().top;
+
+        $(window).scroll(function() {
+            var currentScroll = $(window).scrollTop();
+
+            if(currentScroll >= homeHeaderTop) {
+                $('.home-header').css({
+                    position: 'fixed',
+                    top: '0',
+                    width: '100%',
+                    'z-index': '9999'
+                })
+                $('#first-row').css({
+                    'margin-top':'78px'
+                });
+            } else {
+                $('.home-header').css({
+                    position: 'static'
+                })
+                $('#first-row').css({
+                    'margin-top':'0'
+                });
+            }
         });
 
         function updated(user) {
-
             var currentUser = user.display_name;
-            var $campaignListElement = $('#panel-campaign').children().find('.campaign-list-disabled');
+            var url = "/campaign_manager/campaigns";
+            userCoordinate = user['lat'] + ',' + user['lon'];
 
-            for(var i=0; i < $campaignListElement.length; i++) {
-
-                var $campaign = $($campaignListElement[i]);
-                var managers = JSON.parse($campaign.attr('data-managers').replace(/'/g, '"'));
-
-                if(containsObject(currentUser, managers)) {
-                    $campaign.show();
-                } else {
-                    $campaign.hide();
-                }
+            if(user['lon'] && user['lat']) {
+                url = "/campaign_manager/nearest_campaigns/" + user['lat'] + ',' + user['lon'];
             }
+            clearMap();
+            clearTable();
+            getCampaigns(url, currentUser);
+            {% if not all %}
+                $('#all-campaigns').show();
+            {% else %}
+                $('#nearest-campaigns').show();
+            {% endif %}
         }
+
+        $('.remove-tag').click(function () {
+            location.href='/campaign_manager'
+        })
+
+        $('#all-campaigns').click(function () {
+            location.href='/campaign_manager/all'
+        })
+
+        $('#nearest-campaigns').click(function () {
+            location.href='/campaign_manager'
+        })
 
         function logoutSuccess() {
-            var $campaignListElement = $('#panel-campaign').children().find('.campaign-list-disabled');
-            for(var i=0; i < $campaignListElement.length; i++) {
-                $($campaignListElement[i]).hide();
+            clearMap();
+            clearTable();
+            {% if all %}
+                location.href='/campaign_manager'
+            {% endif %}
+            $('#all-campaigns').hide();
+            $('#nearest-campaigns').hide();
+        }
+
+        if(!auth.authenticated()) {
+            {% if all %}
+                location.href='/campaign_manager'
+            {% endif %}
+            getBrowserLocation();
+        }
+
+        function loginError() {
+            getBrowserLocation();
+        }
+        
+        function clearMap() {
+            map.removeLayer(mapMarkers);
+            map.removeLayer(mapLayers);
+            mapLayers = new L.FeatureGroup();
+            mapMarkers = new L.FeatureGroup();
+            map.addLayer(mapMarkers);
+            map.addLayer(mapLayers);
+        }
+        
+        function clearTable() {
+            table.clear().draw('false');
+        }
+
+        function getBrowserLocation() {
+            // Get user location
+            navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
+
+            function successGetBrowserLocation(position) {
+                var zoom = 10;
+                var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
+                var url = "/campaign_manager/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
+                getCampaigns(url);
+                map.setView(userLocation, zoom);
+            }
+
+            function errorGetBrowserLocation() {
+                console.log('Error get browser location');
+                clearMap();
+                clearTable();
+                getCampaigns();
             }
         }
 
-        $('.campaign-list').click(function () {
-            location.href='edit/' + $(this).attr('data-uuid');
-        });
+        function getCampaigns(url, user) {
 
-        $('#panel-campaign .panel-body .panel-body').click(function(){
-            location.href='campaign/' + $(this).parent().attr('data-uuid');
-        });
+            $('#panel-campaign').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            if(!url) {
+                url = "/campaign_manager/campaigns";
+            }
+            {% if all %}
+                url = "/campaign_manager/campaigns";
+            {% endif %}
+            if(tag) {
+                url += '/'+tag;
+            }
 
-        $('#panel-campaign .panel-body .panel-heading').click(function(){
-            location.href='campaign/' + $(this).parent().attr('data-uuid');
-        });
+            // Clear campaign list in navbar
+            $('.campaign-list-navbar').html('');
+
+            var participants = [];
+
+            $.ajax(url, {
+                success: function(campaigns){
+                    $('#active-campaign-number').html(campaigns.length);
+                    $.each(campaigns, function (index, campaign) {
+                        var tags = '';
+                        var action_button = '';
+
+                        if(campaign['tags']) {
+                            $.each(campaign['tags'], function (index, tag) {
+                               tags += '<a href="/campaign_manager/tags/'+tag+'">' + tag + '</a>';
+                               if(index+1 < campaign['tags'].length) {
+                                   tags += ', ';
+                               }
+                            });
+                        }
+
+                        if($.inArray(user, campaign['campaign_managers'])>-1) {
+                            action_button = '<button type="button" href="#" class="campaign-list btn"'+
+                                                'onclick="location.href=\'/campaign_manager/edit/'+campaign['uuid']+'\'">'+
+                                                '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
+                                             '</button>'
+                        }
+
+                        $.each(campaign['campaign_managers'], function (index, manager) {
+                            if($.inArray(manager, participants)==-1) {
+                                participants.push(manager);
+                            }
+                        })
+
+                        table.row.add([
+                            '<span class="campaign-td"><a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
+                            '<span class="tag">'+tags+'</span>',
+                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
+                            action_button
+                        ]).draw( false );
+
+                        // Add to navigation bar
+                        $('.campaign-list-navbar').append('<li>'+
+                            '<a href="/campaign_manager/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
+                        '</li>');
+
+                        // Add campaign layer
+                        var campaignLayer = L.geoJson(campaign['geometry'], {
+                            onEachFeature: function (feature, layer) {
+                                // Check if feature is a polygon
+                                if (feature.geometry.type === 'Polygon') {
+                                    // Don't stroke and do opaque fill
+                                    layer.setStyle({
+                                        'weight': 0.3,
+                                        'fillOpacity': 0.5,
+                                        'color': '#FF5722'
+                                    });
+                                }
+                            }
+                        }).addTo(mapLayers);
+
+                        var bounds = campaignLayer.getBounds();
+                        var center = bounds.getCenter();
+
+                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                        marker.bindPopup(
+                            '<div class="campaign-marker"><a href="campaign/'+
+                                campaign['uuid'] +'"> ' +
+                                campaign['name'] +
+                            '</a></div>'
+                        );
+                    });
+
+                    $('#participants-number').html(participants.length);
+
+                    $('#panel-campaign').LoadingOverlay("hide");
+
+                    {% if all %}
+                        map.fitBounds(mapLayers.getBounds());
+                    {% endif %}
+                }
+            });
+        }
 
     </script>
 

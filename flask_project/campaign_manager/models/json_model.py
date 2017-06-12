@@ -20,7 +20,7 @@ class JsonModel(Version):
         """
         return [
             attr for attr in dir(self)
-            if not callable(getattr(self, attr)) and not attr.startswith("__")
+            if not callable(getattr(self, attr)) and not attr.startswith("_")
             ]
 
     def to_dict(self):

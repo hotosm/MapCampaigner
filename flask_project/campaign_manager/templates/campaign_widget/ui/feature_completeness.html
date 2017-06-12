@@ -6,32 +6,32 @@
     <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features</div>
     <table class="feature-list-table">
         <thead>
-            <tr>
-                <th>ID</th>
-                {% for key in data.attributes %}
-                    <th>{{ key }}</th>
-                {% endfor %}
-            </tr>
+        <tr>
+            <th>ID</th>
+            {% for key in data.attributes %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
         </thead>
         <tbody>
-            {% for row in data.data %}
-                {% if row['error'] %}
-                    <tr>
-                        <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
-                        {% for key in data.attributes %}
-                            {% if not row['tags'] %}
-                                <td>-</td>
-                            {% elif row['tags'][key] %}
-                                <td>{{ row['tags'][key] }}</td>
-                            {% elif row[key] %}
-                                <td>{{ row[key] }}</td>
-                            {% else %}
-                                <td>-</td>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endif %}
-            {% endfor %}
+        {% for row in data.data %}
+            {% if row['error'] %}
+                <tr>
+                    <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
+                    {% for key in data.attributes %}
+                        {% if not row['tags'] %}
+                            <td>-</td>
+                        {% elif row['tags'][key] %}
+                            <td>{{ row['tags'][key] }}</td>
+                        {% elif row[key] %}
+                            <td>{{ row[key] }}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
         </tbody>
     </table>
 </div>
@@ -54,7 +54,7 @@
         height: 10px;
     }
 
-    .progress-bar {
+    .progress-bar-wrapper .progress-bar {
         height: 10px;
         background-color: #AC3232;
         border-radius: 50px;
@@ -84,8 +84,11 @@
 
 </style>
 <script>
+    var function_id = "{{ function_id }}";
+    var $wrapper = $('#{{ function_id }}');
     $(document).ready(function () {
-        $('.feature-list-table').DataTable();
+        $wrapper.find('.feature-list-table').DataTable();
+        $wrapper.find('.dataTables_wrapper').show();
     });
     function see_completeness_details(event) {
         if (!$(event).closest(".completness").find(".dataTables_wrapper").is(":visible")) {
