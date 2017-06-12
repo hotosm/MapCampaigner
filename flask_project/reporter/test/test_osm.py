@@ -56,7 +56,7 @@ def mock_which(name, flags=os.X_OK):
 class OsmTestCase(unittest.TestCase):
     """Test the OSM retrieval functions."""
 
-    @mock.patch('reporter.osm.open', side_effect=mock_open)
+    @mock.patch('builtins.open', side_effect=mock_open)
     @mock.patch('reporter.osm.fetch_osm', side_effect=mock_load_osm_document)
     @mock.patch('os.path.getmtime', side_effect=mock_getmtime)
     def test_load_osm_document(self, mock_open_file, mock_fetch_osm, mock_get_mtime):
@@ -99,7 +99,7 @@ class OsmTestCase(unittest.TestCase):
         self.assertEqual(file_time, file_time2, message)
         LOGGER.info('....OK')
 
-    @mock.patch('reporter.osm.open', side_effect=mock_open)
+    @mock.patch('builtins.open', side_effect=mock_open)
     @mock.patch('reporter.osm.fetch_osm', side_effect=mock_load_osm_document)
     @mock.patch('os.path.getmtime', side_effect=mock_getmtime)
     def test_get_osm_file_with_date_range(self, mock_open_file, mock_fetch_osm, mock_get_mtime):
