@@ -7,7 +7,7 @@ import os
 
 import unittest
 from unittest import mock
-from reporter.utilities import LOGGER
+from reporter.utilities import LOGGER, which
 from reporter.osm import (
     load_osm_document,
     import_and_extract_shapefile,
@@ -45,7 +45,15 @@ def mock_getmtime(file_path):
     return None
 
 
-class OsmTestCase(LoggedTestCase):
+def mock_which(name, flags=os.X_OK):
+
+    if(name):
+        result = ['found1', 'found2']
+
+    return result
+
+
+class OsmTestCase(unittest.TestCase):
     """Test the OSM retrieval functions."""
 
     @mock.patch('reporter.osm.open', side_effect=mock_open)
@@ -73,9 +81,9 @@ class OsmTestCase(LoggedTestCase):
             message = 'load_osm_document from overpass failed %s' % url
             LOGGER.exception(message)
             raise
-        #string = file_handle.read().decode('utf-8')
+        # string = file_handle.read().decode('utf-8')
         LOGGER.info('Checking that Jacoline is in the returned document...')
-        #self.assertIn('Jacoline', file_handle)
+        # self.assertIn('Jacoline', file_handle)
         self.assertIsNotNone(file_handle)
         self.assertEquals(file_handle, 'success')
         LOGGER.info('....OK')
@@ -96,9 +104,7 @@ class OsmTestCase(LoggedTestCase):
     @mock.patch('os.path.getmtime', side_effect=mock_getmtime)
     def test_get_osm_file_with_date_range(self, mock_open_file, mock_fetch_osm, mock_get_mtime):
         """Check that we can get osm file with date range as query"""
-        #
-        # NOTE - INTERNET CONNECTION NEEDED FOR THIS TEST
-        #
+
         url = (
             'http://overpass-api.de/api/interpreter?data='
             '[diff:"2012-09-14T15:00:00Z","2015-09-21T15:00:00Z"];'
@@ -117,9 +123,9 @@ class OsmTestCase(LoggedTestCase):
             message = 'load_osm_document from overpass failed %s' % url
             LOGGER.exception(message)
             raise
-        #string = file_handle.read().decode('utf-8')
+        # string = file_handle.read().decode('utf-8')
         LOGGER.info('Checking that Jacoline is in the returned document...')
-        #self.assertIn('Jacoline', string)
+        # self.assertIn('Jacoline', string)
         self.assertIsNotNone(file_handle)
         self.assertEquals(file_handle, 'success with date')
         file_time = os.path.getmtime(file_path)
@@ -133,10 +139,11 @@ class OsmTestCase(LoggedTestCase):
         self.assertEqual(file_time, file_time2, message)
         LOGGER.info('....OK')
 
-    # def test_import_and_extract_shapefile(self):
-    #     """Test the roads to shp converter."""
-    #     zip_path = import_and_extract_shapefile('buildings', FIXTURE_PATH)
-    #     self.assertTrue(os.path.exists(zip_path), zip_path)
+    @mock.patch('reporter.osm.which', side_effect=mock_which)
+    def test_import_and_extract_shapefile(self, mock):
+        """Test the roads to shp converter."""
+        zip_path = import_and_extract_shapefile('buildings', FIXTURE_PATH)
+        self.assertTrue(os.path.exists(zip_path), zip_path)
 
     def test_check_string(self):
         """Test that we can validate for bad strings."""
