@@ -53,7 +53,7 @@ def mock_which(name, flags=os.X_OK):
     return result
 
 
-class OsmTestCase(unittest.TestCase):
+class OsmTestCase(LoggedTestCase):
     """Test the OSM retrieval functions."""
 
     @mock.patch('builtins.open', side_effect=mock_open)
