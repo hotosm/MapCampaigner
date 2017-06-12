@@ -54,7 +54,7 @@ class TestPep8(unittest.TestCase):
             default_number_lines = 5
 
         # make pep8 produces some extra lines by default.
-        lines = len(output.splitlines()) - default_number_lines
+        lines = len(output.splitlines())
         print(output)
         message = (
             'Hey mate, go back to your keyboard :) (expected %s, got %s '
