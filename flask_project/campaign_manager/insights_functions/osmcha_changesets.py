@@ -63,8 +63,11 @@ class OsmchaChangesets(AbstractInsightsFunction):
             input_bbox.append(bbox[3])
             input_bbox.append(bbox[1])
 
+        start_date = self.campaign.start_date
+        end_date = self.campaign.end_date
         return OsmchaChangesetProvider().get_data(
-            input_bbox, self.current_page)
+            input_bbox, self.current_page,
+            start_date=start_date, end_date=end_date)
 
     def process_data(self, raw_datas):
         """ Process data from raw.
@@ -88,12 +91,12 @@ class OsmchaChangesets(AbstractInsightsFunction):
             if properties['check_date']:
                 check_date = datetime.strptime(
                     properties['check_date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%B %d, %Y, %H:%M"),
+                    "%Y-%m-%d %H:%M"),
             clean_data.append({
                 'ID': properties['uid'],
                 'Date': datetime.strptime(
                     properties['date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%B %d, %Y, %H:%M"),
+                    "%Y-%m-%d %H:%M"),
                 'User': properties['user'],
                 'Comment': properties['comment'],
                 'Count': {
