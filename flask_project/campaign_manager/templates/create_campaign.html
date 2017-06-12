@@ -91,10 +91,25 @@
                                 </div>
                                 <div class="row" style="margin-bottom: -12px;">
                                     <div class="col-lg-6">
-                                        <div class="form-group required-form">
+                                        <div class="form-group">
                                             <label for="campaign_managers">Managers of campaign</label>
-                                            {{ form.campaign_managers }}
-                                            <p class="help-block"></p>
+                                            <div class="error-form error-managers" style="display: none">This field is required</div>
+                                            <div id="managers-list">
+                                            </div>
+                                            <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;">
+                                            <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
+                                            <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+                                            <br/>
+                                            <br/>
+                                            <div id="users-not-found" style="display: none">
+                                                No users found.
+                                            </div>
+                                            <div id="users-found" style="display: none">
+                                                <p>Select osm users</p>
+                                                <select id="list-osm-users" multiple class="form-control"></select>
+                                                <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to managers</button>
+                                            </div>
+                                            <p class="helock"></p>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
@@ -218,7 +233,96 @@
 
     <script type="text/javascript">
 
+        //------------------ CAMPAIGN MANAGERS ------------------//
+        var managers_list = [];
+        {% if form.campaign_managers.data %}
+            managers_list = {{ form.campaign_managers.data | safe }};
+        {% endif %}
+
+        $(function() {
+            if(managers_list.length > 0) {
+                $.each(managers_list, function (index, value) {
+                    $('#managers-list').append(
+                        '<span class="manager">'+ value +
+                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+value+'\')" aria-hidden="true"></i></span>'
+                    )
+                })
+            }
+        });
+
+        function removeManager(e, manager) {
+            var index = managers_list.indexOf(manager);
+            if(index > -1) {
+                managers_list.splice(index, 1);
+            }
+            $(e).parent().remove();
+        }
+
+        $("#add-to-managers").click(function(){
+            var listOsmUsers = [];
+            $('#list-osm-users :selected').each(function(i, selected){
+                listOsmUsers[i] = $(selected).text();
+            });
+
+            $('.error-managers').hide();
+
+            for(var i=0; i<listOsmUsers.length; i++) {
+                if($.inArray(listOsmUsers[i], managers_list) === -1) {
+                    managers_list.push(listOsmUsers[i]);
+                    $('#managers-list').append(
+                        '<span class="manager">'+ listOsmUsers[i] +
+                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+listOsmUsers[i]+'\')" aria-hidden="true"></i></span>'
+                    )
+                }
+            }
+
+        });
+
+        $("#search-osm-user-button").click(function(){
+            searchOsmUser();
+        });
+
+        $('#search-osm-user-text').keypress(function (e) {
+            if (e.which === 13) {
+                searchOsmUser();
+            }
+        });
+
+        function searchOsmUser() {
+            var textInput = $('#search-osm-user-text').val();
+            var url = '/campaign_manager/search_osm/'+textInput;
+            var $searchOsmButton = $('#search-osm-user-button');
+            $searchOsmButton.attr('disabled', 'disabled');
+            $searchOsmButton.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $('#users-not-found').hide();
+            $('#users-found').hide();
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $searchOsmButton.removeAttr('disabled');
+                    $searchOsmButton.LoadingOverlay("hide");
+                    $('#list-osm-users').html('');
+                    var dataObj = JSON.parse(data);
+
+                    if(dataObj.length>0) {
+                        $('#users-found').show("slow");
+                    } else {
+                        $('#users-not-found').show("slow");
+                    }
+
+                    $.each(dataObj, function (index, value) {
+                        $('#list-osm-users').append($('<option/>', {
+                            value: value,
+                            text : value
+                        }));
+                    });
+                }
+            });
+        }
+
+
         //------------------ BUTTONS ------------------//
+
         function scrollToClass(element_class, removed_height) {
             var scrollTo = $(element_class).offset().top - removed_height;
             if($(window).scrollTop() !== scrollTo) {
@@ -313,8 +417,11 @@
         function updated(response) {
             $('#campaign-panel').show();
             {% if action == 'create' %}
-                // Set default campaign manager
-                $('#campaign_managers').val(response.display_name);
+                managers_list.push(response.display_name);
+                $('#managers-list').append(
+                    '<span class="manager">'+ response.display_name +
+                    '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+response.display_name+'\')" aria-hidden="true"></i></span>'
+                );
             {% endif %}
         }
 
@@ -360,47 +467,52 @@
                 var radio_form = $(value).find("[type=radio]");
                 var select_form = $(value).find('select');
 
-                if(input_form.length > 0) {
+                if (input_form.length > 0) {
                     input_form.removeClass('error');
 
-                    input_form.click(function(){
+                    input_form.click(function () {
                         $(this).removeClass('error');
                         $(this).attr('placeholder', '');
                     });
 
-                    if(input_form.val() === '') {
+                    if (input_form.val() === '') {
                         input_form.addClass('error');
                         input_form.attr('placeholder', 'This field is required');
                         valid = false;
                     }
-                } else if(select_form.length > 0) {
+                } else if (select_form.length > 0) {
                     select_form.removeClass('error');
 
-                    select_form.click(function(){
+                    select_form.click(function () {
                         $(this).removeClass('error');
                     });
 
-                    if(select_form.val().length === 0) {
+                    if (select_form.val().length === 0) {
                         select_form.addClass('error');
                         valid = false;
                     }
-                } else if(radio_form.length > 0) {
+                } else if (radio_form.length > 0) {
                     var radio_checked = false;
-                    for(var i=0; i<radio_form.length;i++) {
-                        if(!$(radio_form[i]).is(":checked")) {
+                    for (var i = 0; i < radio_form.length; i++) {
+                        if (!$(radio_form[i]).is(":checked")) {
                             valid = false;
                         } else {
                             radio_checked = true;
                             break;
                         }
-                }
+                    }
                     var error = radio_form.parent().parent().find('.error-form');
                     $(error).remove();
-                    if(!radio_checked){
+                    if (!radio_checked) {
                         radio_form.parent().parent().prepend('<div class="error-form">This field is required</div>');
                     }
                 }
             });
+
+            if (managers_list.length === 0) {
+                valid = false;
+                $('.error-managers').show();
+            }
 
             return valid;
         }
@@ -487,6 +599,11 @@
 
         $("#campaign-form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
+
+            $.each(managers_list, function (index, value) {
+                $('#campaign_managers').append('<option selected="selected" value="'+value+'">'+value+'</option>')
+            });
+
             if (!auth.authenticated() || !$("#uploader").val()) {
                 window.location.replace("/campaign_manager/not-logged-in.html");
             }

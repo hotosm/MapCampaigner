@@ -153,9 +153,33 @@
 }
 
 .error-form {
+    color: #ac3232 !important;
     margin-top: 2px;
 }
 
 #description {
     height: 200px;
+}
+
+#managers-list {
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.manager {
+    height: 150px !important;
+    padding: 5px 15px;
+    border-radius: 6px;
+    margin-right: 5px;
+    background-color: #dedede;
+}
+
+.remove-manager {
+    padding-left: 8px;
+    color: #ac3232;
+}
+
+.remove-manager:hover {
+    color: #dc3939;
+    cursor: pointer;
 }

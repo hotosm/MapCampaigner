@@ -15,6 +15,13 @@ from wtforms.validators import DataRequired, Optional
 from campaign_manager.utilities import get_osm_user, get_tags
 
 
+class ManagerSelectMultipleField(SelectMultipleField):
+
+    def pre_validate(self, form):
+        if self.data:
+            return True
+
+
 class CampaignForm(FlaskForm):
     name = StringField(
         u'Campaign name',
@@ -38,9 +45,8 @@ class CampaignForm(FlaskForm):
     end_date = DateField(
             u'End date of campaign')
 
-    campaign_managers = SelectMultipleField(
+    campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',
-        choices=[(user, user) for user in get_osm_user()],
         validators=[DataRequired('Campaign manager is needed')])
     tags = SelectMultipleField(
         u'Tags of campaign',

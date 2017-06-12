@@ -19,7 +19,7 @@ from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
-from urllib import request
+from urllib import request as urllibrequest
 
 
 try:
@@ -525,7 +525,7 @@ def get_osm_names(query_name):
     found_exact = False
 
     try:
-        whosthat_response = request.urlopen(whosthat_url)
+        whosthat_response = urllibrequest.urlopen(whosthat_url)
         whosthat_data = json.loads(whosthat_response.read())
     except (HTTPError, URLError):
         print("connection error")
@@ -542,7 +542,7 @@ def get_osm_names(query_name):
         osm_url = 'https://www.openstreetmap.org/user/' + \
                   query_name.replace(" ", "%20")
         try:
-            osm_response = request.urlopen(osm_url)
+            osm_response = urllibrequest.urlopen(osm_url)
         except (HTTPError, URLError):
             print("connection error")
 
