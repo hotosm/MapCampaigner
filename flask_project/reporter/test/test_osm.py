@@ -5,9 +5,8 @@
 """
 import os
 
-import unittest
 from unittest import mock
-from reporter.utilities import LOGGER, which
+from reporter.utilities import LOGGER
 from reporter.osm import (
     load_osm_document,
     import_and_extract_shapefile,
@@ -53,7 +52,7 @@ def mock_which(name, flags=os.X_OK):
     return result
 
 
-class OsmTestCase(unittest.TestCase):
+class OsmTestCase(LoggedTestCase):
     """Test the OSM retrieval functions."""
 
     @mock.patch('reporter.osm.open', side_effect=mock_open)
