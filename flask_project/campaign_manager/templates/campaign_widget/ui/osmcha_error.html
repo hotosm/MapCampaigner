@@ -19,9 +19,9 @@
                         {% elif key == 'User' %}
                             <a href='https://osmcha.mapbox.com/?usernames={{ value }}'>{{ value }}</a>
                         {% elif key == 'Count' %}
-                            <span class='label label-success'>{{ value.success }}</span>
-                            <span class='label label-warning'>{{ value.warning }}</span>
-                            <span class='label label-danger'>{{ value.danger }}</span>
+                            <span class='label label-success'>{{ value.create }}</span>
+                            <span class='label label-warning'>{{ value.modify }}</span>
+                            <span class='label label-danger'>{{ value.delete }}</span>
                         {% elif key == 'Verified' %}
                             {% if value.status %}
                                 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>

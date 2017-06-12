@@ -1,15 +1,16 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
+from datetime import datetime
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
-from campaign_manager.data_providers.osmcha_provider import OsmchaProvider
+from campaign_manager.data_providers.osmcha_changeset_provider import OsmchaChangesetProvider
 
 
-class OsmchaError(AbstractInsightsFunction):
-    function_name = "Showing osmcha error"
+class OsmchaChangesets(AbstractInsightsFunction):
+    function_name = "Showing osmcha changesets"
     category = ['error']
     icon = 'list'
 
@@ -62,7 +63,7 @@ class OsmchaError(AbstractInsightsFunction):
             input_bbox.append(bbox[3])
             input_bbox.append(bbox[1])
 
-        return OsmchaProvider().get_data(
+        return OsmchaChangesetProvider().get_data(
             input_bbox, self.current_page)
 
     def process_data(self, raw_datas):
@@ -74,4 +75,38 @@ class OsmchaError(AbstractInsightsFunction):
         :rtype: dict
         """
         raw_datas['uuid'] = self.campaign.uuid
+        raw_datas['headers'] = [
+            'uid', 'date', 'user', 'comment', 'count', 'reasons',
+            'checked', 'check_date'
+        ]
+
+        data = raw_datas['data']['features']
+        clean_data = []
+        for row in data:
+            properties = row['properties']
+            check_date = None
+            if properties['check_date']:
+                check_date = datetime.strptime(
+                    properties['check_date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
+                    "%B %d, %Y, %H:%M"),
+            clean_data.append({
+                'ID': properties['uid'],
+                'Date': datetime.strptime(
+                    properties['date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
+                    "%B %d, %Y, %H:%M"),
+                'User': properties['user'],
+                'Comment': properties['comment'],
+                'Count': {
+                    'create': properties['create'],
+                    'modify': properties['modify'],
+                    'delete': properties['delete'],
+                },
+                'Reasons': ', '.join(
+                    [comment['name'] for comment in properties['reasons']]),
+                "Suspected": properties['is_suspect'],
+                "Harmful": properties['harmful'],
+                "Checked": properties['checked'],
+                "Check date": check_date,
+            })
+        raw_datas['data'] = clean_data
         return raw_datas

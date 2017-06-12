@@ -78,14 +78,17 @@ class Campaign(JsonModel):
         :rtype: str
         """
         for key, value in self.selected_functions.items():
-            SelectedFunction = getattr(
-                insights_functions, value['function'])
-            selected_function = SelectedFunction(
+            try:
+                SelectedFunction = getattr(
+                    insights_functions, value['function'])
+                selected_function = SelectedFunction(
                     self,
                     feature=value['feature'],
                     required_attributes=value['attributes'])
-            value['manager_only'] = selected_function.manager_only
-            value['name'] = selected_function.name()
+                value['manager_only'] = selected_function.manager_only
+                value['name'] = selected_function.name()
+            except AttributeError:
+                value = None
         return json.dumps(self.selected_functions).replace('None', 'null')
 
     def parse_json_file(self):
@@ -308,7 +311,7 @@ class Campaign(JsonModel):
         """
         campaigns = []
         point = shapely_geometry.Point(
-                [float(x) for x in coordinate.split(',')])
+            [float(x) for x in coordinate.split(',')])
         distance = 3
         circle_buffer = point.buffer(distance)
 
@@ -318,7 +321,7 @@ class Campaign(JsonModel):
                     campaign = Campaign.get(os.path.splitext(file)[0])
                     #
                     polygon = shapely_geometry.Polygon(
-                            campaign.corrected_coordinates())
+                        campaign.corrected_coordinates())
                     if circle_buffer.contains(polygon):
                         campaign_dict = campaign.to_dict()
                         allowed = True
