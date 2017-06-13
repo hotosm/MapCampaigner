@@ -11,12 +11,17 @@ from campaign_manager.data_providers._abstract_data_provider import (
 )
 
 
-class OsmchaChangesetProvider(AbstractDataProvider):
+class AbstractOsmchaProvider(AbstractDataProvider):
     """Data from osmcha"""
     limit_per_page = 15
-    osmcha_api_url = (
-        Config().OSMCHA_API + 'changesets/'
-    )
+
+    def get_api_url(self):
+        """ Return url of osmcha
+
+        :return: url
+        :rtype:str
+        """
+        raise NotImplementedError()
 
     def get_data(self, geometry, page=1, start_date='', end_date=''):
         """Get data from osmcha.
@@ -47,10 +52,11 @@ class OsmchaChangesetProvider(AbstractDataProvider):
                 'date__lte': end_date
             }
             request = requests.get(
-                self.osmcha_api_url,
+                self.get_api_url(),
                 params=payload,
                 timeout=60,
             )
+            print(request.url)
             data = request.json()
         except HTTPError as e:
             raise e

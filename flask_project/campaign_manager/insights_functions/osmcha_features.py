@@ -1,5 +1,5 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '17/05/17'
+__date__ = '13/06/17'
 
 from app_config import Config
 from datetime import datetime
@@ -7,11 +7,11 @@ from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
-from campaign_manager.data_providers.osmcha_changesets_provider import OsmchaChangesetsProvider
+from campaign_manager.data_providers.osmcha_features_provider import OsmchaFeaturesProvider
 
 
-class OsmchaChangesets(AbstractInsightsFunction):
-    function_name = "Showing osmcha changesets"
+class OsmchaFeatures(AbstractInsightsFunction):
+    function_name = "Showing osmcha features"
     category = ['error']
     icon = 'list'
 
@@ -35,7 +35,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
         :return: string name of html
         :rtype: str
         """
-        return "osmcha_changesets"
+        return "osmcha_features"
 
     def get_summary_html_file(self):
         """ Get summary name in templates
@@ -59,7 +59,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
         geometry = self.campaign.geometry
         start_date = self.campaign.start_date
         end_date = self.campaign.end_date
-        return OsmchaChangesetsProvider().get_data(
+        return OsmchaFeaturesProvider().get_data(
             geometry, self.current_page,
             start_date=start_date, end_date=end_date)
 
@@ -73,38 +73,23 @@ class OsmchaChangesets(AbstractInsightsFunction):
         """
         raw_datas['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
         raw_datas['uuid'] = self.campaign.uuid
-        raw_datas['headers'] = [
-            'uid', 'date', 'user', 'comment', 'count', 'reasons',
-            'checked', 'check_date'
-        ]
 
         data = raw_datas['data']['features']
         clean_data = []
         for row in data:
             properties = row['properties']
-            check_date = None
-            if properties['check_date']:
-                check_date = datetime.strptime(
-                    properties['check_date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%Y-%m-%d %H:%M"),
             clean_data.append({
-                'ID': properties['uid'],
+                'ID': {
+                    'osm_id': properties['osm_id'],
+                    'osm_link': properties['osm_link'],
+                },
                 'Date': datetime.strptime(
                     properties['date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
                     "%Y-%m-%d %H:%M"),
-                'User': properties['user'],
+                'Changeset': properties['changeset'],
                 'Comment': properties['comment'],
-                'Count': {
-                    'create': properties['create'],
-                    'modify': properties['modify'],
-                    'delete': properties['delete'],
-                },
                 'Reasons': ', '.join(
                     [comment['name'] for comment in properties['reasons']]),
-                "Suspected": properties['is_suspect'],
-                "Harmful": properties['harmful'],
-                "Checked": properties['checked'],
-                "Check date": check_date,
             })
         raw_datas['data'] = clean_data
         return raw_datas

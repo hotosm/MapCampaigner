@@ -5,3 +5,4 @@ from .count_feature import CountFeature
 from .feature_attribute_completeness import FeatureAttributeCompleteness
 from .upload_coverage import UploadCoverage
 from .osmcha_changesets import OsmchaChangesets
+from .osmcha_features import OsmchaFeatures
