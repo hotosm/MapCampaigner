@@ -75,3 +75,33 @@ def load_osm_document_cached(file_path, url_path):
         fetch_osm(file_path, url_path)
     file_handle = open(file_path, 'rb')
     return file_handle
+
+
+def multi_feature_to_polygon(geojson):
+    """ Convert multi features to be multipolygon
+    as single geometry.
+
+    :param geojson: Geojson that
+    :type geojson: dict
+
+    :return: Nice geojson with multipolygon
+    :rtype:dict
+    """
+    single_feature = {
+        'type': 'MultiPolygon',
+        'coordinates': []
+    }
+    for feature in geojson['features']:
+        if feature['geometry']['type'] == "MultiPolygon":
+            for coordinate in feature['geometry']['coordinates']:
+                single_feature['coordinates'].append(coordinate)
+        else:
+            single_feature['coordinates'].append(
+                feature['geometry']['coordinates']
+            )
+
+    geojson['features'] = [{
+        "type": "Feature", "properties": {},
+        "geometry": single_feature
+    }]
+    return geojson

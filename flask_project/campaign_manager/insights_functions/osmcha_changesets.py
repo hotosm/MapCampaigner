@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
+from app_config import Config
 from datetime import datetime
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -34,7 +35,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
         :return: string name of html
         :rtype: str
         """
-        return "osmcha_error"
+        return "osmcha_changeset"
 
     def get_summary_html_file(self):
         """ Get summary name in templates
@@ -55,18 +56,11 @@ class OsmchaChangesets(AbstractInsightsFunction):
         :return: data from provider
         :rtype: dict
         """
-        bbox = self.campaign.get_bbox()
-        input_bbox = []
-        if bbox:
-            input_bbox.append(bbox[2])
-            input_bbox.append(bbox[0])
-            input_bbox.append(bbox[3])
-            input_bbox.append(bbox[1])
-
+        geometry = self.campaign.geometry
         start_date = self.campaign.start_date
         end_date = self.campaign.end_date
         return OsmchaChangesetProvider().get_data(
-            input_bbox, self.current_page,
+            geometry, self.current_page,
             start_date=start_date, end_date=end_date)
 
     def process_data(self, raw_datas):
@@ -77,6 +71,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
         :return: processed data
         :rtype: dict
         """
+        raw_datas['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
         raw_datas['uuid'] = self.campaign.uuid
         raw_datas['headers'] = [
             'uid', 'date', 'user', 'comment', 'count', 'reasons',
