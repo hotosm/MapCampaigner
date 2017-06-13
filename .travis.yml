@@ -51,6 +51,7 @@ install:
 before_script:
 
 script:
+  - flake8 --config .flake8 flask_project
   - nosetests flask_project
 
 after_script:
