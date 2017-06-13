@@ -27,6 +27,13 @@ TAG_MAPPING = {
     'flood_prone': 'flood-prone'
 }
 
+TAG_MAPPING_REVERSE = {
+    'roads': 'highway',
+    'buildings': 'building',
+    'evacuation-centers': 'evacuation_center',
+    'flood-prone': 'flood_prone'
+}
+
 POTENTIAL_IDP_OVERPASS_QUERY = (
     '('
     # Amenity school

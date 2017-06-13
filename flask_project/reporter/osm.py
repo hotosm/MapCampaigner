@@ -18,7 +18,7 @@ from shutil import copyfile
 from reporter.utilities import temp_dir, unique_filename, zip_shp, which
 from reporter import config
 from reporter import LOGGER
-from reporter.queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP
+from reporter.queries import SQL_QUERY_MAP, OVERPASS_QUERY_MAP, OVERPASS_QUERY_MAP_POLYGON
 from reporter.utilities import (
     shapefile_resource_base_path,
     overpass_resource_base_path,
@@ -41,7 +41,8 @@ def get_osm_file(
         feature='all',
         overpass_verbosity='body',
         date_from=None,
-        date_to=None):
+        date_to=None,
+        use_polygon=False):
     """Fetch an osm file given a bounding box using the overpass API.
 
     :param coordinates: Coordinates as a list in the form:
@@ -60,6 +61,9 @@ def get_osm_file(
 
     :param date_to: Second date for date range.
     :type date_to: str
+    
+    :param use_polygon: Flag if coordinates is polygon or bbox
+    :type use_polygon: bool
 
     :returns: A file which has been opened on the retrieved OSM dataset.
     :rtype: file
@@ -91,9 +95,15 @@ def get_osm_file(
     Equivalent url (http encoded)::
     """
     server_url = 'http://overpass-api.de/api/interpreter?data='
-    parameters = coordinates
+    parameters = dict()
     parameters['print_mode'] = overpass_verbosity
-    query = OVERPASS_QUERY_MAP[feature].format(**parameters)
+
+    if use_polygon:
+        parameters['polygon'] = coordinates
+        query = OVERPASS_QUERY_MAP_POLYGON[feature].format(**parameters)
+    else:
+        parameters.update(coordinates)
+        query = OVERPASS_QUERY_MAP[feature].format(**parameters)
 
     if date_from and date_to:
         try:

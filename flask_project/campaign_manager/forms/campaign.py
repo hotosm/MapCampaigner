@@ -40,6 +40,7 @@ class CampaignForm(FlaskForm):
             ('Finish', 'Finish')
         ]
     )
+
     start_date = DateField(
             u'Start date of campaign')
     end_date = DateField(

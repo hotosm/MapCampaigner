@@ -1,0 +1,100 @@
+<div class="row">
+    <div class="col-lg-5">
+        <canvas id="average-engagement" style="width: 100%; "></canvas>
+    </div>
+    <div class="col-lg-6 overview-container">
+
+        {% for entry in data %}
+            <canvas id="overview{{ loop.index }}" style="width: 100%; height: 200px;"></canvas>
+            Total Ways <span class="label label-primary">{{ entry.ways }}</span>
+            <hr/>
+        {% endfor %}
+    </div>
+</div>
+
+<style type="text/css">
+    .overview-container {
+        height: 620px;
+        overflow:auto;
+        border:1px solid #ddd;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+        $.fn.dataTable.moment( 'DD-MM-YYYY' );
+
+        var chartData = {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 0
+            }]
+        };
+
+        {% for entry in data %}
+            chartData['labels'].push("{{ entry.name }}");
+            chartData['datasets'][0]['data'].push({{ entry.ways }});
+            chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
+        {% endfor %}
+
+        var ctx = document.getElementById("average-engagement").getContext('2d');
+        var averageChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {}
+        });
+
+        // User timeline charts
+        {% for entry in data %}
+            var d{{ loop.index }} = {{ entry.timeline|safe }};
+            var chartData{{ loop.index }} = {
+                labels: [],
+                datasets: [{
+                    label: "{{ entry.name }}",
+                    backgroundColor: '#' + intToRGB(hashCode("{{ entry.name }}")),
+                    data: []
+                }]
+            };
+            var values = [];
+            for (i=0; i < d{{ loop.index }}.length; i++)
+            {
+                var pair = d{{ loop.index }}[i];
+                var dateString = pair[0];
+                var date = moment.utc(dateString, "YYYY-MM-DD");
+                pair[0] = date.valueOf();
+                d{{ loop.index }}[i] = pair;
+
+                chartData{{ loop.index }}.labels.push(date.format('DD/MM'));
+                chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
+
+                if(d{{ loop.index }}.length === 1) {
+
+                    chartData{{ loop.index }}.labels.push(date.format('DD/MM'));
+                    chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
+
+                    var previousDate = date.subtract(1, "days");
+                    chartData{{ loop.index }}.labels[0] = previousDate.format('DD/MM');
+                    chartData{{ loop.index }}.datasets[0].data[0] = 0;
+
+                    var nextDate = date.add(2, "days");
+                    chartData{{ loop.index }}.labels.push(nextDate.format('DD/MM'));
+                    chartData{{ loop.index }}.datasets[0].data.push(0);
+
+                    break;
+                }
+            }
+
+            console.log(chartData{{ loop.index }});
+
+            var ctx{{ loop.index }} = document.getElementById("overview{{ loop.index }}").getContext('2d');
+            var overview{{ loop.index }} = new Chart(ctx{{ loop.index }}, {
+                type: 'line',
+                data: chartData{{ loop.index }},
+                options: {}
+            });
+
+        {% endfor %}
+    });
+</script>
