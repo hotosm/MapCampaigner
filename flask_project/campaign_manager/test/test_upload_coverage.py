@@ -74,7 +74,8 @@ class UploadCoverageTestCase(unittest.TestCase):
              'last_uploaded': '2017-06-06', 'geojson': '{}'}
         self.assertIsNotNone(post_output)
         self.assertEquals(post_output['uuid'], self.campaign.uuid)
-        self.assertEquals(sorted(post_output['files']), sorted(expected_output_files))
+        self.assertEquals(
+            sorted(post_output['files']), sorted(expected_output_files))
         self.assertEquals(post_output['coverage'], expected_coverage)
 
     def test_compare_shapefile(self):
