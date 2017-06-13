@@ -51,7 +51,9 @@ install:
 before_script:
 
 script:
+  - cd deployment
   - make pep8
+  - cd ..
   - nosetests flask_project
 
 after_script:
