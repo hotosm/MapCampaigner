@@ -18,11 +18,11 @@ class TestPep8(unittest.TestCase):
 
     def test_pep8(self):
         """Test if the code is PEP8 compliant."""
-        if os.environ.get('ON_TRAVIS', False):
+        if os.environ.get('ON_TRAVIS', 'false') == 'true':
             root = './'
             command = ['make', 'pep8']
             output = Popen(command, stdout=PIPE, cwd=root).communicate()[0]
-            default_number_lines = 0
+            default_number_lines = 5
         elif sys.platform.startswith('win'):
             root = '../../'
             command = [
@@ -51,7 +51,7 @@ class TestPep8(unittest.TestCase):
             root = '../../'
             command = ['make', 'pep8']
             output = Popen(command, stdout=PIPE, cwd=root).communicate()[0]
-            default_number_lines = 5
+            default_number_lines = 0
 
         # make pep8 produces some extra lines by default.
         lines = len(output.splitlines())
