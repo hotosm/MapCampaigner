@@ -20,10 +20,10 @@ class OsmParser(xml.sax.ContentHandler):
         :param tag_name: Name of the osm tag to use for parsing e.g.
             'buildings' or 'roads'.
         :type tag_name: basestring
-        
+
         :param start_date: Start date of range time to parse
         :type start_date: float
-        
+
         :param end_date: End date of range time to parse
         :type end_date: float
 

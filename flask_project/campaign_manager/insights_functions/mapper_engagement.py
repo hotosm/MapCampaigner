@@ -1,6 +1,7 @@
-from campaign_manager.insights_functions._abstract_overpass_user_function import (
-    AbstractOverpassUserFunction
-)
+from campaign_manager.insights_functions._abstract_overpass_user_function \
+    import (
+        AbstractOverpassUserFunction
+    )
 
 
 class MapperEngagement(AbstractOverpassUserFunction):
