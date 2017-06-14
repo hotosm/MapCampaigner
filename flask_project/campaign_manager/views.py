@@ -4,6 +4,8 @@ import os
 import shapefile
 import shutil
 from datetime import datetime
+from urllib.error import HTTPError, URLError
+from bs4 import BeautifulSoup
 from flask import request, render_template, Response
 
 from app_config import Config
@@ -16,6 +18,9 @@ import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
+
+from urllib import request as urllibrequest
+
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -509,6 +514,45 @@ def edit_campaign(uuid):
     context['uuid'] = uuid
     return render_template(
         'create_campaign.html', form=form, **context)
+
+
+@campaign_manager.route('/search_osm/<query_name>', methods=['GET'])
+def get_osm_names(query_name):
+    whosthat_url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' \
+                   + query_name.replace(" ", "%20")
+    whosthat_data = []
+    osm_usernames = []
+    found_exact = False
+
+    try:
+        whosthat_response = urllibrequest.urlopen(whosthat_url)
+        whosthat_data = json.loads(whosthat_response.read())
+    except (HTTPError, URLError):
+        print("connection error")
+
+    for whosthat_names in whosthat_data:
+        for whosthat_name in whosthat_names['names']:
+            if whosthat_name.lower() == query_name:
+                found_exact = True
+            osm_usernames.append(whosthat_name)
+
+    # If username not found in whosthat db, check directly to openstreetmap
+    osm_response = None
+    if not found_exact:
+        osm_url = 'https://www.openstreetmap.org/user/' + \
+                  query_name.replace(" ", "%20")
+        try:
+            osm_response = urllibrequest.urlopen(osm_url)
+        except (HTTPError, URLError):
+            print("connection error")
+
+    if osm_response:
+        osm_soup = BeautifulSoup(osm_response, 'html.parser')
+        osm_title = osm_soup.find('title').string
+        if query_name in osm_title:
+            osm_usernames.append(query_name)
+
+    return Response(json.dumps(osm_usernames))
 
 
 @campaign_manager.route('/land')
