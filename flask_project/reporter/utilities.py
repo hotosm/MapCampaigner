@@ -139,7 +139,11 @@ def split_polygon(polygon):
     return polygon_string.strip()
 
 
-def osm_object_contributions(osm_file, tag_name, date_start=None, date_end=None):
+def osm_object_contributions(
+        osm_file,
+        tag_name,
+        date_start=None,
+        date_end=None):
     """Compile a summary of user contributions for the selected osm data type.
 
     :param osm_file: A file object reading from a .osm file.
@@ -147,12 +151,12 @@ def osm_object_contributions(osm_file, tag_name, date_start=None, date_end=None)
 
     :param tag_name: The tag name we want to filter on.
     :type tag_name: str
-    
+
     :param date_start: The start date we want to filter
     :type date_start: float
-    
-    :param date_start: The end date we want to filter
-    :type date_start: float
+
+    :param date_end: The end date we want to filter
+    :type date_end: float
 
     :returns: A list of dicts where items in the list are sorted from highest
         contributor (based on number of ways) down to lowest. Each element
@@ -175,7 +179,10 @@ def osm_object_contributions(osm_file, tag_name, date_start=None, date_end=None)
         }
     :rtype: list
     """
-    parser = OsmParser(tag_name=tag_name, start_date=date_start, end_date=date_end)
+    parser = OsmParser(
+            tag_name=tag_name,
+            start_date=date_start,
+            end_date=date_end)
     try:
         xml.sax.parse(osm_file, parser)
     except xml.sax.SAXParseException:
