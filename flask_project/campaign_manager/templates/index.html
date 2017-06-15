@@ -223,6 +223,7 @@
         });
 
         function updated(user) {
+            clearNotification();
             var currentUser = user.display_name;
             var url = "/campaign_manager/campaigns";
             userCoordinate = user['lat'] + ',' + user['lon'];
