@@ -199,7 +199,7 @@
                     o['lon'] = long;
                     o['lat'] = lat;
                     if (map) {
-                        that.locationMarker = L.marker([lat, long]).addTo(map);
+                        that.locationMarker = L.marker([lat, long], {icon: userIcon}).addTo(map);
                         map.setView([lat, long], 8);
                         that.locationMarker.bindPopup("Your location from osm");
                     }
