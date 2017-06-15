@@ -133,6 +133,7 @@
                                     <div class="form-group map-wrapper" data-error="">
                                         <label>Campaign Map</label>
                                         <div id="campaign-map"></div>
+                                        <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -692,10 +693,18 @@
             drawnItems.eachLayer(function (layer) {
                 totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
             });
+
+            var kmSquare = parseFloat(totalAreaSize/1000000);
+            $('#campaign-map-area-size').html('Area size : '+  kmSquare.toFixed(2) + ' km<sup>2</sup>');
             if (totalAreaSize > maxAreaSize) {
                 showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
                 $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
+                $('#campaign-map-area-size').removeClass('label-success');
+                $('#campaign-map-area-size').addClass('label-danger');
             } else {
+                clearNotification();
+                $('#campaign-map-area-size').removeClass('label-danger');
+                $('#campaign-map-area-size').addClass('label-success');
                 $('.map-wrapper').data('error', '');
             }
         }
