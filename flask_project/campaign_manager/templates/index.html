@@ -234,6 +234,7 @@
             clearMap();
             clearTable();
             getCampaigns(url, currentUser);
+            getTotalCampaigns();
             {% if not all %}
                 $('#all-campaigns').show();
             {% else %}
@@ -268,6 +269,7 @@
                 location.href='/campaign_manager'
             {% endif %}
             getBrowserLocation();
+            getTotalCampaigns();
         }
 
         function loginError() {
@@ -307,6 +309,16 @@
             }
         }
 
+        function getTotalCampaigns() {
+            var url = "/campaign_manager/total_campaigns"
+            $.ajax(url, {
+                success: function (response) {
+                    $('#active-campaign-number').html(response['campaign_total']);
+                    $('#participants-number').html(response['participant_total']);
+                }
+            })
+        }
+
         function getCampaigns(url, user) {
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
@@ -327,7 +339,6 @@
 
             $.ajax(url, {
                 success: function(campaigns){
-                    $('#active-campaign-number').html(campaigns.length);
                     $.each(campaigns, function (index, campaign) {
                         var tags = '';
                         var action_button = '';
@@ -392,8 +403,6 @@
                             '</a></div>'
                         );
                     });
-
-                    $('#participants-number').html(participants.length);
 
                     $('#panel-campaign').LoadingOverlay("hide");
 

@@ -133,3 +133,4 @@ api.add_resource(CampaignNearestList, '/nearest_campaigns/<string:coordinate>')
 api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')
+api.add_resource(CampaignTotal, '/total_campaigns')
