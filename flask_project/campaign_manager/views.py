@@ -23,10 +23,11 @@ from urllib import request as urllibrequest
 
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, GOOGLE_API_KEY
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+    GOOGLE_API_KEY = ''
 
 MAX_AREA_SIZE = 320000000
 
@@ -40,7 +41,8 @@ def home():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY
     )
 
     # noinspection PyUnresolvedReferences
@@ -57,7 +59,8 @@ def home_all():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        all=True
+        all=True,
+        google_api_key=GOOGLE_API_KEY
     )
 
     # noinspection PyUnresolvedReferences
@@ -74,6 +77,7 @@ def campaigns_with_tag(tag):
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY,
         tag=tag
     )
 
@@ -347,6 +351,7 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
+        context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign.geometry)
         context['campaigns'] = Campaign.all()
         context['selected_functions'] = \
@@ -449,7 +454,8 @@ def create_campaign():
         )
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY
     )
     context['url'] = '/campaign_manager/create'
     context['action'] = 'create'
@@ -504,6 +510,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
+    context['google_api_key'] = GOOGLE_API_KEY
     context['url'] = '/campaign_manager/edit/%s' % uuid
     context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
