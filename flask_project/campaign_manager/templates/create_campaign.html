@@ -697,6 +697,48 @@
         campaignMap.on('draw:created', saveLayer);
         campaignMap.on('draw:edited', editLayer);
         campaignMap.on('draw:deleted', deleteLayer);
+        campaignMap.on('draw:drawstart', startDraw);
+        campaignMap.on('draw:drawstop', stopDraw);
+
+        var temporaryDrawnLayers = null;
+
+        function saveLayer(e) {
+            temporaryDrawnLayers = null;
+            var layer = e.layer;
+            drawnItems.addLayer(layer);
+            getAreaSize();
+            stringfyGeometry();
+        }
+
+        function editLayer(e) {
+            var layers = e.layers;
+            getAreaSize();
+            stringfyGeometry();
+        }
+
+        function deleteLayer(e) {
+            var layers = e.layers;
+            layers.eachLayer(function (feature) {
+                drawnItems.removeLayer(feature);
+            });
+            getAreaSize();
+            stringfyGeometry();
+        }
+
+        function startDraw(e) {
+            temporaryDrawnLayers = jQuery.extend(true, {}, drawnItems);
+            drawnItems.clearLayers();
+        }
+
+        function stopDraw(e) {
+            if(temporaryDrawnLayers !== null) {
+                var temporaryLayers = temporaryDrawnLayers._layers;
+                for (var key in temporaryLayers) {
+                    drawnItems.addLayer(temporaryLayers[key]);
+                }
+                temporaryDrawnLayers = null;
+            }
+        }
 
         function stringfyGeometry() {
             var json = drawnItems.toGeoJSON();
@@ -723,28 +765,6 @@
                 $('#campaign-map-area-size').addClass('label-success');
                 $('.map-wrapper').data('error', '');
             }
-        }
-
-        function saveLayer(e) {
-            var layer = e.layer;
-            drawnItems.addLayer(layer);
-            getAreaSize();
-            stringfyGeometry();
-        }
-
-        function editLayer(e) {
-            var layers = e.layers;
-            getAreaSize();
-            stringfyGeometry();
-        }
-
-        function deleteLayer(e) {
-            var layers = e.layers;
-            layers.eachLayer(function (feature) {
-                drawnItems.removeLayer(feature);
-            });
-            getAreaSize();
-            stringfyGeometry();
         }
 
         function getFormElement(event, className) {
