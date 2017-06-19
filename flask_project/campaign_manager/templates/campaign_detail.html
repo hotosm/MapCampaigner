@@ -66,12 +66,11 @@
                         <p>
                             <span class="grey-italic">Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
-                                <span id="map-default">
+                                <span id="map-default" style="display: none">
                                 Default
                                 </span>
                                 <span id="map-custom">
                                 Custom
-                                <button id="choose-default" class="btn btn-info btn-manage" style="height: 20px; padding: 0; margin: 0; background-color: #77a1aa" onclick="chooseDefault()">Use Default</button>
                                 </span>
                             {% else %}
                                 <span id="map-default"></span>
@@ -262,32 +261,55 @@
             calculateProgress();
         });
 
-        document.getElementById('map-default').classList.add('hide');
+        var useDefault =  L.Control.extend({
+
+        options: {
+            position: 'topright',
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
+
+            container.type = 'button';
+            container.title = 'switch to default map'
+            container.value = 'use default map';
+            container.onclick = function(){
+                chooseDefault();
+            };
+
+            return container;
+        }
+        });
+
         function chooseDefault() {
+            custom_map.removeFrom(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-            'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-            maxZoom: 15
-        }).addTo(map);
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
+                'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 15
+            }).addTo(map);
             document.getElementById('map-custom').classList.add('hide');
             document.getElementById('map-default').classList.add('show');
+            map.removeControl(switchMap);
         }
 
         var drawnItems = new L.FeatureGroup();
         var map = L.map('campaign-map-detail').setView([0, 0], 1);
         var map_type = '{{ map_type }}';
         if(!map_type){
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-            'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-            maxZoom: 15
-        }).addTo(map);}
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
+                'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+                maxZoom: 15
+            }).addTo(map);}
         else {
             var attribution_note = findAttribution(map_type);
-            L.tileLayer(map_type, {
-            attribution: attribution_note,
-            maxZoom: 15
-        }).addTo(map);
+            var custom_map = L.tileLayer(map_type, {
+                attribution: attribution_note,
+                maxZoom: 15
+            }).addTo(map);
+            var switchMap = new useDefault();
+            map.addControl(switchMap);
         }
         {% if geometry %}
             drawnItems = L.geoJSON(
