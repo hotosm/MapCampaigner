@@ -31,6 +31,7 @@ class Campaign(JsonModel):
     tags = []
     description = ''
     _content_json = None
+    map_type = ''
 
     def __init__(self, uuid=None):
         if uuid:

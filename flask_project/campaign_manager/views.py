@@ -482,6 +482,7 @@ def edit_campaign(uuid):
             form.tags.data = campaign.tags
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
+            form.map_type.data = campaign.map_type
             form.selected_functions.data = json.dumps(
                     campaign.selected_functions)
             form.start_date.data = datetime.datetime.strptime(
