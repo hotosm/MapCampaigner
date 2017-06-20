@@ -5,4 +5,5 @@ from .count_feature import CountFeature
 from .feature_attribute_completeness import FeatureAttributeCompleteness
 from .mapper_engagement import MapperEngagement
 from .upload_coverage import UploadCoverage
-from .osmcha_error import OsmchaError
+from .osmcha_changesets import OsmchaChangesets
+from .osmcha_features import OsmchaFeatures

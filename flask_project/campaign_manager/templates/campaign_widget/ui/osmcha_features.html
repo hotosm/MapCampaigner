@@ -1,6 +1,4 @@
 <div class="osmch-error">
-    <i style="color: gray">This data was created based from bbox of geometry of campaign. So there are some data that outside of geometry.</i>
-    <br><br>
     <table class="feature-list-table">
         <thead>
         <tr>
@@ -15,28 +13,9 @@
                 {% for key, value in row.items() %}
                     <td>
                         {% if key == 'ID' %}
-                            <a href='https://osmcha.mapbox.com/{{ value }}'>{{ value }}</a>
-                        {% elif key == 'User' %}
-                            <a href='https://osmcha.mapbox.com/?usernames={{ value }}'>{{ value }}</a>
-                        {% elif key == 'Count' %}
-                            <span class='label label-success'>{{ value.success }}</span>
-                            <span class='label label-warning'>{{ value.warning }}</span>
-                            <span class='label label-danger'>{{ value.danger }}</span>
-                        {% elif key == 'Verified' %}
-                            {% if value.status %}
-                                <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                {% if value.thumbs_up %}
-                                    <span class="glyphicon glyphicon-thumbs-up"></span>
-                                {% else %}
-                                    <span class="glyphicon glyphicon-thumbs-down"></span>
-                                {% endif %}
-                                {% if value.verifier %}
-                                    <a href='https://osmcha.mapbox.com/?checked_by={{ value.verifier }}'>{{ value.verifier }}</a>
-                                {% endif %}
-
-                            {% else %}
-                                <span aria-hidden='true' class='glyphicon glyphicon-remove text-danger'></span>
-                            {% endif %}
+                            <a href='{{ value.osm_link }}'>{{ value.osm_id }}</a>
+                        {% elif key == 'Changeset' %}
+                            <a href='{{ data.osmcha_url }}changesets/{{ value }}'>{{ value }}</a>
                         {% else %}
                             {{ value }}
                         {% endif %}
