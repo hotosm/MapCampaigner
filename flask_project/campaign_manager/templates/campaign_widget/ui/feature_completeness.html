@@ -3,11 +3,12 @@
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
-    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features</div>
+    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features</div>
     <table class="feature-list-table">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
             {% for key in data.attributes %}
                 <th>{{ key }}</th>
             {% endfor %}
@@ -16,20 +17,36 @@
         <tbody>
         {% for row in data.data %}
             {% if row['error'] %}
-                <tr>
-                    <td><a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">{{ row['id'] }}</a></td>
-                    {% for key in data.attributes %}
-                        {% if not row['tags'] %}
-                            <td>-</td>
-                        {% elif row['tags'][key] %}
-                            <td>{{ row['tags'][key] }}</td>
-                        {% elif row[key] %}
-                            <td>{{ row[key] }}</td>
+            <tr>
+                <td>
+                    <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
+                        {{ row['type'] }} :
+                        {% if 'tags' in row %}
+                            {% if row['tags']['name'] %}
+                                {{ row['tags']['name'] }} ({{ row['id'] }})
+                            {% else %}
+                                {{ row['id'] }}
+                            {% endif %}
                         {% else %}
-                            <td>-</td>
+                            {{ row['id'] }}
                         {% endif %}
-                    {% endfor %}
-                </tr>
+                    </a>
+                </td>
+                <td>
+                    {{ row['type'] }}
+                </td>
+                {% for key in data.attributes %}
+                    {% if not row['tags'] %}
+                        <td>-</td>
+                    {% elif row['tags'][key] %}
+                        <td>{{ row['tags'][key] }}</td>
+                    {% elif row[key] %}
+                        <td>{{ row[key] }}</td>
+                    {% else %}
+                        <td>-</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
             {% endif %}
         {% endfor %}
         </tbody>
@@ -41,10 +58,11 @@
         text-align: center;
         cursor: pointer;
         margin: 10px;
+        padding-top: 20px;
     }
 
     .progress-bar-indicator {
-        color: #AC3232;
+        color: #77a1aa;
         margin-top: 0px;
     }
 
@@ -56,7 +74,7 @@
 
     .progress-bar-wrapper .progress-bar {
         height: 10px;
-        background-color: #AC3232;
+        background-color: #77a1aa;
         border-radius: 50px;
     }
 
@@ -65,7 +83,7 @@
     }
 
     .feature-list-table .error-indicator {
-        background-color: #AC3232;
+        background-color: #77a1aa;
         color: white;
     }
 
