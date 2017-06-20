@@ -19,7 +19,7 @@ class Config(object):
     # OSMCHA ATTRIBUTES
     _OSMCHA_DOMAIN = 'http://osmcha-django-staging.tilestream.net/'
     OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
-    OSMCHA_FRONTEND_URL = _OSMCHA_DOMAIN + 'osmcha-frontend/'
+    OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
 
 
 class ProductionConfig(Config):

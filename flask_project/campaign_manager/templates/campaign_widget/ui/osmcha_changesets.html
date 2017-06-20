@@ -15,7 +15,7 @@
                         {% if key == 'ID' %}
                             <a href='{{ data.osmcha_url }}changesets/{{ value }}'>{{ value }}</a>
                         {% elif key == 'User' %}
-                            <a href='{{ data.osmcha_url }}?usernames={{ value }}'>{{ value }}</a>
+                            <a href='https://www.openstreetmap.org/user/{{ value }}'>{{ value }}</a>
                         {% elif key == 'Count' %}
                             <span class='label label-success'>{{ value.create }}</span>
                             <span class='label label-warning'>{{ value.modify }}</span>
