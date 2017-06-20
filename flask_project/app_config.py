@@ -1,4 +1,5 @@
 import os
+
 # import SECRET_KEY into current namespace
 # noinspection PyUnresolvedReferences
 try:
@@ -14,6 +15,11 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = THE_SECRET_KEY
+
+    # OSMCHA ATTRIBUTES
+    _OSMCHA_DOMAIN = 'http://osmcha-django-staging.tilestream.net/'
+    OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
+    OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
 
 
 class ProductionConfig(Config):

@@ -11,6 +11,13 @@ from campaign_manager.data_providers._abstract_data_provider import (
 class ShapefileProvider(AbstractDataProvider):
     """Provider from overpass"""
 
+    @staticmethod
+    class MultiPolygonFound(Exception):
+        def __init__(self):
+            self.message = "Shapefile should be in single polygon."
+            super(ShapefileProvider.MultiPolygonFound, self).__init__(
+                self.message)
+
     def get_data(self, shapefile_file):
         """Get shapefile data.
 
@@ -31,10 +38,11 @@ class ShapefileProvider(AbstractDataProvider):
                     geometry=geom,
                     properties=atr)
                 buffer.append(feature)
-                if 'date' in feature['properties'] and \
-                        feature['properties']['date']:
+                try:
                     feature['properties']['date'] = \
                         feature['properties']['date'].strftime('%Y-%m-%d')
+                except (AttributeError, KeyError):
+                    pass
             return {
                 "type": "FeatureCollection",
                 "features": buffer
