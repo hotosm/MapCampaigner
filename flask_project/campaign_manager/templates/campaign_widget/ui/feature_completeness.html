@@ -104,10 +104,10 @@
 <script>
     var function_id = "{{ function_id }}";
     var $wrapper = $('#{{ function_id }}');
-    $(document).ready(function () {
-        $wrapper.find('.feature-list-table').DataTable();
-        $wrapper.find('.dataTables_wrapper').show();
+    $wrapper.find('.feature-list-table').DataTable({
+        "bSortClasses": false
     });
+    $wrapper.find('.dataTables_wrapper').show();
     function see_completeness_details(event) {
         if (!$(event).closest(".completness").find(".dataTables_wrapper").is(":visible")) {
             $(event).html('<i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features');
