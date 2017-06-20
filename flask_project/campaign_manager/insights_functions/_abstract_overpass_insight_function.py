@@ -74,6 +74,8 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
                     good_data.append(raw_data)
                 else:
                     raw_data['error'] = True
+                    if not self.need_required_attributes:
+                        processed_data.append(raw_data)
                     good_data.append(raw_data)
         self._function_good_data = good_data
         return processed_data
