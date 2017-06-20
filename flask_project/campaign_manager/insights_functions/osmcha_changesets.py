@@ -6,8 +6,9 @@ from datetime import datetime
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
-
-from campaign_manager.data_providers.osmcha_changesets_provider import OsmchaChangesetsProvider
+from campaign_manager.data_providers.osmcha_changesets_provider import (
+    OsmchaChangesetsProvider
+)
 
 
 class OsmchaChangesets(AbstractInsightsFunction):
@@ -63,48 +64,52 @@ class OsmchaChangesets(AbstractInsightsFunction):
             geometry, self.current_page,
             start_date=start_date, end_date=end_date)
 
-    def process_data(self, raw_datas):
+    def process_data(self, raw_data):
         """ Process data from raw.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
+        :param raw_data: Raw data that returns by function provider
+        :type raw_data: dict
 
         :return: processed data
         :rtype: dict
         """
-        raw_datas['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
-        raw_datas['uuid'] = self.campaign.uuid
-        raw_datas['headers'] = [
+        raw_data['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
+        raw_data['uuid'] = self.campaign.uuid
+        raw_data['headers'] = [
             'uid', 'date', 'user', 'comment', 'count', 'reasons',
             'checked', 'check_date'
         ]
 
-        data = raw_datas['data']['features']
-        clean_data = []
-        for row in data:
-            properties = row['properties']
-            check_date = None
-            if properties['check_date']:
-                check_date = datetime.strptime(
-                    properties['check_date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%Y-%m-%d %H:%M"),
-            clean_data.append({
-                'ID': properties['uid'],
-                'Date': datetime.strptime(
-                    properties['date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%Y-%m-%d %H:%M"),
-                'User': properties['user'],
-                'Comment': properties['comment'],
-                'Count': {
-                    'create': properties['create'],
-                    'modify': properties['modify'],
-                    'delete': properties['delete'],
-                },
-                'Reasons': ', '.join(
-                    [comment['name'] for comment in properties['reasons']]),
-                "Suspected": properties['is_suspect'],
-                "Harmful": properties['harmful'],
-                "Checked": properties['checked'],
-                "Check date": check_date,
-            })
-        raw_datas['data'] = clean_data
-        return raw_datas
+        if 'data' in raw_data and 'features' in raw_data['data']:
+            data = raw_data['data']['features']
+            clean_data = []
+            for row in data:
+                properties = row['properties']
+                check_date = None
+                if properties['check_date']:
+                    check_date = datetime.strptime(
+                        properties['check_date'],
+                        '%Y-%m-%dT%H:%M:%SZ').strftime(
+                        "%Y-%m-%d %H:%M"),
+                clean_data.append({
+                    'ID': properties['uid'],
+                    'Date': datetime.strptime(
+                        properties['date'],
+                        '%Y-%m-%dT%H:%M:%SZ').strftime(
+                        "%Y-%m-%d %H:%M"),
+                    'User': properties['user'],
+                    'Comment': properties['comment'],
+                    'Count': {
+                        'create': properties['create'],
+                        'modify': properties['modify'],
+                        'delete': properties['delete'],
+                    },
+                    'Reasons': ', '.join(
+                        [comment['name'] for comment in properties['reasons']]
+                    ),
+                    "Suspected": properties['is_suspect'],
+                    "Harmful": properties['harmful'],
+                    "Checked": properties['checked'],
+                    "Check date": check_date,
+                })
+            raw_data['data'] = clean_data
+        return raw_data

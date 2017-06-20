@@ -6,8 +6,9 @@ from datetime import datetime
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
-
-from campaign_manager.data_providers.osmcha_features_provider import OsmchaFeaturesProvider
+from campaign_manager.data_providers.osmcha_features_provider import (
+    OsmchaFeaturesProvider
+)
 
 
 class OsmchaFeatures(AbstractInsightsFunction):
@@ -63,33 +64,36 @@ class OsmchaFeatures(AbstractInsightsFunction):
             geometry, self.current_page,
             start_date=start_date, end_date=end_date)
 
-    def process_data(self, raw_datas):
+    def process_data(self, raw_data):
         """ Process data from raw.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
+        :param raw_data: Raw data that returns by function provider
+        :type raw_data: dict
 
         :return: processed data
         :rtype: dict
         """
-        raw_datas['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
-        raw_datas['uuid'] = self.campaign.uuid
+        raw_data['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
+        raw_data['uuid'] = self.campaign.uuid
 
-        data = raw_datas['data']['features']
-        clean_data = []
-        for row in data:
-            properties = row['properties']
-            clean_data.append({
-                'ID': {
-                    'osm_id': properties['osm_id'],
-                    'osm_link': properties['osm_link'],
-                },
-                'Date': datetime.strptime(
-                    properties['date'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                    "%Y-%m-%d %H:%M"),
-                'Changeset': properties['changeset'],
-                'Comment': properties['comment'],
-                'Reasons': ', '.join(
-                    [comment['name'] for comment in properties['reasons']]),
-            })
-        raw_datas['data'] = clean_data
-        return raw_datas
+        if 'data' in raw_data and 'features' in raw_data['data']:
+            data = raw_data['data']['features']
+            clean_data = []
+            for row in data:
+                properties = row['properties']
+                clean_data.append({
+                    'ID': {
+                        'osm_id': properties['osm_id'],
+                        'osm_link': properties['osm_link'],
+                    },
+                    'Date': datetime.strptime(
+                        properties['date'],
+                        '%Y-%m-%dT%H:%M:%SZ').strftime(
+                        "%Y-%m-%d %H:%M"),
+                    'Changeset': properties['changeset'],
+                    'Comment': properties['comment'],
+                    'Reasons': ', '.join(
+                        [comment['name'] for comment in properties['reasons']]
+                    ),
+                })
+            raw_data['data'] = clean_data
+        return raw_data
