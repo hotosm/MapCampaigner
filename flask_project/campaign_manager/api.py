@@ -102,6 +102,30 @@ class CampaignTagList(Resource):
         return campaigns_json
 
 
+class CampaignTotal(Resource):
+    """Show total of campaign and participants."""
+
+    def get_campaigns(self):
+        """Returns campaigns.
+        """
+        return Campaign.all()
+
+    def get(self):
+        """Get total of campaign and participants."""
+        campaigns = self.get_campaigns()
+        participants = []
+        for campaign in campaigns:
+            if campaign.campaign_creator not in participants:
+                participants.append(campaign.campaign_creator)
+            for manager in campaign.campaign_managers:
+                if manager not in participants:
+                    participants.append(manager)
+
+        return {
+            'campaign_total': len(campaigns),
+            'participant_total': len(participants)
+        }
+
 # Setup the Api resource routing here
 api.add_resource(CampaignList, '/campaigns')
 api.add_resource(CampaignTagList, '/campaigns/<string:tag>')
@@ -109,3 +133,4 @@ api.add_resource(CampaignNearestList, '/nearest_campaigns/<string:coordinate>')
 api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')
+api.add_resource(CampaignTotal, '/total_campaigns')
