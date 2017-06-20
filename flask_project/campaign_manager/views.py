@@ -19,7 +19,6 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 
 from urllib import request as urllibrequest
 
-
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, GOOGLE_API_KEY
 except ImportError:
@@ -146,6 +145,14 @@ def campaign_boundary_upload_chunk_success(uuid):
             folder, uuid
         )
         geojson = ShapefileProvider().get_data(shapefile_file)
+        if len(geojson['features']) > 1:
+            raise ShapefileProvider.MultiPolygonFound
+        elif len(geojson['features']) == 0:
+            raise ShapefileProvider.MultiPolygonFound
+        else:
+            if geojson['features'][0]['geometry']['type'] != 'Polygon':
+                raise ShapefileProvider.MultiPolygonFound
+
         if not geojson:
             if os.path.exists(folder):
                 shutil.rmtree(folder)
@@ -169,6 +176,11 @@ def campaign_boundary_upload_chunk_success(uuid):
         }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
+    except ShapefileProvider.MultiPolygonFound as e:
+        return Response(json.dumps({
+            'success': False,
+            'reason': e.message
+        }))
 
 
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
