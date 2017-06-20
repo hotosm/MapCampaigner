@@ -811,9 +811,14 @@
             getFormElement($event, '.function-attributes').hide();
 
             if ($(event).val() !== '') {
-                var need_feature = functions[$(event).val()]['need_feature'];
-                var need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                var features = functions[$(event).val()]['features'];
+                var need_feature = 'false';
+                var need_required_attributes = 'false';
+                var features = null;
+                if(typeof functions[$(event).val()] !== 'undefined') {
+                    need_feature = functions[$(event).val()]['need_feature'];
+                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+                    features = functions[$(event).val()]['features'];
+                }
 
                 if (features && need_feature === 'true') {
                     getFormElement($event, '.function-feature').show();
