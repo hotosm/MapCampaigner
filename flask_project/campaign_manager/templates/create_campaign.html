@@ -62,27 +62,14 @@
                                     </div>
                                     <br/>
                                 </div>
-                                <div class="row" style="margin-bottom: -12px;">
-                                    <div class="col-lg-6">
-                                        <div class="form-group">
-                                            <label for="campaign_managers">Managers of campaign</label>
-                                            <div class="error-form error-managers" style="display: none">This field is required</div>
-                                            <div id="managers-list">
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group required-form">
+                                                <label for="start_date">Start date of campaign</label>
+                                                {{ form.start_date }}
+                                                <p class="help-block"></p>
                                             </div>
-                                            <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;">
-                                            <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
-                                            <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
-                                            <br/>
-                                            <br/>
-                                            <div id="users-not-found" style="display: none">
-                                                No users found.
-                                            </div>
-                                            <div id="users-found" style="display: none">
-                                                <p>Select osm users</p>
-                                                <select id="list-osm-users" multiple class="form-control"></select>
-                                                <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to managers</button>
-                                            </div>
-                                            <p class="helock"></p>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group required-form">
@@ -101,20 +88,31 @@
                                         <p class="help-block">Status of the campaign</p>
                                     </div>
                                 </div>
-                                <div class="cc-buttons">
-                                    <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
-                                </div>
-                            </fieldset>
-                        </form>
-
-                        <fieldset id="fieldset-2" data-fieldset-step="2">
-                            <div class="row">
-                                <!-- /.col-lg-6 (nested) -->
-                                <div class="col-lg-8">
-                                    <div class="form-group map-wrapper" data-error="">
-                                        <label>Campaign Map</label>
-                                        <div id="campaign-map"></div>
-                                        <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
+                            </div>
+                            <div class="row" style="margin-bottom: -12px;">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="campaign_managers">Managers of campaign</label>
+                                        <div class="error-form error-managers" style="display: none">This field is required</div>
+                                        <div id="managers-list">
+                                        </div>
+                                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;">
+                                            <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
+                                            <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
+                                            </button>
+                                            <br/>
+                                            <br/>
+                                            <div id="users-not-found" style="display: none">
+                                                No users found.
+                                            </div>
+                                            <div id="users-found" style="display: none">
+                                                <p>Select osm users</p>
+                                                <select id="list-osm-users" multiple class="form-control"></select>
+                                                <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
+                                                    managers
+                                                </button>
+                                            </div>
+                                            <p class="helock"></p>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -138,6 +136,7 @@
                                 <div class="form-group map-wrapper" data-error="">
                                     <label>Campaign Map</label>
                                     <div id="campaign-map"></div>
+                                    <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                 </div>
                             </div>
                             <div class="col-lg-4">
@@ -244,12 +243,12 @@
             managers_list = {{ form.campaign_managers.data | safe }};
         {% endif %}
 
-        $(function() {
-            if(managers_list.length > 0) {
+        $(function () {
+            if (managers_list.length > 0) {
                 $.each(managers_list, function (index, value) {
                     $('#managers-list').append(
-                        '<span class="manager">'+ value +
-                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+value+'\')" aria-hidden="true"></i></span>'
+                            '<span class="manager">' + value +
+                            '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
                     )
                 })
             }
@@ -257,33 +256,33 @@
 
         function removeManager(e, manager) {
             var index = managers_list.indexOf(manager);
-            if(index > -1) {
+            if (index > -1) {
                 managers_list.splice(index, 1);
             }
             $(e).parent().remove();
         }
 
-        $("#add-to-managers").click(function(){
+        $("#add-to-managers").click(function () {
             var listOsmUsers = [];
-            $('#list-osm-users :selected').each(function(i, selected){
+            $('#list-osm-users :selected').each(function (i, selected) {
                 listOsmUsers[i] = $(selected).text();
             });
 
             $('.error-managers').hide();
 
-            for(var i=0; i<listOsmUsers.length; i++) {
-                if($.inArray(listOsmUsers[i], managers_list) === -1) {
+            for (var i = 0; i < listOsmUsers.length; i++) {
+                if ($.inArray(listOsmUsers[i], managers_list) === -1) {
                     managers_list.push(listOsmUsers[i]);
                     $('#managers-list').append(
-                        '<span class="manager">'+ listOsmUsers[i] +
-                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+listOsmUsers[i]+'\')" aria-hidden="true"></i></span>'
+                            '<span class="manager">' + listOsmUsers[i] +
+                            '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + listOsmUsers[i] + '\')" aria-hidden="true"></i></span>'
                     )
                 }
             }
 
         });
 
-        $("#search-osm-user-button").click(function(){
+        $("#search-osm-user-button").click(function () {
             searchOsmUser();
         });
 
@@ -295,7 +294,7 @@
 
         function searchOsmUser() {
             var textInput = $('#search-osm-user-text').val();
-            var url = '/campaign_manager/search_osm/'+textInput;
+            var url = '/campaign_manager/search_osm/' + textInput;
             var $searchOsmButton = $('#search-osm-user-button');
             $searchOsmButton.attr('disabled', 'disabled');
             $searchOsmButton.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
@@ -309,7 +308,7 @@
                     $('#list-osm-users').html('');
                     var dataObj = JSON.parse(data);
 
-                    if(dataObj.length>0) {
+                    if (dataObj.length > 0) {
                         $('#users-found').show("slow");
                     } else {
                         $('#users-not-found').show("slow");
@@ -318,7 +317,7 @@
                     $.each(dataObj, function (index, value) {
                         $('#list-osm-users').append($('<option/>', {
                             value: value,
-                            text : value
+                            text: value
                         }));
                     });
                 }
@@ -424,8 +423,8 @@
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
                 $('#managers-list').append(
-                    '<span class="manager">'+ response.display_name +
-                    '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+response.display_name+'\')" aria-hidden="true"></i></span>'
+                        '<span class="manager">' + response.display_name +
+                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + response.display_name + '\')" aria-hidden="true"></i></span>'
                 );
             {% endif %}
         }
@@ -606,7 +605,7 @@
             $("#uploader").val($("#profile-name").html());
 
             $.each(managers_list, function (index, value) {
-                $('#campaign_managers').append('<option selected="selected" value="'+value+'">'+value+'</option>')
+                $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
             });
 
             if (!auth.authenticated() || !$("#uploader").val()) {
@@ -630,9 +629,9 @@
         }).addTo(campaignMap);
 
         new L.Control.GPlaceAutocomplete({
-	        position: "topright",
-	        callback: function(location){
-		        campaignMap.fitBounds([
+            position: "topright",
+            callback: function (location) {
+                campaignMap.fitBounds([
                     [
                         location.geometry.viewport.getSouthWest().lat(),
                         location.geometry.viewport.getSouthWest().lng()
@@ -642,7 +641,7 @@
                         location.geometry.viewport.getNorthEast().lng()
                     ]
                 ]);
-	        }
+            }
         }).addTo(campaignMap);
 
         // Get user location
@@ -735,7 +734,7 @@
         }
 
         function stopDraw(e) {
-            if(temporaryDrawnLayers !== null) {
+            if (temporaryDrawnLayers !== null) {
                 var temporaryLayers = temporaryDrawnLayers._layers;
                 for (var key in temporaryLayers) {
                     drawnItems.addLayer(temporaryLayers[key]);
@@ -756,8 +755,8 @@
                 totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
             });
 
-            var kmSquare = parseFloat(totalAreaSize/1000000);
-            $('#campaign-map-area-size').html('Area size : '+  kmSquare.toFixed(2) + ' km<sup>2</sup>');
+            var kmSquare = parseFloat(totalAreaSize / 1000000);
+            $('#campaign-map-area-size').html('Area size : ' + kmSquare.toFixed(2) + ' km<sup>2</sup>');
             if (totalAreaSize > maxAreaSize) {
                 showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
                 $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
@@ -812,22 +811,20 @@
             getFormElement($event, '.function-attributes').hide();
 
             if ($(event).val() !== '') {
-                if (functions[$(event).val()]) {
-                    var need_feature = functions[$(event).val()]['need_feature'];
-                    var need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                    var features = functions[$(event).val()]['features'];
+                var need_feature = functions[$(event).val()]['need_feature'];
+                var need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+                var features = functions[$(event).val()]['features'];
 
-                    if (features && need_feature === 'true') {
-                        getFormElement($event, '.function-feature').show();
-                        $.each(features, function (index, feature) {
-                            getFormElement($event, '.function-feature').append(
-                                    "<option value='" + feature + "'>" + feature + "</option>"
-                            );
-                        });
-                    }
-                    if (need_required_attributes === 'true') {
-                        getFormElement($event, '.function-attributes').show();
-                    }
+                if (features && need_feature === 'true') {
+                    getFormElement($event, '.function-feature').show();
+                    $.each(features, function (index, feature) {
+                        getFormElement($event, '.function-feature').append(
+                                "<option value='" + feature + "'>" + feature + "</option>"
+                        );
+                    });
+                }
+                if (need_required_attributes === 'true') {
+                    getFormElement($event, '.function-attributes').show();
                 }
             }
 
