@@ -2,6 +2,13 @@
     <div class="col-lg-4"></div>
     <div class="col-lg-4">
         <canvas class="pieChart"></canvas>
+        <div class="footer">
+            Data updated at {{ data['last_update'] }}.
+            {% if data['updating'] %}
+                <br>
+                Currently updating.
+            {% endif %}
+        </div>
     </div>
     <div class="col-lg-4"></div>
 </div>
@@ -18,14 +25,14 @@
         }]
     };
 
-    {% for key, value in data.items() %}
+    {% for key, value in data['data'].items() %}
         {% if key != 'yes' %}
             chart_data['labels'].push(capitalizeFirstLetter('{{ key }}'));
             chart_data['datasets'][0]['data'].push('{{ value }}');
             chart_data['datasets'][0]['backgroundColor'].push(getRandomColor());
         {% endif %}
     {% endfor %}
-    
+
     if (chart_data['labels'].length !== 0) {
         var ctx = $wrapper.find(".pieChart");
         var options = {};

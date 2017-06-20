@@ -115,3 +115,11 @@
 .insight-content {
     min-height: 70px;
 }
+
+.insight-content .footer {
+    color: red;
+    padding: 20px;
+    font-style: italic;
+    font-size: 12px;
+    text-align: center;
+}

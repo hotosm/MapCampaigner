@@ -1,3 +1,4 @@
+import datetime
 import json
 import hashlib
 import os
@@ -61,13 +62,20 @@ class OverpassProvider(AbstractDataProvider):
         url_path = '%s%s' % (server_url, encoded_query)
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
         file_path = os.path.join(config.CACHE_DIR, safe_name)
-        osm_document = load_osm_document_cached(file_path, url_path)
+        osm_doc, osm_doc_time, updating = load_osm_document_cached(
+            file_path, url_path)
 
-        osm_data = json.loads(osm_document.read())
+        osm_data = json.loads(osm_doc.read())
 
         regex = 'runtime error:'
         if 'remark' in osm_data:
             if re.search(regex, osm_data['remark']):
                 raise OverpassTimeoutException
 
-        return osm_data['elements']
+        return {
+            'features': osm_data['elements'],
+            'last_update': datetime.datetime.fromtimestamp(
+                osm_doc_time).strftime(
+                '%Y-%m-%d %H:%M:%S'),
+            'updating_status': updating
+        }

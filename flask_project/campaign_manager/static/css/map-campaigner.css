@@ -1017,3 +1017,10 @@ body {
 		line-height: 1.8;
 	}
 }
+
+.information {
+    color: gray;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 10px
+}

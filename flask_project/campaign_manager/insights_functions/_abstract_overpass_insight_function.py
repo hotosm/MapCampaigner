@@ -15,15 +15,21 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     icon = 'list'
     _function_good_data = None  # cleaned data
 
+    last_update = ''
+    is_updating = False
+
     def get_data_from_provider(self):
         """ Get data provider function
         :return: data from provider
         :rtype: dict
         """
-        return OverpassProvider().get_data(
+        overpass_data = OverpassProvider().get_data(
             self.FEATURES_MAPPING[self.feature],
             self.campaign.corrected_coordinates()
         )
+        self.last_update = overpass_data['last_update']
+        self.is_updating = overpass_data['updating_status']
+        return overpass_data['features']
 
     def process_data(self, raw_datas):
         """ Get geometry of campaign.
