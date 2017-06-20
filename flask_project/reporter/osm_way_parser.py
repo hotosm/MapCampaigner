@@ -3,6 +3,8 @@
 :copyright: (c) 2013 by Tim Sutton
 :license: GPLv3, see LICENSE for more details.
 """
+import calendar
+import datetime
 import xml.sax
 
 
@@ -12,12 +14,18 @@ class OsmParser(xml.sax.ContentHandler):
     Sax is used so that large documents can be parsed efficiently.
     """
 
-    def __init__(self, tag_name):
+    def __init__(self, tag_name, start_date=None, end_date=None):
         """Constructor for parser.
 
         :param tag_name: Name of the osm tag to use for parsing e.g.
             'buildings' or 'roads'.
         :type tag_name: basestring
+
+        :param start_date: Start date of range time to parse
+        :type start_date: float
+
+        :param end_date: End date of range time to parse
+        :type end_date: float
 
         :returns: An OsmParser
         :rtype: OsmParser instance.
@@ -32,6 +40,9 @@ class OsmParser(xml.sax.ContentHandler):
         self.wayCountDict = {}
         self.nodeCountDict = {}
         self.userDayCountDict = {}
+        self.ignoreOld = False
+        self.dateStart = start_date
+        self.dateEnd = end_date
 
     def startElement(self, name, attributes):
         """Callback for when an element start is encountered.
@@ -43,13 +54,27 @@ class OsmParser(xml.sax.ContentHandler):
                 the attributes of the element.
         :type attributes: dict
         """
+        if self.dateStart and self.dateEnd and name == 'old':
+            self.ignoreOld = True
+
+        if self.ignoreOld:
+            return
+
         if name == 'way':
-            self.inWay = True
-            self.wayCount += 1
-            self.user = attributes.get('user')
             timestamp = attributes.get('timestamp')
             # 2012-12-10T12:26:21Z
             date_part = timestamp.split('T')[0]
+
+            if self.dateStart and self.dateEnd:
+                date_timestamp = calendar.timegm(datetime.datetime.strptime(
+                        date_part, '%Y-%m-%d').timetuple()) * 1000
+                if not self.dateStart <= date_timestamp <= self.dateEnd:
+                    self.inWay = False
+                    return
+
+            self.inWay = True
+            self.wayCount += 1
+            self.user = attributes.get('user')
             if self.user not in self.userDayCountDict:
                 self.userDayCountDict[self.user] = dict()
 
@@ -77,6 +102,9 @@ class OsmParser(xml.sax.ContentHandler):
         :param name: The name of the element that has ended.
         :type name: str
         """
+        if name == 'old' and self.ignoreOld:
+            self.ignoreOld = False
+
         if name == 'way':
             if self.found:
                 # Its a target object so update it and node counts

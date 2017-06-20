@@ -33,6 +33,9 @@
     <!-- DataTables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.css"/>
 
+    <!-- Leaflet Google Places CSS -->
+    <link href="/campaign_manager/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.css" rel="stylesheet">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -94,9 +97,18 @@
 
     <!-- DataTables Javascript -->
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/datetime-moment.js"></script>
 
     <!-- Moment Javascript -->
     <script type="text/javascript" src="/campaign_manager/static/libs/moment.js"></script>
+
+    <!-- Google Api Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places"></script>
+
+    <!-- Leaflet Google Places JavaScript -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.js"></script>
 
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
@@ -196,7 +208,7 @@
                     o['lon'] = long;
                     o['lat'] = lat;
                     if (map) {
-                        that.locationMarker = L.marker([lat, long]).addTo(map);
+                        that.locationMarker = L.marker([lat, long], {icon: userIcon}).addTo(map);
                         map.setView([lat, long], 8);
                         that.locationMarker.bindPopup("Your location from osm");
                     }

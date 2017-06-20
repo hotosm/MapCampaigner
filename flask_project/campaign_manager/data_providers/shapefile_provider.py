@@ -31,10 +31,11 @@ class ShapefileProvider(AbstractDataProvider):
                     geometry=geom,
                     properties=atr)
                 buffer.append(feature)
-                if 'date' in feature['properties'] and \
-                        feature['properties']['date']:
+                try:
                     feature['properties']['date'] = \
                         feature['properties']['date'].strftime('%Y-%m-%d')
+                except AttributeError:
+                    pass
             return {
                 "type": "FeatureCollection",
                 "features": buffer

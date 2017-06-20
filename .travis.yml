@@ -10,22 +10,12 @@ cache:
     #- /tmp # cache any previously downloaded .osm files
   timeout: 1000
 compiler: clang
-addons:
-  postgresql: "9.4"
-  apt:
-    sources:
-      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'  # postgis
-    packages:
-      # Check that legacy scripts are available before upgrading postgis - they are required!
-      - postgresql-9.4-postgis-2.1
-      - osm2pgsql
-      - postgis
-# python defs need to be here as well as in include for test matrix
-# see https://docs.travis-ci.com/user/customizing-the-build#Explicitly-Included-Jobs-need-complete-definitions
+
 python:
   - '3.6'
   - '3.5'
   - '3.4'
+
 env:
   global:
     - ON_TRAVIS=true
@@ -33,22 +23,17 @@ env:
     - APP_SETTINGS=app_config.DevelopmentConfig
     - DATABASE_URL=localhost
 
-# Build environment specific options - one build per top level item in include list
 matrix:
   fast_finish: true
   include:
     - python: '3.6'
-      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+      env: TRAVIS_CONFIG=PYTHON3
     - python: '3.5'
-      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+      env: TRAVIS_CONFIG=PYTHON3
     - python: '3.4'
-      env: TRAVIS_CONFIG=PYTHON3 # used if you want to run environment specific stuff in before_script
+      env: TRAVIS_CONFIG=PYTHON3
+
   exclude:
-    # This is a daft hack to solve a problem where travis creates a
-    # default build for every python variation we try to build with
-    # see https://github.com/travis-ci/travis-ci/issues/4681#issuecomment-277513723
-    # and
-    # https://github.com/kartoza/osm-reporter/pull/109#issuecomment-292807417
     - python: '3.6'
     - python: '3.5'
     - python: '3.4'
@@ -56,55 +41,23 @@ matrix:
 git:
   depth: 30
 
-
-#addons:
-  #sauce_connect:
-  #  username: "timlinux"
-  #  access_key: "Your Sauce Labs access key"
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#kartoza"
-    use_notice: true
-
-  email:
-    - tim@kartoza.com
-#  webhooks:
-#    urls:
-#      - https://webhooks.gitter.im/e/467e3aff72e344d1dae3 # need to get a proper app key first
-#    on_success: change  # options: [always|never|change] default: always
-#    on_failure: always # options: [always|never|change] default: always
-#    on_start: never # default: never
-
 before_install:
-  #- ./ci/travis/${TRAVIS_CONFIG}/before_install.sh
 
 install:
-  #- ./ci/travis/${TRAVIS_CONFIG}/install.sh
-  -
+  - pip install coveralls
+  - pip install -r deployment/docker/requirements.txt
+  - pip install -r deployment/docker/requirements-dev.txt
 
 before_script:
-  - echo "Build starting on " `date`
-  - psql -U postgres -c "create database template_postgis encoding 'UTF8' TEMPLATE template0;"
-  - psql -U postgres -c "update pg_database set datistemplate=true where datname='template_postgis';"
-  - psql -U postgres -c "create extension postgis;" template_postgis 
-  - ls -lah /usr/share/postgresql/
-  - ls -lah /usr/share/postgresql/9.4/
-  - ls -lah /usr/share/postgresql/9.4/contrib/
-  # Check that legacy scripts are available before upgrading postgis to a newer version than 2.1 - they are required!
-  - ls -lah /usr/share/postgresql/9.4/contrib/postgis-2.1/
-  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.1/legacy_minimal.sql
-  - psql -U postgres template_postgis < /usr/share/postgresql/9.4/contrib/postgis-2.1/legacy_gist.sql
-  - echo "Databases:"
-  - psql -l
-  - which pgsql2shp
-  - pip install -r requirements.txt
-  - pip install -r requirements-dev.txt
 
 script:
-  - PYTHONPATH=`pwd`/reporter:`pwd`:$(PYTHONPATH) nosetests -v --with-id --with-xcoverage --with-xunit --verbose --cover-package=reporter reporter
-  - make pep8
+  - cd deployment && make pep8
+  - nosetests ../flask_project
 
 after_script:
-  -
+  - coveralls
+
+email:
+  - dimas@kartoza.com
+  - irwan@kartoza.com
+  - anita@kartoza.com

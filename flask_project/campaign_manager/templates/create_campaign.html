@@ -11,7 +11,7 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-12">
-            <h3 class="cc-title">Create Campaign</h3>
+            <h3 class="cc-title">{{ action }} Campaign</h3>
             <div class="panel panel-default cc-panel">
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
                     <div class="cc-steps">
@@ -62,14 +62,27 @@
                                     </div>
                                     <br/>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group required-form">
-                                                <label for="start_date">Start date of campaign</label>
-                                                {{ form.start_date }}
-                                                <p class="help-block"></p>
+                                <div class="row" style="margin-bottom: -12px;">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="campaign_managers">Managers of campaign</label>
+                                            <div class="error-form error-managers" style="display: none">This field is required</div>
+                                            <div id="managers-list">
                                             </div>
+                                            <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;">
+                                            <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
+                                            <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+                                            <br/>
+                                            <br/>
+                                            <div id="users-not-found" style="display: none">
+                                                No users found.
+                                            </div>
+                                            <div id="users-found" style="display: none">
+                                                <p>Select osm users</p>
+                                                <select id="list-osm-users" multiple class="form-control"></select>
+                                                <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to managers</button>
+                                            </div>
+                                            <p class="helock"></p>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group required-form">
@@ -88,13 +101,20 @@
                                         <p class="help-block">Status of the campaign</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row" style="margin-bottom: -12px;">
-                                <div class="col-lg-6">
-                                    <div class="form-group required-form">
-                                        <label for="campaign_managers">Managers of campaign</label>
-                                        {{ form.campaign_managers }}
-                                        <p class="help-block"></p>
+                                <div class="cc-buttons">
+                                    <button type="button" class="btn btn-next pull-right">Next  <span class="pull-right"> > </span> </button>
+                                </div>
+                            </fieldset>
+                        </form>
+
+                        <fieldset id="fieldset-2" data-fieldset-step="2">
+                            <div class="row">
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-8">
+                                    <div class="form-group map-wrapper" data-error="">
+                                        <label>Campaign Map</label>
+                                        <div id="campaign-map"></div>
+                                        <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -218,7 +238,96 @@
 
     <script type="text/javascript">
 
+        //------------------ CAMPAIGN MANAGERS ------------------//
+        var managers_list = [];
+        {% if form.campaign_managers.data %}
+            managers_list = {{ form.campaign_managers.data | safe }};
+        {% endif %}
+
+        $(function() {
+            if(managers_list.length > 0) {
+                $.each(managers_list, function (index, value) {
+                    $('#managers-list').append(
+                        '<span class="manager">'+ value +
+                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+value+'\')" aria-hidden="true"></i></span>'
+                    )
+                })
+            }
+        });
+
+        function removeManager(e, manager) {
+            var index = managers_list.indexOf(manager);
+            if(index > -1) {
+                managers_list.splice(index, 1);
+            }
+            $(e).parent().remove();
+        }
+
+        $("#add-to-managers").click(function(){
+            var listOsmUsers = [];
+            $('#list-osm-users :selected').each(function(i, selected){
+                listOsmUsers[i] = $(selected).text();
+            });
+
+            $('.error-managers').hide();
+
+            for(var i=0; i<listOsmUsers.length; i++) {
+                if($.inArray(listOsmUsers[i], managers_list) === -1) {
+                    managers_list.push(listOsmUsers[i]);
+                    $('#managers-list').append(
+                        '<span class="manager">'+ listOsmUsers[i] +
+                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+listOsmUsers[i]+'\')" aria-hidden="true"></i></span>'
+                    )
+                }
+            }
+
+        });
+
+        $("#search-osm-user-button").click(function(){
+            searchOsmUser();
+        });
+
+        $('#search-osm-user-text').keypress(function (e) {
+            if (e.which === 13) {
+                searchOsmUser();
+            }
+        });
+
+        function searchOsmUser() {
+            var textInput = $('#search-osm-user-text').val();
+            var url = '/campaign_manager/search_osm/'+textInput;
+            var $searchOsmButton = $('#search-osm-user-button');
+            $searchOsmButton.attr('disabled', 'disabled');
+            $searchOsmButton.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $('#users-not-found').hide();
+            $('#users-found').hide();
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $searchOsmButton.removeAttr('disabled');
+                    $searchOsmButton.LoadingOverlay("hide");
+                    $('#list-osm-users').html('');
+                    var dataObj = JSON.parse(data);
+
+                    if(dataObj.length>0) {
+                        $('#users-found').show("slow");
+                    } else {
+                        $('#users-not-found').show("slow");
+                    }
+
+                    $.each(dataObj, function (index, value) {
+                        $('#list-osm-users').append($('<option/>', {
+                            value: value,
+                            text : value
+                        }));
+                    });
+                }
+            });
+        }
+
+
         //------------------ BUTTONS ------------------//
+
         function scrollToClass(element_class, removed_height) {
             var scrollTo = $(element_class).offset().top - removed_height;
             if ($(window).scrollTop() !== scrollTo) {
@@ -313,8 +422,11 @@
         function updated(response) {
             $('#campaign-panel').show();
             {% if action == 'create' %}
-                // Set default campaign manager
-                $('#campaign_managers').val(response.display_name);
+                managers_list.push(response.display_name);
+                $('#managers-list').append(
+                    '<span class="manager">'+ response.display_name +
+                    '<i class="fa fa-times remove-manager" onclick="removeManager(this, \''+response.display_name+'\')" aria-hidden="true"></i></span>'
+                );
             {% endif %}
         }
 
@@ -402,6 +514,11 @@
                 }
             });
 
+            if (managers_list.length === 0) {
+                valid = false;
+                $('.error-managers').show();
+            }
+
             return valid;
         }
 
@@ -487,6 +604,11 @@
 
         $("#campaign-form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
+
+            $.each(managers_list, function (index, value) {
+                $('#campaign_managers').append('<option selected="selected" value="'+value+'">'+value+'</option>')
+            });
+
             if (!auth.authenticated() || !$("#uploader").val()) {
                 window.location.replace("/campaign_manager/not-logged-in.html");
             }
@@ -496,6 +618,7 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
         });
 
@@ -504,6 +627,22 @@
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
             'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 18
+        }).addTo(campaignMap);
+
+        new L.Control.GPlaceAutocomplete({
+	        position: "topright",
+	        callback: function(location){
+		        campaignMap.fitBounds([
+                    [
+                        location.geometry.viewport.getSouthWest().lat(),
+                        location.geometry.viewport.getSouthWest().lng()
+                    ],
+                    [
+                        location.geometry.viewport.getNorthEast().lat(),
+                        location.geometry.viewport.getNorthEast().lng()
+                    ]
+                ]);
+	        }
         }).addTo(campaignMap);
 
         // Get user location
@@ -562,27 +701,13 @@
         campaignMap.on('draw:created', saveLayer);
         campaignMap.on('draw:edited', editLayer);
         campaignMap.on('draw:deleted', deleteLayer);
+        campaignMap.on('draw:drawstart', startDraw);
+        campaignMap.on('draw:drawstop', stopDraw);
 
-        function stringfyGeometry() {
-            var json = drawnItems.toGeoJSON();
-            $("#geometry").val(JSON.stringify(json));
-        }
-
-        var maxAreaSize = {{ maximum_area_size }};
-        function getAreaSize() {
-            var totalAreaSize = 0;
-            drawnItems.eachLayer(function (layer) {
-                totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-            });
-            if (totalAreaSize > maxAreaSize) {
-                showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
-                $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
-            } else {
-                $('.map-wrapper').data('error', '');
-            }
-        }
+        var temporaryDrawnLayers = null;
 
         function saveLayer(e) {
+            temporaryDrawnLayers = null;
             var layer = e.layer;
             drawnItems.addLayer(layer);
             getAreaSize();
@@ -602,6 +727,48 @@
             });
             getAreaSize();
             stringfyGeometry();
+        }
+
+        function startDraw(e) {
+            temporaryDrawnLayers = jQuery.extend(true, {}, drawnItems);
+            drawnItems.clearLayers();
+        }
+
+        function stopDraw(e) {
+            if(temporaryDrawnLayers !== null) {
+                var temporaryLayers = temporaryDrawnLayers._layers;
+                for (var key in temporaryLayers) {
+                    drawnItems.addLayer(temporaryLayers[key]);
+                }
+                temporaryDrawnLayers = null;
+            }
+        }
+
+        function stringfyGeometry() {
+            var json = drawnItems.toGeoJSON();
+            $("#geometry").val(JSON.stringify(json));
+        }
+
+        var maxAreaSize = {{ maximum_area_size }};
+        function getAreaSize() {
+            var totalAreaSize = 0;
+            drawnItems.eachLayer(function (layer) {
+                totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+            });
+
+            var kmSquare = parseFloat(totalAreaSize/1000000);
+            $('#campaign-map-area-size').html('Area size : '+  kmSquare.toFixed(2) + ' km<sup>2</sup>');
+            if (totalAreaSize > maxAreaSize) {
+                showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
+                $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
+                $('#campaign-map-area-size').removeClass('label-success');
+                $('#campaign-map-area-size').addClass('label-danger');
+            } else {
+                clearNotification();
+                $('#campaign-map-area-size').removeClass('label-danger');
+                $('#campaign-map-area-size').addClass('label-success');
+                $('.map-wrapper').data('error', '');
+            }
         }
 
         function getFormElement(event, className) {
@@ -668,6 +835,7 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
         }
 
         function removeFunction(event) {

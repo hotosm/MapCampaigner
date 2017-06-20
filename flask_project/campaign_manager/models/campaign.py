@@ -32,11 +32,12 @@ class Campaign(JsonModel):
     description = ''
     _content_json = None
 
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self.json_path = Campaign.get_json_file(uuid)
-        self.edited_at = time.ctime(os.path.getmtime(self.json_path))
-        self.parse_json_file()
+    def __init__(self, uuid=None):
+        if uuid:
+            self.uuid = uuid
+            self.json_path = Campaign.get_json_file(uuid)
+            self.edited_at = time.ctime(os.path.getmtime(self.json_path))
+            self.parse_json_file()
 
     def save(self, uploader):
         """Save current campaign
