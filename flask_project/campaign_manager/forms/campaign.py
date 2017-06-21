@@ -11,8 +11,10 @@ from wtforms.fields import (
     TextAreaField,
     RadioField
 )
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, ValidationError
+from urllib.parse import urlparse
 from campaign_manager.utilities import get_osm_user, get_tags
+from campaign_manager.views import valid_map_list
 
 
 class ManagerSelectMultipleField(SelectMultipleField):
@@ -20,6 +22,20 @@ class ManagerSelectMultipleField(SelectMultipleField):
     def pre_validate(self, form):
         if self.data:
             return True
+
+
+def validate_map(form, field):
+    tile_layer = urlparse(field.data)
+    valid_map = valid_map_list()
+    if tile_layer.scheme != '' \
+            and (tile_layer.netloc != '' or tile_layer.path != ''):
+        if tile_layer.scheme != 'https':
+            raise ValidationError('Please input url using "https://"')
+        elif field.data not in valid_map:
+            raise ValidationError(
+                'The url is invalid or is not supported, please input another '
+                'url. e.g. https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png '
+                'or leave blank to use default')
 
 
 class CampaignForm(FlaskForm):
@@ -56,6 +72,10 @@ class CampaignForm(FlaskForm):
     geometry = HiddenField(
         u'Map geometry for this campaign',
         validators=[DataRequired('Geometry is needed')])
+    map_type = StringField(
+        u'Campaign Map',
+        description='Campaign manager may change the map view',
+        validators=[validate_map])
     selected_functions = HiddenField(
         u'Selected Functions')
     submit = SubmitField(u'Submit')

@@ -115,3 +115,25 @@
 .insight-content {
     min-height: 70px;
 }
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: inline !important;
+}
+
+.leaflet-top.leaflet-right input {
+    background-color: white;
+    border: 1px solid gray;
+    width: 120px;
+    height: 27px;
+    font-size: 10pt;
+    font-weight: 600;
+    color: black;
+}
+
+.leaflet-top.leaflet-right input:hover {
+    background-color: #f4f4f4 !important;
+}

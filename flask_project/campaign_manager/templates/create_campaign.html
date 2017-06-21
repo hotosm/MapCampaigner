@@ -61,6 +61,16 @@
                                         <p class="help-block">Description for the campaign</p>
                                     </div>
                                     <br/>
+                                  <div class="form-group map-input">
+                                            <label for="map_type">Campaign Map</label>
+                                            {{ form.map_type }}
+                                            {% if form['errors'] %}
+                                                <p class="error-form">
+                                                {{ form['errors'].map_type[0] }}</p>
+                                            {% endif %}
+                                            <p class="help-block">Change map display, leave blank to use default</p>
+                                        </div>
+                                        <br/>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="row">
