@@ -51,9 +51,9 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             'attributes': required_attributes,
             'data': self._function_good_data,
             'percentage': '%.1f' % (
-                (len(data) / metadata['collected_data_count']) * 100
+                (len(data) / len(self._function_good_data)) * 100
             ),
             'complete': len(data),
-            'total': metadata['collected_data_count']
+            'total': len(self._function_good_data)
         }
         return output

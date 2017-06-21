@@ -285,7 +285,7 @@
             default_map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 15
+                maxZoom: 20
             }).addTo(map);
             document.getElementById('map-custom').classList.add('hide');
             document.getElementById('map-default').classList.add('show');
@@ -312,18 +312,19 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 15
+                maxZoom: 20
             }).addTo(map);}
         else {
             var default_map;
             var custom_map = L.tileLayer(map_type, {
                 attribution: attribution,
-                maxZoom: 15
+                maxZoom: 20
             }).addTo(map);
             var switchMap = new useDefault();
             var switchCustom = new useCustom();
             map.addControl(switchMap);
         }
+
         {% if geometry %}
             drawnItems = L.geoJSON(
                     $.parseJSON('{{ geometry|safe }}'), {

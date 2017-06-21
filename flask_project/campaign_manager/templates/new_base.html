@@ -104,11 +104,16 @@
     <!-- Moment Javascript -->
     <script type="text/javascript" src="/campaign_manager/static/libs/moment.js"></script>
 
-    <!-- Google Api Key -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places"></script>
+    {% if google_api_key %}
+        <!-- Google Api Key -->
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places"></script>
 
-    <!-- Leaflet Google Places JavaScript -->
-    <script type="text/javascript" src="/campaign_manager/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.js"></script>
+        <!-- Leaflet Google Places JavaScript -->
+        <script type="text/javascript" src="/campaign_manager/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.js"></script>
+    {% endif %}
+
+    <!-- Javascript Cookie -->
+    <script type="text/javascript" src="/campaign_manager/static/libs/js.cookie-2.1.4.min.js"></script>
 
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
     <script src="/campaign_manager/static/libs/jquery-file-upload/jquery.fileupload.js"></script>

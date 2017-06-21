@@ -86,8 +86,6 @@
                 }
             }
 
-            console.log(chartData{{ loop.index }});
-
             var ctx{{ loop.index }} = document.getElementById("overview{{ loop.index }}").getContext('2d');
             var overview{{ loop.index }} = new Chart(ctx{{ loop.index }}, {
                 type: 'line',

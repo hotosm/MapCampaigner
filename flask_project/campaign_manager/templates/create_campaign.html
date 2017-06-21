@@ -638,21 +638,23 @@
             maxZoom: 18
         }).addTo(campaignMap);
 
-        new L.Control.GPlaceAutocomplete({
-            position: "topright",
-            callback: function (location) {
-                campaignMap.fitBounds([
-                    [
-                        location.geometry.viewport.getSouthWest().lat(),
-                        location.geometry.viewport.getSouthWest().lng()
-                    ],
-                    [
-                        location.geometry.viewport.getNorthEast().lat(),
-                        location.geometry.viewport.getNorthEast().lng()
-                    ]
-                ]);
-            }
-        }).addTo(campaignMap);
+        {% if google_api_key %}
+            new L.Control.GPlaceAutocomplete({
+                position: "topright",
+                callback: function (location) {
+                    campaignMap.fitBounds([
+                        [
+                            location.geometry.viewport.getSouthWest().lat(),
+                            location.geometry.viewport.getSouthWest().lng()
+                        ],
+                        [
+                            location.geometry.viewport.getNorthEast().lat(),
+                            location.geometry.viewport.getNorthEast().lng()
+                        ]
+                    ]);
+                }
+            }).addTo(campaignMap);
+        {% endif %}
 
         // Get user location
         {% if action == 'create' %}
