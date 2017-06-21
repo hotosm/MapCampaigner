@@ -162,6 +162,17 @@
 
     <script type="text/javascript">
 
+        $(function () {
+            var user_location_setting = Cookies.get('user_location_setting');
+            if(user_location_setting === 'all') {
+                // check current url
+                var current_href = window.location.href.split('/');
+                if(current_href[current_href.length-1] !== 'all') {
+                   location.href='/campaign_manager/all';
+                }
+            }
+        });
+
         var map = L.map('campaign-map').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
@@ -247,10 +258,12 @@
         })
 
         $('#all-campaigns').click(function () {
+            Cookies.set('user_location_setting', 'all');
             location.href='/campaign_manager/all'
         })
 
         $('#nearest-campaigns').click(function () {
+            Cookies.set('user_location_setting', 'nearest');
             location.href='/campaign_manager'
         })
 
