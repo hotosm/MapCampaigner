@@ -31,9 +31,27 @@
                             {{ row['id'] }}
                         {% endif %}
                     </a>
+                    {% if row['type'] == 'relation' %}
+                        <span class="show-members">
+                            <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
+                        </span>
+                        <div class="relation-member">
+                        Members :
+                        <ul>
+                        {% for member in row['members'] %}
+                            <li>
+                            <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
+                                {{ member['type'] }} : {{ member['ref'] }}
+                            </a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        </div>
+                    {% endif %}
                 </td>
                 <td>
-                    {{ row['type'] }}
+                    {{ row['type'] }} <ul>
+                </ul>
                 </td>
                 {% for key in data.attributes %}
                     {% if not row['tags'] %}
@@ -100,8 +118,19 @@
         background-color: rgba(223, 234, 242, 0.20) !important;
     }
 
+    .show-members:hover {
+        cursor: pointer;
+    }
+
+    .relation-member {
+        display: none;
+    }
 </style>
 <script>
+    $(document).tooltip({
+        selector: "[data-toggle=tooltip]",
+        container: "body"
+    });
     var function_id = "{{ function_id }}";
     var $wrapper = $('#{{ function_id }}');
     $wrapper.find('.feature-list-table').DataTable({
@@ -117,4 +146,18 @@
             $(event).closest(".completness").find(".dataTables_wrapper").hide();
         }
     }
+    $('.show-members').click(function (e) {
+        if($(this).children().hasClass('fa-arrow-circle-down')) {
+            $(this).siblings('.relation-member').show();
+            $(this).children().removeClass('fa-arrow-circle-down');
+            $(this).children().addClass('fa-arrow-circle-up');
+            $(this).children().attr('data-original-title', 'Hide members');
+        } else {
+            $(this).siblings('.relation-member').hide();
+            $(this).children().removeClass('fa-arrow-circle-up');
+            $(this).children().addClass('fa-arrow-circle-down');
+            $(this).children().attr('data-original-title', 'Show members');
+
+        }
+    });
 </script>
