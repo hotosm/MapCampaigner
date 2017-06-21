@@ -164,10 +164,11 @@
 
         $(function () {
             var user_location_setting = Cookies.get('user_location_setting');
+            var tag = "{{ tag }}";
             if(user_location_setting === 'all') {
                 // check current url
                 var current_href = window.location.href.split('/');
-                if(current_href[current_href.length-1] !== 'all') {
+                if(current_href[current_href.length-1] !== 'all' && !tag) {
                    location.href='/campaign_manager/all';
                 }
             }
