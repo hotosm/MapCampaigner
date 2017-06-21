@@ -20,10 +20,14 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 from urllib import request as urllibrequest
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, GOOGLE_API_KEY
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+
+try:
+    from secret import GOOGLE_API_KEY
+except ImportError:
     GOOGLE_API_KEY = ''
 
 MAX_AREA_SIZE = 320000000
