@@ -42,11 +42,14 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
             req_attr = required_attributes
 
             for raw_data in raw_datas:
+                if raw_data['type'] == 'node':
+                    continue
+
                 if 'tags' in raw_data:
                     raw_attr = raw_data["tags"]
 
                     # just get required attr
-                    is_fullfilling_requirement = True
+                    is_fulfilling_requirement = True
                     if len(req_attr) > 0:
                         # checking data
                         for req_key, req_value in req_attr.items():
@@ -54,23 +57,25 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
                             if req_key in raw_attr:
                                 raw_value = raw_attr[req_key].lower()
                                 if req_value and raw_value not in req_value:
-                                    is_fullfilling_requirement = False
+                                    is_fulfilling_requirement = False
                                     break
                             else:
-                                is_fullfilling_requirement = False
+                                is_fulfilling_requirement = False
                                 break
-                        if is_fullfilling_requirement:
+                        if is_fulfilling_requirement:
                             processed_data.append(raw_data)
                     else:
                         processed_data.append(raw_attr)
 
-                    if is_fullfilling_requirement:
+                    if is_fulfilling_requirement:
                         raw_data['error'] = False
                     else:
                         raw_data['error'] = True
                     good_data.append(raw_data)
                 else:
+                    raw_data['error'] = True
+                    if not self.need_required_attributes:
+                        processed_data.append(raw_data)
                     good_data.append(raw_data)
-                    raw_data['error'] = False
         self._function_good_data = good_data
         return processed_data
