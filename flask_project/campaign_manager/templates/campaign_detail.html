@@ -259,16 +259,47 @@
         }
         });
 
+        var useCustom = L.Control.extend({
+            options: {
+            position: 'topright'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
+
+            container.type = 'button';
+            container.title = 'switch to custom map';
+            container.value = 'use custom map';
+            container.onclick = function(){
+                chooseCustom();
+            };
+
+            return container;
+        }
+        });
+
         function chooseDefault() {
             custom_map.removeFrom(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            default_map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 15
             }).addTo(map);
             document.getElementById('map-custom').classList.add('hide');
             document.getElementById('map-default').classList.add('show');
+            document.getElementById('map-custom').classList.remove('show');
             map.removeControl(switchMap);
+            map.addControl(switchCustom)
+        }
+
+        function chooseCustom(){
+            default_map.removeFrom(map);
+            custom_map.addTo(map);
+            document.getElementById('map-custom').classList.add('show');
+            document.getElementById('map-default').classList.remove('show');
+            document.getElementById('map-default').classList.add('hide');
+            map.removeControl(switchCustom);
+            map.addControl(switchMap)
         }
 
         var drawnItems = new L.FeatureGroup();
@@ -282,11 +313,13 @@
                 maxZoom: 15
             }).addTo(map);}
         else {
+            var default_map;
             var custom_map = L.tileLayer(map_type, {
                 attribution: attribution,
                 maxZoom: 15
             }).addTo(map);
             var switchMap = new useDefault();
+            var switchCustom = new useCustom();
             map.addControl(switchMap);
         }
         {% if geometry %}
