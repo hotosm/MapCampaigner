@@ -25,7 +25,7 @@
             </p>
         </div>
         <div class="col-lg-5">
-             <div class="panel panel-default detail-panel-information">
+            <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
                     <div class="detail-campaign-status running">
                         <i class="fa fa-circle" aria-hidden="true"></i> <label>Running</label>
@@ -40,8 +40,8 @@
                     </div>
                     <div class="detail-progress">
                         <div class="progress">
-                          <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-                          </div>
+                            <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                            </div>
                         </div>
                     </div>
                     <div class="detail-creator-info">
@@ -124,56 +124,58 @@
             $('.insight-content').html('');
             var index = 0;
 
-            if(Object.keys(selected_functions).length === 0) {
+            if (Object.keys(selected_functions).length === 0) {
                 $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
             } else {
                 $('.insight-tabs').show();
             }
 
             $.each(selected_functions, function (key, selected_function) {
-                var allow_function = true;
-                if (selected_function['manager_only']) {
-                    if ($.inArray(username, managers) === -1) {
-                        allow_function = false;
-                    }
-                }
-                if (allow_function) {
-                    var href = "#" + key;
-                    var active = '';
-                    if(index===0){
-                        active = 'active';
-                    }
-                    $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
-                    $('.insight-tabs').append(
-                        '<li class="' + active + '">' +
-                        '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
-                            selected_function['name'] + '</a>' +
-                        '</li>'
-                    );
-                    $('.insight-content').find('#' + key).remove();
-                    $('.insight-content').append(
-                        '<div class="tab-pane fade ' + active + ' in" id="' + key + '">' +
-                            '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>'+
-                        '</div>'
-                    );
-                    get_function(key);
-                    if (!containsObject(selected_function['feature'], feature_collected)) {
-                        feature_collected.push(selected_function['feature']);
-                        if (selected_function["category"] !== "coverage-function") {
-                            get_metadata(key);
+                if (selected_function['name']) {
+                    var allow_function = true;
+                    if (selected_function['manager_only']) {
+                        if ($.inArray(username, managers) === -1) {
+                            allow_function = false;
                         }
                     }
-                    index++;
+                    if (allow_function) {
+                        var href = "#" + key;
+                        var active = '';
+                        if (index === 0) {
+                            active = 'active';
+                        }
+                        $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
+                        $('.insight-tabs').append(
+                                '<li class="' + active + '">' +
+                                '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
+                                selected_function['name'] + '</a>' +
+                                '</li>'
+                        );
+                        $('.insight-content').find('#' + key).remove();
+                        $('.insight-content').append(
+                                '<div class="tab-pane fade ' + active + ' in" id="' + key + '">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
+                                '</div>'
+                        );
+                        get_function(key);
+                        if (!containsObject(selected_function['feature'], feature_collected)) {
+                            feature_collected.push(selected_function['feature']);
+                            if (selected_function["category"] !== "coverage-function") {
+                                get_metadata(key);
+                            }
+                        }
+                        index++;
+                    }
                 }
             });
         }
-        
+
         function calculateProgress() {
 
             var start_date = "{{ start_date }}";
             var end_date = "{{ end_date }}";
 
-            if(start_date==='None' || end_date==='None') {
+            if (start_date === 'None' || end_date === 'None') {
                 $('.detail-campaign-status label').html('-');
                 return;
             }
@@ -183,7 +185,7 @@
 
             var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
 
-            if(campaign_range < 0) {
+            if (campaign_range < 0) {
                 console.log('Invalid Date');
                 $('.detail-campaign-status label').html('-');
                 return;
@@ -193,17 +195,17 @@
 
             var progress = 0;
 
-            if(remaining_days <= 0) {
+            if (remaining_days <= 0) {
                 progress = 100;
                 $('.detail-campaign-status').removeClass('running');
                 $('.detail-campaign-status').addClass('finished');
                 $('.detail-campaign-status label').html('Finished');
             } else {
-                progress = remaining_days/campaign_range * 100;
+                progress = remaining_days / campaign_range * 100;
             }
 
             $('#campaign-progress').css({
-                'width': progress+'%'
+                'width': progress + '%'
             })
         }
 
@@ -216,7 +218,7 @@
             render_selected_functions(user.display_name);
             var managers = {{ campaign_managers | safe }};
             // Shows manage button if current user is one of the manager
-            if($.inArray(user.display_name, managers) > -1) {
+            if ($.inArray(user.display_name, managers) > -1) {
                 $('.btn-manage').show();
             }
         }
@@ -345,15 +347,14 @@
                         first_function = false;
                     }
 
-                    $('#'+function_id).html(
-                        data
+                    $('#' + function_id).html(
+                            data
                     );
                 }
             });
         }
 
         function get_metadata(function_id) {
-            console.log(function_id);
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id + '/metadata';
             $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
 

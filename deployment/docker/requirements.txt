@@ -9,5 +9,6 @@ flask-admin
 pyshp
 beautifulsoup4
 PyGeoj
+requests
 shapely
 flask-restful==0.3.6

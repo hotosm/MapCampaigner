@@ -2,7 +2,8 @@ from unittest import TestCase, mock
 from campaign_manager.api import (
     CampaignList,
     CampaignNearestList,
-    CampaignTagList
+    CampaignTagList,
+    CampaignTotal
 )
 from campaign_manager.models.campaign import Campaign
 
@@ -11,6 +12,12 @@ def mock_get_campaign():
     campaign = Campaign()
     campaign.uuid = '111'
     campaign.name = 'test'
+    campaign.campaign_creator = 'test_creator'
+    campaign.campaign_managers = [
+        'test_manager1',
+        'test_manager2',
+        'test_creator'
+    ]
     campaign._content_json = {
         'name': campaign.name,
         'uuid': campaign.uuid
@@ -78,3 +85,12 @@ class TestApi(TestCase):
         campaigns = CampaignTagList().get(tag)
         self.assertEqual(len(campaigns), 1)
         self.assertEqual(campaigns[0]['name'], 'test')
+
+    @mock.patch('campaign_manager.api.CampaignTotal.get_campaigns',
+                side_effect=mock_get_campaign)
+    def test_get_total_campaign_and_participant(self, mock_get_campaign):
+        """Test we get all campaign list."""
+        response = CampaignTotal().get()
+
+        self.assertEqual(response['campaign_total'], 1)
+        self.assertEqual(response['participant_total'], 3)

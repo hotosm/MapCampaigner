@@ -1,7 +1,6 @@
 import json
 import inspect
 import os
-import shapefile
 import shutil
 from datetime import datetime
 from urllib.error import HTTPError, URLError
@@ -10,7 +9,6 @@ from flask import request, render_template, Response
 
 from app_config import Config
 from campaign_manager import campaign_manager
-from campaign_manager.models.campaign import Campaign
 from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.utilities import module_path, temporary_folder
@@ -21,12 +19,12 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 
 from urllib import request as urllibrequest
 
-
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, GOOGLE_API_KEY
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+    GOOGLE_API_KEY = ''
 
 MAX_AREA_SIZE = 320000000
 
@@ -40,7 +38,8 @@ def home():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY
     )
 
     # noinspection PyUnresolvedReferences
@@ -57,7 +56,8 @@ def home_all():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        all=True
+        all=True,
+        google_api_key=GOOGLE_API_KEY
     )
 
     # noinspection PyUnresolvedReferences
@@ -74,6 +74,7 @@ def campaigns_with_tag(tag):
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY,
         tag=tag
     )
 
@@ -144,6 +145,14 @@ def campaign_boundary_upload_chunk_success(uuid):
             folder, uuid
         )
         geojson = ShapefileProvider().get_data(shapefile_file)
+        if len(geojson['features']) > 1:
+            raise ShapefileProvider.MultiPolygonFound
+        elif len(geojson['features']) == 0:
+            raise ShapefileProvider.MultiPolygonFound
+        else:
+            if geojson['features'][0]['geometry']['type'] != 'Polygon':
+                raise ShapefileProvider.MultiPolygonFound
+
         if not geojson:
             if os.path.exists(folder):
                 shutil.rmtree(folder)
@@ -167,6 +176,11 @@ def campaign_boundary_upload_chunk_success(uuid):
         }))
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
+    except ShapefileProvider.MultiPolygonFound as e:
+        return Response(json.dumps({
+            'success': False,
+            'reason': e.message
+        }))
 
 
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
@@ -259,8 +273,8 @@ def upload_chunk(_file, filename):
 
 
 @campaign_manager.route(
-        '/campaign/<uuid>/coverage-upload-chunk',
-        methods=['POST'])
+    '/campaign/<uuid>/coverage-upload-chunk',
+    methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -293,8 +307,8 @@ def campaign_coverage_upload_chunk(uuid):
 
 
 @campaign_manager.route(
-        '/campaign/<uuid>/boundary-upload-chunk',
-        methods=['POST'])
+    '/campaign/<uuid>/boundary-upload-chunk',
+    methods=['POST'])
 def campaign_boundary_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -347,6 +361,7 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
+        context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign.geometry)
         context['campaigns'] = Campaign.all()
         context['selected_functions'] = \
@@ -526,7 +541,8 @@ def create_campaign():
         )
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        google_api_key=GOOGLE_API_KEY
     )
     context['url'] = '/campaign_manager/create'
     context['action'] = 'create'
@@ -561,7 +577,7 @@ def edit_campaign(uuid):
             form.geometry.data = json.dumps(campaign.geometry)
             form.map_type.data = campaign.map_type
             form.selected_functions.data = json.dumps(
-                    campaign.selected_functions)
+                campaign.selected_functions)
             form.start_date.data = datetime.datetime.strptime(
                 campaign.start_date, '%Y-%m-%d')
             if campaign.end_date:
@@ -582,6 +598,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
+    context['google_api_key'] = GOOGLE_API_KEY
     context['url'] = '/campaign_manager/edit/%s' % uuid
     context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
@@ -652,9 +669,9 @@ if __name__ == '__main__':
         campaign_manager.debug = True
         # set up flask to serve static content
         campaign_manager.add_url_rule(
-                '/<path:path>',
-                'static_file',
-                static_file)
+            '/<path:path>',
+            'static_file',
+            static_file)
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()
