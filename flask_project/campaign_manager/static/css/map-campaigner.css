@@ -6,7 +6,7 @@
 body {
     background-color: #f7f7f7;
     height: 100%;
-    font-family: 'Oxygen', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .navbar-default {
@@ -868,10 +868,25 @@ body {
     border-radius: 12px !important;
 }
 
-#campaign-table th {
+#campaign-table th, table.dataTable thead td {
+    border-bottom: none;
     color: #919191;
     font-size: 10pt;
     font-weight: lighter;
+}
+#campaign-table, table.dataTable.no-footer  {
+    border-bottom: none;
+}
+
+.feature-list-table th, table.dataTable thead td {
+    border-bottom: none !important;
+    color: #919191;
+    font-size: 10pt !important;
+    font-weight: lighter !important;
+}
+
+.feature-list-table, table.dataTable.no-footer  {
+    border-bottom: none !important;
 }
 
 .campaign-td a{
