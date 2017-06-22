@@ -116,6 +116,14 @@
     min-height: 70px;
 }
 
+.insight-content .footer {
+    color: #898989;
+    padding: 20px;
+    font-style: italic;
+    font-size: 12px;
+    text-align: center;
+}
+
 .hide {
     display: none;
 }

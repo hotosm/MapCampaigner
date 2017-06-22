@@ -190,6 +190,9 @@ def fetch_osm(file_path, url_path):
         if re.search(regex, data):
             raise OverpassTimeoutException
 
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
         file_handle = open(file_path, 'wb')
         file_handle.write(data.encode('utf-8'))
         file_handle.close()

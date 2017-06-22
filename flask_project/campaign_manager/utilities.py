@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '16/05/17'
 
 import os
+import threading
 from utilities import absolute_path
 import time
 
@@ -51,6 +52,27 @@ def get_tags():
     return tags
 
 
+running_thread = []
+
+
+class FetchOsmThread(threading.Thread):
+    threadID = 0
+
+    def __init__(self, file_path, url_path):
+        self.threadID = file_path
+        self.file_path = file_path
+        self.url_path = url_path
+        threading.Thread.__init__(self)
+
+    # third step, implement the run(), which will be invoked
+    # at the notation: thread.start()
+    def run(self):
+        if self.threadID not in running_thread:
+            running_thread.append(self.threadID)
+            fetch_osm(self.file_path, self.url_path)
+            running_thread.remove(self.threadID)
+
+
 def load_osm_document_cached(file_path, url_path):
     """Load an cached osm document, update the results if 15 minutes old.
 
@@ -60,21 +82,26 @@ def load_osm_document_cached(file_path, url_path):
     :param url_path: Path of the file
     :type url_path: str
 
-    :returns: A file object for the the downloaded file.
-    :rtype: file
+    :returns: Dictionary that contains file, last_update, and updating status.
+    :rtype: dict
     """
     elapsed_seconds = 0
     limit_seconds = 900  # 15 minutes
+    file_time = 0
+    updating_status = False
     if os.path.exists(file_path):
         current_time = time.time()  # in unix epoch
         file_time = os.path.getmtime(file_path)  # in unix epoch
         elapsed_seconds = current_time - file_time
-        if elapsed_seconds > limit_seconds:
-            os.remove(file_path)
+
     if elapsed_seconds > limit_seconds or not os.path.exists(file_path):
-        fetch_osm(file_path, url_path)
+        if not os.path.exists(file_path):
+            fetch_osm(file_path, url_path)
+        else:
+            FetchOsmThread(file_path, url_path).start()
+            updating_status = True
     file_handle = open(file_path, 'rb')
-    return file_handle
+    return file_handle, file_time, updating_status
 
 
 def multi_feature_to_polygon(geojson):

@@ -69,6 +69,13 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="footer">
+        Data updated at {{ data['last_update'] }}.
+        {% if data['updating'] %}
+            <br>
+            Currently updating.
+        {% endif %}
+    </div>
 </div>
 <style type="text/css">
     .see-detail {

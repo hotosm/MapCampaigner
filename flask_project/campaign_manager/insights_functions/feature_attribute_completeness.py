@@ -2,8 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 from campaign_manager.insights_functions._abstract_overpass_insight_function \
-    import (
-        AbstractOverpassInsightFunction)
+    import AbstractOverpassInsightFunction
 
 
 class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
@@ -44,7 +43,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         :return: Processed data
         :rtype: dict
         """
-        metadata = self.metadata()
         required_attributes = {}
         required_attributes.update(self.get_required_attributes())
         output = {
@@ -54,6 +52,8 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                 (len(data) / len(self._function_good_data)) * 100
             ),
             'complete': len(data),
-            'total': len(self._function_good_data)
+            'total': len(self._function_good_data),
+            'last_update': self.last_update,
+            'updating': self.is_updating,
         }
         return output

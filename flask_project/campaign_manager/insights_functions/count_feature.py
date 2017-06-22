@@ -1,8 +1,8 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
+
 from campaign_manager.insights_functions._abstract_overpass_insight_function \
-    import (
-        AbstractOverpassInsightFunction)
+    import AbstractOverpassInsightFunction
 
 
 class CountFeature(AbstractOverpassInsightFunction):
@@ -41,7 +41,12 @@ class CountFeature(AbstractOverpassInsightFunction):
         :return: Processed data
         :rtype: dict
         """
-        output = {}
+        output = {
+            'last_update': self.last_update,
+            'updating': self.is_updating,
+            'data': {}
+        }
+        data = data
         for current_data in data:
             key = 'building'
             alternative_keys = ['amenity']
@@ -50,7 +55,6 @@ class CountFeature(AbstractOverpassInsightFunction):
                 for alternative in alternative_keys:
                     if alternative in current_data:
                         key = alternative
-
             try:
                 building_type = current_data[key]
             except KeyError:
@@ -62,7 +66,6 @@ class CountFeature(AbstractOverpassInsightFunction):
             )
 
             if building_group not in output:
-                output[building_group] = 0
-            output[building_group] += 1
-
+                output['data'][building_group] = 0
+            output['data'][building_group] += 1
         return output
