@@ -99,7 +99,7 @@ def load_osm_document_cached(file_path, url_path):
             fetch_osm(file_path, url_path)
         else:
             FetchOsmThread(file_path, url_path).start()
-        updating_status = True
+            updating_status = True
     file_handle = open(file_path, 'rb')
     return file_handle, file_time, updating_status
 
