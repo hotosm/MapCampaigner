@@ -20,10 +20,14 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 from urllib import request as urllibrequest
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, GOOGLE_API_KEY
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+
+try:
+    from secret import GOOGLE_API_KEY
+except ImportError:
     GOOGLE_API_KEY = ''
 
 MAX_AREA_SIZE = 320000000
@@ -398,6 +402,10 @@ def get_campaign(uuid):
         # Participant
         context['participants'] = len(campaign.campaign_managers)
 
+        # Map attribution
+        if campaign.map_type != '':
+            context['attribution'] = find_attribution(campaign.map_type)
+
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
@@ -439,6 +447,79 @@ def get_selected_functions():
 
         funct_dict[insight_function] = function_dict
     return funct_dict
+
+
+def valid_map_list():
+    """List for valid maps."""
+
+    valid_map = ({
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png':
+            'OpenStreetMap</a> and contributors, under an '
+            '<a href="http://www.openstreetmap.org/copyright" '
+            'target="_parent">open license</a>',
+        'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png':
+            '&copy; <a href="http://www.openstreetmap.org/copyright">'
+            'OpenStreetMap</a>',
+        'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png':
+            '&copy; Openstreetmap France | &copy; <a href='
+            '"http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png':
+            '&copy; <a href="http://www.openstreetmap.org/copyright">'
+            'OpenStreetMap</a>, Tiles courtesy of '
+            '<a href="http://hot.openstreetmap.org/" target="_blank">'
+            'Humanitarian OpenStreetMap Team</a>',
+        'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png':
+            'Map data: &copy; <a href="http://www.openstreetmap.org/'
+            'copyright">OpenStreetMap</a>, '
+            '<a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: '
+            '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> '
+            '(<a href="https://creativecommons.org/licenses/by-sa/3.0/">'
+            'CC-BY-SA</a>)',
+        'https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png':
+            'Tiles courtesy of <a href="http://openstreetmap.se/" target='
+            '"_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href'
+            '="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        'https://{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png':
+            'Tiles courtesy of <a href="http://openstreetmap.se/" target='
+            '"_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href'
+            '="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        'https://server.arcgisonline.com/ArcGIS/rest/services/'
+        'World_Street_Map/MapServer/tile/{z}/{y}/{x}':
+            'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, '
+            'Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), '
+            'Esri (Thailand), TomTom, 2012',
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/'
+        'MapServer/tile/{z}/{y}/{x}':
+            'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap'
+            ', iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, '
+            'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), '
+            'and the GIS User Community',
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/'
+        'MapServer/tile/{z}/{y}/{x}':
+            'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX,'
+            ' GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS '
+            'User Community',
+        'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png':
+            'Wikimedia maps beta | Map data &copy; <a href="http:'
+            '//openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+        'https://maps.wikimedia.org/osm/{z}/{x}/{y}.png':
+            'Wikimedia maps beta | Map data &copy; <a href="http:'
+            '//openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/'
+        '{z}/{x}/{y}.png':
+            '&copy; <a href="http://www.openstreetmap.org/copyright">'
+            'OpenStreetMap</a> &copy; <a href="https://carto.com/attribution">'
+            'CARTO</a>',
+    })
+    return valid_map
+
+
+def find_attribution(map_url):
+    """Find map attribution."""
+
+    _valid_map = valid_map_list()
+    attribution = _valid_map[map_url]
+    return attribution
 
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])
@@ -498,6 +579,7 @@ def edit_campaign(uuid):
             form.tags.data = campaign.tags
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
+            form.map_type.data = campaign.map_type
             form.selected_functions.data = json.dumps(
                 campaign.selected_functions)
             form.start_date.data = datetime.datetime.strptime(

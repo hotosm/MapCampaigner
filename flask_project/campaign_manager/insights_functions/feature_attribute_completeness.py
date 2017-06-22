@@ -43,18 +43,17 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         :return: Processed data
         :rtype: dict
         """
-        metadata = self.metadata()
         required_attributes = {}
         required_attributes.update(self.get_required_attributes())
         output = {
             'attributes': required_attributes,
             'data': self._function_good_data,
             'percentage': '%.1f' % (
-                (len(data) / metadata['collected_data_count']) * 100
+                (len(data) / len(self._function_good_data)) * 100
             ),
             'complete': len(data),
-            'total': metadata['collected_data_count'],
+            'total': len(self._function_good_data),
             'last_update': self.last_update,
-            'updating': self.is_updating
+            'updating': self.is_updating,
         }
         return output

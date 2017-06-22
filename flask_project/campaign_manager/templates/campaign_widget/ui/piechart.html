@@ -1,5 +1,5 @@
 <div class="row piechart-wrapper">
-    <div class="col-lg-4"></div>
+    <div class="col-lg-3"></div>
     <div class="col-lg-4">
         <canvas class="pieChart"></canvas>
         <div class="footer">
@@ -10,8 +10,26 @@
             {% endif %}
         </div>
     </div>
-    <div class="col-lg-4"></div>
+     <div class="col-lg-3">
+        <div class="chart-legends"></div>
+    </div>
+    <div class="col-lg-2"></div>
 </div>
+
+<style>
+    .chart-legends {
+        font-size: 9pt;
+    }
+
+    .chart-legends li {
+        padding-bottom: 8px;
+    }
+
+    .chart-legends ul {
+        list-style-type: none;
+    }
+
+</style>
 
 <script type="text/javascript">
     var function_id = "{{ function_id }}";
@@ -27,21 +45,41 @@
 
     {% for key, value in data['data'].items() %}
         {% if key != 'yes' %}
-            chart_data['labels'].push(capitalizeFirstLetter('{{ key }}'));
+            chart_data['labels'].push('{{ key }}');
             chart_data['datasets'][0]['data'].push('{{ value }}');
-            chart_data['datasets'][0]['backgroundColor'].push(getRandomColor());
+            chart_data['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ key }}")));
         {% endif %}
     {% endfor %}
 
     if (chart_data['labels'].length !== 0) {
         var ctx = $wrapper.find(".pieChart");
-        var options = {};
         // And for a doughnut chart
         var myDoughnutChart = new Chart(ctx, {
             type: 'doughnut',
             data: chart_data,
-            options: options
+            options: {
+                legend: {
+                    display: false
+                },
+                legendCallback: function(chart){
+                    var text = [];
+                    text.push('<ul>');
+                    for (var i=0; i<chart.data.datasets[0].data.length; i++) {
+                        text.push('<li>');
+                        text.push('<span style="display:inline-block;width:25px;height:10px; background-color: '+ chart.data.datasets[0].backgroundColor[i] +'"></span> ');
+                        if (chart.data.labels[i]) {
+                            text.push(chart.data.labels[i]);
+                        }
+                        text.push(' [' + chart.data.datasets[0].data[i] + ']');
+                        text.push('</li>');
+                    }
+                    text.push('</ul>');
+                    return text.join("");
+                }
+            }
         });
+
+        $('.chart-legends').html(myDoughnutChart.generateLegend());
     } else {
         $wrapper.find('.piechart-wrapper').addClass('error');
         $wrapper.find('.piechart-wrapper').html(

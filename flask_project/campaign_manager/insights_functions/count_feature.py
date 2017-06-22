@@ -48,16 +48,24 @@ class CountFeature(AbstractOverpassInsightFunction):
         }
         data = data
         for current_data in data:
-            building_key = 'building'
-            if building_key not in current_data:
-                building_key = 'amenity'
+            key = 'building'
+            alternative_keys = ['amenity']
+
+            if key not in current_data:
+                for alternative in alternative_keys:
+                    if alternative in current_data:
+                        key = alternative
             try:
-                building_type = current_data[building_key]
+                building_type = current_data[key]
             except KeyError:
                 building_type = 'unknown'
 
-            if building_type not in output:
-                output['data'][building_type] = 0
-            output['data'][building_type] += 1
+            building_group = u'{group_key} : {group_type}'.format(
+                group_key=key,
+                group_type=building_type.capitalize()
+            )
 
+            if building_group not in output:
+                output['data'][building_group] = 0
+            output['data'][building_group] += 1
         return output

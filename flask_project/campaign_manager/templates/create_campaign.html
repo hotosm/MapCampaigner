@@ -61,6 +61,16 @@
                                         <p class="help-block">Description for the campaign</p>
                                     </div>
                                     <br/>
+                                  <div class="form-group map-input">
+                                            <label for="map_type">Campaign Map</label>
+                                            {{ form.map_type }}
+                                            {% if form['errors'] %}
+                                                <p class="error-form">
+                                                {{ form['errors'].map_type[0] }}</p>
+                                            {% endif %}
+                                            <p class="help-block">Change map display, leave blank to use default</p>
+                                        </div>
+                                        <br/>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="row">
@@ -628,21 +638,23 @@
             maxZoom: 18
         }).addTo(campaignMap);
 
-        new L.Control.GPlaceAutocomplete({
-            position: "topright",
-            callback: function (location) {
-                campaignMap.fitBounds([
-                    [
-                        location.geometry.viewport.getSouthWest().lat(),
-                        location.geometry.viewport.getSouthWest().lng()
-                    ],
-                    [
-                        location.geometry.viewport.getNorthEast().lat(),
-                        location.geometry.viewport.getNorthEast().lng()
-                    ]
-                ]);
-            }
-        }).addTo(campaignMap);
+        {% if google_api_key %}
+            new L.Control.GPlaceAutocomplete({
+                position: "topright",
+                callback: function (location) {
+                    campaignMap.fitBounds([
+                        [
+                            location.geometry.viewport.getSouthWest().lat(),
+                            location.geometry.viewport.getSouthWest().lng()
+                        ],
+                        [
+                            location.geometry.viewport.getNorthEast().lat(),
+                            location.geometry.viewport.getNorthEast().lng()
+                        ]
+                    ]);
+                }
+            }).addTo(campaignMap);
+        {% endif %}
 
         // Get user location
         {% if action == 'create' %}
