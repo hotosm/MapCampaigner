@@ -45,12 +45,16 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         """
         required_attributes = {}
         required_attributes.update(self.get_required_attributes())
+        percentage = '0.0'
+        if len(self._function_good_data) > 0:
+            percentage = '%.1f' % (
+                (len(data) / len(self._function_good_data)) * 100
+            )
+
         output = {
             'attributes': required_attributes,
             'data': self._function_good_data,
-            'percentage': '%.1f' % (
-                (len(data) / len(self._function_good_data)) * 100
-            ),
+            'percentage': percentage,
             'complete': len(data),
             'total': len(self._function_good_data),
             'last_update': self.last_update,
