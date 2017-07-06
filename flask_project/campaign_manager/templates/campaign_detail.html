@@ -65,7 +65,7 @@
                         </p>
                         <p>
                             <span class="grey-italic">Total Contributors :</span>
-                            <span id="contributors"></span>
+                            <span id="contributors"><span class="grey-italic">Loading data...</span></span>
                         </p>
                         <p>
                             <span class="grey-italic">Map:</span>
@@ -248,7 +248,6 @@
 
         function calculateContributors () {
             var url = "/campaign_manager/campaign/" + uuid +"/total_contributors";
-            $('#contributors').html('<span class="grey-italic">Loading data...<span>');
             $.ajax({
                 url: url,
                 success: function (response) {
