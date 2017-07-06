@@ -2,6 +2,8 @@ from flask_restful import Resource, Api
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.insights_functions.mapper_engagement import \
+    MapperEngagement
 
 api = Api(campaign_manager)
 
@@ -126,6 +128,41 @@ class CampaignTotal(Resource):
             'participant_total': len(participants)
         }
 
+
+class CampaignContributors(Resource):
+    """Show Campaign Contributors."""
+
+    def get_campaign(self, uuid):
+        """Return campaign."""
+        return Campaign(uuid=uuid)
+
+    def get(self, uuid):
+        """Get total contributors."""
+
+        campaign = self.get_campaign(uuid)
+        mapper_buildings = MapperEngagement(
+            campaign=campaign, feature='buildings')
+        mapper_buildings.run()
+        data1 = mapper_buildings.get_function_data()
+
+        mapper_roads = MapperEngagement(campaign=campaign, feature='roads')
+        mapper_roads.run()
+        data2 = mapper_roads.get_function_data()
+
+        user = []
+        for entry in range(len(data1)):
+            if data1[entry]['name'] not in user:
+                user.append(data1[entry]['name'])
+
+        for entry in range(len(data2)):
+            if data2[entry]['name'] not in user:
+                user.append(data2[entry]['name'])
+
+        contributors_total = len(user)
+
+        return {'contributors_total': contributors_total}
+
+
 # Setup the Api resource routing here
 api.add_resource(CampaignList, '/campaigns')
 api.add_resource(CampaignTagList, '/campaigns/<string:tag>')
@@ -134,3 +171,5 @@ api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')
 api.add_resource(CampaignTotal, '/total_campaigns')
+api.add_resource(CampaignContributors,
+                 '/campaign/<string:uuid>/total_contributors')
