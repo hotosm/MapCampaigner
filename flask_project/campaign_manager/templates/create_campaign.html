@@ -16,7 +16,7 @@
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
                     <div class="cc-steps">
                         <div class="cc-progress">
-                            <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
+                            <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="7" style="width: 8.33%;"></div>
                         </div>
                         <div class="cc-step active" data-step="1">
                             <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
@@ -27,18 +27,22 @@
                             <p>Campaign Map</p>
                         </div>
                         <div class="cc-step" data-step="3">
+                            <div class="cc-step-icon"><i class="fa fa-map"></i></div>
+                            <p>Remote Mapping</p>
+                        </div>
+                        <div class="cc-step" data-step="4">
                             <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
                             <p>Coverage Function</p>
                         </div>
-                        <div class="cc-step" data-step="4">
+                        <div class="cc-step" data-step="5">
                             <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
                             <p>Quality Function</p>
                         </div>
-                        <div class="cc-step" data-step="5">
+                        <div class="cc-step" data-step="6">
                             <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
                             <p>Error Function</p>
                         </div>
-                        <div class="cc-step" data-step="6">
+                        <div class="cc-step" data-step="7">
                             <div class="cc-step-icon"><i class="fa fa-link"></i></div>
                             <p>Engagement Function</p>
                         </div>
@@ -106,23 +110,23 @@
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
                                         <div id="managers-list">
                                         </div>
-                                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;">
-                                            <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
-                                            <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
+                                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                                        <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
+                                        <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
+                                        </button>
+                                        <br/>
+                                        <br/>
+                                        <div id="users-not-found" style="display: none">
+                                            No users found.
+                                        </div>
+                                        <div id="users-found" style="display: none">
+                                            <p>Select osm users</p>
+                                            <select id="list-osm-users" multiple class="form-control"></select>
+                                            <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
+                                                managers
                                             </button>
-                                            <br/>
-                                            <br/>
-                                            <div id="users-not-found" style="display: none">
-                                                No users found.
-                                            </div>
-                                            <div id="users-found" style="display: none">
-                                                <p>Select osm users</p>
-                                                <select id="list-osm-users" multiple class="form-control"></select>
-                                                <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
-                                                    managers
-                                                </button>
-                                            </div>
-                                            <p class="helock"></p>
+                                        </div>
+                                        <p class="helock"></p>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -162,8 +166,27 @@
                         </div>
                     </fieldset>
 
+                     <fieldset id="fieldset-3" data-fieldset-step="3">
+                            <div class="row">
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-12">
+                                    <div class="form-group map-wrapper" data-error="">
+                                        <label>Search Project</label>
+
+                                        <div class="form-group">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cc-buttons">
+                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </fieldset>
+
                     {% for category in categories %}
-                        <fieldset id="fieldset-{{ loop.index + 2 }}" data-fieldset-step="{{ loop.index + 2 }}">
+                        <fieldset id="fieldset-{{ loop.index + 3 }}" data-fieldset-step="{{ loop.index + 3 }}">
                             <div class="row insight-functions">
                                 <div class="col-lg-12">
                                     <div class="form-group" style="padding-bottom: 25px;">
@@ -463,6 +486,8 @@
         }
 
         function checkSteps(step) {
+            return true;
+
             if (step === 1) {
                 return checkStep1();
             } else if (step === 2) {
