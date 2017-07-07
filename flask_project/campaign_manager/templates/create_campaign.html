@@ -301,6 +301,12 @@
 {% endblock %}
 
 {% block after_base_js %}
+    <script type="text/javascript">
+        var remote_projects_list = [];
+        {% if form.remote_projects.data %}
+            remote_projects_list = {{ form.remote_projects.data | safe }};
+        {% endif %}
+    </script>
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
@@ -340,6 +346,11 @@
     </script>
 
     <script type="text/javascript">
+
+        var remote_projects_list = [];
+        {% if form.remote_projects.data %}
+            remote_projects_list = {{ form.remote_projects.data | safe }};
+        {% endif %}
 
         //------------------ CAMPAIGN MANAGERS ------------------//
         var managers_list = [];

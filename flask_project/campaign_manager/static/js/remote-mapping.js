@@ -1,6 +1,10 @@
 var remoteMap = null;
 var addedLayers = {};
 
+$.each(remote_projects_list, function (index, value) {
+    addProject(' ', value)
+});
+
 setTimeout(function () {
     remoteMap = L.map('remote-map', {
         center: [0, 0],
