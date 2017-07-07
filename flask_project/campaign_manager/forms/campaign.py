@@ -42,11 +42,13 @@ class CampaignForm(FlaskForm):
     name = StringField(
         u'Campaign name',
         validators=[DataRequired('Campaign name is needed')],
-        description='Name for the campaign'
+        description='Name for the campaign',
+        render_kw={'placeholder': 'Campaign name'}
     )
     description = TextAreaField(
         u'Campaign description',
-        description='Description for the campaign'
+        description='Description for the campaign',
+        render_kw={'placeholder': 'Campaign descriptions'}
     )
     campaign_status = RadioField(
         u'Campaign status',
@@ -58,9 +60,13 @@ class CampaignForm(FlaskForm):
     )
 
     start_date = DateField(
-            u'Start date of campaign')
+        u'Start date of campaign',
+        render_kw={'placeholder': '---'}
+    )
     end_date = DateField(
-            u'End date of campaign')
+        u'End date of campaign',
+        render_kw={'placeholder': '---'}
+    )
 
     campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',
@@ -75,7 +81,9 @@ class CampaignForm(FlaskForm):
     map_type = StringField(
         u'Campaign Map',
         description='Campaign manager may change the map view',
-        validators=[validate_map])
+        validators=[validate_map],
+        render_kw={'placeholder': 'Campaign map'}
+    )
     selected_functions = HiddenField(
         u'Selected Functions')
     submit = SubmitField(u'Submit')

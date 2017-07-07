@@ -10,59 +10,97 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-12">
-            <h3 class="cc-title">{{ action }} Campaign</h3>
+        <div class="col-lg-2">
+            <div class="panel panel-default panel-header">
+                <span class="panel-header-info">STATUS</span><br/>
+                {% if form.name.data %}
+                    <span class="campaign-status-icon status-active"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="campaign-status">&nbsp;Active</span>
+                {% else %}
+                    <span class="campaign-status-icon status-inactive"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="campaign-status">&nbsp;Inactive</span>
+                {% endif %}
+            </div>
+            <div class="cc-nav-steps" style="background-color: white;">
+                <div class="panel panel-default panel-header cc-nav active" data-step="1">
+                    <div><i class="fa fa-info-circle"></i><span>&nbsp;&nbsp;General Information</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="2">
+                    <div><i class="fa fa-globe"></i><span>&nbsp;&nbsp;Campaign AOI</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="3">
+                    <div><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="4">
+                    <div><i class="fa fa-star-half-o"></i><span>&nbsp;&nbsp;Quality Function</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="5">
+                    <div><i class="fa fa-exclamation-triangle"></i><span>&nbsp;&nbsp;Error Function</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="6">
+                    <div><i class="fa fa-link"></i><span>&nbsp;&nbsp;Engagement Function</span>
+                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                </div>
+            </div>
+            <div class="panel panel-default panel-header" style="border-top: 1px solid #ddd !important;">
+                <span class="panel-header-info">DASHBOARD SETTINGS</span><br/>
+                <span class="dashboard-settings">Basic</span>
+            </div>
+        </div>
+
+        <div class="col-lg-10">
             <div class="panel panel-default cc-panel">
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
-                    <div class="cc-steps">
-                        <div class="cc-progress">
-                            <div class="cc-progress-line" data-now-value="8.33" data-number-of-steps="6" style="width: 8.33%;"></div>
-                        </div>
-                        <div class="cc-step active" data-step="1">
-                            <div class="cc-step-icon"><i class="fa fa-info-circle"></i></div>
-                            <p>General Information</p>
-                        </div>
-                        <div class="cc-step" data-step="2">
-                            <div class="cc-step-icon"><i class="fa fa-map"></i></div>
-                            <p>Campaign Map</p>
-                        </div>
-                        <div class="cc-step" data-step="3">
-                            <div class="cc-step-icon"><i class="fa fa-paint-brush"></i></div>
-                            <p>Coverage Function</p>
-                        </div>
-                        <div class="cc-step" data-step="4">
-                            <div class="cc-step-icon"><i class="fa fa-star-half-o"></i></div>
-                            <p>Quality Function</p>
-                        </div>
-                        <div class="cc-step" data-step="5">
-                            <div class="cc-step-icon"><i class="fa fa-exclamation-triangle"></i></div>
-                            <p>Error Function</p>
-                        </div>
-                        <div class="cc-step" data-step="6">
-                            <div class="cc-step-icon"><i class="fa fa-link"></i></div>
-                            <p>Engagement Function</p>
-                        </div>
-                    </div>
 
                     <form id="campaign-form" method="POST" action="{{ url }}" role="form">
                         {{ form.hidden_tag() }}
+                        <div class="row">
+                                    <div class="form-header col-lg-9">
+                                        <div class="panel panel-default panel-header">
+                                            <span class="panel-header-info">NAME</span><br/>
+                                            {% if form.name.data %}
+                                                <span class="campaign-name-header">{{ form.name.data }}</span>
+                                            {% else %}
+                                                <span class="campaign-name-header">New Campaign</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-header col-lg-3">
+                                        <div class="panel panel-default panel-header form-header">
+                                            <div class="form-header col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label class="panel-header-info" for="start_date">START DATE</label>
+                                                    {{ form.start_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
+                                            </div>
+                                            <div class="form-header col-md-6">
+                                                <div class="form-group required-form">
+                                                    <label class="panel-header-info" for="end_date">END DATE</label>
+                                                    {{ form.end_date }}
+                                                    <p class="help-block"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                         <fieldset id="fieldset-1" data-fieldset-step="1">
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="form-body col-lg-9">
                                     <div class="form-group required-form">
-                                        <label for="name">Campaign name</label>
                                         {{ form.name }}
-                                        <p class="help-block">Name for the campaign</p>
                                     </div>
                                     <br/>
                                     <div class="form-group">
-                                        <label for="description">Campaign description</label>
                                         {{ form.description }}
-                                        <p class="help-block">Description for the campaign</p>
                                     </div>
                                     <br/>
                                   <div class="form-group map-input">
-                                            <label for="map_type">Campaign Map</label>
                                             {{ form.map_type }}
                                             {% if form['errors'] %}
                                                 <p class="error-form">
@@ -72,25 +110,7 @@
                                         </div>
                                         <br/>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group required-form">
-                                                <label for="start_date">Start date of campaign</label>
-                                                {{ form.start_date }}
-                                                <p class="help-block"></p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group required-form">
-                                                <label for="end_date">End date of campaign</label>
-                                                {{ form.end_date }}
-                                                <p class="help-block"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br/>
-                                    <br/>
+                                <div class="form-body col-lg-3">
                                     <div class="form-group required-form">
                                         <label for="campaign_status">Campaign status</label>
                                         {#                                            <div class="error-form">This field is required</div>#}
@@ -100,9 +120,9 @@
                                 </div>
                             </div>
                             <div class="row" style="margin-bottom: -12px;">
-                                <div class="col-lg-6">
+                                <div class="form-body col-lg-6">
                                     <div class="form-group">
-                                        <label for="campaign_managers">Managers of campaign</label>
+                                        <label for="campaign_managers">Managers</label>
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
                                         <div id="managers-list">
                                         </div>
@@ -123,11 +143,12 @@
                                                 </button>
                                             </div>
                                             <p class="helock"></p>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="form-body col-lg-6">
                                     <div class="form-group">
-                                        <label for="tags">Tags of campaign</label>
+                                        <label for="tags">Types</label>
                                         {{ form.tags }}
                                         <p class="help-block"></p>
                                     </div>
@@ -142,14 +163,14 @@
                     <fieldset id="fieldset-2" data-fieldset-step="2">
                         <div class="row">
                             <!-- /.col-lg-6 (nested) -->
-                            <div class="col-lg-8">
+                            <div class="form-body col-lg-8">
                                 <div class="form-group map-wrapper" data-error="">
-                                    <label>Campaign Map</label>
-                                    <div id="campaign-map"></div>
+                                    <label>Create AOI</label>
+                                    <div id="campaign-map" style="margin-top: 30px"></div>
                                     <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="form-body col-lg-4">
                                 <div class="form-group">
                                     <label>Update boundary by shp</label>
                                     {% include 'campaign_widget/ui/upload_boundary.html' %}
@@ -165,7 +186,7 @@
                     {% for category in categories %}
                         <fieldset id="fieldset-{{ loop.index + 2 }}" data-fieldset-step="{{ loop.index + 2 }}">
                             <div class="row insight-functions">
-                                <div class="col-lg-12">
+                                <div class="form-body col-lg-12">
                                     <div class="form-group" style="padding-bottom: 25px;">
                                         <div id="{{ category }}-function" class="function-wrapper">
                                             <label class="category-label">{{ category }} Functions</label>
@@ -193,9 +214,9 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
                         </fieldset>
                     {% endfor %}
+                </div>
                     <!-- /.row (nested) -->
                 </div>
                 <!-- /.panel-body -->
@@ -360,7 +381,7 @@
 
         $('.btn-next').click(function () {
             var nextStep = true;
-            var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+            var currentActiveStep = $('.cc-nav-steps').find('.panel.panel-default.panel-header.cc-nav.active');
             var progressLine = $(this).parents('.cc').find('.cc-progress-line');
             var parentFieldset = $(this).parents('fieldset');
             var currentFieldsetNumber = parentFieldset.data('fieldset-step');
@@ -380,6 +401,7 @@
                 $('#fieldset-' + currentFieldsetNumber).fadeOut(400, function () {
                     // change icons
                     currentActiveStep.removeClass('active').addClass('activated').next().addClass('active');
+                    currentActiveStep.find('.cc-nav-icon').addClass('activated');
                     // progress bar
                     barProgress(progressLine, 'right');
 
@@ -401,7 +423,7 @@
 
         $('.btn-prev').click(function () {
             // navigation steps / progress steps
-            var currentActiveStep = $(this).parents('.cc').find('.cc-step.active');
+            var currentActiveStep =$('.cc-nav-steps').find('.panel.panel-default.panel-header.cc-nav.active');
             var progressLine = $(this).parents('.cc').find('.cc-progress-line');
             var parentFieldset = $(this).parents('fieldset');
             var currentFieldsetNumber = parentFieldset.data('fieldset-step');
@@ -683,7 +705,8 @@
         });
         $("#end_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
-            autoClose: true
+            autoClose: true,
+            position: 'bottom right'
         });
 
         campaignMap.fitBounds(bounds);
