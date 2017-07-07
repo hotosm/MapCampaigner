@@ -118,13 +118,78 @@
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
+        var remote_projects = {{ remote_projects|safe }};
+        var addedLayers = {};
+
+        function renderRemoteProjects(index) {
+
+            if(remote_projects.length === 0) {
+                return;
+            }
+
+            var active = '';
+
+            if (index === 0) {
+                active = 'active';
+            }
+
+            $('.insight-tabs').append(
+                '<li class="' + active + '">' +
+                    '<a href="remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
+                        'Remote Mapper'+
+                '</li>'
+            );
+
+            $('.insight-content').append(
+                '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
+                    '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
+                '</div>'
+            );
+
+            var remoteProjectsIndex = 0;
+            for(var i=0; i < remote_projects.length; i++) {
+                var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + remote_projects[i];
+                remoteProjectsIndex = i;
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+                        if(remoteProjectsIndex === 0) {
+                            $('#remote-mapper-content').html('')
+                        }
+
+                        var layerGroup = L.geoJSON();
+                        layerGroup.addTo(map);
+
+                        layerGroup.addData(data['tasks']);
+
+                        addedLayers[data['projectId']] = layerGroup;
+
+                        $('#remote-mapper-content').append(
+                            '<div class="added-project well well-sm" onclick="showProjectMap(this, '+data['projectId']+')">'+
+                                '<div class="project-detail-name">'+
+                                    '#'+data['projectId']+' '+data['projectInfo']['name']+''+
+                                '</div>'+
+                                '<div class="project-detail-desc">'+
+                                    data['projectInfo']['shortDescription']+
+                                '</div>'+
+                            '</div>'
+                        )
+                    }
+                });
+            }
+        }
+
+        function showProjectMap(el, projectId) {
+            var layer = addedLayers[projectId];
+            map.fitBounds(layer.getBounds());
+        }
 
         function render_selected_functions(username) {
             $('.insight-tabs').html('');
             $('.insight-content').html('');
             var index = 0;
 
-            if (Object.keys(selected_functions).length === 0) {
+            if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
                 $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
             } else {
                 $('.insight-tabs').show();
@@ -168,6 +233,8 @@
                     }
                 }
             });
+
+            renderRemoteProjects(index);
         }
 
         function calculateProgress() {
@@ -186,7 +253,6 @@
             var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
 
             if (campaign_range < 0) {
-                console.log('Invalid Date');
                 $('.detail-campaign-status label').html('-');
                 return;
             }
