@@ -2426,7 +2426,7 @@ module.exports = Object.keys || require('./shim');
 /**!
  * is
  * the definitive JavaScript type testing library
- * 
+ *
  * @copyright 2013 Enrico Marino
  * @license MIT
  */

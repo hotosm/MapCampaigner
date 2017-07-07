@@ -28,6 +28,7 @@ class Campaign(JsonModel):
     end_date = None
     campaign_managers = []
     selected_functions = []
+    remote_projects = []
     tags = []
     description = ''
     _content_json = None
