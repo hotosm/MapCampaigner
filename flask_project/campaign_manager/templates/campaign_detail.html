@@ -135,28 +135,21 @@
 
             $('.insight-tabs').append(
                 '<li class="' + active + '">' +
-                    '<a href="remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
+                    '<a href="#remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
                         'Remote Mapper'+
                 '</li>'
             );
 
             $('.insight-content').append(
                 '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
-                    '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
                 '</div>'
             );
 
-            var remoteProjectsIndex = 0;
             for(var i=0; i < remote_projects.length; i++) {
                 var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + remote_projects[i];
-                remoteProjectsIndex = i;
                 $.ajax({
                     url: url,
                     success: function (data) {
-                        if(remoteProjectsIndex === 0) {
-                            $('#remote-mapper-content').html('')
-                        }
-
                         var layerGroup = L.geoJSON();
                         layerGroup.addTo(map);
 

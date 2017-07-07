@@ -68,11 +68,11 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
                 nextButton = '<button type="button" class="btn btn-sm next-project-page" ' +
                     'onclick="searchProjects('+
                         nextPage + ',' +
-                        (searchText ? searchText : '\'\'') + ',' +
-                        (mapperLevel ? mapperLevel : '\'\'') + ',' +
-                        (mappingTypes ? mappingTypes : '\'\'') + ',' +
-                        (organisationTag ? organisationTag : '\'\'') + ',' +
-                        (campaignTag ? campaignTag : '\'\'') +')"> Next </button>'
+                        (searchText ? '\''+searchText+'\'' : '\'\'') + ',' +
+                        (mapperLevel ? '\''+mapperLevel+'\'' : '\'\'') + ',' +
+                        (mappingTypes ? '\''+mappingTypes+'\'' : '\'\'') + ',' +
+                        (organisationTag ? '\''+organisationTag+'\'' : '\'\'') + ',' +
+                        (campaignTag ? '\''+campaignTag+'\'' : '\'\'') +')"> Next </button>'
             }
 
             if(data['pagination']['page'] - 1 > 0) {
@@ -80,11 +80,11 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
                 prevButton = '<button type="button" class="btn btn-sm prev-project-page" ' +
                     'onclick="searchProjects('+
                         prevPage + ',' +
-                        (searchText ? searchText : '\'\'') + ',' +
-                        (mapperLevel ? mapperLevel : '\'\'') + ',' +
-                        (mappingTypes ? mappingTypes : '\'\'') + ',' +
-                        (organisationTag ? organisationTag : '\'\'') + ',' +
-                        (campaignTag ? campaignTag : '\'\'') +')"> Prev </button>'
+                        (searchText ? '\''+searchText+'\'' : '\'\'') + ',' +
+                        (mapperLevel ? '\''+mapperLevel+'\'' : '\'\'') + ',' +
+                        (mappingTypes ? '\''+mappingTypes+'\'' : '\'\'') + ',' +
+                        (organisationTag ? '\''+organisationTag+'\'' : '\'\'') + ',' +
+                        (campaignTag ? '\''+campaignTag+'\'' : '\'\'') +')"> Prev </button>'
             }
 
             $listProjectsDiv.append(
