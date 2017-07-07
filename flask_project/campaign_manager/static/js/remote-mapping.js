@@ -1,5 +1,12 @@
 var remoteMap = null;
 var addedLayers = {};
+var taskStatusFillColor = {
+    'READY': '#FFFFFF',
+    'MAPPED': '#FFE4B5',
+    'INVALIDATED': '#D3D3D3',
+    'VALIDATED': '#B0DE5C',
+    'BADIMAGERY': '#d2a29e'
+};
 
 $.each(remote_projects_list, function (index, value) {
     addProject(' ', value)
@@ -131,10 +138,27 @@ function addProject(el, projectId) {
             $(el).attr("disabled", true);
             var map = getMap();
 
-            var layerGroup = L.geoJSON();
+            var layerGroup = L.geoJSON([data['tasks']], {
+                style: function (feature) {
+                    if(typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {
+                        return {
+                            weight: 2,
+                            color: "#999",
+                            opacity: 1,
+                            fillColor: taskStatusFillColor[feature.properties.taskStatus],
+                            fillOpacity: 0.8
+                        }
+                    }
+                    return feature.properties && feature.properties.style;
+                },
+                onEachFeature: function (feature, layer) {
+                    var popupContent = feature.properties.taskStatus;
+                    layer.bindPopup(popupContent);
+                }
+            });
             layerGroup.addTo(map);
 
-            layerGroup.addData(data['tasks']);
+            addedLayers[data['projectId']] = layerGroup;
 
             map.fitBounds(layerGroup.getBounds());
 
