@@ -55,11 +55,45 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
     $.ajax({
         url: url,
         success: function (data) {
-            $('#list-projects').html('');
+            var $listProjectsDiv = $('#list-projects');
+
+            $listProjectsDiv.html('');
             var results = data['results'];
-            $('#list-projects').append(
-                '<div style="margin-bottom:10px"> Page ' + data['pagination']['page'] + ' / ' + data['pagination']['pages'] + '</div>'
+
+            var nextButton = '';
+            var prevButton = '';
+
+            if(data['pagination']['pages'] > data['pagination']['page']) {
+                var nextPage = parseInt(pageNum) + 1;
+                nextButton = '<button type="button" class="btn btn-sm next-project-page" ' +
+                    'onclick="searchProjects('+
+                        nextPage + ',' +
+                        (searchText ? searchText : '\'\'') + ',' +
+                        (mapperLevel ? mapperLevel : '\'\'') + ',' +
+                        (mappingTypes ? mappingTypes : '\'\'') + ',' +
+                        (organisationTag ? organisationTag : '\'\'') + ',' +
+                        (campaignTag ? campaignTag : '\'\'') +')"> Next </button>'
+            }
+
+            if(data['pagination']['page'] - 1 > 0) {
+                var prevPage = parseInt(pageNum) - 1;
+                prevButton = '<button type="button" class="btn btn-sm prev-project-page" ' +
+                    'onclick="searchProjects('+
+                        prevPage + ',' +
+                        (searchText ? searchText : '\'\'') + ',' +
+                        (mapperLevel ? mapperLevel : '\'\'') + ',' +
+                        (mappingTypes ? mappingTypes : '\'\'') + ',' +
+                        (organisationTag ? organisationTag : '\'\'') + ',' +
+                        (campaignTag ? campaignTag : '\'\'') +')"> Prev </button>'
+            }
+
+            $listProjectsDiv.append(
+                '<div style="margin-bottom:10px" class="pagination-projects"> Page ' + data['pagination']['page'] + ' / ' + data['pagination']['pages'] + '</div>'
             );
+
+            $('.pagination-projects').append(nextButton);
+            $('.pagination-projects').prepend(prevButton);
+
             $.each(results, function (index, result) {
 
                 $('#list-projects').append(
@@ -100,6 +134,10 @@ function addProject(el, projectId) {
 
             map.fitBounds(layerGroup.getBounds());
 
+            if(Object.keys(addedLayers).length === 0) {
+                $listAddedProjectsDiv.html('');
+            }
+
             addedLayers[data['projectId']] = layerGroup;
 
             $listAddedProjectsDiv.append(
@@ -121,12 +159,16 @@ function addProject(el, projectId) {
 
 function removeProject(el, projectId) {
     var layer = addedLayers[projectId];
+    var $listAddedProjectsDiv = $('#list-added-projects');
     var map = getMap();
 
     map.removeLayer(layer);
 
     delete addedLayers[projectId];
     $(el).parent().parent().remove();
+    if(Object.keys(addedLayers).length === 0) {
+        $listAddedProjectsDiv.html('-');
+    }
 }
 
 function showProjectMap(el, projectId) {

@@ -48,8 +48,130 @@
                         </div>
                     </div>
 
-                     <fieldset id="fieldset-1" data-fieldset-step="1">
+                    <form id="campaign-form" method="POST" action="{{ url }}" role="form">
+                        {{ form.hidden_tag() }}
+                        <fieldset id="fieldset-1" data-fieldset-step="1">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group required-form">
+                                        <label for="name">Campaign name</label>
+                                        {{ form.name }}
+                                        <p class="help-block">Name for the campaign</p>
+                                    </div>
+                                    <br/>
+                                    <div class="form-group">
+                                        <label for="description">Campaign description</label>
+                                        {{ form.description }}
+                                        <p class="help-block">Description for the campaign</p>
+                                    </div>
+                                    <br/>
+                                  <div class="form-group map-input">
+                                            <label for="map_type">Campaign Map</label>
+                                            {{ form.map_type }}
+                                            {% if form['errors'] %}
+                                                <p class="error-form">
+                                                {% if form['errors'].map_type %}
+                                                    {{ form['errors'].map_type[0] }}
+                                                {% endif %}
+                                                </p>
+                                            {% endif %}
+                                            <p class="help-block">Change map display, leave blank to use default</p>
+                                        </div>
+                                        <br/>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group required-form">
+                                                <label for="start_date">Start date of campaign</label>
+                                                {{ form.start_date }}
+                                                <p class="help-block"></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group required-form">
+                                                <label for="end_date">End date of campaign</label>
+                                                {{ form.end_date }}
+                                                <p class="help-block"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <div class="form-group required-form">
+                                        <label for="campaign_status">Campaign status</label>
+                                        {{ form.campaign_status }}
+                                        <p class="help-block">Status of the campaign</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <select id="remote_projects" multiple name="remote_projects" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                            <div class="row" style="margin-bottom: -12px;">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="campaign_managers">Managers of campaign</label>
+                                        <div class="error-form error-managers" style="display: none">This field is required</div>
+                                        <div id="managers-list">
+                                        </div>
+                                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                                        <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
+                                        <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
+                                        </button>
+                                        <br/>
+                                        <br/>
+                                        <div id="users-not-found" style="display: none">
+                                            No users found.
+                                        </div>
+                                        <div id="users-found" style="display: none">
+                                            <p>Select osm users</p>
+                                            <select id="list-osm-users" multiple class="form-control"></select>
+                                            <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
+                                                managers
+                                            </button>
+                                        </div>
+                                        <p class="helock"></p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="tags">Tags of campaign</label>
+                                        {{ form.tags }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cc-buttons">
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </fieldset>
+
+                    </form>
+
+                    <fieldset id="fieldset-2" data-fieldset-step="2">
                         <div class="row">
+                            <!-- /.col-lg-6 (nested) -->
+                            <div class="col-lg-8">
+                                <div class="form-group map-wrapper" data-error="">
+                                    <label>Campaign Map</label>
+                                    <div id="campaign-map"></div>
+                                    <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label>Update boundary by shp</label>
+                                    {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cc-buttons">
+                            <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                            <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="fieldset-3" data-fieldset-step="3">
+                         <div class="row">
                             <!-- /.col-lg-6 (nested) -->
                             <div class="col-lg-12">
                                 <div class="row" style="margin-bottom: 20px;">
@@ -126,123 +248,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="cc-buttons">
-                            <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
-                            <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
-                        </div>
-                    </fieldset>
 
-                    <form id="campaign-form" method="POST" action="{{ url }}" role="form">
-                        {{ form.hidden_tag() }}
-                        <fieldset id="fieldset-3" data-fieldset-step="3">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="form-group required-form">
-                                        <label for="name">Campaign name</label>
-                                        {{ form.name }}
-                                        <p class="help-block">Name for the campaign</p>
-                                    </div>
-                                    <br/>
-                                    <div class="form-group">
-                                        <label for="description">Campaign description</label>
-                                        {{ form.description }}
-                                        <p class="help-block">Description for the campaign</p>
-                                    </div>
-                                    <br/>
-                                  <div class="form-group map-input">
-                                            <label for="map_type">Campaign Map</label>
-                                            {{ form.map_type }}
-                                            {% if form['errors'] %}
-                                                <p class="error-form">
-                                                {{ form['errors'].map_type[0] }}</p>
-                                            {% endif %}
-                                            <p class="help-block">Change map display, leave blank to use default</p>
-                                        </div>
-                                        <br/>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group required-form">
-                                                <label for="start_date">Start date of campaign</label>
-                                                {{ form.start_date }}
-                                                <p class="help-block"></p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group required-form">
-                                                <label for="end_date">End date of campaign</label>
-                                                {{ form.end_date }}
-                                                <p class="help-block"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br/>
-                                    <br/>
-                                    <div class="form-group required-form">
-                                        <label for="campaign_status">Campaign status</label>
-                                        {{ form.campaign_status }}
-                                        <p class="help-block">Status of the campaign</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-bottom: -12px;">
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="campaign_managers">Managers of campaign</label>
-                                        <div class="error-form error-managers" style="display: none">This field is required</div>
-                                        <div id="managers-list">
-                                        </div>
-                                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
-                                        <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
-                                        <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
-                                        </button>
-                                        <br/>
-                                        <br/>
-                                        <div id="users-not-found" style="display: none">
-                                            No users found.
-                                        </div>
-                                        <div id="users-found" style="display: none">
-                                            <p>Select osm users</p>
-                                            <select id="list-osm-users" multiple class="form-control"></select>
-                                            <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
-                                                managers
-                                            </button>
-                                        </div>
-                                        <p class="helock"></p>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="tags">Tags of campaign</label>
-                                        {{ form.tags }}
-                                        <p class="help-block"></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
-                            </div>
-                        </fieldset>
-                    </form>
-
-                    <fieldset id="fieldset-2" data-fieldset-step="2">
-                        <div class="row">
-                            <!-- /.col-lg-6 (nested) -->
-                            <div class="col-lg-8">
-                                <div class="form-group map-wrapper" data-error="">
-                                    <label>Campaign Map</label>
-                                    <div id="campaign-map"></div>
-                                    <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label>Update boundary by shp</label>
-                                    {% include 'campaign_widget/ui/upload_boundary.html' %}
-                                </div>
-                            </div>
-                        </div>
                         <div class="cc-buttons">
                             <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
                             <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
@@ -482,6 +488,8 @@
                         } else {
                             campaignMap.setView([0, 0], 2);
                         }
+                    } else if(currentFieldsetNumber + 1 === 3) {
+                        remoteMap.invalidateSize();
                     }
                 });
             }
@@ -551,8 +559,6 @@
         }
 
         function checkSteps(step) {
-            return true;
-
             if (step === 1) {
                 return checkStep1();
             } else if (step === 2) {
@@ -710,6 +716,10 @@
 
             if (!auth.authenticated() || !$("#uploader").val()) {
                 window.location.replace("/campaign_manager/not-logged-in.html");
+            }
+
+            for (var key in addedLayers) {
+                $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
 
             // Processing selected function
