@@ -589,6 +589,7 @@ def edit_campaign(uuid):
             form.name.data = campaign.name
             form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
+            form.remote_projects.data = campaign.remote_projects
             form.tags.data = campaign.tags
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
