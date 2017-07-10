@@ -4,6 +4,7 @@
 
 #campaign-panel {
     /*padding: 40px !important;*/
+    padding-right: 0 !important;
 }
 
 .cc-title {
@@ -92,6 +93,10 @@
 
 .cc-buttons {
     margin-top: 50px !important;
+}
+
+.btn-next {
+    margin-right: 15px;
 }
 
 .btn-next, .btn-prev, .submit-button {
@@ -205,6 +210,7 @@
 }
 
 .panel-header {
+    border-radius: 0 !important;
     padding: 11px 25px !important;
     border-top: none !important;
 }
@@ -313,7 +319,7 @@
 }
 
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
-  font-size: 13pt;
+  font-size: 11pt;
 }
 
 #campaign-form select#tags {
@@ -379,4 +385,13 @@ select.dashboard-settings {
     margin-right: 10px;
     padding-bottom: 2px;
     padding-top: 2px;
+}
+
+#page-wrapper .row {
+    margin-right: 0 !important;
+}
+
+#list-projects .panel-default {
+    border-top: 1px solid #ddd !important;
+    margin-top: 10px;
 }
