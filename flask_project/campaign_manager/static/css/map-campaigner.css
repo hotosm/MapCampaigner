@@ -547,10 +547,6 @@ body {
     color: black !important;
 }
 
-.panel, .panel-heading {
-    border-radius: 0 !important;
-}
-
 .panel-primary > .panel-heading {
     color: #fff;
     background-color: #3498db;
@@ -1042,4 +1038,9 @@ body {
 
 .nav.navbar-nav {
     margin-left: 50px;
+}
+
+.grey-italic {
+    color: #898989;
+    font-style: italic;
 }

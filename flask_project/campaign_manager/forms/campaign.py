@@ -58,7 +58,6 @@ class CampaignForm(FlaskForm):
             ('Finish', 'Finish')
         ]
     )
-
     start_date = DateField(
         u'Start date of campaign',
         render_kw={'placeholder': '---'}
@@ -67,10 +66,12 @@ class CampaignForm(FlaskForm):
         u'End date of campaign',
         render_kw={'placeholder': '---'}
     )
-
     campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',
         validators=[DataRequired('Campaign manager is needed')])
+    remote_projects = ManagerSelectMultipleField(
+        u'Remote Projects'
+    )
     tags = SelectMultipleField(
         u'Tags of campaign',
         choices=[(tag, tag) for tag in get_tags()])

@@ -45,7 +45,7 @@
 .cc-step {
     position: relative;
     float: left;
-    width: 16.66%;
+    width: 14.28%;
     padding: 0 5px;
 }
 
@@ -349,4 +349,34 @@ select.dashboard-settings {
 
 .show {
     display: block;
+}
+
+.project-detail-desc {
+    font-size: 9pt;
+    color: #565656 !important;
+}
+
+.project-detail-name {
+    font-weight: bolder;
+    color: #46828f !important;
+}
+.project-detail-name:hover{
+    cursor: pointer;
+}
+
+#remote-map {
+    height: 500px;
+    width: 100%;
+}
+
+.next-project-page {
+    margin-left: 10px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+}
+
+.prev-project-page {
+    margin-right: 10px;
+    padding-bottom: 2px;
+    padding-top: 2px;
 }

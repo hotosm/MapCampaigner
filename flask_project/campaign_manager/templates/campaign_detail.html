@@ -64,6 +64,10 @@
                             </span>
                         </p>
                         <p>
+                            <span class="grey-italic">Total Contributors :</span>
+                            <span id="contributors"><span class="grey-italic">Loading data...</span></span>
+                        </p>
+                        <p>
                             <span class="grey-italic">Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
                                 <span id="map-default" style="display: none">
@@ -118,13 +122,93 @@
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
+        var remote_projects = {{ remote_projects|safe }};
+        var addedLayers = {};
+        var taskStatusFillColor = {
+            'READY': '#FFFFFF',
+            'MAPPED': '#FFE4B5',
+            'INVALIDATED': '#D3D3D3',
+            'VALIDATED': '#B0DE5C',
+            'BADIMAGERY': '#d2a29e'
+        };
+
+        function renderRemoteProjects(index) {
+
+            if(remote_projects.length === 0) {
+                return;
+            }
+
+            var active = '';
+
+            if (index === 0) {
+                active = 'active';
+            }
+
+            $('.insight-tabs').append(
+                '<li class="' + active + '">' +
+                    '<a href="#remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
+                        'Remote Mapper'+
+                '</li>'
+            );
+
+            $('.insight-content').append(
+                '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
+                '</div>'
+            );
+
+            for(var i=0; i < remote_projects.length; i++) {
+                var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + remote_projects[i];
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+                        var layerGroup = L.geoJSON([data['tasks']], {
+                            style: function (feature) {
+                                if(typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {
+                                    return {
+                                        weight: 2,
+                                        color: "#999",
+                                        opacity: 1,
+                                        fillColor: taskStatusFillColor[feature.properties.taskStatus],
+                                        fillOpacity: 0.8
+                                    }
+                                }
+                                return feature.properties && feature.properties.style;
+                            },
+                            onEachFeature: function (feature, layer) {
+                                var popupContent = feature.properties.taskStatus;
+                                layer.bindPopup(popupContent);
+                            }
+                        });
+                        layerGroup.addTo(map);
+
+                        addedLayers[data['projectId']] = layerGroup;
+
+                        $('#remote-mapper-content').append(
+                            '<div class="added-project well well-sm" onclick="showProjectMap(this, '+data['projectId']+')">'+
+                                '<div class="project-detail-name">'+
+                                    '#'+data['projectId']+' '+data['projectInfo']['name']+''+
+                                '</div>'+
+                                '<div class="project-detail-desc">'+
+                                    data['projectInfo']['shortDescription']+
+                                '</div>'+
+                            '</div>'
+                        )
+                    }
+                });
+            }
+        }
+
+        function showProjectMap(el, projectId) {
+            var layer = addedLayers[projectId];
+            map.fitBounds(layer.getBounds());
+        }
 
         function render_selected_functions(username) {
             $('.insight-tabs').html('');
             $('.insight-content').html('');
             var index = 0;
 
-            if (Object.keys(selected_functions).length === 0) {
+            if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
                 $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
             } else {
                 $('.insight-tabs').show();
@@ -168,6 +252,8 @@
                     }
                 }
             });
+
+            renderRemoteProjects(index);
         }
 
         function calculateProgress() {
@@ -186,7 +272,6 @@
             var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
 
             if (campaign_range < 0) {
-                console.log('Invalid Date');
                 $('.detail-campaign-status label').html('-');
                 return;
             }
@@ -239,7 +324,17 @@
             }
 
             calculateProgress();
+            calculateContributors();
         });
+
+        function calculateContributors () {
+            var url = "/campaign_manager/campaign/" + uuid +"/total_contributors";
+            $.ajax({
+                url: url,
+                success: function (response) {
+                    $('#contributors').html(response['contributors_total']);
+                }
+            });}
 
         var useDefault =  L.Control.extend({
 

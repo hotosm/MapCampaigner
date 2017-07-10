@@ -9,6 +9,9 @@ from flask import request, render_template, Response
 
 from app_config import Config
 from campaign_manager import campaign_manager
+from campaign_manager.git_utilities import (
+    save_with_git
+)
 from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.utilities import module_path, temporary_folder
@@ -424,8 +427,8 @@ def get_selected_functions():
         insights_function for insights_function in [
             m[0] for m in inspect.getmembers(
                 insights_functions, inspect.isclass)
-            ]
         ]
+    ]
 
     funct_dict = {}
     for insight_function in functions:
@@ -538,11 +541,21 @@ def create_campaign():
 
         data['uuid'] = uuid.uuid4().hex
         Campaign.create(data, form.uploader.data)
+
+        # create commit as git
+        try:
+            save_with_git(
+                'Create campaign - %s' % data['uuid']
+            )
+        except Exception as e:
+            print(e)
+
         return redirect(
             url_for(
                 'campaign_manager.get_campaign',
                 uuid=data['uuid'])
         )
+
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
@@ -576,6 +589,7 @@ def edit_campaign(uuid):
             form.name.data = campaign.name
             form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
+            form.remote_projects.data = campaign.remote_projects
             form.tags.data = campaign.tags
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
@@ -594,6 +608,15 @@ def edit_campaign(uuid):
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
+
+                # create commit as git
+                try:
+                    save_with_git(
+                        'Update campaign - %s' % data['uuid']
+                    )
+                except Exception as e:
+                    print(e)
+
                 return redirect(
                     url_for('campaign_manager.get_campaign',
                             uuid=campaign.uuid)
