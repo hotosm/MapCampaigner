@@ -157,10 +157,15 @@
             );
 
             for(var i=0; i < remote_projects.length; i++) {
-                var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + remote_projects[i];
+                var url = '/campaign_manager/project_detail?projectId=' + remote_projects[i];
                 $.ajax({
                     url: url,
                     success: function (data) {
+                        try {
+                            data = JSON.parse(data);
+                        } catch (e) {
+                            return;
+                        }
                         var layerGroup = L.geoJSON([data['tasks']], {
                             style: function (feature) {
                                 if(typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {

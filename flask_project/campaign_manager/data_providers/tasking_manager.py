@@ -21,31 +21,38 @@ class TaskingManagerProvider(object):
             organisation_tag=None,
             campaign_tag=None
     ):
-        self.api_url += 'search?'
+        url_request = self.api_url
+        url_request += 'search?'
 
-        self.api_url += 'page=' + page + '&'
+        url_request += 'page=' + page + '&'
 
         if search_text:
-            self.api_url += 'textSearch=' + search_text + '&'
+            url_request += 'textSearch=' + search_text + '&'
 
         if mapper_level:
-            self.api_url += 'mapperLevel=' + mapper_level + '&'
+            url_request += 'mapperLevel=' + mapper_level + '&'
 
         if mapping_types:
-            self.api_url += 'mappingTypes=' + mapping_types + '&'
+            url_request += 'mappingTypes=' + mapping_types + '&'
 
         if organisation_tag:
-            self.api_url += 'organisationTag=' + organisation_tag + '&'
+            url_request += 'organisationTag=' + organisation_tag + '&'
 
         if campaign_tag:
-            self.api_url += 'campaignTag=' + campaign_tag + '&'
+            url_request += 'campaignTag=' + campaign_tag + '&'
+        return self.request_data(url_request)
 
-        web_request = Request(self.api_url, None, self.headers)
+    def project_detail(self, project_id):
+        url_request = self.api_url
+        url_request += project_id
+        return self.request_data(url_request)
 
+    def request_data(self, url_request):
+        web_request = Request(url_request, None, self.headers)
         try:
             url_handle = urlopen(web_request, timeout=60)
             data = url_handle.read().decode('utf-8')
             return data
         except HTTPError as e:
-            LOGGER.exception('Error with Overpass')
+            LOGGER.exception('Error with request')
             return e.msg

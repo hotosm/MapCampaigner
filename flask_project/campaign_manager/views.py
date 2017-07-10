@@ -19,6 +19,9 @@ import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
+from campaign_manager.data_providers.tasking_manager import \
+    TaskingManagerProvider
+
 
 from urllib import request as urllibrequest
 
@@ -690,9 +693,6 @@ def not_logged_in():
     """
     return render_template('not_authenticated.html')
 
-from campaign_manager.data_providers.tasking_manager import \
-    TaskingManagerProvider
-
 
 @campaign_manager.route('/search-remote')
 def search_remote():
@@ -713,6 +713,18 @@ def search_remote():
         campaign_tag=campaign_tag
     )
     return Response(data)
+
+
+@campaign_manager.route('/project-detail')
+def project_detail():
+    """Search remote projects from tasking-manager api."""
+    project_id = request.args.get('projectId')
+
+    data = TaskingManagerProvider().project_detail(
+        project_id=project_id,
+    )
+    return Response(data)
+
 
 if __name__ == '__main__':
     if Config.DEBUG:
