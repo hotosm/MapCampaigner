@@ -35,6 +35,8 @@ make build
 make run
 ```
 
+For testing, please for in the .modules file, and edit .modules file to your repo.
+
 # User Interface
 
 ## Starting a Campaign

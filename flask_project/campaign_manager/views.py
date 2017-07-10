@@ -7,18 +7,16 @@ from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
 
 from bs4 import BeautifulSoup
-from campaign_manager.git_utilities import (
-    save_with_git
-)
 from flask import request, render_template, Response
 
-import campaign_manager.insights_functions as insights_functions
 from app_config import Config
 from campaign_manager import campaign_manager
+import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
-from campaign_manager.utilities import module_path, temporary_folder
+from campaign_manager.utilities import temporary_folder
+
 from reporter import LOGGER
 from reporter.static_files import static_file
 
@@ -129,7 +127,7 @@ def check_geojson_is_polygon(geojson):
     """Checking geojson is polygon"""
     types = ["Polygon", "MultiPolygon"]
     for feature in geojson['features']:
-        if feature['geometry']['type'] not in types:
+        if feature['geometry'] and feature['geometry']['type'] not in types:
             return False
     return True
 
@@ -141,7 +139,7 @@ def campaign_boundary_upload_chunk_success(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
-    # validate coverage
+    # validate boundary
     try:
         # folder for this campaign
         folder = os.path.join(
@@ -292,8 +290,7 @@ def campaign_coverage_upload_chunk(uuid):
         filenames = os.path.splitext(filename)
         # folder for this campaign
         filename = os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'coverage',
             uuid
         )
@@ -427,8 +424,8 @@ def get_selected_functions():
         insights_function for insights_function in [
             m[0] for m in inspect.getmembers(
                 insights_functions, inspect.isclass)
+            ]
         ]
-    ]
 
     funct_dict = {}
     for insight_function in functions:
@@ -542,14 +539,6 @@ def create_campaign():
         data['uuid'] = uuid.uuid4().hex
         Campaign.create(data, form.uploader.data)
 
-        # create commit as git
-        try:
-            save_with_git(
-                'Create campaign - %s' % data['uuid']
-            )
-        except Exception as e:
-            print(e)
-
         return redirect(
             url_for(
                 'campaign_manager.get_campaign',
@@ -608,14 +597,6 @@ def edit_campaign(uuid):
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
-
-                # create commit as git
-                try:
-                    save_with_git(
-                        'Update campaign - %s' % data['uuid']
-                    )
-                except Exception as e:
-                    print(e)
 
                 return redirect(
                     url_for('campaign_manager.get_campaign',

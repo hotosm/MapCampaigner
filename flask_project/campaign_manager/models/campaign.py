@@ -14,7 +14,7 @@ from shapely import geometry as shapely_geometry
 from app_config import Config
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
-from campaign_manager.utilities import module_path
+from campaign_manager.git_utilities import save_with_git
 
 
 class Campaign(JsonModel):
@@ -62,6 +62,14 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+        # create commit as git
+        try:
+            save_with_git(
+                'Update campaign - %s' % self.uuid
+            )
+        except Exception as e:
+            print(e)
 
     def update_data(self, data, uploader):
         """ Update data with new dict.
@@ -148,7 +156,7 @@ class Campaign(JsonModel):
                 required_attributes=function['attributes'],
                 additional_data=additional_data
             )
-        except AttributeError as e:
+        except (AttributeError, KeyError) as e:
             return campaing_ui
 
         # render UI
@@ -277,6 +285,14 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+        # create commit as git
+        try:
+            save_with_git(
+                'Create campaign - %s' % data['uuid']
+            )
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def all(**kwargs):

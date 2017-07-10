@@ -91,6 +91,7 @@
                 add_coverage_file_indicator($(this).get(0).files[i].name);
             }
             $coverage.find('#coverage-last-upload').hide();
+            $coverage.find(".file-upload").off('click');
             $coverage.find(".file-upload").prop('disabled', false);
         });
         $coverage.find(".file-upload").click(function () {
