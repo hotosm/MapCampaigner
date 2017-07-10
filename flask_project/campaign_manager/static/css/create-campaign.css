@@ -305,8 +305,15 @@
     height: 50pt !important;
 }
 
-#campaign-form input#name {
+#campaign-form textarea#description {
     margin-top: 25px;
+}
+
+#campaign-form input#name {
+    border: none !important;
+    box-shadow: none !important;
+    height: 25px !important;
+    padding: 0 !important;
 }
 
 .form-body.col-lg-3 {
