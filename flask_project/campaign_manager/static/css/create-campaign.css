@@ -3,7 +3,8 @@
 }
 
 #campaign-panel {
-    padding: 40px !important;
+    /*padding: 40px !important;*/
+    padding-right: 0 !important;
 }
 
 .cc-title {
@@ -81,9 +82,9 @@
     margin-right: 15px;
 }
 
-.form-group>label {
-    font-weight: 900;
-    font-size: 11pt;
+.dashboard-settings, .campaign-name-header, .campaign-status, .form-group>label {
+    font-weight: 700;
+    font-size: 12pt;
 }
 
 .cc fieldset {
@@ -92,6 +93,10 @@
 
 .cc-buttons {
     margin-top: 50px !important;
+}
+
+.btn-next {
+    margin-right: 15px;
 }
 
 .btn-next, .btn-prev, .submit-button {
@@ -185,6 +190,173 @@
     cursor: pointer;
 }
 
+#page-wrapper {
+    margin: 0;
+    padding: 0;
+}
+
+.status-inactive {
+    color: #898989;
+}
+
+.status-active {
+    color: green;
+}
+
+.panel-header-info {
+    color: #898989;
+    font-size: 8pt !important;
+    font-weight: 700;
+}
+
+.panel-header {
+    border-radius: 0 !important;
+    padding: 11px 25px !important;
+    border-top: none !important;
+}
+.panel-header span {
+    line-height: 17pt;
+}
+
+.col-lg-2 {
+    width: 20.7%;
+    padding-right: 0;
+}
+
+.col-lg-10 {
+    width: 78.3%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.campaign-name-header {
+    font-size: 14pt !important;
+}
+
+#campaign-panel.col-lg-9 {
+    padding: 0 !important;
+}
+
+#campaign-panel.panel-body.cc {
+    padding-top: 0 !important;
+}
+
+.form-header.col-lg-3, .form-header.col-lg-9, .form-header.col-md-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.form-header.col-lg-9, .form-body.col-lg-9 {
+    width: 70%;
+}
+
+.form-header.col-lg-3 {
+    width: 30%;
+}
+
+.panel.panel-default.panel-header.form-header {
+    float: left;
+}
+
+.panel.panel-default.panel-header {
+    height: 55pt;
+    border-collapse: collapse;
+    border-top: none;
+    margin-left: -1px;
+    margin-right: -1px;
+    background-color: white;
+}
+
+.start-date input {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.panel.panel-default {
+    border-collapse: collapse;
+    border-top: none;
+    background-color: #f7f7f7;
+    margin-bottom: 0;
+}
+
+#campaign-form input#start_date, #campaign-form input#end_date {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    height: auto !important;
+}
+
+#campaign-form input {
+    height: 45px !important;
+}
+
+.form-body {
+    padding-left: 25px;
+    margin-top: 20px;
+}
+
+.cc-nav.active {
+    background-color: #f5f5f5 !important;
+}
+
+.cc-nav {
+    font-size: 16px !important;
+    padding-top: 20px !important;
+    height: 50pt !important;
+}
+
+#campaign-form input#name {
+    margin-top: 25px;
+}
+
+.form-body.col-lg-3 {
+    margin-top: 50px;
+}
+
+.help-block {
+    font-size: 10pt;
+    margin-left: 10px !important;
+}
+
+#campaign-form input::placeholder, #campaign-form textarea::placeholder {
+  font-size: 11pt;
+}
+
+#campaign-form select#tags {
+    height: 130px;
+}
+
+.cc-nav.activated {
+    color: #46828f;
+}
+
+.cc-nav-icon.activated {
+    display: block !important;
+    color: #46828f;
+}
+
+.cc-nav {
+    border: none !important;
+}
+
+select.dashboard-settings {
+	border: none !important;
+	width: 100% !important;
+    -webkit-appearance: none;
+	font-size: 14pt;
+	box-shadow: none;
+	background-color: white;
+	font-weight: 700;
+}
+
+.hide {
+    display: none !important;
+}
+
+.show {
+    display: block;
+}
+
 .project-detail-desc {
     font-size: 9pt;
     color: #565656 !important;
@@ -213,4 +385,13 @@
     margin-right: 10px;
     padding-bottom: 2px;
     padding-top: 2px;
+}
+
+#page-wrapper .row {
+    margin-right: 0 !important;
+}
+
+#list-projects .panel-default {
+    border-top: 1px solid #ddd !important;
+    margin-top: 10px;
 }

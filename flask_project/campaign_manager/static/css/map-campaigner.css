@@ -577,11 +577,11 @@ body {
 
 #campaign_status li label {
     position: absolute;
-    margin-top: 10px !important;
+    margin-top: 17px !important;
 }
 
 #campaign-form input, #campaign-form select {
-    border-radius: 2px;
+    border-radius: 5px;
 }
 
 .sub-title {
@@ -1034,6 +1034,10 @@ body {
     font-style: italic;
     text-align: center;
     margin-bottom: 10px
+}
+
+.nav.navbar-nav {
+    margin-left: 50px;
 }
 
 .grey-italic {
