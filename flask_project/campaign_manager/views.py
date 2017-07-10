@@ -530,6 +530,9 @@ def create_campaign():
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
+    if not os.path.exists(Campaign.get_json_folder()):
+        return Response('DATA_SOURCE not found or not valid.')
+
     form = CampaignForm(request.form)
     if form.validate_on_submit():
         data = form.data

@@ -6,7 +6,10 @@ try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
 except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
-from utilities import absolute_path
+try:
+    from secret import DATA_SOURCE as DATA_SOURCE  # noqaqa
+except ImportError:
+    DATA_SOURCE = ''
 
 
 class Config(object):
@@ -23,11 +26,7 @@ class Config(object):
     OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
 
     # CAMPAIGN DATA
-    campaigner_data_folder = os.path.join(
-        absolute_path(),
-        '..',
-        'field-campaigner-data'
-    )
+    campaigner_data_folder = DATA_SOURCE
 
 
 class ProductionConfig(Config):
