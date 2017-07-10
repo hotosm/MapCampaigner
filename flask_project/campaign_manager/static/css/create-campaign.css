@@ -332,3 +332,21 @@
 .cc-nav {
     border: none !important;
 }
+
+select.dashboard-settings {
+	border: none !important;
+	width: 100% !important;
+    -webkit-appearance: none;
+	font-size: 14pt;
+	box-shadow: none;
+	background-color: white;
+	font-weight: 700;
+}
+
+.hide {
+    display: none !important;
+}
+
+.show {
+    display: block;
+}
