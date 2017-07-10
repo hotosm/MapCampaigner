@@ -64,6 +64,10 @@
                             </span>
                         </p>
                         <p>
+                            <span class="grey-italic">Total Contributors :</span>
+                            <span id="contributors"><span class="grey-italic">Loading data...</span></span>
+                        </p>
+                        <p>
                             <span class="grey-italic">Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
                                 <span id="map-default" style="display: none">
@@ -239,7 +243,17 @@
             }
 
             calculateProgress();
+            calculateContributors();
         });
+
+        function calculateContributors () {
+            var url = "/campaign_manager/campaign/" + uuid +"/total_contributors";
+            $.ajax({
+                url: url,
+                success: function (response) {
+                    $('#contributors').html(response['contributors_total']);
+                }
+            });}
 
         var useDefault =  L.Control.extend({
 
