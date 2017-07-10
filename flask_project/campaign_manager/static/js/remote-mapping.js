@@ -36,7 +36,7 @@ $('#search-projects-button').click(function () {
 });
 
 function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisationTag, campaignTag) {
-    var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/search?';
+    var url = '/campaign_manager/search-remote?';
     var urlParams = '';
 
     urlParams += 'page=' + pageNum + '&';
@@ -69,6 +69,7 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
             var $listProjectsDiv = $('#list-projects');
 
             $listProjectsDiv.html('');
+            data = JSON.parse(data);
             var results = data['results'];
 
             var nextButton = '';

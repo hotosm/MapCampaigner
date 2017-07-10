@@ -690,6 +690,29 @@ def not_logged_in():
     """
     return render_template('not_authenticated.html')
 
+from campaign_manager.data_providers.tasking_manager import \
+    TaskingManagerProvider
+
+
+@campaign_manager.route('/search-remote')
+def search_remote():
+    """Search remote projects from tasking-manager api."""
+    page = request.args.get('page')
+    search_text = request.args.get('textSearch', None)
+    mapper_level = request.args.get('mapperLevel', None)
+    mapping_types = request.args.get('mappingTypes', None)
+    organisation_tag = request.args.get('organisationTag', None)
+    campaign_tag = request.args.get('campaignTag', None)
+
+    data = TaskingManagerProvider().search_project(
+        page=page,
+        search_text=search_text,
+        mapper_level=mapper_level,
+        mapping_types=mapping_types,
+        organisation_tag=organisation_tag,
+        campaign_tag=campaign_tag
+    )
+    return Response(data)
 
 if __name__ == '__main__':
     if Config.DEBUG:
