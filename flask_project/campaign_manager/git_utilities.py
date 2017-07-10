@@ -5,10 +5,10 @@ import datetime
 import os
 import subprocess
 from subprocess import call
+from app_config import Config
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-git_folder = os.path.join(
-    file_path, os.pardir)
+git_folder = Config.campaigner_data_folder
 
 
 def git_pull():

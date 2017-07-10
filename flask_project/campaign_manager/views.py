@@ -1,26 +1,26 @@
-import json
 import inspect
+import json
 import os
 import shutil
 from datetime import datetime
+from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
-from bs4 import BeautifulSoup
-from flask import request, render_template, Response
 
-from app_config import Config
-from campaign_manager import campaign_manager
+from bs4 import BeautifulSoup
 from campaign_manager.git_utilities import (
     save_with_git
 )
-from reporter import LOGGER
-from reporter.static_files import static_file
-from campaign_manager.utilities import module_path, temporary_folder
+from flask import request, render_template, Response
+
 import campaign_manager.insights_functions as insights_functions
+from app_config import Config
+from campaign_manager import campaign_manager
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
-
-from urllib import request as urllibrequest
+from campaign_manager.utilities import module_path, temporary_folder
+from reporter import LOGGER
+from reporter.static_files import static_file
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
