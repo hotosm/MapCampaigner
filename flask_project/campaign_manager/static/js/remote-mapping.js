@@ -137,7 +137,7 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
 }
 
 function addProject(el, projectId) {
-    var url = '/campaign_manager/project_detail?projectId=' + projectId;
+    var url = '/campaign_manager/project-detail?projectId=' + projectId;
     var $listAddedProjectsDiv = $('#list-added-projects');
 
     $.ajax({
