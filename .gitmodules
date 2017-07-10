@@ -1,0 +1,3 @@
+[submodule "field-campaigner-data"]
+	path = field-campaigner-data
+	url = git@github.com:hotosm/field-campaigner-data.git

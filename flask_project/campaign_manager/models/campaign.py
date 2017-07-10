@@ -7,9 +7,12 @@ import json
 import os
 import pygeoj
 import time
-from shapely import geometry as shapely_geometry
-import campaign_manager.insights_functions as insights_functions
+
 from flask import render_template
+from shapely import geometry as shapely_geometry
+
+from app_config import Config
+import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.utilities import module_path
 
@@ -218,8 +221,7 @@ class Campaign(JsonModel):
         :rtype: str
         """
         return os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'coverage',
             self.uuid
         )
@@ -227,7 +229,7 @@ class Campaign(JsonModel):
     @staticmethod
     def get_json_folder():
         return os.path.join(
-            module_path(), 'campaigns_data', 'campaign')
+            Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
     def serialize(data):

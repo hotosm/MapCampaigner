@@ -4,6 +4,7 @@ __date__ = '16/05/17'
 import os
 import threading
 from utilities import absolute_path
+import tempfile
 import time
 
 from reporter.osm import fetch_osm
@@ -24,12 +25,13 @@ def module_path(*args):
 def temporary_folder():
     """Get an absolute path for temp folder which
     is relative to the root."""
-
-    return os.path.join(
-        module_path(),
-        'campaigns_data',
-        'temp'
-    )
+    temporary_folder = os.path.join(
+        tempfile.gettempdir(), 'campaign-data')
+    try:
+        os.mkdir(temporary_folder)
+    except OSError as e:
+        pass
+    return temporary_folder
 
 
 def get_osm_user():

@@ -6,6 +6,7 @@ try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
 except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
+from utilities import absolute_path
 
 
 class Config(object):
@@ -20,6 +21,13 @@ class Config(object):
     _OSMCHA_DOMAIN = 'http://osmcha-django-staging.tilestream.net/'
     OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
     OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
+
+    # CAMPAIGN DATA
+    campaigner_data_folder = os.path.join(
+        absolute_path(),
+        '..',
+        'field-campaigner-data'
+    )
 
 
 class ProductionConfig(Config):
