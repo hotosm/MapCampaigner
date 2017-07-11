@@ -66,7 +66,9 @@ def save_with_git(commit_message=''):
     :param commit_message: commit_message
     :type commit_message: str
     """
-    git_pull()
-    git_add()
-    git_commit(commit_message)
-    git_push()
+    from app import osm_app
+    if not osm_app.config['DEBUG']:
+        git_pull()
+        git_add()
+        git_commit(commit_message)
+        git_push()
