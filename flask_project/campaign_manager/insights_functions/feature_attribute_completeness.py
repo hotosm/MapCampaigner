@@ -1,21 +1,16 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
-from campaign_manager.insights_functions._abstract_insights_function import (
-    AbstractInsightsFunction
-)
-from campaign_manager.data_providers.overpass_provider import OverpassProvider
+from campaign_manager.insights_functions._abstract_overpass_insight_function \
+    import AbstractOverpassInsightFunction
 
 
-class FeatureAttributeCompleteness(AbstractInsightsFunction):
+class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     function_name = "Showing feature completeness"
     category = ['quality']
     need_required_attributes = True
     icon = 'list'
     _function_good_data = None  # cleaned data
-
-    last_update = ''
-    is_updating = False
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -38,19 +33,6 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         """
         return ""
 
-    def get_data_from_provider(self):
-        """ Get data provider function
-        :return: data from provider
-        :rtype: dict
-        """
-        overpass_data = OverpassProvider().get_data(
-                self.FEATURES_MAPPING[self.feature],
-                self.campaign.corrected_coordinates()
-        )
-        self.last_update = overpass_data['last_update']
-        self.is_updating = overpass_data['updating_status']
-        return overpass_data['features']
-
     def process_data(self, raw_datas):
         """ Get geometry of campaign.
         :param raw_datas: Raw data that returns by function provider
@@ -62,6 +44,9 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         self._function_good_data = []
         list_good_data = []
         required_attributes = self.get_required_attributes()
+
+        if not raw_datas:
+            return []
 
         for raw_data in raw_datas:
 
