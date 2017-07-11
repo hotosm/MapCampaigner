@@ -24,7 +24,7 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :rtype: dict
         """
         overpass_data = OverpassProvider().get_data(
-            self.FEATURES_MAPPING[self.feature],
+            self.feature,
             self.campaign.corrected_coordinates()
         )
         self.last_update = overpass_data['last_update']

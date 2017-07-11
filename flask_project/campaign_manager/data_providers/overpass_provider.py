@@ -20,13 +20,33 @@ from campaign_manager.utilities import (
 
 class OverpassProvider(AbstractDataProvider):
     """Provider from overpass"""
+    query = (
+        '('
+        'way["%(KEY)s"]'
+        '(poly:"{polygon}");'
+        'relation["%(KEY)s"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
+    query_with_value = (
+        '('
+        'way["%(KEY)s"="%(VALUE)s"]'
+        '(poly:"{polygon}");'
+        'relation["%(KEY)s"="%(VALUE)s"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
 
-    def get_data(self, feature, polygon):
+    def get_data(self, feature_type, polygon):
         """Get osm data.
 
-        :param feature: The type of feature to extract:
+        :param feature_type: The type of feature to extract:
             buildings, building-points, roads, potential-idp, boundary-[1,11]
-        :type feature: str
+        :type feature_type: str
 
         :param polygon: list of array describing polygon area e.g.
         '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
@@ -40,7 +60,6 @@ class OverpassProvider(AbstractDataProvider):
         """
         server_url = 'http://overpass-api.de/api/interpreter?data='
 
-        tag_name = feature
         overpass_verbosity = 'body'
 
         try:
@@ -49,11 +68,21 @@ class OverpassProvider(AbstractDataProvider):
             error = "Invalid area"
             polygon_string = config.POLYGON
 
-        feature_type = TAG_MAPPING[tag_name]
         parameters = dict()
         parameters['print_mode'] = overpass_verbosity
         parameters['polygon'] = polygon_string
-        query = OVERPASS_QUERY_MAP_POLYGON[feature_type].format(**parameters)
+
+        feature_types = feature_type.split('=')
+        if len(feature_types) == 2 and feature_types[1]:
+            query = self.query_with_value % {
+                'KEY': feature_types[0],
+                'VALUE': feature_types[1]
+            }
+        else:
+            query = self.query % {
+                'KEY': feature_type
+            }
+        query = query.format(**parameters)
 
         # Query to returns json string
         query = '[out:json];' + query

@@ -358,10 +358,9 @@
                     </select>
                 </div>
                 <div class="col-lg-4">
-                    <select class="form-control  function-feature" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Select type of feature to extract"
-                            style="display: none">
-                    </select>
+                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Put feature to extract"
+                           style="display: none">
                 </div>
                 <div class="col-lg-3">
                     <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
@@ -1014,20 +1013,13 @@
             if ($(event).val() !== '') {
                 var need_feature = 'false';
                 var need_required_attributes = 'false';
-                var features = null;
                 if(typeof functions[$(event).val()] !== 'undefined') {
                     need_feature = functions[$(event).val()]['need_feature'];
                     need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                    features = functions[$(event).val()]['features'];
                 }
 
-                if (features && need_feature === 'true') {
+                if (need_feature === 'true') {
                     getFormElement($event, '.function-feature').show();
-                    $.each(features, function (index, feature) {
-                        getFormElement($event, '.function-feature').append(
-                                "<option value='" + feature + "'>" + feature + "</option>"
-                        );
-                    });
                 }
                 if (need_required_attributes === 'true') {
                     getFormElement($event, '.function-attributes').show();

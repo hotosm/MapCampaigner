@@ -444,8 +444,6 @@ def get_selected_functions():
         function_dict['name'] = function_name
         function_dict['need_feature'] = \
             ('%s' % selected_function.need_feature).lower()
-        if not selected_function.feature:
-            function_dict['features'] = selected_function.FEATURES
         function_dict['need_required_attributes'] = \
             ('%s' % selected_function.need_required_attributes).lower()
         function_dict['category'] = \
