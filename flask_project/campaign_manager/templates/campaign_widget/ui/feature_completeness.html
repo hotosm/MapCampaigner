@@ -9,6 +9,7 @@
         <tr>
             <th>Name</th>
             <th>Type</th>
+            <th>Status</th>
             {% for key in data.attributes %}
                 <th>{{ key }}</th>
             {% endfor %}
@@ -52,6 +53,12 @@
                 <td>
                     {{ row['type'] }} <ul>
                 </ul>
+                </td>
+                <td>
+                    {% if row['only_warning'] %}
+                    {% else %}
+                       <div class="error-completeness">Error: {{ row['error_message'] }}</div>
+                    {% endif %}
                 </td>
                 {% for key in data.attributes %}
                     {% if not row['tags'] %}
@@ -131,6 +138,10 @@
 
     .relation-member {
         display: none;
+    }
+
+    .error-completeness {
+        color: #c90623;
     }
 </style>
 <script>
