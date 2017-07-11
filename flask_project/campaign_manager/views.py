@@ -14,14 +14,17 @@ from campaign_manager.git_utilities import (
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
-from campaign_manager.utilities import module_path, temporary_folder
+from campaign_manager.utilities import (
+    module_path,
+    temporary_folder,
+    get_types
+)
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
-
 
 from urllib import request as urllibrequest
 
@@ -68,24 +71,6 @@ def home_all():
         oauth_secret=OAUTH_SECRET,
         all=True,
         google_api_key=GOOGLE_API_KEY
-    )
-
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
-
-
-@campaign_manager.route('/tags/<tag>')
-def campaigns_with_tag(tag):
-    """Home page view with tag.
-
-    On this page a summary campaign manager view will shown.
-    """
-
-    context = dict(
-        oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET,
-        google_api_key=GOOGLE_API_KEY,
-        tag=tag
     )
 
     # noinspection PyUnresolvedReferences
@@ -430,8 +415,8 @@ def get_selected_functions():
         insights_function for insights_function in [
             m[0] for m in inspect.getmembers(
                 insights_functions, inspect.isclass)
+            ]
         ]
-    ]
 
     funct_dict = {}
     for insight_function in functions:
@@ -570,6 +555,7 @@ def create_campaign():
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
+    context['types'] = get_types()
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -591,7 +577,7 @@ def edit_campaign(uuid):
             form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
-            form.tags.data = campaign.tags
+            form.types.data = campaign.types
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
             form.map_type.data = campaign.map_type
@@ -635,6 +621,7 @@ def edit_campaign(uuid):
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
+    context['types'] = get_types()
     return render_template(
         'create_campaign.html', form=form, **context)
 

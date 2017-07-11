@@ -13,7 +13,7 @@ from wtforms.fields import (
 )
 from wtforms.validators import DataRequired, Optional, ValidationError
 from urllib.parse import urlparse
-from campaign_manager.utilities import get_osm_user, get_tags
+from campaign_manager.utilities import get_osm_user, get_types
 from campaign_manager.views import valid_map_list
 
 
@@ -72,9 +72,9 @@ class CampaignForm(FlaskForm):
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
-    tags = SelectMultipleField(
+    types = SelectMultipleField(
         u'Tags of campaign',
-        choices=[(tag, tag) for tag in get_tags()])
+        choices=[(key, key) for key, value in get_types().items()])
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',
