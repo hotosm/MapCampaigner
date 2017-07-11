@@ -88,6 +88,13 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             error_found = True
             error_message = 'Name not found'
 
+        # Check operator
+        if not error_found:
+            if 'operator:type' not in feature_data['tags'] \
+               and 'operator' not in feature_data['tags']:
+                error_found = True
+                error_message = 'Operator not found'
+
         # Check all uppercase or lowercase
         if not error_found:
             feature_name = feature_data['tags']['name']
