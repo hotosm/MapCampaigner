@@ -36,7 +36,7 @@ $('#search-projects-button').click(function () {
 });
 
 function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisationTag, campaignTag) {
-    var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/search?';
+    var url = '/campaign_manager/search-remote?';
     var urlParams = '';
 
     urlParams += 'page=' + pageNum + '&';
@@ -69,6 +69,14 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
             var $listProjectsDiv = $('#list-projects');
 
             $listProjectsDiv.html('');
+
+            try {
+                data = JSON.parse(data);
+            } catch (e) {
+                $listProjectsDiv.html(data);
+                return;
+            }
+
             var results = data['results'];
 
             var nextButton = '';
@@ -129,12 +137,18 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
 }
 
 function addProject(el, projectId) {
-    var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + projectId;
+    var url = '/campaign_manager/project-detail?projectId=' + projectId;
     var $listAddedProjectsDiv = $('#list-added-projects');
 
     $.ajax({
         url: url,
         success: function (data) {
+            try {
+                data = JSON.parse(data);
+            } catch (e) {
+                return;
+            }
+
             $(el).attr("disabled", true);
             var map = getMap();
 
