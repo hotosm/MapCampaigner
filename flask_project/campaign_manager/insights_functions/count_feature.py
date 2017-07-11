@@ -115,7 +115,7 @@ class CountFeature(AbstractOverpassInsightFunction):
                 group_type=building_type.capitalize()
             )
 
-            if building_group not in output:
+            if building_group not in output['data']:
                 output['data'][building_group] = 0
             output['data'][building_group] += 1
         return output
