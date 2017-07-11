@@ -42,14 +42,30 @@ def get_osm_user():
     return users
 
 
-def get_tags():
-    osm_user_path = os.path.join(
-        module_path(), 'tag_data.txt')
-    with open(osm_user_path) as f:
-        content = f.readlines()
-    tags = [x.strip() for x in content]
-    tags.sort()
-    return tags
+def get_types():
+    """ Get all types in json
+
+    :return: json of survey of type
+    :rtype: dict
+    """
+    survey_folder = os.path.join(
+        module_path(),
+        'campaigns_data',
+        'surveys'
+    )
+    surveys = {}
+    for filename in os.listdir(survey_folder):
+        if '.gitkeep' in filename:
+            continue
+
+        # check the json for each file
+        survey_path = os.path.join(
+            survey_folder,
+            filename
+        )
+        survey = get_survey_json(survey_path)
+        surveys[filename] = survey
+    return surveys
 
 
 running_thread = []

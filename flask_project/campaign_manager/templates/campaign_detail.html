@@ -13,8 +13,8 @@
     <div class="row">
         <div class="col-lg-7">
             <h3 class="detail-campaign-name">{{ name }}</h3>
-            {% for tag in tags %}
-                <label class="detail-tag"> {{ tag }} </label>
+            {% for type in types %}
+                <label class="detail-tag"> {{ type }} </label>
             {% endfor %}
             <p>
                 {% if description %}

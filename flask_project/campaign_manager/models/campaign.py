@@ -29,7 +29,7 @@ class Campaign(JsonModel):
     campaign_managers = []
     selected_functions = []
     remote_projects = []
-    tags = []
+    types = []
     description = ''
     _content_json = None
     map_type = ''
