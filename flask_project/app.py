@@ -2,7 +2,6 @@ import os
 from flask import Flask
 from reporter import reporter
 from campaign_manager import campaign_manager
-import utilities
 
 osm_app = Flask(__name__, static_folder='./reporter/static')
 osm_app.register_blueprint(reporter)
