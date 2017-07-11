@@ -157,7 +157,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right" onclick="checkFormHeader()">Next <span class="pull-right"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -696,6 +696,34 @@
             }
 
             return valid;
+        }
+
+        function checkFormHeader(){
+                        var valid = true;
+
+            var required_forms = $('.form-header').find('.required-form');
+
+            $.each(required_forms, function (index, value) {
+                var input_form = $(value).find("[type=text]");
+
+                if (input_form.length > 0) {
+                    input_form.removeClass('error');
+
+                    input_form.click(function () {
+                        $(this).removeClass('error');
+                        $(this).attr('placeholder', '');
+                    });
+
+                    if (input_form.val() === '') {
+                        input_form.addClass('error');
+                        input_form.attr('placeholder', 'This field is required');
+                        valid = false;
+                    }
+                }
+            });
+
+            return valid;
+
         }
 
         $(function () {

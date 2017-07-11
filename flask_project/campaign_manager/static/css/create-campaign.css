@@ -326,7 +326,8 @@
 }
 
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
-  font-size: 11pt;
+    font-size: 11pt;
+    font-weight: normal !important;
 }
 
 #campaign-form select#tags {
@@ -401,4 +402,13 @@ select.dashboard-settings {
 #list-projects .panel-default {
     border-top: 1px solid #ddd !important;
     margin-top: 10px;
+}
+
+input#start_date.form-control.error::placeholder,
+input#end_date.form-control.error::placeholder {
+    font-size: 10pt !important;
+}
+
+input#name {
+    font-weight: 700 !important;
 }
