@@ -56,11 +56,11 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         :param raw_datas: Raw data that returns by function provider
         :type raw_datas: dict
 
-        :return: processed data
+        :return: list good data
         :rtype: dict
         """
         self._function_good_data = []
-        processed_data = []
+        list_good_data = []
         required_attributes = self.get_required_attributes()
 
         for raw_data in raw_datas:
@@ -84,9 +84,9 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
                 self._function_good_data.append(raw_data)
 
                 if not raw_data['error']:
-                    processed_data.append(raw_data)
+                    list_good_data.append(raw_data)
 
-        return processed_data
+        return list_good_data
 
     def check_feature_completeness(self, feature_data):
         """Check feature completeness.
@@ -95,6 +95,7 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
         :type feature_data: dict
         """
         error_found = False
+        warning_message = ''
         error_message = ''
 
         # Check name tags
@@ -102,8 +103,39 @@ class FeatureAttributeCompleteness(AbstractInsightsFunction):
             error_found = True
             error_message = 'Name not found'
 
+        # Check all uppercase or lowercase
+        if not error_found:
+            feature_name = feature_data['tags']['name']
+            if feature_name.isupper():
+                error_found = True
+                warning_message = 'Name is all uppercase'
+            elif feature_name.islower():
+                error_found = True
+                warning_message = 'Name is all lowercase'
+
+        # Check mixed case
+        if not error_found:
+            feature_name = feature_data['tags']['name']
+            for index, name in enumerate(feature_name.split()):
+
+                if name[0].islower() and not self.is_string_int(name[0]):
+                    # e.g : name of Feature
+                    error_found = True
+                    warning_message = 'Name is mixed case'
+                    break
+
         feature_data['error'] = error_found
         feature_data['error_message'] = error_message
+        feature_data['warning_message'] = warning_message
+
+    def is_string_int(self, text):
+        """Check whether the text is int or not."""
+        try:
+            int(text)
+        except ValueError:
+            return False
+
+        return True
 
     def post_process_data(self, data):
         """Process data regarding output.

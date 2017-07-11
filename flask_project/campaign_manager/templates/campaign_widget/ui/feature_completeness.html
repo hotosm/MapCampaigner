@@ -55,7 +55,8 @@
                 </ul>
                 </td>
                 <td>
-                    {% if row['only_warning'] %}
+                    {% if row['warning_message'] %}
+                        <div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>
                     {% else %}
                        <div class="error-completeness">Error: {{ row['error_message'] }}</div>
                     {% endif %}
@@ -142,6 +143,10 @@
 
     .error-completeness {
         color: #c90623;
+    }
+
+    .warning-completeness {
+        color: #c99015;
     }
 </style>
 <script>
