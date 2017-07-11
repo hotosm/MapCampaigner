@@ -157,7 +157,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right" onclick="checkFormHeader()">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -515,11 +515,12 @@
             if (currentStep === totalSteps) return;
 
             nextStep = checkSteps(currentStep);
+            var nameDateValid = checkFormHeader();
 
             // scroll window to beginning of the form
             scrollToClass($('#wrapper'), 20);
 
-            if (nextStep) {
+            if (nextStep && nameDateValid) {
                 $(parentFieldset).children().find('button').attr('disabled', 'disabled');
                 $('#fieldset-' + currentFieldsetNumber).fadeOut(400, function () {
                     // change icons
@@ -699,8 +700,7 @@
         }
 
         function checkFormHeader(){
-                        var valid = true;
-
+            var valid = true;
             var required_forms = $('.form-header').find('.required-form');
 
             $.each(required_forms, function (index, value) {
