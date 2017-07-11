@@ -11,6 +11,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     need_required_attributes = True
     icon = 'list'
     _function_good_data = None  # cleaned data
+    nodes = {}
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -49,6 +50,9 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             return []
 
         for raw_data in raw_datas:
+
+            if raw_data['type'] == 'node':
+                continue
 
             good_data = False
 
