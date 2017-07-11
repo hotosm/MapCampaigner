@@ -2,7 +2,6 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 from abc import ABCMeta
-import pygeoj
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
 
@@ -14,14 +13,7 @@ class AbstractInsightsFunction(object):
     __metaclass__ = ABCMeta
 
     CATEGORIES = ['coverage', 'quality', 'error', 'engagement']
-    FEATURES = ['buildings', 'roads']
-    FEATURES_MAPPING = {
-        'buildings': 'building',
-        'roads': 'road'
-    }
-    EXTRA_MAPPING = {
-        'amenity': 'building'
-    }
+
     _function_raw_data = None  # data exaclty from osm
     _function_data = None  # data that used by others
 
