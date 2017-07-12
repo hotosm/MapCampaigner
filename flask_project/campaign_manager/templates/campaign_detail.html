@@ -258,6 +258,11 @@
                 }
             });
 
+
+            for(var i=0; i<feature_collected.length;i++) {
+                calculateContributors(feature_collected[i]);
+            }
+
             renderRemoteProjects(index);
         }
 
@@ -329,15 +334,16 @@
             }
 
             calculateProgress();
-            calculateContributors();
         });
 
-        function calculateContributors () {
-            var url = "/campaign_manager/campaign/" + uuid +"/total_contributors";
+        var total_contributors = 0;
+        function calculateContributors (feature) {
+            var url = "/campaign_manager/campaign/total_contributors/" + uuid + "/" + feature;
             $.ajax({
                 url: url,
                 success: function (response) {
-                    $('#contributors').html(response['contributors_total']);
+                    total_contributors += parseInt(response['contributors_total']);
+                    $('#contributors').html(total_contributors);
                 }
             });}
 
