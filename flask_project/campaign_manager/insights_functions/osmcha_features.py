@@ -16,9 +16,6 @@ class OsmchaFeatures(AbstractInsightsFunction):
     category = ['error']
     icon = 'list'
 
-    # attribute of insight function
-    need_feature = False
-    need_required_attributes = False
     current_page = 1
     function_id = ''
 

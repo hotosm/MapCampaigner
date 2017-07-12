@@ -97,11 +97,20 @@
   },
   "start_date": "2017-01-01",
   "types": {
-    "Educational Facilities": [
-      "Name",
-      "Amenity",
-      "Opening_hours"
-    ]
+    "type-1": {
+      "type": "Educational Facilities",
+      "tags": [
+        "Name",
+        "Amenity"
+      ]
+    },
+    "type-2": {
+      "type": "Bank",
+      "tags": [
+        "Name",
+        "Amenity"
+      ]
+    }
   },
   "tags": [
     "boundaries",

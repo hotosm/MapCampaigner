@@ -164,6 +164,13 @@
                                         <p class="helock"></p>
                                     </div>
                                 </div>
+                                <div class="form-body col-lg-6">
+                                    <div class="form-group">
+                                        <label for="types">Types</label>
+                                        {{ form.types }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="cc-buttons">
                                 <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
@@ -366,17 +373,6 @@
                             <option value="{{ key }}">{{ value.name }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-lg-4">
-                    <select class="form-control  function-feature" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Select type of feature to extract"
-                            style="display: none">
-                    </select>
-                </div>
-                <div class="col-lg-3">
-                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Additional attributes for this function"
-                           style="display: none">
                 </div>
             </div>
         </div>
@@ -782,9 +778,7 @@
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'feature': $(row).find('.function-feature').val(),
-                        'category': category,
-                        'attributes': $(row).find('.function-attributes').val()
+                        'category': category
                     }
                 }
             });
