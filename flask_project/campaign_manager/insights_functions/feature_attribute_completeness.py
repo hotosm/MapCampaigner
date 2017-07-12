@@ -58,7 +58,8 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                     continue
 
                 self._function_good_data.append(value)
-                self.check_feature_completeness(value, required_attributes, survey_attributes)
+                self.check_feature_completeness(
+                    value, required_attributes, survey_attributes)
 
                 if not value['error']:
                     list_good_data.append(value)

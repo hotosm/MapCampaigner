@@ -103,6 +103,13 @@
         "Name",
         "Amenity"
       ]
+    },
+    "type-2": {
+      "type": "Bank",
+      "tags": [
+        "Name",
+        "Amenity"
+      ]
     }
   },
   "tags": [
