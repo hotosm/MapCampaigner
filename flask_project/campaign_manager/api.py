@@ -131,12 +131,13 @@ class CampaignTotal(Resource):
 
 class CampaignContributors(Resource):
     """Show Campaign Contributors."""
+    feature = None
 
     def get_campaign(self, uuid):
         """Return campaign."""
         return Campaign(uuid=uuid)
 
-    def get(self, uuid):
+    def get(self, uuid, feature):
         """Get total contributors."""
 
         campaign = self.get_campaign(uuid)
@@ -148,7 +149,8 @@ class CampaignContributors(Resource):
         ]
 
         user = []
-        for feature in features:
+
+        if feature in features:
             mapper = MapperEngagement(
                 campaign=campaign, feature=feature)
             mapper.run()
@@ -171,5 +173,6 @@ api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')
 api.add_resource(CampaignTotal, '/total_campaigns')
-api.add_resource(CampaignContributors,
-                 '/campaign/<string:uuid>/total_contributors')
+api.add_resource(
+        CampaignContributors,
+        '/campaign/total_contributors/<string:uuid>/<string:feature>')
