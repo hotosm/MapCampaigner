@@ -15,8 +15,6 @@ from campaign_manager.data_providers.shapefile_provider import (
 class UploadCoverage(AbstractInsightsFunction):
     function_name = "Upload shapefile for creating coverage"
     category = ['coverage']
-    need_feature = False
-    need_required_attributes = False
     manager_only = True
 
     def initiate(self, additional_data):

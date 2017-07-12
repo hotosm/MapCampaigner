@@ -1,0 +1,27 @@
+FEATURE:roads
+highway
+  - primary
+  - secondary
+  - tertiary
+  - unclassified
+  - residential
+  - footway
+name
+surface
+  - asphalt
+  - concrete
+  - unpaved
+smoothness
+  - good
+  - intermediate
+  - bad
+  - very_bad
+  - horrible
+width
+oneway
+  - yes
+  - no
+bridge
+  - yes
+  - viaduct
+description

@@ -24,32 +24,32 @@
             <div class="cc-nav-steps" style="background-color: white;">
                 <div class="panel panel-default panel-header cc-nav active" data-step="1">
                     <div><i class="fa fa-info-circle"></i><span>&nbsp;&nbsp;General Information</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div class="panel panel-default panel-header cc-nav" data-step="2">
                     <div><i class="fa fa-globe"></i><span>&nbsp;&nbsp;Campaign AOI</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div class="panel panel-default panel-header cc-nav" data-step="2">
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div><span class="panel-header-info" style="margin-left: 25px">FUNCTIONS</span></div>
                 <div class="panel panel-default panel-header cc-nav" data-step="3">
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
                 </div>
                 <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="4">
                     <div><i class="fa fa-star-half-o"></i><span>&nbsp;&nbsp;Quality Function</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="5">
                     <div><i class="fa fa-exclamation-triangle"></i><span>&nbsp;&nbsp;Error Function</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="6">
                     <div><i class="fa fa-link"></i><span>&nbsp;&nbsp;Engagement Function</span>
-                    <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
             </div>
             <div class="panel panel-default panel-header" style="border-top: 1px solid #ddd !important;">
@@ -66,33 +66,33 @@
                     <form id="campaign-form" method="POST" action="{{ url }}" role="form">
                         {{ form.hidden_tag() }}
                         <div class="row">
-                                    <div class="form-header col-lg-9">
-                                        <div class="panel panel-default panel-header">
-                                            <span class="panel-header-info">NAME</span><br/>
-                                            <div class="form-group required-form">
-                                                {{ form.name }}
-                                            </div>
+                            <div class="form-header col-lg-9">
+                                <div class="panel panel-default panel-header">
+                                    <span class="panel-header-info">NAME</span><br/>
+                                    <div class="form-group required-form">
+                                        {{ form.name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-header col-lg-3">
+                                <div class="panel panel-default panel-header">
+                                    <div class="form-header col-md-6">
+                                        <div class="form-group required-form">
+                                            <label class="panel-header-info" for="start_date">START DATE</label>
+                                            {{ form.start_date }}
+                                            <p class="help-block"></p>
                                         </div>
                                     </div>
-                                    <div class="form-header col-lg-3">
-                                        <div class="panel panel-default panel-header">
-                                            <div class="form-header col-md-6">
-                                                <div class="form-group required-form">
-                                                    <label class="panel-header-info" for="start_date">START DATE</label>
-                                                    {{ form.start_date }}
-                                                    <p class="help-block"></p>
-                                                </div>
-                                            </div>
-                                            <div class="form-header col-md-6">
-                                                <div class="form-group required-form">
-                                                    <label class="panel-header-info" for="end_date">END DATE</label>
-                                                    {{ form.end_date }}
-                                                    <p class="help-block"></p>
-                                                </div>
-                                            </div>
+                                    <div class="form-header col-md-6">
+                                        <div class="form-group required-form">
+                                            <label class="panel-header-info" for="end_date">END DATE</label>
+                                            {{ form.end_date }}
+                                            <p class="help-block"></p>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
                         <fieldset id="fieldset-1" data-fieldset-step="1">
                             <div class="row">
                                 <div class="form-body col-lg-9">
@@ -100,18 +100,18 @@
                                         {{ form.description }}
                                     </div>
                                     <br/>
-                                  <div class="form-group map-input">
-                                            {{ form.map_type }}
-                                            {% if form['errors'] %}
-                                                <p class="error-form">
+                                    <div class="form-group map-input">
+                                        {{ form.map_type }}
+                                        {% if form['errors'] %}
+                                            <p class="error-form">
                                                 {% if form['errors'].map_type %}
                                                     {{ form['errors'].map_type[0] }}
                                                 {% endif %}
-                                                </p>
-                                            {% endif %}
-                                            <p class="help-block">Change map display, leave blank to use default</p>
-                                        </div>
-                                        <br/>
+                                            </p>
+                                        {% endif %}
+                                        <p class="help-block">Change map display, leave blank to use default</p>
+                                    </div>
+                                    <br/>
                                 </div>
                                 <div class="form-body col-lg-3">
                                     <div class="form-group required-form">
@@ -133,12 +133,12 @@
                                         <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
                                         <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
                                         </button>
-                                            <br/>
-                                            <br/>
-                                            <div id="users-not-found" style="display: none">
-                                                No users found.
-                                            </div>
-                                            <div id="users-found" style="display: none">
+                                        <br/>
+                                        <br/>
+                                        <div id="users-not-found" style="display: none">
+                                            No users found.
+                                        </div>
+                                        <div id="users-found" style="display: none">
                                             <p>Select osm users</p>
                                             <select id="list-osm-users" multiple class="form-control"></select>
                                             <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
@@ -150,8 +150,8 @@
                                 </div>
                                 <div class="form-body col-lg-6">
                                     <div class="form-group">
-                                        <label for="tags">Types</label>
-                                        {{ form.tags }}
+                                        <label for="types">Types</label>
+                                        {{ form.types }}
                                         <p class="help-block"></p>
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@
                     </fieldset>
 
                     <fieldset id="fieldset-3" data-fieldset-step="3">
-                         <div class="row">
+                        <div class="row">
                             <!-- /.col-lg-6 (nested) -->
                             <div class="col-lg-12">
                                 <div class="row" style="margin-bottom: 20px;">
@@ -256,7 +256,8 @@
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-default" id="search-projects-button" style="margin-top: 10px;">
-                                            <i class="fa fa-search" aria-hidden="true"></i> Search </button>
+                                            <i class="fa fa-search" aria-hidden="true"></i> Search
+                                        </button>
                                     </div>
 
                                     <div>
@@ -319,10 +320,10 @@
                         </fieldset>
                     {% endfor %}
                 </div>
-                    <!-- /.row (nested) -->
-                </div>
-                <!-- /.panel-body -->
+                <!-- /.row (nested) -->
             </div>
+            <!-- /.panel-body -->
+        </div>
     </div>
 
 {% endblock %}
@@ -357,16 +358,6 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-4">
-                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Put feature to extract"
-                           style="display: none">
-                </div>
-                <div class="col-lg-3">
-                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Additional attributes for this function"
-                           style="display: none">
-                </div>
             </div>
         </div>
     </script>
@@ -374,18 +365,20 @@
     <script type="text/javascript">
         //------------------ DASHBOARD SETTINGS -----------------//
         function changeDashboard() {
-           var setting = $('#dashboard-settings option:selected').text();
-           if (setting.toLowerCase() == 'advanced'){
-               $('.cc-functions').addClass('show');
-               $('.cc-functions').removeClass('hide');
-           }
-           else {
-               $('.cc-functions').removeClass('show');
-               $('.cc-functions').addClass('hide');
-           }
-        };
+            var setting = $('#dashboard-settings option:selected').text();
+            if (setting.toLowerCase() == 'advanced') {
+                $('.cc-functions').addClass('show');
+                $('.cc-functions').removeClass('hide');
+            }
+            else {
+                $('.cc-functions').removeClass('show');
+                $('.cc-functions').addClass('hide');
+            }
+        }
+        ;
 
         var remote_projects_list = [];
+        var types = {{ types|safe }};
         {% if form.remote_projects.data %}
             remote_projects_list = {{ form.remote_projects.data | safe }};
         {% endif %}
@@ -539,7 +532,7 @@
                         } else {
                             campaignMap.setView([0, 0], 2);
                         }
-                    } else if(currentFieldsetNumber + 1 === 3) {
+                    } else if (currentFieldsetNumber + 1 === 3) {
                         remoteMap.invalidateSize();
                     }
                 });
@@ -548,7 +541,7 @@
 
         $('.btn-prev').click(function () {
             // navigation steps / progress steps
-            var currentActiveStep =$('.cc-nav-steps').find('.cc-nav.active');
+            var currentActiveStep = $('.cc-nav-steps').find('.cc-nav.active');
             var progressLine = $(this).parents('.cc').find('.cc-progress-line');
             var parentFieldset = $(this).parents('fieldset');
             var currentFieldsetNumber = parentFieldset.data('fieldset-step');
@@ -769,9 +762,7 @@
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'feature': $(row).find('.function-feature').val(),
-                        'category': category,
-                        'attributes': $(row).find('.function-attributes').val()
+                        'category': category
                     }
                 }
             });
@@ -1009,22 +1000,6 @@
             getFormElement($event, '.function-attributes').val('');
             getFormElement($event, '.function-feature').hide();
             getFormElement($event, '.function-attributes').hide();
-
-            if ($(event).val() !== '') {
-                var need_feature = 'false';
-                var need_required_attributes = 'false';
-                if(typeof functions[$(event).val()] !== 'undefined') {
-                    need_feature = functions[$(event).val()]['need_feature'];
-                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                }
-
-                if (need_feature === 'true') {
-                    getFormElement($event, '.function-feature').show();
-                }
-                if (need_required_attributes === 'true') {
-                    getFormElement($event, '.function-attributes').show();
-                }
-            }
 
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));

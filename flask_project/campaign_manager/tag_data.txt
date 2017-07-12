@@ -1,6 +1,0 @@
-buildings
-roads
-educational facilities
-points of interest
-health facilities
-boundaries
