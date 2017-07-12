@@ -64,6 +64,12 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             for key, values in required_attributes.items():
                 tags_needed = raw_attr.get(key, None)
 
+                # if values of attribute is not provided
+                # e.g. { 'name=' }
+                if tags_needed and not values:
+                    good_data = True
+                    continue
+
                 if tags_needed and tags_needed in [x.lower() for x in values]:
                     good_data = True
 
