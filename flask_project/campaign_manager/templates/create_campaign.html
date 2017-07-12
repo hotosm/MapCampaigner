@@ -135,7 +135,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div id="TypesTagsContainer"></div>
+                                <div id="typesTagsContainer"></div>
                             </div>
                             <div class="row"><div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div></div>
                             <div class="row" style="margin-bottom: -12px;">
@@ -1054,43 +1054,59 @@
         //----------------- Types & Tags -----------------//
 
         var type=0;
+
+        addTypes();
+
         function addTypes() {
             type += 1;
+
             var row = $("<div/>");
-            var row_tags = $("<div/>");
-            row.addClass("col-lg-4");
+            row.addClass("row");
+
+            var column = $("<div/>");
+            column.addClass("col-lg-4");
+            row.append(column);
+
             var select = $("<select />");
             select.addClass('select-types');
             select.html('{{ form.types }}');
-            row.append(select);
-            $("#TypesTagsContainer").append(row);
+
+            // Add empty value
+            select.prepend('<option value="">Select type</option>');
+
+            column.append(select);
+
+            $("#typesTagsContainer").append(row);
+
+            select.change(onTypesChange);
         }
 
-        $("#TypesTagsContainer").change(function showTags(){
-            var selected_types = new Array();
-           $("#TypesTagsContainer option:selected").each(function (i) {
-               var $this = $(this);
-               if ($this.length) {
-                   selected_types[i] = $this.text();
-               }
-           });
+        function onTypesChange() {
 
-           var row = $("<div/>");
-           row.addClass("row-tags");
-           row.addClass("col-lg-7");
-           for (var i=0; i <selected_types.length; i++){
-               var div = $("<div />");
-               div.addClass("row");
-               var tags = types[selected_types[i]]['tags'];
-               var key_tags = Object.keys(tags);
-               for( var j=0; j<key_tags.length; j++){
-                    div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
-               }
-               row.html(div);
-           }
+            var selected_type = this.value;
 
-            $("#TypesTagsContainer").append(row);
-        });
+            var row = $(this).parent().parent();
+
+            var row_tags = row.children('.row-tags');
+
+            if(row_tags) {
+                row_tags.remove();
+            }
+
+            var column = $("<div/>");
+            column.addClass("row-tags");
+            column.addClass("col-lg-7");
+
+            row.append(column);
+
+            var div = $("<div />");
+            var tags = types[selected_type]['tags'];
+            var key_tags = Object.keys(tags);
+            for( var j=0; j<key_tags.length; j++){
+                div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+            }
+            column.html(div);
+        }
 
     </script>
 
