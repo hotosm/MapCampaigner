@@ -8,7 +8,7 @@ from campaign_manager.insights_functions._abstract_overpass_insight_function \
 class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     function_name = "Showing feature completeness"
     category = ['quality']
-    need_required_attributes = True
+    tags_capitalizaition_checks = ['name']
     icon = 'list'
     _function_good_data = None  # cleaned data
     nodes = {}
@@ -34,95 +34,100 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         """
         return ""
 
-    def process_data(self, raw_datas):
+    def process_data(self, raw_data):
         """ Get geometry of campaign.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
+        :param raw_data: Raw data that returns by function provider
+        :type raw_data: dict
 
         :return: list good data
         :rtype: dict
         """
-        self._function_good_data = []
         list_good_data = []
-        required_attributes = self.get_required_attributes()
+        self._function_good_data = []
 
-        if not raw_datas:
+        if not raw_data:
             return []
+        try:
+            required_attributes = self.tag['tags']
+            survey_attributes = self.campaign.get_json_type(self.tag['type'])
+            for value in raw_data:
+                if value['type'] == 'node':
+                    continue
 
-        for raw_data in raw_datas:
+                if 'tags' not in value:
+                    continue
 
-            if raw_data['type'] == 'node':
-                continue
+                self._function_good_data.append(value)
+                self.check_feature_completeness(value, required_attributes, survey_attributes)
 
-            good_data = False
-
-            if 'tags' not in raw_data:
-                continue
-
-            raw_attr = raw_data["tags"]
-
-            for key, values in required_attributes.items():
-                tags_needed = raw_attr.get(key, None)
-
-                if tags_needed and tags_needed in [x.lower() for x in values]:
-                    good_data = True
-
-            if good_data:
-                # Check feature completeness
-                self.check_feature_completeness(raw_data)
-                self._function_good_data.append(raw_data)
-
-                if not raw_data['error']:
-                    list_good_data.append(raw_data)
+                if not value['error']:
+                    list_good_data.append(value)
+        except KeyError:
+            pass
 
         return list_good_data
 
-    def check_feature_completeness(self, feature_data):
+    def check_capitalization(self, key, value):
+        # Check all uppercase or lowercase
+        if value.isupper():
+            return '%s value is all uppercase' % key
+        elif value.islower():
+            return '%s value is all lowercase' % key
+
+        # Check mixed case
+        for index, name in enumerate(value.split()):
+            if name[0].islower() and not self.is_string_int(name[0]):
+                # e.g : name of Feature
+                return '%s value is mixed case'
+
+        return None
+
+    def check_feature_completeness(
+            self, feature_data, required_attributes, survey_attributes):
         """Check feature completeness.
 
         :param feature_data: Feature data
         :type feature_data: dict
+
+        :param required_attributes: Required attributes
+        :type required_attributes: list
+
+        :param survey_attributes: Survey Attributes
+        :type survey_attributes: dict
         """
-        error_found = False
-        warning_message = ''
-        error_message = ''
+        warning_message = []
+        error_message = []
 
-        # Check name tags
-        if 'name' not in feature_data['tags']:
-            error_found = True
-            error_message = 'Name not found'
+        tags = feature_data['tags']
+        for required_attribute in required_attributes:
+            required_attribute = required_attribute.lower()
+            try:
+                survey_values = survey_attributes[required_attribute]
+            except KeyError:
+                survey_values = []
 
-        # Check operator
-        if not error_found:
-            if 'operator:type' not in feature_data['tags'] \
-               and 'operator' not in feature_data['tags']:
-                error_found = True
-                error_message = 'Operator not found'
+            if required_attribute not in tags:
+                error_message.append(
+                    '%s not found' % required_attribute)
+            else:
+                value_in_tag = tags[required_attribute]
+                if survey_values:
+                    if value_in_tag not in survey_values:
+                        error_message.append(
+                            '%s is not allowed as value tag' %
+                            value_in_tag)
+                if required_attribute in self.tags_capitalizaition_checks:
+                    warning = self.check_capitalization(
+                        required_attribute, value_in_tag)
+                    if warning:
+                        warning_message.append(warning)
 
-        # Check all uppercase or lowercase
-        if not error_found:
-            feature_name = feature_data['tags']['name']
-            if feature_name.isupper():
-                error_found = True
-                warning_message = 'Name is all uppercase'
-            elif feature_name.islower():
-                error_found = True
-                warning_message = 'Name is all lowercase'
+        feature_data['error'] = False
+        if warning_message or error_message:
+            feature_data['error'] = True
 
-        # Check mixed case
-        if not error_found:
-            feature_name = feature_data['tags']['name']
-            for index, name in enumerate(feature_name.split()):
-
-                if name[0].islower() and not self.is_string_int(name[0]):
-                    # e.g : name of Feature
-                    error_found = True
-                    warning_message = 'Name is mixed case'
-                    break
-
-        feature_data['error'] = error_found
-        feature_data['error_message'] = error_message
-        feature_data['warning_message'] = warning_message
+        feature_data['error_message'] = ', '.join(error_message)
+        feature_data['warning_message'] = ', '.join(warning_message)
 
     def is_string_int(self, text):
         """Check whether the text is int or not."""

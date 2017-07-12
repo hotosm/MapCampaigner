@@ -333,19 +333,6 @@ def campaign_boundary_upload_chunk(uuid):
         return Response('Campaign not found')
 
 
-@campaign_manager.route('/campaign/<uuid>/<insight_function_id>/metadata')
-def get_campaign_insight_function_data_metadata(uuid, insight_function_id):
-    from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
-    """
-    try:
-        campaign = Campaign.get(uuid)
-        data = campaign.insights_function_data_metadata(insight_function_id)
-        return Response(json.dumps(data))
-    except Campaign.DoesNotExist:
-        return Response('Campaign not found')
-
-
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     from campaign_manager.models.campaign import Campaign
@@ -427,10 +414,6 @@ def get_selected_functions():
         function_name = selected_function.name()
         function_dict = {}
         function_dict['name'] = function_name
-        function_dict['need_feature'] = \
-            ('%s' % selected_function.need_feature).lower()
-        function_dict['need_required_attributes'] = \
-            ('%s' % selected_function.need_required_attributes).lower()
         function_dict['category'] = \
             selected_function.category
 

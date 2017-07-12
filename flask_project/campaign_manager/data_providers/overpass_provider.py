@@ -32,26 +32,29 @@ class OverpassProvider(AbstractDataProvider):
     )
     query_with_value = (
         '('
-        'way["%(KEY)s"="%(VALUE)s"]'
+        'way["%(KEY)s"~"%(VALUE)s"]'
         '(poly:"{polygon}");'
-        'relation["%(KEY)s"="%(VALUE)s"]'
+        'relation["%(KEY)s"~"%(VALUE)s"]'
         '(poly:"{polygon}");'
         ');'
         '(._;>;);'
         'out {print_mode};'
     )
 
-    def get_data(self, feature_type, polygon):
+    def get_data(self, polygon, feature_key, feature_values=None):
         """Get osm data.
-
-        :param feature_type: The type of feature to extract:
-            buildings, building-points, roads, potential-idp, boundary-[1,11]
-        :type feature_type: str
 
         :param polygon: list of array describing polygon area e.g.
         '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
         [29.168701171875004,-26.34265280938059]]
         :type polygon: list
+
+        :param feature_key: The type of feature to extract:
+            buildings, building-points, roads, potential-idp, boundary-[1,11]
+        :type feature_key: str
+
+        :param feature_values: The value of features as query
+        :type feature_values: list
 
         :raises: OverpassTimeoutException
 
@@ -72,15 +75,14 @@ class OverpassProvider(AbstractDataProvider):
         parameters['print_mode'] = overpass_verbosity
         parameters['polygon'] = polygon_string
 
-        feature_types = feature_type.split('=')
-        if len(feature_types) == 2 and feature_types[1]:
+        if feature_values:
             query = self.query_with_value % {
-                'KEY': feature_types[0],
-                'VALUE': feature_types[1]
+                'KEY': feature_key,
+                'VALUE': '|'.join(feature_values)
             }
         else:
             query = self.query % {
-                'KEY': feature_type
+                'KEY': feature_key
             }
         query = query.format(**parameters)
 

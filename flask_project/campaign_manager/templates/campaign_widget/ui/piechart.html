@@ -10,7 +10,7 @@
             {% endif %}
         </div>
     </div>
-     <div class="col-lg-3">
+    <div class="col-lg-3">
         <div class="chart-legends"></div>
     </div>
     <div class="col-lg-2"></div>
@@ -32,8 +32,11 @@
 </style>
 
 <script type="text/javascript">
-    var function_id = "{{ function_id }}";
-    var $wrapper = $('#{{ function_id }}');
+    var tab_id = '{{ function_id }}';
+    {% if additional_data.type %}
+        tab_id += '-' + "{{ additional_data.type }}".replace(/\s+/g, '-');
+    {% endif %}
+    var $wrapper = $('#'+tab_id);
     var chart_data = {
         labels: [],
         datasets: [{
@@ -61,12 +64,12 @@
                 legend: {
                     display: false
                 },
-                legendCallback: function(chart){
+                legendCallback: function (chart) {
                     var text = [];
                     text.push('<ul>');
-                    for (var i=0; i<chart.data.datasets[0].data.length; i++) {
+                    for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
                         text.push('<li>');
-                        text.push('<span style="display:inline-block;width:25px;height:10px; background-color: '+ chart.data.datasets[0].backgroundColor[i] +'"></span> ');
+                        text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
                         if (chart.data.labels[i]) {
                             text.push(chart.data.labels[i]);
                         }

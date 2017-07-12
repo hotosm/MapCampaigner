@@ -8,7 +8,6 @@ from campaign_manager.insights_functions._abstract_overpass_insight_function \
 class CountFeature(AbstractOverpassInsightFunction):
     function_name = "Showing number of feature in group"
     category = ['quality']
-    need_required_attributes = False
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -31,54 +30,27 @@ class CountFeature(AbstractOverpassInsightFunction):
         """
         return ""
 
-    def process_data(self, raw_datas):
+    def process_data(self, raw_data):
         """ Get geometry of campaign.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
+        :param raw_data: Raw data that returns by function provider
+        :type raw_data: dict
 
         :return: processed data
         :rtype: dict
         """
-        good_data = []
         processed_data = []
         required_attributes = self.get_required_attributes()
 
         # process data based on required attributes
-        if raw_datas:
-            req_attr = required_attributes
+        req_attr = required_attributes
 
-            for raw_data in raw_datas:
-                if raw_data['type'] == 'node':
-                    continue
+        for raw_data in raw_data:
+            if raw_data['type'] == 'node':
+                continue
 
-                if 'tags' in raw_data:
-                    raw_attr = raw_data["tags"]
-
-                    # just get required attr
-                    is_fulfilling_requirement = True
-                    if len(req_attr) > 0:
-                        # checking data
-                        for req_key, req_value in req_attr.items():
-                            # if key in attr
-                            if req_key in raw_attr:
-                                raw_value = raw_attr[req_key].lower()
-                                if req_value and raw_value not in req_value:
-                                    is_fulfilling_requirement = False
-                                    break
-                            else:
-                                is_fulfilling_requirement = False
-                                break
-                        if is_fulfilling_requirement:
-                            processed_data.append(raw_data)
-                    else:
-                        processed_data.append(raw_attr)
-
-                    good_data.append(raw_data)
-                else:
-                    if not self.need_required_attributes:
-                        processed_data.append(raw_data)
-                    good_data.append(raw_data)
-        self._function_good_data = good_data
+            if 'tags' not in raw_data:
+                continue
+            processed_data.append(raw_data['tags'])
         return processed_data
 
     def post_process_data(self, data):

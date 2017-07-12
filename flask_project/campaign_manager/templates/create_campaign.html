@@ -358,16 +358,6 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-4">
-                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Put feature to extract"
-                           style="display: none">
-                </div>
-                <div class="col-lg-3">
-                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Additional attributes for this function"
-                           style="display: none">
-                </div>
             </div>
         </div>
     </script>
@@ -772,9 +762,7 @@
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'feature': $(row).find('.function-feature').val(),
-                        'category': category,
-                        'attributes': $(row).find('.function-attributes').val()
+                        'category': category
                     }
                 }
             });
@@ -1012,22 +1000,6 @@
             getFormElement($event, '.function-attributes').val('');
             getFormElement($event, '.function-feature').hide();
             getFormElement($event, '.function-attributes').hide();
-
-            if ($(event).val() !== '') {
-                var need_feature = 'false';
-                var need_required_attributes = 'false';
-                if(typeof functions[$(event).val()] !== 'undefined') {
-                    need_feature = functions[$(event).val()]['need_feature'];
-                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                }
-
-                if (need_feature === 'true') {
-                    getFormElement($event, '.function-feature').show();
-                }
-                if (need_required_attributes === 'true') {
-                    getFormElement($event, '.function-attributes').show();
-                }
-            }
 
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
