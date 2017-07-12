@@ -122,8 +122,24 @@
                                 </div>
                             </div>
                             <select id="remote_projects" multiple name="remote_projects" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                            <div class="row">
+                                <div class="form-body">
+                                    <div class="form-group col-lg-4" style="padding-left: 0">
+                                        <label for="types">Types</label>
+{#                                        {{ form.types }}#}
+{#                                        <p class="help-block"></p>#}
+                                    </div>
+                                    <div class="form-group col-lg-7" style="margin-left: 25px">
+                                        <label>Tags</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="TypesTagsContainer"></div>
+                            </div>
+                            <div class="row"><div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div></div>
                             <div class="row" style="margin-bottom: -12px;">
-                                <div class="form-body col-lg-6">
+                                <div class="form-body">
                                     <div class="form-group">
                                         <label for="campaign_managers">Managers</label>
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
@@ -146,13 +162,6 @@
                                             </button>
                                         </div>
                                         <p class="helock"></p>
-                                    </div>
-                                </div>
-                                <div class="form-body col-lg-6">
-                                    <div class="form-group">
-                                        <label for="types">Types</label>
-                                        {{ form.types }}
-                                        <p class="help-block"></p>
                                     </div>
                                 </div>
                             </div>
@@ -1047,6 +1056,48 @@
         function removeFunction(event) {
             $(event).parent().parent().parent().remove();
         }
+
+        //----------------- Types & Tags -----------------//
+
+        var type=0;
+        function addTypes() {
+            type += 1;
+            var row = $("<div/>");
+            var row_tags = $("<div/>");
+            row.addClass("col-lg-4");
+            var select = $("<select />");
+            select.addClass('select-types');
+            select.html('{{ form.types }}');
+            row.append(select);
+            $("#TypesTagsContainer").append(row);
+        }
+
+        $("#TypesTagsContainer").change(function showTags(){
+            var selected_types = new Array();
+           $("#TypesTagsContainer option:selected").each(function (i) {
+               var $this = $(this);
+               if ($this.length) {
+                   selected_types[i] = $this.text();
+               }
+           });
+
+           var row = $("<div/>");
+           row.addClass("row-tags");
+           row.addClass("col-lg-7");
+           for (var i=0; i <selected_types.length; i++){
+               var div = $("<div />");
+               div.addClass("row");
+               var tags = types[selected_types[i]]['tags'];
+               var key_tags = Object.keys(tags);
+               for( var j=0; j<key_tags.length; j++){
+                    div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+               }
+               row.html(div);
+           }
+
+            $("#TypesTagsContainer").append(row);
+        });
+
     </script>
 
 {% endblock %}
