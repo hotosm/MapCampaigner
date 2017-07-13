@@ -1067,7 +1067,7 @@
                 var $select = $(element).find('.type-selection select');
                 if ($select.val()) {
                     var tags = [];
-                    $(element).find('.row-tags span').each(function (index, spanElement) {
+                    $(element).find('.row-tags span.selected').each(function (index, spanElement) {
                         tags.push($(spanElement).text().trim())
                     });
                     types_value['type-' + (index + 1)] = {

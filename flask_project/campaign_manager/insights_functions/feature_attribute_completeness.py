@@ -50,6 +50,10 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         try:
             required_attributes = self.tag['tags']
             survey_attributes = self.campaign.get_json_type(self.tag['type'])
+            if not required_attributes:
+                required_attributes = [
+                    tag for tag in survey_attributes['tags']
+                    ]
             for value in raw_data:
                 if value['type'] == 'node':
                     continue
