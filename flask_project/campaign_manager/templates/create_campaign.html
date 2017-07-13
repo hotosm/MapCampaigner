@@ -127,6 +127,7 @@
                                 <div class="form-body col-lg-4">
                                     <div class="form-group">
                                         <label for="types">Types</label>
+                                        <div class="types-required-message">This field is required</div>
                                     </div>
                                 </div>
                                 <div class="form-body col-lg-7">
@@ -691,8 +692,11 @@
                 $('.error-managers').show();
             }
 
+            if (Object.keys(getTypesSelectionValue()).length === 0) {
+                valid = false;
+                $('.types-required-message').show();
+            }
 
-            // tags
             $("#types").val(JSON.stringify(getTypesSelectionValue()));
             return valid;
         }
@@ -792,7 +796,7 @@
                         'feature': $(row).find('.function-feature').val(),
                         'attributes': $(row).find('.function-attributes').val(),
                         'type': $(row).find('.function-selection').data('type')
-                }
+                    }
                 }
             });
             return functions;
@@ -1053,10 +1057,13 @@
 
         //----------------- Types & Tags -----------------//
 
+        var addedTypes = [];
+
         {% if form.types.data %}
             var selected_types_data = {{ form.types.data | safe }};
-            $.each(selected_types_data, function (index, type){
+            $.each(selected_types_data, function (index, type) {
                 var selected_type = selected_types_data[index]['type'];
+                addedTypes.push(selected_type);
                 addTypes(selected_type);
             });
         {% else %}
@@ -1066,16 +1073,12 @@
         function getTypesSelectionValue() {
             // GET SELECTED TYPES
             var types_value = {};
-            $("#typesTagsContainer").find('.row').each(function (index, element) {
-                var $select = $(element).find('.type-selection select');
-                if ($select.val()) {
-                    var tags = [];
-                    $(element).find('.row-tags span.selected').each(function (index, spanElement) {
-                        tags.push($(spanElement).text().trim())
-                    });
+
+            $.each(addedTypes, function (index, addedType) {
+                if (addedType) {
                     types_value['type-' + (index + 1)] = {
-                        type: $select.val(),
-                        tags: tags
+                        type: addedType,
+                        tags: []
                     }
                 }
             });
@@ -1129,7 +1132,6 @@
             column.addClass("col-lg-4");
             column.addClass("form-group");
             column.addClass("type-selection");
-            column.addClass("required-form");
             row.append(column);
 
             var select = $("<select />");
@@ -1138,24 +1140,30 @@
             select.attr('name', 'types_options');
             select.html('{{ form.types_options }}');
 
-            {% if form.types.data %}
+            var addedTypesIndex = addedTypes.length;
+            addedTypes[addedTypesIndex] = '';
+
+            column.append(select);
+            select.change(onTypesChange);
+
+            if (value) {
                 // Add empty value with no default selection
                 select.prepend('<option value="">Select type</option>');
                 select.children().removeAttr('selected');
-                select.find('option[value="'+value+'"]').prop('selected', true);
-            {% else %}
+                select.find('option[value="' + value + '"]').prop('selected', true);
+                select.trigger('change');
+            } else {
                 // Add empty value with default selection
                 select.prepend('<option value="" selected="selected">Select type</option>');
-            {% endif %}
-            column.append(select);
+            }
 
             $("#typesTagsContainer").append(row);
 
-            select.change(onTypesChange);
-            select.trigger('change');
         }
 
         function onTypesChange() {
+
+            $('.types-required-message').hide();
 
             var selected_type = this.value;
 
@@ -1181,12 +1189,12 @@
                     div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
                 }
                 column.html(div);
-            }
 
-            row.append('<div class="col-lg-1 row-tags">' +
-                    '<button class="btn btn-danger btn-sm btn-block"' +
-                    'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
-                    '<i class="fa fa-minus"></i></button></div>');
+                row.append('<div class="col-lg-1 row-tags">' +
+                        '<button class="btn btn-danger btn-sm btn-block"' +
+                        'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
+                        '<i class="fa fa-minus"></i></button></div>');
+            }
         }
 
         function removeTags(event, type) {

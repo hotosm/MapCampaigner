@@ -34,8 +34,8 @@
                         </a>
                         {% if row['type'] == 'relation' %}
                             <span class="show-members">
-                            <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
-                        </span>
+                                <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
+                            </span>
                             <div class="relation-member">
                                 Members :
                                 <ul>
@@ -178,7 +178,7 @@
             $(event).closest(".completness").find(".feature-list-table").hide();
         }
     }
-    $('.show-members').click(function (e) {
+    $('.show-members').unbind('click').click(function (e) {
         if ($(this).children().hasClass('fa-arrow-circle-down')) {
             $(this).siblings('.relation-member').show();
             $(this).children().removeClass('fa-arrow-circle-down');
