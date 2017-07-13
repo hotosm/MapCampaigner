@@ -11,8 +11,6 @@ web:
     - DATABASE_URL=postgresql://db/gis
   ports:
     - "64000:8080"
-  env_file:
-    - campaign_environtment.env
   volumes:
     - ../flask_project:/home/web/osm_reporter
     - ${CAMPAIGN_DATA}:/home/web/field-campaigner-data
