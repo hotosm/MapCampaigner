@@ -85,6 +85,7 @@
                         </p>
                     </div>
                     <div class="detail-button-wrapper">
+                        <button class="btn btn-info btn-share pull-left" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
                         <button class="btn btn-info btn-manage pull-right" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
                     </div>
                 </div>
@@ -502,6 +503,13 @@
         }
         function zoomToFeature(e) {
             map.fitBounds(e.target.getBounds());
+        }
+
+        function shareTweet(uuid) {
+            var host = window.location.origin;
+            var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+            windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
+                    host + '/campaign_manager/campaign/' + uuid;
         }
 
     </script>

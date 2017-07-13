@@ -99,6 +99,19 @@
     padding-right: 30px !important;
 }
 
+.btn-share {
+    background-color: #00aced;
+    border: 0;
+    font-weight: bold;
+    border-radius: 15px;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+.btn-share:hover {
+    background-color: #0084b4;
+}
+
 .btn-manage:hover {
     background-color: #992c2c;
 }
