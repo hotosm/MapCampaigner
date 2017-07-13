@@ -1,5 +1,5 @@
 PROJECT_ID := osmreporter
-CAMPAIGN_DATA :=/home/meomancer/Development/field-campaigner-data
+CAMPAIGN_DATA :=
 
 SHELL := /bin/bash
 
@@ -11,14 +11,13 @@ run:
 	@echo "------------------------------------------------------------------"
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
-	@if $(CAMPAIGN_DATA)== ""\
+	@if [ ! $(CAMPAIGN_DATA) ]; then\
         read -p "Enter campaign path data:" path; \
         CAMPAIGN_DATA=$$path; \
         export CAMPAIGN_DATA=$$CAMPAIGN_DATA; \
-    else\
-        export CAMPAIGN_DATA=$(CAMPAIGN_DATA);\
-    endif\
-    echo $CAMPAIGN_DATA;\
+        else\
+            export CAMPAIGN_DATA=$(CAMPAIGN_DATA);\
+    fi;\
     docker-compose -p $(PROJECT_ID) up -d web
 
 build:
@@ -92,7 +91,14 @@ run-dev:
 	@echo "Running in development mode"
 	@echo "You can access it on http://localhost:64002"
 	@echo "------------------------------------------------------------------"
-	@export CAMPAIGN_DATA=$(CAMPAIGN_DATA) && docker-compose -p $(PROJECT_ID) up -d dev
+	@if [ ! $(CAMPAIGN_DATA) ]; then\
+        read -p "Enter campaign path data:" path; \
+        CAMPAIGN_DATA=$$path; \
+        export CAMPAIGN_DATA=$$CAMPAIGN_DATA; \
+        else\
+            export CAMPAIGN_DATA=$(CAMPAIGN_DATA);\
+    fi;\
+	docker-compose -p $(PROJECT_ID) up -d dev
 
 log:
 	@echo

@@ -8,6 +8,7 @@ import tempfile
 import time
 
 from reporter.osm import fetch_osm
+from app_config import Config
 
 
 def module_path(*args):
@@ -51,8 +52,7 @@ def get_types():
     :rtype: dict
     """
     survey_folder = os.path.join(
-        module_path(),
-        'campaigns_data',
+        Config.campaigner_data_folder,
         'surveys'
     )
     surveys = {}

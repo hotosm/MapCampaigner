@@ -231,8 +231,7 @@ class Campaign(JsonModel):
         """
         # getting features and required attributes from types
         survey_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'surveys'
         )
         survey_file = os.path.join(
