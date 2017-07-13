@@ -705,3 +705,7 @@ if __name__ == '__main__':
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()
+
+@campaign_manager.route('/about')
+def about():
+    return render_template('about.html')
