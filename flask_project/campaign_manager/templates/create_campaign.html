@@ -1094,25 +1094,17 @@
                 if (tags[feature]) {
                     feature += '=' + tags[feature]
                 }
-
-                {# count features #}
-                $('#quality-function-add').click();
-                var row = $('#quality-function .function-form').find('.function-form-row')[index];
-                $(row).find('.function-selection').val('CountFeature');
-                $(row).find('.function-selection').trigger('change');
-                $(row).find('.function-feature').val(feature);
-                $(row).find('.function-selection').data('type', type);
-                index += 1;
-
-                {# completeness #}
-                $('#quality-function-add').click();
-                var row = $('#quality-function .function-form').find('.function-form-row')[index];
-                $(row).find('.function-selection').val('FeatureAttributeCompleteness');
-                $(row).find('.function-selection').trigger('change');
-                $(row).find('.function-feature').val(feature);
-                $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
-                $(row).find('.function-selection').data('type', type);
-                index += 1;
+                var default_insights = types[type]['insights'];
+                $.each(default_insights, function (insight_index, insight) {
+                    $('#quality-function-add').click();
+                    var row = $('#quality-function .function-form').find('.function-form-row')[index];
+                    $(row).find('.function-selection').val(insight);
+                    $(row).find('.function-selection').trigger('change');
+                    $(row).find('.function-selection').data('type', type);
+                    $(row).find('.function-feature').val(feature);
+                    $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
+                    index += 1;
+                });
             });
             return types_value
         }

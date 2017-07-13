@@ -1,4 +1,7 @@
 FEATURE:amenity
+INSIGHTS
+  - FeatureAttributeCompleteness
+  - CountFeature
 name
 amenity
   - clinic

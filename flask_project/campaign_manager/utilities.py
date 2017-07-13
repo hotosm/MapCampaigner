@@ -160,6 +160,7 @@ def get_survey_json(survey_file):
     """
     surveys = {
         'feature': None,
+        'insights': [],
         'tags': {}
     }
     if os.path.isfile(survey_file):
@@ -172,14 +173,20 @@ def get_survey_json(survey_file):
                     if line:
                         surveys['feature'] = line.replace('FEATURE:', '')
                 else:
-                    if line[0] != '-':
-                        if line not in surveys['tags']:
-                            surveys['tags'][line] = []
+                    if line == 'INSIGHTS':
                         last_tag = line
                     else:
-                        line = line.replace('-', '').strip()
-                        if last_tag:
-                            surveys['tags'][last_tag].append(line)
+                        if line[0] != '-':
+                            if line not in surveys['tags']:
+                                surveys['tags'][line] = []
+                            last_tag = line
+                        else:
+                            line = line.replace('-', '').strip()
+                            if last_tag == 'INSIGHTS':
+                                surveys['insights'].append(line)
+                            else:
+                                if last_tag:
+                                    surveys['tags'][last_tag].append(line)
 
                 line_number += 1
     return surveys

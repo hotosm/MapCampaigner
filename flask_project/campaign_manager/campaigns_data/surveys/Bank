@@ -1,4 +1,6 @@
 FEATURE:amenity
+INSIGHTS
+  - FeatureAttributeCompleteness
 amenity
   - bank
   - banking_agent

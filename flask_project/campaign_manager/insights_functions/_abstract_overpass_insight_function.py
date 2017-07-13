@@ -2,7 +2,6 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 import json
-from json.decoder import JSONDecodeError
 from abc import ABCMeta
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -46,7 +45,7 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
                 required_attributes = [
                     tag for tag in survey_attributes['tags']
                     ]
-        except JSONDecodeError:
+        except ValueError:
             required_attributes = []
         return required_attributes
 
