@@ -2,7 +2,6 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 from abc import ABCMeta
-import pygeoj
 from flask import render_template
 from jinja2.exceptions import TemplateNotFound
 
@@ -14,14 +13,7 @@ class AbstractInsightsFunction(object):
     __metaclass__ = ABCMeta
 
     CATEGORIES = ['coverage', 'quality', 'error', 'engagement']
-    FEATURES = ['buildings', 'roads']
-    FEATURES_MAPPING = {
-        'buildings': 'building',
-        'roads': 'road'
-    }
-    EXTRA_MAPPING = {
-        'amenity': 'building'
-    }
+
     _function_raw_data = None  # data exaclty from osm
     _function_data = None  # data that used by others
 
@@ -33,11 +25,8 @@ class AbstractInsightsFunction(object):
     required_attributes = ""
     category = []
 
-    # attribute of insight function
-    need_feature = True
-    need_required_attributes = True
-
     manager_only = False
+    type_required = False
 
     def __init__(
             self,
@@ -49,6 +38,7 @@ class AbstractInsightsFunction(object):
         if not self.feature:
             self.feature = feature
         self.required_attributes = required_attributes
+        self.additional_data = additional_data
         if 'function_id' in additional_data:
             self.function_id = additional_data['function_id']
         self.initiate(additional_data)
@@ -66,12 +56,6 @@ class AbstractInsightsFunction(object):
         :return: string of name
         """
         name = self.function_name
-        if self.feature:
-            name = '%s for %s' % (name, self.feature)
-            if self.required_attributes:
-                name = '%s with attributes %s' % (
-                    name,
-                    self.required_attributes)
         return name
 
     def run(self):
@@ -79,18 +63,6 @@ class AbstractInsightsFunction(object):
         self._function_raw_data = self.get_data_from_provider()
         self._function_data = self.process_data(self._function_raw_data)
         self._function_data = self.post_process_data(self._function_data)
-
-    def metadata(self):
-        """ Return metadata of data from collected data.
-        :return: Metadata of data from collected data.
-        """
-        if not self._function_raw_data:
-            self.run()
-
-        return {
-            'collected_data_count': len(self._function_raw_data),
-            'filtered_data_count': len(self._function_data)
-        }
 
     def get_function_data(self):
         """ Return function data
@@ -198,7 +170,8 @@ class AbstractInsightsFunction(object):
                 'campaign_widget/%s/%s.html' % (ui_type, html_name),
                 **{
                     'data': self._function_data,
-                    'function_id': self.function_id
+                    'function_id': self.function_id,
+                    'additional_data': self.additional_data
                 }
             )
         except TemplateNotFound:

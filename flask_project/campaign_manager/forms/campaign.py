@@ -13,7 +13,7 @@ from wtforms.fields import (
 )
 from wtforms.validators import DataRequired, Optional, ValidationError
 from urllib.parse import urlparse
-from campaign_manager.utilities import get_osm_user, get_tags
+from campaign_manager.utilities import get_osm_user, get_types
 from campaign_manager.views import valid_map_list
 
 
@@ -42,11 +42,13 @@ class CampaignForm(FlaskForm):
     name = StringField(
         u'Campaign name',
         validators=[DataRequired('Campaign name is needed')],
-        description='Name for the campaign'
+        description='Name for the campaign',
+        render_kw={'placeholder': 'Campaign name'}
     )
     description = TextAreaField(
         u'Campaign description',
-        description='Description for the campaign'
+        description='Description for the campaign',
+        render_kw={'placeholder': 'Campaign descriptions'}
     )
     campaign_status = RadioField(
         u'Campaign status',
@@ -57,18 +59,22 @@ class CampaignForm(FlaskForm):
         ]
     )
     start_date = DateField(
-            u'Start date of campaign')
+        u'Start date of campaign',
+        render_kw={'placeholder': '---'}
+    )
     end_date = DateField(
-            u'End date of campaign')
+        u'End date of campaign',
+        render_kw={'placeholder': '---'}
+    )
     campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',
         validators=[DataRequired('Campaign manager is needed')])
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
-    tags = SelectMultipleField(
+    types = SelectMultipleField(
         u'Tags of campaign',
-        choices=[(tag, tag) for tag in get_tags()])
+        choices=[(key, key) for key, value in get_types().items()])
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',
@@ -76,7 +82,9 @@ class CampaignForm(FlaskForm):
     map_type = StringField(
         u'Campaign Map',
         description='Campaign manager may change the map view',
-        validators=[validate_map])
+        validators=[validate_map],
+        render_kw={'placeholder': 'Campaign map'}
+    )
     selected_functions = HiddenField(
         u'Selected Functions')
     submit = SubmitField(u'Submit')

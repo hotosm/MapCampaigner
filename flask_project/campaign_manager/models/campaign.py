@@ -15,6 +15,7 @@ from app_config import Config
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.git_utilities import save_with_git
+from campaign_manager.utilities import get_survey_json, module_path
 
 
 class Campaign(JsonModel):
@@ -32,7 +33,7 @@ class Campaign(JsonModel):
     campaign_managers = []
     selected_functions = []
     remote_projects = []
-    tags = []
+    types = []
     description = ''
     _content_json = None
     map_type = ''
@@ -99,6 +100,9 @@ class Campaign(JsonModel):
                     self,
                     feature=value['feature'],
                     required_attributes=value['attributes'])
+
+                value['type_required'] = \
+                    ('%s' % selected_function.type_required).lower()
                 value['manager_only'] = selected_function.manager_only
                 value['name'] = selected_function.name()
             except AttributeError:
@@ -219,6 +223,23 @@ class Campaign(JsonModel):
             self.corrected_coordinates()
         geojson = pygeoj.load(data=geometry)
         return geojson.bbox
+
+    def get_json_type(self, type):
+        """ Get survey of campaign types in json.
+        :return: json surveys of types
+        :rtype: dict
+        """
+        # getting features and required attributes from types
+        survey_folder = os.path.join(
+            module_path(),
+            'campaigns_data',
+            'surveys'
+        )
+        survey_file = os.path.join(
+            survey_folder,
+            type
+        )
+        return get_survey_json(survey_file)
 
     # ----------------------------------------------------------
     # coverage functions

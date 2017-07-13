@@ -13,9 +13,11 @@
     <div class="row">
         <div class="col-lg-7">
             <h3 class="detail-campaign-name">{{ name }}</h3>
-            {% for tag in tags %}
-                <label class="detail-tag"> {{ tag }} </label>
-            {% endfor %}
+            {% if types %}
+                {% for type, value in types.items() %}
+                    <label class="detail-tag"> {{ value.type }} </label>
+                {% endfor %}
+            {% endif %}
             <p>
                 {% if description %}
                     {{ description }}
@@ -134,7 +136,7 @@
 
         function renderRemoteProjects(index) {
 
-            if(remote_projects.length === 0) {
+            if (remote_projects.length === 0) {
                 return;
             }
 
@@ -145,25 +147,30 @@
             }
 
             $('.insight-tabs').append(
-                '<li class="' + active + '">' +
+                    '<li class="' + active + '">' +
                     '<a href="#remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
-                        'Remote Mapper'+
-                '</li>'
+                    'Remote Mapper' +
+                    '</li>'
             );
 
             $('.insight-content').append(
-                '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
-                '</div>'
+                    '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
+                    '</div>'
             );
 
-            for(var i=0; i < remote_projects.length; i++) {
-                var url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com/api/v1/project/' + remote_projects[i];
+            for (var i = 0; i < remote_projects.length; i++) {
+                var url = '/campaign_manager/project-detail?projectId=' + remote_projects[i];
                 $.ajax({
                     url: url,
                     success: function (data) {
+                        try {
+                            data = JSON.parse(data);
+                        } catch (e) {
+                            return;
+                        }
                         var layerGroup = L.geoJSON([data['tasks']], {
                             style: function (feature) {
-                                if(typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {
+                                if (typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {
                                     return {
                                         weight: 2,
                                         color: "#999",
@@ -184,14 +191,14 @@
                         addedLayers[data['projectId']] = layerGroup;
 
                         $('#remote-mapper-content').append(
-                            '<div class="added-project well well-sm" onclick="showProjectMap(this, '+data['projectId']+')">'+
-                                '<div class="project-detail-name">'+
-                                    '#'+data['projectId']+' '+data['projectInfo']['name']+''+
-                                '</div>'+
-                                '<div class="project-detail-desc">'+
-                                    data['projectInfo']['shortDescription']+
-                                '</div>'+
-                            '</div>'
+                                '<div class="added-project well well-sm" onclick="showProjectMap(this, ' + data['projectId'] + ')">' +
+                                '<div class="project-detail-name">' +
+                                '#' + data['projectId'] + ' ' + data['projectInfo']['name'] + '' +
+                                '</div>' +
+                                '<div class="project-detail-desc">' +
+                                data['projectInfo']['shortDescription'] +
+                                '</div>' +
+                                '</div>'
                         )
                     }
                 });
@@ -223,35 +230,51 @@
                         }
                     }
                     if (allow_function) {
-                        var href = "#" + key;
-                        var active = '';
-                        if (index === 0) {
-                            active = 'active';
+                        var types = {'None': ''};
+                        if (selected_function['type_required'] == 'true') {
+                            types = {{ types|safe }};
                         }
-                        $('.insight-tabs').find('a[href="' + href + '"]').closest('li').remove();
-                        $('.insight-tabs').append(
-                                '<li class="' + active + '">' +
-                                '<a href="' + href + '" data-toggle="tab" aria-expanded="true">' +
-                                selected_function['name'] + '</a>' +
-                                '</li>'
-                        );
-                        $('.insight-content').find('#' + key).remove();
-                        $('.insight-content').append(
-                                '<div class="tab-pane fade ' + active + ' in" id="' + key + '">' +
-                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
-                                '</div>'
-                        );
-                        get_function(key);
-                        if (!containsObject(selected_function['feature'], feature_collected)) {
-                            feature_collected.push(selected_function['feature']);
-                            if (selected_function["category"] !== "coverage-function") {
-                                get_metadata(key);
+
+                        $.each(types, function (type, value_type) {
+                            var tab_id = key;
+                            var tab_name = selected_function['name'];
+                            if (type != 'None') {
+                                tab_id += '-' + type.replace(/\s+/g, '-');
                             }
-                        }
-                        index++;
+                            if (type != 'None') {
+                                tab_name += ' for ' + value_type['type'];
+                            }
+                            var active = '';
+                            if (index === 0) {
+                                active = 'active';
+                            }
+                            $('.insight-tabs').find('a[href="#' + tab_id + '"]').closest('li').remove();
+                            $('.insight-tabs').append(
+                                    '<li class="' + active + '">' +
+                                    '<a href="#' + tab_id + '" data-toggle="tab" aria-expanded="true">' +
+                                    tab_name + '</a>' +
+                                    '</li>'
+                            );
+                            $('.insight-content').find('#' + key).remove();
+                            $('.insight-content').append(
+                                    '<div class="tab-pane fade ' + active + ' in" id="' + tab_id + '">' +
+                                    '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
+                                    '</div>'
+                            );
+                            get_function(key, type);
+                            if (!containsObject(selected_function['feature'], feature_collected)) {
+                                feature_collected.push(selected_function['feature']);
+                            }
+                            index++;
+                        })
                     }
                 }
             });
+
+
+            for(var i=0; i<feature_collected.length;i++) {
+                calculateContributors(feature_collected[i]);
+            }
 
             renderRemoteProjects(index);
         }
@@ -324,56 +347,57 @@
             }
 
             calculateProgress();
-            calculateContributors();
         });
 
-        function calculateContributors () {
-            var url = "/campaign_manager/campaign/" + uuid +"/total_contributors";
+        var total_contributors = 0;
+        function calculateContributors (feature) {
+            var url = "/campaign_manager/campaign/total_contributors/" + uuid + "/" + feature;
             $.ajax({
                 url: url,
                 success: function (response) {
-                    $('#contributors').html(response['contributors_total']);
+                    total_contributors += parseInt(response['contributors_total']);
+                    $('#contributors').html(total_contributors);
                 }
             });
         }
 
-        var useDefault =  L.Control.extend({
+        var useDefault = L.Control.extend({
 
-        options: {
-            position: 'topright'
-        },
+            options: {
+                position: 'topright'
+            },
 
-        onAdd: function (map) {
-            var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
+            onAdd: function (map) {
+                var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
 
-            container.type = 'button';
-            container.title = 'switch to default map';
-            container.value = 'use default map';
-            container.onclick = function(){
-                chooseDefault();
-            };
+                container.type = 'button';
+                container.title = 'switch to default map';
+                container.value = 'use default map';
+                container.onclick = function () {
+                    chooseDefault();
+                };
 
-            return container;
-        }
+                return container;
+            }
         });
 
         var useCustom = L.Control.extend({
             options: {
-            position: 'topright'
-        },
+                position: 'topright'
+            },
 
-        onAdd: function (map) {
-            var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
+            onAdd: function (map) {
+                var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
 
-            container.type = 'button';
-            container.title = 'switch to custom map';
-            container.value = 'use custom map';
-            container.onclick = function(){
-                chooseCustom();
-            };
+                container.type = 'button';
+                container.title = 'switch to custom map';
+                container.value = 'use custom map';
+                container.onclick = function () {
+                    chooseCustom();
+                };
 
-            return container;
-        }
+                return container;
+            }
         });
 
         function chooseDefault() {
@@ -390,7 +414,7 @@
             map.addControl(switchCustom)
         }
 
-        function chooseCustom(){
+        function chooseCustom() {
             default_map.removeFrom(map);
             custom_map.addTo(map);
             document.getElementById('map-custom').classList.add('show');
@@ -404,12 +428,13 @@
         var map = L.map('campaign-map-detail').setView([0, 0], 1);
         var map_type = '{{ map_type }}';
         var attribution = '{{ attribution|safe }}';
-        if(!map_type){
+        if (!map_type) {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 20
-            }).addTo(map);}
+            }).addTo(map);
+        }
         else {
             var default_map;
             var custom_map = L.tileLayer(map_type, {
@@ -433,9 +458,12 @@
         {% endif %}
 
         var first_function = true;
-        function get_function(function_id) {
+        function get_function(function_id, type) {
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
             $.ajax({
+                data: {
+                    type: type,
+                },
                 url: url,
                 success: function (data) {
                     var active = '';
@@ -443,25 +471,14 @@
                         active = 'active';
                         first_function = false;
                     }
+                    var tab_id = function_id;
+                    if (type != 'None') {
+                        tab_id += '-' + type.replace(/\s+/g, '-');
+                    }
 
-                    $('#' + function_id).html(
+                    $('#' + tab_id).html(
                             data
                     );
-                }
-            });
-        }
-
-        function get_metadata(function_id) {
-            var url = '/campaign_manager/campaign/' + uuid + '/' + function_id + '/metadata';
-            $('#features').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
-
-            $.ajax({
-                url: url,
-                success: function (data) {
-                    var dataObj = JSON.parse(data);
-                    feature_collected_count += dataObj["collected_data_count"];
-                    $('#features').LoadingOverlay('hide');
-                    $('#features .panel-body').html(feature_collected_count);
                 }
             });
         }

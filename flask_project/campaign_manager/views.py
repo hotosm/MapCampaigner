@@ -11,11 +11,16 @@ from flask import request, render_template, Response
 
 from app_config import Config
 from campaign_manager import campaign_manager
+from campaign_manager.utilities import (
+    get_types
+)
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 from campaign_manager.utilities import temporary_folder
+from campaign_manager.data_providers.tasking_manager import \
+    TaskingManagerProvider
 
 from reporter import LOGGER
 from reporter.static_files import static_file
@@ -63,24 +68,6 @@ def home_all():
         oauth_secret=OAUTH_SECRET,
         all=True,
         google_api_key=GOOGLE_API_KEY
-    )
-
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
-
-
-@campaign_manager.route('/tags/<tag>')
-def campaigns_with_tag(tag):
-    """Home page view with tag.
-
-    On this page a summary campaign manager view will shown.
-    """
-
-    context = dict(
-        oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET,
-        google_api_key=GOOGLE_API_KEY,
-        tag=tag
     )
 
     # noinspection PyUnresolvedReferences
@@ -342,19 +329,6 @@ def campaign_boundary_upload_chunk(uuid):
         return Response('Campaign not found')
 
 
-@campaign_manager.route('/campaign/<uuid>/<insight_function_id>/metadata')
-def get_campaign_insight_function_data_metadata(uuid, insight_function_id):
-    from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
-    """
-    try:
-        campaign = Campaign.get(uuid)
-        data = campaign.insights_function_data_metadata(insight_function_id)
-        return Response(json.dumps(data))
-    except Campaign.DoesNotExist:
-        return Response('Campaign not found')
-
-
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     from campaign_manager.models.campaign import Campaign
@@ -436,12 +410,6 @@ def get_selected_functions():
         function_name = selected_function.name()
         function_dict = {}
         function_dict['name'] = function_name
-        function_dict['need_feature'] = \
-            ('%s' % selected_function.need_feature).lower()
-        if not selected_function.feature:
-            function_dict['features'] = selected_function.FEATURES
-        function_dict['need_required_attributes'] = \
-            ('%s' % selected_function.need_required_attributes).lower()
         function_dict['category'] = \
             selected_function.category
 
@@ -561,6 +529,7 @@ def create_campaign():
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
+    context['types'] = get_types()
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -582,7 +551,7 @@ def edit_campaign(uuid):
             form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
-            form.tags.data = campaign.tags
+            form.types.data = campaign.types
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
             form.map_type.data = campaign.map_type
@@ -618,6 +587,7 @@ def edit_campaign(uuid):
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
+    context['types'] = get_types()
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -673,6 +643,38 @@ def not_logged_in():
     """Not logged in page.
     """
     return render_template('not_authenticated.html')
+
+
+@campaign_manager.route('/search-remote')
+def search_remote():
+    """Search remote projects from tasking-manager api."""
+    page = request.args.get('page')
+    search_text = request.args.get('textSearch', None)
+    mapper_level = request.args.get('mapperLevel', None)
+    mapping_types = request.args.get('mappingTypes', None)
+    organisation_tag = request.args.get('organisationTag', None)
+    campaign_tag = request.args.get('campaignTag', None)
+
+    data = TaskingManagerProvider().search_project(
+        page=page,
+        search_text=search_text,
+        mapper_level=mapper_level,
+        mapping_types=mapping_types,
+        organisation_tag=organisation_tag,
+        campaign_tag=campaign_tag
+    )
+    return Response(data)
+
+
+@campaign_manager.route('/project-detail')
+def project_detail():
+    """Search remote projects from tasking-manager api."""
+    project_id = request.args.get('projectId')
+
+    data = TaskingManagerProvider().project_detail(
+        project_id=project_id,
+    )
+    return Response(data)
 
 
 if __name__ == '__main__':

@@ -4,11 +4,12 @@
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
     <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features</div>
-    <table class="feature-list-table">
+    <table class="feature-list-table" style="width: 100%">
         <thead>
         <tr>
             <th>Name</th>
             <th>Type</th>
+            <th>Status</th>
             {% for key in data.attributes %}
                 <th>{{ key }}</th>
             {% endfor %}
@@ -17,54 +18,61 @@
         <tbody>
         {% for row in data.data %}
             {% if row['error'] %}
-            <tr>
-                <td>
-                    <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
-                        {{ row['type'] }} :
-                        {% if 'tags' in row %}
-                            {% if row['tags']['name'] %}
-                                {{ row['tags']['name'] }} ({{ row['id'] }})
+                <tr>
+                    <td>
+                        <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
+                            {{ row['type'] }} :
+                            {% if 'tags' in row %}
+                                {% if row['tags']['name'] %}
+                                    {{ row['tags']['name'] }} ({{ row['id'] }})
+                                {% else %}
+                                    {{ row['id'] }}
+                                {% endif %}
                             {% else %}
                                 {{ row['id'] }}
                             {% endif %}
-                        {% else %}
-                            {{ row['id'] }}
-                        {% endif %}
-                    </a>
-                    {% if row['type'] == 'relation' %}
-                        <span class="show-members">
+                        </a>
+                        {% if row['type'] == 'relation' %}
+                            <span class="show-members">
                             <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
                         </span>
-                        <div class="relation-member">
-                        Members :
-                        <ul>
-                        {% for member in row['members'] %}
-                            <li>
-                            <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
-                                {{ member['type'] }} : {{ member['ref'] }}
-                            </a>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {{ row['type'] }} <ul>
-                </ul>
-                </td>
-                {% for key in data.attributes %}
-                    {% if not row['tags'] %}
-                        <td>-</td>
-                    {% elif row['tags'][key] %}
-                        <td>{{ row['tags'][key] }}</td>
-                    {% elif row[key] %}
-                        <td>{{ row[key] }}</td>
-                    {% else %}
-                        <td>-</td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
+                            <div class="relation-member">
+                                Members :
+                                <ul>
+                                    {% for member in row['members'] %}
+                                        <li>
+                                            <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
+                                                {{ member['type'] }} : {{ member['ref'] }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ row['type'] }}
+                    </td>
+                    <td>
+                        {% if row['warning_message'] %}
+                            <div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>
+                        {% endif %}
+                        {% if row['error_message'] %}
+                            <div class="error-completeness">Error: {{ row['error_message'] }}</div>
+                        {% endif %}
+                    </td>
+                    {% for key in data.attributes %}
+                        {% if not row['tags'] %}
+                            <td>-</td>
+                        {% elif row['tags'][key] %}
+                            <td>{{ row['tags'][key] }}</td>
+                        {% elif row[key] %}
+                            <td>{{ row[key] }}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
             {% endif %}
         {% endfor %}
         </tbody>
@@ -117,6 +125,15 @@
         color: white;
     }
 
+    td {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    tr {
+        vertical-align: top;
+    }
+
     tr.odd:hover, tr.even:hover {
         background-color: rgba(59, 132, 172, 0.13) !important;
     }
@@ -131,6 +148,14 @@
 
     .relation-member {
         display: none;
+    }
+
+    .error-completeness {
+        color: #c90623;
+    }
+
+    .warning-completeness {
+        color: #c99015;
     }
 </style>
 <script>
@@ -154,7 +179,7 @@
         }
     }
     $('.show-members').click(function (e) {
-        if($(this).children().hasClass('fa-arrow-circle-down')) {
+        if ($(this).children().hasClass('fa-arrow-circle-down')) {
             $(this).siblings('.relation-member').show();
             $(this).children().removeClass('fa-arrow-circle-down');
             $(this).children().addClass('fa-arrow-circle-up');

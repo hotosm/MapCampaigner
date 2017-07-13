@@ -44,14 +44,30 @@ def get_osm_user():
     return users
 
 
-def get_tags():
-    osm_user_path = os.path.join(
-        module_path(), 'tag_data.txt')
-    with open(osm_user_path) as f:
-        content = f.readlines()
-    tags = [x.strip() for x in content]
-    tags.sort()
-    return tags
+def get_types():
+    """ Get all types in json
+
+    :return: json of survey of type
+    :rtype: dict
+    """
+    survey_folder = os.path.join(
+        module_path(),
+        'campaigns_data',
+        'surveys'
+    )
+    surveys = {}
+    for filename in os.listdir(survey_folder):
+        if '.gitkeep' in filename:
+            continue
+
+        # check the json for each file
+        survey_path = os.path.join(
+            survey_folder,
+            filename
+        )
+        survey = get_survey_json(survey_path)
+        surveys[filename] = survey
+    return surveys
 
 
 running_thread = []
@@ -134,3 +150,38 @@ def multi_feature_to_polygon(geojson):
         "geometry": single_feature
     }]
     return geojson
+
+
+def get_survey_json(survey_file):
+    """ Return survey types of campaign in json
+    :param survey_file: path of survey to be checked
+    :type survey_file: str
+
+    :return: json of survey of type
+    :rtype: dict
+    """
+    surveys = {
+        'feature': None,
+        'tags': {}
+    }
+    if os.path.isfile(survey_file):
+        with open(survey_file) as f:
+            line_number = 0
+            last_tag = None
+            for line in f:
+                line = line.replace('\n', '').strip()
+                if line_number == 0:
+                    if line:
+                        surveys['feature'] = line.replace('FEATURE:', '')
+                else:
+                    if line[0] != '-':
+                        if line not in surveys['tags']:
+                            surveys['tags'][line] = []
+                        last_tag = line
+                    else:
+                        line = line.replace('-', '').strip()
+                        if last_tag:
+                            surveys['tags'][last_tag].append(line)
+
+                line_number += 1
+    return surveys

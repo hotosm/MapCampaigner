@@ -20,18 +20,41 @@ from campaign_manager.utilities import (
 
 class OverpassProvider(AbstractDataProvider):
     """Provider from overpass"""
+    query = (
+        '('
+        'way["%(KEY)s"]'
+        '(poly:"{polygon}");'
+        'relation["%(KEY)s"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
+    query_with_value = (
+        '('
+        'way["%(KEY)s"~"%(VALUE)s"]'
+        '(poly:"{polygon}");'
+        'relation["%(KEY)s"~"%(VALUE)s"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
 
-    def get_data(self, feature, polygon):
+    def get_data(self, polygon, feature_key, feature_values=None):
         """Get osm data.
-
-        :param feature: The type of feature to extract:
-            buildings, building-points, roads, potential-idp, boundary-[1,11]
-        :type feature: str
 
         :param polygon: list of array describing polygon area e.g.
         '[[28.01513671875,-25.77516058680343],[28.855590820312504,-25.567220388070023],
         [29.168701171875004,-26.34265280938059]]
         :type polygon: list
+
+        :param feature_key: The type of feature to extract:
+            buildings, building-points, roads, potential-idp, boundary-[1,11]
+        :type feature_key: str
+
+        :param feature_values: The value of features as query
+        :type feature_values: list
 
         :raises: OverpassTimeoutException
 
@@ -40,7 +63,6 @@ class OverpassProvider(AbstractDataProvider):
         """
         server_url = 'http://overpass-api.de/api/interpreter?data='
 
-        tag_name = feature
         overpass_verbosity = 'body'
 
         try:
@@ -49,11 +71,20 @@ class OverpassProvider(AbstractDataProvider):
             error = "Invalid area"
             polygon_string = config.POLYGON
 
-        feature_type = TAG_MAPPING[tag_name]
         parameters = dict()
         parameters['print_mode'] = overpass_verbosity
         parameters['polygon'] = polygon_string
-        query = OVERPASS_QUERY_MAP_POLYGON[feature_type].format(**parameters)
+
+        if feature_values:
+            query = self.query_with_value % {
+                'KEY': feature_key,
+                'VALUE': '|'.join(feature_values)
+            }
+        else:
+            query = self.query % {
+                'KEY': feature_key
+            }
+        query = query.format(**parameters)
 
         # Query to returns json string
         query = '[out:json];' + query

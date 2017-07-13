@@ -8,7 +8,6 @@ from campaign_manager.insights_functions._abstract_overpass_insight_function \
 class CountFeature(AbstractOverpassInsightFunction):
     function_name = "Showing number of feature in group"
     category = ['quality']
-    need_required_attributes = False
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -31,6 +30,29 @@ class CountFeature(AbstractOverpassInsightFunction):
         """
         return ""
 
+    def process_data(self, raw_data):
+        """ Get geometry of campaign.
+        :param raw_data: Raw data that returns by function provider
+        :type raw_data: dict
+
+        :return: processed data
+        :rtype: dict
+        """
+        processed_data = []
+        required_attributes = self.get_required_attributes()
+
+        # process data based on required attributes
+        req_attr = required_attributes
+
+        for raw_data in raw_data:
+            if raw_data['type'] == 'node':
+                continue
+
+            if 'tags' not in raw_data:
+                continue
+            processed_data.append(raw_data['tags'])
+        return processed_data
+
     def post_process_data(self, data):
         """ Process data regarding output.
         This needed for processing data for counting or grouping.
@@ -48,24 +70,19 @@ class CountFeature(AbstractOverpassInsightFunction):
         }
         data = data
         for current_data in data:
-            key = 'building'
-            alternative_keys = ['amenity']
-
-            if key not in current_data:
-                for alternative in alternative_keys:
-                    if alternative in current_data:
-                        key = alternative
+            group_type = 'unknown'
+            group_key = self.feature
             try:
-                building_type = current_data[key]
+                group_type = current_data[group_key]
             except KeyError:
-                building_type = 'unknown'
+                pass
 
             building_group = u'{group_key} : {group_type}'.format(
-                group_key=key,
-                group_type=building_type.capitalize()
+                group_key=group_key,
+                group_type=group_type.capitalize()
             )
 
-            if building_group not in output:
+            if building_group not in output['data']:
                 output['data'][building_group] = 0
             output['data'][building_group] += 1
         return output

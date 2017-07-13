@@ -12,76 +12,61 @@ from campaign_manager.data_providers.overpass_provider import OverpassProvider
 class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     __metaclass__ = ABCMeta
     category = ['quality']
+    FEATURES_MAPPING = {
+        'buildings': 'building',
+        'roads': 'road'
+    }
     icon = 'list'
-    _function_good_data = None  # cleaned data
+    tag = {}
 
     last_update = ''
     is_updating = False
+    type_required = True
+
+    def initiate(self, additional_data):
+        """ Initiate function
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
+        """
+        if 'type' in additional_data:
+            try:
+                self.tag = self.campaign.types[additional_data['type']]
+            except (ValueError, KeyError):
+                pass
+        if self.feature in self.FEATURES_MAPPING:
+            self.feature = self.FEATURES_MAPPING[self.feature]
+
+    def name(self):
+        """Name of insight functions
+        :return: string of name
+        """
+        name = self.function_name
+        if self.tag:
+            name += ' for type %s' % self.tag['type']
+        return name
 
     def get_data_from_provider(self):
         """ Get data provider function
         :return: data from provider
         :rtype: dict
         """
-        overpass_data = OverpassProvider().get_data(
-            self.FEATURES_MAPPING[self.feature],
-            self.campaign.corrected_coordinates()
-        )
+        if not self.tag:
+            return []
+
+        value = self.campaign.get_json_type(self.tag['type'])
+        feature = value['feature']
+        if feature in value['tags']:
+            overpass_data = OverpassProvider().get_data(
+                self.campaign.corrected_coordinates(),
+                feature_key=value['feature'],
+                feature_values=value['tags'][feature]
+            )
+        else:
+            overpass_data = OverpassProvider().get_data(
+                self.campaign.corrected_coordinates(),
+                feature_key=value['feature'],
+            )
         self.last_update = overpass_data['last_update']
         self.is_updating = overpass_data['updating_status']
         return overpass_data['features']
-
-    def process_data(self, raw_datas):
-        """ Get geometry of campaign.
-        :param raw_datas: Raw data that returns by function provider
-        :type raw_datas: dict
-
-        :return: processed data
-        :rtype: dict
-        """
-        good_data = []
-        processed_data = []
-        required_attributes = self.get_required_attributes()
-
-        # process data based on required attributes
-        if raw_datas:
-            req_attr = required_attributes
-
-            for raw_data in raw_datas:
-                if raw_data['type'] == 'node':
-                    continue
-
-                if 'tags' in raw_data:
-                    raw_attr = raw_data["tags"]
-
-                    # just get required attr
-                    is_fulfilling_requirement = True
-                    if len(req_attr) > 0:
-                        # checking data
-                        for req_key, req_value in req_attr.items():
-                            # if key in attr
-                            if req_key in raw_attr:
-                                raw_value = raw_attr[req_key].lower()
-                                if req_value and raw_value not in req_value:
-                                    is_fulfilling_requirement = False
-                                    break
-                            else:
-                                is_fulfilling_requirement = False
-                                break
-                        if is_fulfilling_requirement:
-                            processed_data.append(raw_data)
-                    else:
-                        processed_data.append(raw_attr)
-
-                    if is_fulfilling_requirement:
-                        raw_data['error'] = False
-                    else:
-                        raw_data['error'] = True
-                    good_data.append(raw_data)
-                else:
-                    raw_data['error'] = True
-                    if not self.need_required_attributes:
-                        processed_data.append(raw_data)
-                    good_data.append(raw_data)
-        self._function_good_data = good_data
-        return processed_data
