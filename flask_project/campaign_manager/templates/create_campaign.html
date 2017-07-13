@@ -656,6 +656,7 @@
                     }
                 } else if (select_form.length > 0) {
                     select_form.removeClass('error');
+                    select_form.parent().removeClass('error');
 
                     select_form.click(function () {
                         $(this).removeClass('error');
@@ -663,6 +664,8 @@
 
                     if (select_form.val().length === 0) {
                         select_form.addClass('error');
+                        select_form.parent().addClass('error');
+                        select_form.parent().prepend('This field is required');
                         valid = false;
                     }
                 } else if (radio_form.length > 0) {
@@ -1050,9 +1053,15 @@
 
         //----------------- Types & Tags -----------------//
 
-        var addedTypes = [];
-
-        addTypes();
+        {% if form.types.data %}
+            var selected_types_data = {{ form.types.data | safe }};
+            $.each(selected_types_data, function (index, type){
+                var selected_type = selected_types_data[index]['type'];
+                addTypes(selected_type);
+            });
+        {% else %}
+            addTypes();
+        {% endif %}
 
         function getTypesSelectionValue() {
             // GET SELECTED TYPES
@@ -1112,7 +1121,7 @@
             return types_value
         }
 
-        function addTypes() {
+        function addTypes(value) {
             var row = $("<div/>");
             row.addClass("row");
 
@@ -1120,13 +1129,24 @@
             column.addClass("col-lg-4");
             column.addClass("form-group");
             column.addClass("type-selection");
+            column.addClass("required-form");
             row.append(column);
 
             var select = $("<select />");
             select.addClass('select-types');
+            select.attr('id', 'types_options');
+            select.attr('name', 'types_options');
             select.html('{{ form.types_options }}');
 
-            // Add empty value
+            {% if form.types.data %}
+                // Add empty value with no default selection
+                select.prepend('<option value="">Select type</option>');
+                select.children().removeAttr('selected');
+                select.find('option[value="'+value+'"]').prop('selected', true);
+            {% else %}
+                // Add empty value with default selection
+                select.prepend('<option value="" selected="selected">Select type</option>');
+            {% endif %}
             column.append(select);
 
             $("#typesTagsContainer").append(row);
@@ -1138,8 +1158,6 @@
         function onTypesChange() {
 
             var selected_type = this.value;
-
-            addedTypes.push(selected_type);
 
             var row = $(this).parent().parent();
 
