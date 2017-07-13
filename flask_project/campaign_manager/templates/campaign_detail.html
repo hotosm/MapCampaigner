@@ -230,49 +230,36 @@
                         }
                     }
                     if (allow_function) {
-                        var types = {'None': ''};
-                        if (selected_function['type_required'] == 'true') {
-                            types = {{ types|safe }};
+                        var tab_id = key;
+                        var tab_name = selected_function['name'];
+                        var active = '';
+                        if (index === 0) {
+                            active = 'active';
                         }
-
-                        $.each(types, function (type, value_type) {
-                            var tab_id = key;
-                            var tab_name = selected_function['name'];
-                            if (type != 'None') {
-                                tab_id += '-' + type.replace(/\s+/g, '-');
-                            }
-                            if (type != 'None') {
-                                tab_name += ' for ' + value_type['type'];
-                            }
-                            var active = '';
-                            if (index === 0) {
-                                active = 'active';
-                            }
-                            $('.insight-tabs').find('a[href="#' + tab_id + '"]').closest('li').remove();
-                            $('.insight-tabs').append(
-                                    '<li class="' + active + '">' +
-                                    '<a href="#' + tab_id + '" data-toggle="tab" aria-expanded="true">' +
-                                    tab_name + '</a>' +
-                                    '</li>'
-                            );
-                            $('.insight-content').find('#' + key).remove();
-                            $('.insight-content').append(
-                                    '<div class="tab-pane fade ' + active + ' in" id="' + tab_id + '">' +
-                                    '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
-                                    '</div>'
-                            );
-                            get_function(key, type);
-                            if (!containsObject(selected_function['feature'], feature_collected)) {
-                                feature_collected.push(selected_function['feature']);
-                            }
-                            index++;
-                        })
+                        $('.insight-tabs').find('a[href="#' + tab_id + '"]').closest('li').remove();
+                        $('.insight-tabs').append(
+                                '<li class="' + active + '">' +
+                                '<a href="#' + tab_id + '" data-toggle="tab" aria-expanded="true">' +
+                                tab_name + '</a>' +
+                                '</li>'
+                        );
+                        $('.insight-content').find('#' + key).remove();
+                        $('.insight-content').append(
+                                '<div class="tab-pane fade ' + active + ' in" id="' + tab_id + '">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
+                                '</div>'
+                        );
+                        get_function(key);
+                        if (!containsObject(selected_function['feature'], feature_collected)) {
+                            feature_collected.push(selected_function['feature']);
+                        }
+                        index++;
                     }
                 }
             });
 
 
-            for(var i=0; i<feature_collected.length;i++) {
+            for (var i = 0; i < feature_collected.length; i++) {
                 calculateContributors(feature_collected[i]);
             }
 
@@ -350,7 +337,7 @@
         });
 
         var total_contributors = 0;
-        function calculateContributors (feature) {
+        function calculateContributors(feature) {
             var url = "/campaign_manager/campaign/total_contributors/" + uuid + "/" + feature;
             $.ajax({
                 url: url,
@@ -458,12 +445,9 @@
         {% endif %}
 
         var first_function = true;
-        function get_function(function_id, type) {
+        function get_function(function_id) {
             var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
             $.ajax({
-                data: {
-                    type: type,
-                },
                 url: url,
                 success: function (data) {
                     var active = '';
@@ -472,13 +456,7 @@
                         first_function = false;
                     }
                     var tab_id = function_id;
-                    if (type != 'None') {
-                        tab_id += '-' + type.replace(/\s+/g, '-');
-                    }
-
-                    $('#' + tab_id).html(
-                            data
-                    );
+                    $('#' + tab_id).html(data);
                 }
             });
         }

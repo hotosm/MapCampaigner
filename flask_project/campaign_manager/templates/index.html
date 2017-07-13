@@ -60,7 +60,7 @@
                                     NAME
                                 </th>
                                 <th>
-                                    TAGS
+                                    TYPES
                                 </th>
                                 <th>
                                     PARTICIPANTS
@@ -354,16 +354,16 @@
             $.ajax(url, {
                 success: function(campaigns){
                     $.each(campaigns, function (index, campaign) {
-                        var tags = '';
+                        var types = [];
                         var action_button = '';
 
-                        if(campaign['tags']) {
-                            $.each(campaign['tags'], function (index, tag) {
-                               tags += '<a href="/campaign_manager/tags/'+tag+'">' + tag + '</a>';
-                               if(index+1 < campaign['tags'].length) {
-                                   tags += ', ';
-                               }
+                        if(campaign['types']) {
+                            $.each(campaign['types'], function (index, type) {
+                               types.push(type['type']);
                             });
+                            types = types.join()
+                        }else{
+                            types = '-'
                         }
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
@@ -381,7 +381,7 @@
 
                         table.row.add([
                             '<span class="campaign-td"><a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
-                            '<span class="tag">'+tags+'</span>',
+                            '<span class="tag">'+types+'</span>',
                             '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
                             action_button
                         ]).draw( false );

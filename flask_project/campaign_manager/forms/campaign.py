@@ -72,9 +72,10 @@ class CampaignForm(FlaskForm):
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
-    types = SelectMultipleField(
-        u'Tags of campaign',
-        choices=[(key, key) for key, value in get_types().items()])
+    types_options = SelectMultipleField(
+        u'Types of campaign',
+        choices=[(key, key) for key, value in sorted(get_types().items())])
+    types = HiddenField(u'Types that selected for this campaign')
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',

@@ -296,7 +296,7 @@
 }
 
 .cc-nav.active {
-    background-color: #f5f5f5 !important;
+    background-color: #dedede !important;
 }
 
 .cc-nav {
@@ -328,10 +328,6 @@
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
     font-size: 11pt;
     font-weight: normal !important;
-}
-
-#campaign-form select#types {
-    height: 130px;
 }
 
 .cc-nav.activated {
@@ -411,4 +407,59 @@ input#end_date.form-control.error::placeholder {
 
 input#name {
     font-weight: 700 !important;
+}
+
+input#search-osm-user-text {
+    width: 50%;
+}
+
+.select-types {
+    height: 40px;
+    box-shadow: none;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: white;
+    width: 100% !important;
+    margin-left: 13px;
+    margin-top: 5px;
+}
+
+input#btn-add {
+    width: 150px !important;
+    height: 35px !important;
+    border-radius: 25px !important;
+    background-color: #dedede;
+}
+
+.key-tags {
+    border: 1px solid #dedede !important;
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    margin-left: 0px !important;
+    line-height: 40px;
+}
+
+#TypesTagsContainer {
+    margin-top: 5px;
+}
+
+#TypesTagsContainer .row {
+    margin-left: 0px;
+}
+
+.row-tags {
+    margin-bottom: 15px !important;
+}
+
+.type-selection.required-form.error {
+    color: #ac3232;
+}
+
+.types-required-message {
+    display: none;
+    color: #ac3232;
 }

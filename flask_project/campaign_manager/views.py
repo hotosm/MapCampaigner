@@ -412,6 +412,10 @@ def get_selected_functions():
         function_dict['name'] = function_name
         function_dict['category'] = \
             selected_function.category
+        function_dict['need_feature'] = \
+            ('%s' % selected_function.need_feature).lower()
+        function_dict['need_required_attributes'] = \
+            ('%s' % selected_function.need_required_attributes).lower()
 
         funct_dict[insight_function] = function_dict
     return funct_dict
