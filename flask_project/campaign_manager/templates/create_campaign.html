@@ -34,7 +34,7 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div><span class="panel-header-info" style="margin-left: 25px">FUNCTIONS</span></div>
+                <div style="margin-top: 10px"><span class="panel-header-info" style="margin-left: 25px;">FUNCTIONS</span></div>
                 <div class="panel panel-default panel-header cc-nav" data-step="3">
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
@@ -800,10 +800,6 @@
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
 
-            for (var i=0; i<addedTypes.length;i++) {
-                $('#types').append('<option selected="selected" value="' + addedTypes[i] + '">' + addedTypes[i] + '</option>')
-            }
-
             // Processing selected function
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
@@ -1074,6 +1070,7 @@
             $("#typesTagsContainer").append(row);
 
             select.change(onTypesChange);
+            select.trigger('change');
         }
 
         function onTypesChange() {
