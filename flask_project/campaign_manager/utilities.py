@@ -56,17 +56,18 @@ def get_types():
         'surveys'
     )
     surveys = {}
-    for filename in os.listdir(survey_folder):
-        if '.gitkeep' in filename:
-            continue
+    if os.path.exists(survey_folder):
+        for filename in os.listdir(survey_folder):
+            if '.gitkeep' in filename:
+                continue
 
-        # check the json for each file
-        survey_path = os.path.join(
-            survey_folder,
-            filename
-        )
-        survey = get_survey_json(survey_path)
-        surveys[filename] = survey
+            # check the json for each file
+            survey_path = os.path.join(
+                survey_folder,
+                filename
+            )
+            survey = get_survey_json(survey_path)
+            surveys[filename] = survey
     return surveys
 
 
