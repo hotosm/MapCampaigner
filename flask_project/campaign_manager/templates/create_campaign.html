@@ -136,7 +136,9 @@
                                 </div>
                             </div>
                             <div id="typesTagsContainer"></div>
-                            <div class="row"><div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div></div>
+                            <div class="row">
+                                <div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div>
+                            </div>
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
                                     <div class="form-group">
@@ -365,6 +367,16 @@
                             <option value="{{ key }}">{{ value.name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="col-lg-4">
+                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Put feature to extract"
+                           style="display: none">
+                </div>
+                <div class="col-lg-3">
+                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Additional attributes for this function"
+                           style="display: none">
                 </div>
             </div>
         </div>
@@ -699,7 +711,7 @@
             return valid;
         }
 
-        function checkFormHeader(){
+        function checkFormHeader() {
             var valid = true;
             var required_forms = $('.form-header').find('.required-form');
 
@@ -770,7 +782,9 @@
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'category': category
+                        'category': category,
+                        'feature': $(row).find('.function-feature').val(),
+                        'attributes': $(row).find('.function-attributes').val()
                     }
                 }
             });
@@ -807,6 +821,9 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
+
+            // tags
+            $("#types").val(JSON.stringify(getTypesSelectionValue()));
         });
 
         var campaignMap = L.map('campaign-map');
@@ -858,18 +875,18 @@
         $("#start_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
-            onSelect: function(date) {
+            onSelect: function (date) {
                 $("#end_date").val(date);
-                $("#end_date").datepicker({ minDate: new Date(date) })
+                $("#end_date").datepicker({minDate: new Date(date)})
             }
         });
         $("#end_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
             position: 'bottom right',
-            onSelect: function(date){
+            onSelect: function (date) {
                 $("#start_date").val(date);
-                $("#start_date").datepicker({ maxDate: new Date(date) })
+                $("#start_date").datepicker({maxDate: new Date(date)})
             }
         });
 
@@ -963,9 +980,9 @@
                 $('#campaign-map-area-size').addClass('label-danger');
             } else {
                 clearNotification();
+                $('.map-wrapper').data('error', '');
                 $('#campaign-map-area-size').removeClass('label-danger');
                 $('#campaign-map-area-size').addClass('label-success');
-                $('.map-wrapper').data('error', '');
             }
         }
 
@@ -1031,12 +1048,6 @@
                     getFormElement($event, '.function-attributes').show();
                 }
             }
-
-            var selected_functions = {};
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
         }
 
         function removeFunction(event) {
@@ -1045,9 +1056,35 @@
 
         //----------------- Types & Tags -----------------//
 
-        var addedTypes=[];
+        var addedTypes = [];
 
         addTypes();
+
+        function getTypesSelectionValue() {
+            // GET SELECTED TYPES
+            var types_value = {};
+            $("#typesTagsContainer").find('.row').each(function (index, element) {
+                var $select = $(element).find('.type-selection select');
+                if ($select.val()) {
+                    var tags = [];
+                    $(element).find('.row-tags span').each(function (index, spanElement) {
+                        tags.push($(spanElement).text())
+                    });
+                    types_value['type-' + (index + 1)] = {
+                        type: $select.val(),
+                        tags: tags
+                    }
+                }
+            });
+            if (jQuery.isEmptyObject(types_value)) {
+                showNotifications('Need at least one type for campaign.', 'danger');
+                $('.map-wrapper').data('error', 'Need at least one type for campaign.');
+            } else {
+                clearNotification();
+                $('.map-wrapper').data('error', '');
+            }
+            return types_value
+        }
 
         function addTypes() {
             var row = $("<div/>");
@@ -1056,15 +1093,14 @@
             var column = $("<div/>");
             column.addClass("col-lg-4");
             column.addClass("form-group");
+            column.addClass("type-selection");
             row.append(column);
 
             var select = $("<select />");
             select.addClass('select-types');
-            select.html('{{ form.types }}');
+            select.html('{{ form.types_options }}');
 
             // Add empty value
-            select.prepend('<option value="">Select type</option>');
-
             column.append(select);
 
             $("#typesTagsContainer").append(row);
@@ -1083,7 +1119,7 @@
 
             var row_tags = row.children('.row-tags');
 
-            if(row_tags) {
+            if (row_tags) {
                 row_tags.remove();
             }
 
@@ -1094,23 +1130,26 @@
             row.append(column);
 
             var div = $("<div />");
-            var tags = types[selected_type]['tags'];
-            var key_tags = Object.keys(tags);
-            for( var j=0; j<key_tags.length; j++){
-                div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+            if (types[selected_type]) {
+                var tags = types[selected_type]['tags'];
+                var key_tags = Object.keys(tags);
+                for (var j = 0; j < key_tags.length; j++) {
+                    div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+                }
+                column.html(div);
             }
-            column.html(div);
 
             row.append('<div class="col-lg-1 row-tags">' +
-                        '<button class="btn btn-danger btn-sm btn-block"' +
-                        'type=button onclick="removeTags(this, \''+selected_type+'\')">'+
-                        '<i class="fa fa-minus"></i></button></div>');
+                    '<button class="btn btn-danger btn-sm btn-block"' +
+                    'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
+                    '<i class="fa fa-minus"></i></button></div>');
+            getTypesSelectionValue()
         }
 
         function removeTags(event, type) {
             $(event).parent().parent().remove();
             addedTypes.splice($.inArray(type, addedTypes), 1);
-            if(addedTypes.length < 1) {
+            if (addedTypes.length < 1) {
                 addTypes();
             }
         }

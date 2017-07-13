@@ -72,6 +72,7 @@ class Campaign(JsonModel):
         for key, value in data.items():
             setattr(self, key, value)
         self.geometry = json.loads(self.geometry)
+        self.types = json.loads(self.types)
         self.selected_functions = json.loads(self.selected_functions)
         self.save(uploader)
 
@@ -286,6 +287,7 @@ class Campaign(JsonModel):
         uuid = data['uuid']
         Campaign.validate(data, uuid)
         data['geometry'] = json.loads(data['geometry'])
+        data['types'] = json.loads(data['types'])
         data['selected_functions'] = json.loads(data['selected_functions'])
 
         json_str = Campaign.serialize(data)
