@@ -1,1 +1,171 @@
-{"campaign_creator": "meomancer", "campaign_managers": ["dimasciput", "meomancer"], "campaign_status": "Start", "coverage": {}, "description": "", "edited_at": "Tue Jun  6 13:10:32 2017", "edited_by": "meomancer", "end_date": "2017-06-02", "geometry": {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[[20.42787551879883, -34.04071164207856], [20.42787551879883, -34.02854878090723], [20.444784164428714, -34.02854878090723], [20.444784164428714, -34.04071164207856], [20.42787551879883, -34.04071164207856]]]}}, {"type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[[20.4276180267334, -34.02769518131149], [20.4276180267334, -34.01673989100637], [20.444784164428714, -34.01673989100637], [20.444784164428714, -34.02769518131149], [20.4276180267334, -34.02769518131149]]]}}, {"type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[[20.44538497924805, -34.04078276479281], [20.44538497924805, -34.01688217656674], [20.459547042846683, -34.01688217656674], [20.459547042846683, -34.04078276479281], [20.44538497924805, -34.04078276479281]]]}}]}, "name": "OSMCHA Campaign Test", "selected_functions": {"function-1": {"function": "OsmchaChangesets", "feature": null, "category": "error-function", "attributes": ""}, "function-2": {"function": "OsmchaFeatures", "feature": null, "category": "error-function", "attributes": ""}}, "start_date": "2017-05-01", "tags": ["boundaries", "buildings", "educational facilities"], "uploader": "meomancer", "uuid": "bbddd0936f8d41f9ade9c75482965621", "version": 4}
+{
+  "campaign_creator": "meomancer",
+  "campaign_managers": [
+    "dimasciput",
+    "meomancer"
+  ],
+  "campaign_status": "Start",
+  "coverage": {},
+  "description": "",
+  "edited_at": "Tue Jun  6 13:10:32 2017",
+  "edited_by": "meomancer",
+  "end_date": "2017-06-02",
+  "geometry": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                20.42787551879883,
+                -34.04071164207856
+              ],
+              [
+                20.42787551879883,
+                -34.02854878090723
+              ],
+              [
+                20.444784164428714,
+                -34.02854878090723
+              ],
+              [
+                20.444784164428714,
+                -34.04071164207856
+              ],
+              [
+                20.42787551879883,
+                -34.04071164207856
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                20.4276180267334,
+                -34.02769518131149
+              ],
+              [
+                20.4276180267334,
+                -34.01673989100637
+              ],
+              [
+                20.444784164428714,
+                -34.01673989100637
+              ],
+              [
+                20.444784164428714,
+                -34.02769518131149
+              ],
+              [
+                20.4276180267334,
+                -34.02769518131149
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                20.44538497924805,
+                -34.04078276479281
+              ],
+              [
+                20.44538497924805,
+                -34.01688217656674
+              ],
+              [
+                20.459547042846683,
+                -34.01688217656674
+              ],
+              [
+                20.459547042846683,
+                -34.04078276479281
+              ],
+              [
+                20.44538497924805,
+                -34.04078276479281
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "map_type": "",
+  "name": "OSMCHA Campaign Test",
+  "remote_projects": [],
+  "selected_functions": {
+    "function-7": {
+      "function": "CountFeature",
+      "category": "quality-function",
+      "feature": "amenity=college,kindergarten,school,university",
+      "attributes": "",
+      "type": "Educational Facilities"
+    },
+    "function-8": {
+      "function": "FeatureAttributeCompleteness",
+      "category": "quality-function",
+      "feature": "amenity=college,kindergarten,school,university",
+      "attributes": "[]",
+      "type": "Educational Facilities"
+    },
+    "function-9": {
+      "function": "CountFeature",
+      "category": "quality-function",
+      "feature": "amenity=clinic,doctors,hospital",
+      "attributes": "",
+      "type": "Health facilities"
+    },
+    "function-10": {
+      "function": "FeatureAttributeCompleteness",
+      "category": "quality-function",
+      "feature": "amenity=clinic,doctors,hospital",
+      "attributes": "[]",
+      "type": "Health facilities"
+    },
+    "function-5": {
+      "function": "OsmchaChangesets",
+      "category": "error-function",
+      "feature": "",
+      "attributes": ""
+    },
+    "function-6": {
+      "function": "OsmchaFeatures",
+      "category": "error-function",
+      "feature": "",
+      "attributes": ""
+    }
+  },
+  "start_date": "2017-05-01",
+  "types": {
+    "type-1": {
+      "type": "Educational Facilities",
+      "tags": []
+    },
+    "type-2": {
+      "type": "Health facilities",
+      "tags": []
+    }
+  },
+  "types_options": [],
+  "uploader": "meomancer",
+  "uuid": "bbddd0936f8d41f9ade9c75482965621",
+  "version": 8
+}

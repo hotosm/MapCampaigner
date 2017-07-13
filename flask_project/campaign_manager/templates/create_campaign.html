@@ -688,6 +688,9 @@
                 $('.error-managers').show();
             }
 
+
+            // tags
+            $("#types").val(JSON.stringify(getTypesSelectionValue()));
             return valid;
         }
 
@@ -784,8 +787,9 @@
                         'function': $(row).find('.function-selection').val(),
                         'category': category,
                         'feature': $(row).find('.function-feature').val(),
-                        'attributes': $(row).find('.function-attributes').val()
-                    }
+                        'attributes': $(row).find('.function-attributes').val(),
+                        'type': $(row).find('.function-selection').data('type')
+                }
                 }
             });
             return functions;
@@ -821,9 +825,6 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
-
-            // tags
-            $("#types").val(JSON.stringify(getTypesSelectionValue()));
         });
 
         var campaignMap = L.map('campaign-map');
@@ -1029,20 +1030,13 @@
             if ($(event).val() !== '') {
                 var need_feature = 'false';
                 var need_required_attributes = 'false';
-                var features = null;
                 if (typeof functions[$(event).val()] !== 'undefined') {
                     need_feature = functions[$(event).val()]['need_feature'];
                     need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                    features = functions[$(event).val()]['features'];
                 }
 
-                if (features && need_feature === 'true') {
+                if (need_feature === 'true') {
                     getFormElement($event, '.function-feature').show();
-                    $.each(features, function (index, feature) {
-                        getFormElement($event, '.function-feature').append(
-                                "<option value='" + feature + "'>" + feature + "</option>"
-                        );
-                    });
                 }
                 if (need_required_attributes === 'true') {
                     getFormElement($event, '.function-attributes').show();
@@ -1083,6 +1077,38 @@
                 clearNotification();
                 $('.map-wrapper').data('error', '');
             }
+
+            {# also render insights function #}
+            $('#quality-function .function-form').html('');
+            var index = 0;
+            $.each(types_value, function (key, value) {
+                var type = value['type'];
+                var survey = types[type];
+                var feature = survey['feature'];
+                var tags = survey['tags'];
+                if (tags[feature]) {
+                    feature += '=' + tags[feature]
+                }
+
+                {# count features #}
+                $('#quality-function-add').click();
+                var row = $('#quality-function .function-form').find('.function-form-row')[index];
+                $(row).find('.function-selection').val('CountFeature');
+                $(row).find('.function-selection').trigger('change');
+                $(row).find('.function-feature').val(feature);
+                $(row).find('.function-selection').data('type', type);
+                index += 1;
+
+                {# completeness #}
+                $('#quality-function-add').click();
+                var row = $('#quality-function .function-form').find('.function-form-row')[index];
+                $(row).find('.function-selection').val('FeatureAttributeCompleteness');
+                $(row).find('.function-selection').trigger('change');
+                $(row).find('.function-feature').val(feature);
+                $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
+                $(row).find('.function-selection').data('type', type);
+                index += 1;
+            });
             return types_value
         }
 
@@ -1143,7 +1169,6 @@
                     '<button class="btn btn-danger btn-sm btn-block"' +
                     'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                     '<i class="fa fa-minus"></i></button></div>');
-            getTypesSelectionValue()
         }
 
         function removeTags(event, type) {

@@ -29,21 +29,16 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :param additional_data: additional data that needed
         :type additional_data:dict
         """
-        if 'type' in additional_data:
-            try:
-                self.tag = self.campaign.types[additional_data['type']]
-            except (ValueError, KeyError):
-                pass
         if self.feature in self.FEATURES_MAPPING:
             self.feature = self.FEATURES_MAPPING[self.feature]
+        if 'type' in additional_data:
+            self.type = additional_data['type']
 
     def name(self):
         """Name of insight functions
         :return: string of name
         """
         name = self.function_name
-        if self.tag:
-            name += ' for type %s' % self.tag['type']
         return name
 
     def get_data_from_provider(self):
@@ -51,21 +46,22 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :return: data from provider
         :rtype: dict
         """
-        if not self.tag:
+        features = self.feature.split('=')
+        if len(features) == 0:
             return []
-
-        value = self.campaign.get_json_type(self.tag['type'])
-        feature = value['feature']
-        if feature in value['tags']:
+        elif len(features) == 2:
+            feature_key = features[0]
+            feature_values = features[1].split(',')
             overpass_data = OverpassProvider().get_data(
                 self.campaign.corrected_coordinates(),
-                feature_key=value['feature'],
-                feature_values=value['tags'][feature]
+                feature_key=feature_key,
+                feature_values=feature_values
             )
         else:
+            feature_key = features[0]
             overpass_data = OverpassProvider().get_data(
                 self.campaign.corrected_coordinates(),
-                feature_key=value['feature'],
+                feature_key=feature_key,
             )
         self.last_update = overpass_data['last_update']
         self.is_updating = overpass_data['updating_status']

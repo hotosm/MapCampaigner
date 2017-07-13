@@ -143,6 +143,8 @@ class Campaign(JsonModel):
             SelectedFunction = getattr(
                 insights_functions, function['function'])
             additional_data['function_id'] = insight_function_id
+            if 'type' in function:
+                additional_data['type'] = function['type']
             selected_function = SelectedFunction(
                 self,
                 feature=function['feature'],

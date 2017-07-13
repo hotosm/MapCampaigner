@@ -28,6 +28,10 @@ class AbstractInsightsFunction(object):
     manager_only = False
     type_required = False
 
+    # attribute of insight function
+    need_feature = False
+    need_required_attributes = False
+
     def __init__(
             self,
             campaign,
