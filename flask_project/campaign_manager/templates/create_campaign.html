@@ -121,22 +121,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <select id="remote_projects" multiple name="remote_projects" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                            <select id="remote_projects" multiple name="remote_projects" style="display: none;"></select>
+                            <select id="types" multiple="" name="types" style="display: none;"></select>
                             <div class="row">
-                                <div class="form-body">
-                                    <div class="form-group col-lg-4" style="padding-left: 0">
+                                <div class="form-body col-lg-4">
+                                    <div class="form-group">
                                         <label for="types">Types</label>
-{#                                        {{ form.types }}#}
-{#                                        <p class="help-block"></p>#}
                                     </div>
-                                    <div class="form-group col-lg-7" style="margin-left: 25px">
+                                </div>
+                                <div class="form-body col-lg-7">
+                                    <div class="form-group">
                                         <label>Tags</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div id="typesTagsContainer"></div>
-                            </div>
+                            <div id="typesTagsContainer"></div>
                             <div class="row"><div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div></div>
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
@@ -162,13 +161,6 @@
                                             </button>
                                         </div>
                                         <p class="helock"></p>
-                                    </div>
-                                </div>
-                                <div class="form-body col-lg-6">
-                                    <div class="form-group">
-                                        <label for="types">Types</label>
-                                        {{ form.types }}
-                                        <p class="help-block"></p>
                                     </div>
                                 </div>
                             </div>
@@ -808,6 +800,10 @@
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
 
+            for (var i=0; i<addedTypes.length;i++) {
+                $('#types').append('<option selected="selected" value="' + addedTypes[i] + '">' + addedTypes[i] + '</option>')
+            }
+
             // Processing selected function
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
@@ -1053,18 +1049,18 @@
 
         //----------------- Types & Tags -----------------//
 
-        var type=0;
+        var addedTypes=[];
 
         addTypes();
 
         function addTypes() {
-            type += 1;
 
             var row = $("<div/>");
             row.addClass("row");
 
             var column = $("<div/>");
             column.addClass("col-lg-4");
+            column.addClass("form-group");
             row.append(column);
 
             var select = $("<select />");
@@ -1084,6 +1080,8 @@
         function onTypesChange() {
 
             var selected_type = this.value;
+
+            addedTypes.push(selected_type);
 
             var row = $(this).parent().parent();
 
