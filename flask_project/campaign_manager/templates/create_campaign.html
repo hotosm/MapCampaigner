@@ -34,7 +34,7 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div><span class="panel-header-info" style="margin-left: 25px">FUNCTIONS</span></div>
+                <div style="margin-top: 10px"><span class="panel-header-info" style="margin-left: 25px;">FUNCTIONS</span></div>
                 <div class="panel panel-default panel-header cc-nav" data-step="3">
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
@@ -121,9 +121,27 @@
                                     </div>
                                 </div>
                             </div>
-                            <select id="remote_projects" multiple name="remote_projects" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                            <select id="remote_projects" multiple name="remote_projects" style="display: none;"></select>
+                            <select id="types" multiple="" name="types" style="display: none;"></select>
+                            <div class="row">
+                                <div class="form-body col-lg-4">
+                                    <div class="form-group">
+                                        <label for="types">Types</label>
+                                        <div class="types-required-message">This field is required</div>
+                                    </div>
+                                </div>
+                                <div class="form-body col-lg-7">
+                                    <div class="form-group">
+                                        <label>Tags</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="typesTagsContainer"></div>
+                            <div class="row">
+                                <div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div>
+                            </div>
                             <div class="row" style="margin-bottom: -12px;">
-                                <div class="form-body col-lg-6">
+                                <div class="form-body">
                                     <div class="form-group">
                                         <label for="campaign_managers">Managers</label>
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
@@ -146,13 +164,6 @@
                                             </button>
                                         </div>
                                         <p class="helock"></p>
-                                    </div>
-                                </div>
-                                <div class="form-body col-lg-6">
-                                    <div class="form-group">
-                                        <label for="types">Types</label>
-                                        {{ form.types }}
-                                        <p class="help-block"></p>
                                     </div>
                                 </div>
                             </div>
@@ -357,6 +368,16 @@
                             <option value="{{ key }}">{{ value.name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="col-lg-4">
+                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Put feature to extract"
+                           style="display: none">
+                </div>
+                <div class="col-lg-3">
+                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Additional attributes for this function"
+                           style="display: none">
                 </div>
             </div>
         </div>
@@ -636,6 +657,7 @@
                     }
                 } else if (select_form.length > 0) {
                     select_form.removeClass('error');
+                    select_form.parent().removeClass('error');
 
                     select_form.click(function () {
                         $(this).removeClass('error');
@@ -643,6 +665,8 @@
 
                     if (select_form.val().length === 0) {
                         select_form.addClass('error');
+                        select_form.parent().addClass('error');
+                        select_form.parent().prepend('This field is required');
                         valid = false;
                     }
                 } else if (radio_form.length > 0) {
@@ -668,6 +692,11 @@
                 $('.error-managers').show();
             }
 
+            if (Object.keys(getTypesSelectionValue()).length === 0) {
+                valid = false;
+                $('.types-required-message').show();
+            }
+
             return valid;
         }
 
@@ -691,7 +720,7 @@
             return valid;
         }
 
-        function checkFormHeader(){
+        function checkFormHeader() {
             var valid = true;
             var required_forms = $('.form-header').find('.required-form');
 
@@ -762,7 +791,9 @@
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'category': category
+                        'category': category,
+                        'feature': $(row).find('.function-feature').val(),
+                        'attributes': $(row).find('.function-attributes').val()
                     }
                 }
             });
@@ -799,6 +830,9 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
+
+            // tags
+            $("#types").val(JSON.stringify(getTypesSelectionValue()));
         });
 
         var campaignMap = L.map('campaign-map');
@@ -850,18 +884,18 @@
         $("#start_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
-            onSelect: function(date) {
+            onSelect: function (date) {
                 $("#end_date").val(date);
-                $("#end_date").datepicker({ minDate: new Date(date) })
+                $("#end_date").datepicker({minDate: new Date(date)})
             }
         });
         $("#end_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
             position: 'bottom right',
-            onSelect: function(date){
+            onSelect: function (date) {
                 $("#start_date").val(date);
-                $("#start_date").datepicker({ maxDate: new Date(date) })
+                $("#start_date").datepicker({maxDate: new Date(date)})
             }
         });
 
@@ -955,9 +989,9 @@
                 $('#campaign-map-area-size').addClass('label-danger');
             } else {
                 clearNotification();
+                $('.map-wrapper').data('error', '');
                 $('#campaign-map-area-size').removeClass('label-danger');
                 $('#campaign-map-area-size').addClass('label-success');
-                $('.map-wrapper').data('error', '');
             }
         }
 
@@ -1001,16 +1035,149 @@
             getFormElement($event, '.function-feature').hide();
             getFormElement($event, '.function-attributes').hide();
 
-            var selected_functions = {};
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
+            if ($(event).val() !== '') {
+                var need_feature = 'false';
+                var need_required_attributes = 'false';
+                var features = null;
+                if (typeof functions[$(event).val()] !== 'undefined') {
+                    need_feature = functions[$(event).val()]['need_feature'];
+                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+                    features = functions[$(event).val()]['features'];
+                }
+
+                if (features && need_feature === 'true') {
+                    getFormElement($event, '.function-feature').show();
+                    $.each(features, function (index, feature) {
+                        getFormElement($event, '.function-feature').append(
+                                "<option value='" + feature + "'>" + feature + "</option>"
+                        );
+                    });
+                }
+                if (need_required_attributes === 'true') {
+                    getFormElement($event, '.function-attributes').show();
+                }
+            }
         }
 
         function removeFunction(event) {
             $(event).parent().parent().parent().remove();
         }
+
+        //----------------- Types & Tags -----------------//
+
+        var addedTypes = [];
+
+        {% if form.types.data %}
+            var selected_types_data = {{ form.types.data | safe }};
+            $.each(selected_types_data, function (index, type){
+                var selected_type = selected_types_data[index]['type'];
+                addedTypes.push(selected_type);
+                addTypes(selected_type);
+            });
+        {% else %}
+            addTypes();
+        {% endif %}
+
+        function getTypesSelectionValue() {
+            // GET SELECTED TYPES
+            var types_value = {};
+
+            $.each(addedTypes, function(index, addedType){
+                if(addedType) {
+                    types_value['type-' + (index + 1)] = {
+                        type: addedType,
+                        tags: []
+                    }
+                }
+            });
+
+            return types_value
+        }
+
+        function addTypes(value) {
+            var row = $("<div/>");
+            row.addClass("row");
+
+            var column = $("<div/>");
+            column.addClass("col-lg-4");
+            column.addClass("form-group");
+            column.addClass("type-selection");
+            row.append(column);
+
+            var select = $("<select />");
+            select.addClass('select-types');
+            select.attr('id', 'types_options');
+            select.attr('name', 'types_options');
+            select.html('{{ form.types_options }}');
+
+            var addedTypesIndex = addedTypes.length;
+            addedTypes[addedTypesIndex] = '';
+
+            column.append(select);
+            select.change(onTypesChange);
+
+            if(value) {
+                // Add empty value with no default selection
+                select.prepend('<option value="">Select type</option>');
+                select.children().removeAttr('selected');
+                select.find('option[value="' + value + '"]').prop('selected', true);
+                select.trigger('change');
+            } else {
+                // Add empty value with default selection
+                select.prepend('<option value="" selected="selected">Select type</option>');
+            }
+
+            $("#typesTagsContainer").append(row);
+
+        }
+
+        function onTypesChange() {
+
+            $('.types-required-message').hide();
+
+            var selected_type = this.value;
+
+            var row = $(this).parent().parent();
+
+            var row_tags = row.children('.row-tags');
+
+            if (row_tags) {
+                row_tags.remove();
+            }
+
+            var column = $("<div/>");
+            column.addClass("row-tags");
+            column.addClass("col-lg-6");
+
+            row.append(column);
+
+            var div = $("<div />");
+            if (types[selected_type]) {
+                var tags = types[selected_type]['tags'];
+                var key_tags = Object.keys(tags);
+                for (var j = 0; j < key_tags.length; j++) {
+                    div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+                }
+                column.html(div);
+
+                row.append('<div class="col-lg-1 row-tags">' +
+                        '<button class="btn btn-danger btn-sm btn-block"' +
+                        'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
+                        '<i class="fa fa-minus"></i></button></div>');
+            }
+
+            var typeIndex = row.index();
+            addedTypes[typeIndex] = selected_type;
+        }
+
+        function removeTags(event, type) {
+            $(event).parent().parent().remove();
+            addedTypes.splice($.inArray(type, addedTypes), 1);
+            if (addedTypes.length < 1) {
+                addTypes();
+            }
+        }
+
     </script>
 
 {% endblock %}

@@ -144,6 +144,7 @@
         drawnItems.addData(geojson);
         campaignMap.fitBounds(drawnItems.getBounds());
         stringfyGeometry();
+        getAreaSize();
     }
     function upload_complete() {
         $.ajax({
