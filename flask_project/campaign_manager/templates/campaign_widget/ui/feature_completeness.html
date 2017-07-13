@@ -3,7 +3,7 @@
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
-    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features</div>
+    <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features</div>
     <table class="feature-list-table" style="width: 100%">
         <thead>
         <tr>
@@ -111,7 +111,7 @@
         border-radius: 50px;
     }
 
-    .completness .dataTables_wrapper {
+    .completness .feature-list-table {
         display: none;
     }
 
@@ -168,14 +168,14 @@
     $wrapper.find('.feature-list-table').DataTable({
         "bSortClasses": false
     });
-    $wrapper.find('.dataTables_wrapper').show();
+    $wrapper.find('.feature-list-table').show();
     function see_completeness_details(event) {
-        if (!$(event).closest(".completness").find(".dataTables_wrapper").is(":visible")) {
+        if (!$(event).closest(".completness").find(".feature-list-table").is(":visible")) {
             $(event).html('<i class="fa fa-caret-up" aria-hidden="true"></i> hide list of incomplete features');
-            $(event).closest(".completness").find(".dataTables_wrapper").show();
+            $(event).closest(".completness").find(".feature-list-table").show();
         } else {
             $(event).html('<i class="fa fa-caret-down" aria-hidden="true"></i> see list of incomplete features');
-            $(event).closest(".completness").find(".dataTables_wrapper").hide();
+            $(event).closest(".completness").find(".feature-list-table").hide();
         }
     }
     $('.show-members').click(function (e) {
