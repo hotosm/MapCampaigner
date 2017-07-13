@@ -1094,6 +1094,10 @@
                 if (tags[feature]) {
                     feature += '=' + tags[feature]
                 }
+                var attibutes_on_insights = 'all';
+                if (value['tags'].length != 0) {
+                    attibutes_on_insights = value['tags'].join()
+                }
                 var default_insights = types[type]['insights'];
                 $.each(default_insights, function (insight_index, insight) {
                     $('#quality-function-add').click();
@@ -1102,7 +1106,7 @@
                     $(row).find('.function-selection').trigger('change');
                     $(row).find('.function-selection').data('type', type);
                     $(row).find('.function-feature').val(feature);
-                    $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
+                    $(row).find('.function-attributes').val(attibutes_on_insights);
                     index += 1;
                 });
             });
