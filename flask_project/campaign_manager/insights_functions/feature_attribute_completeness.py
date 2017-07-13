@@ -1,6 +1,6 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
-
+import json
 from campaign_manager.insights_functions._abstract_overpass_insight_function \
     import AbstractOverpassInsightFunction
 
@@ -12,6 +12,11 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     icon = 'list'
     _function_good_data = None  # cleaned data
     nodes = {}
+    type = None
+
+    # attribute of insight function
+    need_feature = True
+    need_required_attributes = True
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -45,15 +50,11 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         list_good_data = []
         self._function_good_data = []
 
-        if not raw_data:
+        if not raw_data or not self.type:
             return []
         try:
-            required_attributes = self.tag['tags']
-            survey_attributes = self.campaign.get_json_type(self.tag['type'])
-            if not required_attributes:
-                required_attributes = [
-                    tag for tag in survey_attributes['tags']
-                    ]
+            required_attributes = self.get_required_attributes()
+            survey_attributes = self.campaign.get_json_type(self.type)
             for value in raw_data:
                 if value['type'] == 'node':
                     continue
@@ -153,8 +154,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         :return: Processed data
         :rtype: dict
         """
-        required_attributes = {}
-        required_attributes.update(self.get_required_attributes())
         percentage = '0.0'
         if len(self._function_good_data) > 0:
             percentage = '%.1f' % (
@@ -162,7 +161,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             )
 
         output = {
-            'attributes': required_attributes,
+            'attributes': self.get_required_attributes(),
             'data': self._function_good_data,
             'percentage': percentage,
             'complete': len(data),

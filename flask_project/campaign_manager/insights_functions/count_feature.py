@@ -9,6 +9,9 @@ class CountFeature(AbstractOverpassInsightFunction):
     function_name = "Showing number of feature in group"
     category = ['quality']
 
+    # attribute of insight function
+    need_feature = True
+
     def get_ui_html_file(self):
         """ Get ui name in templates
         :return: string name of html
@@ -72,6 +75,9 @@ class CountFeature(AbstractOverpassInsightFunction):
         for current_data in data:
             group_type = 'unknown'
             group_key = self.feature
+            features = self.feature.split('=')
+            if len(features) > 0:
+                group_key = features[0]
             try:
                 group_type = current_data[group_key]
             except KeyError:

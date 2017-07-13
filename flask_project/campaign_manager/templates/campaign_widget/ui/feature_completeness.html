@@ -164,9 +164,6 @@
         container: "body"
     });
     var tab_id = '{{ function_id }}';
-    {% if additional_data.type %}
-        tab_id += '-' + "{{ additional_data.type }}".replace(/\s+/g, '-');
-    {% endif %}
     var $wrapper = $('#' + tab_id);
     $wrapper.find('.feature-list-table').DataTable({
         "bSortClasses": false

@@ -697,6 +697,7 @@
                 $('.types-required-message').show();
             }
 
+            $("#types").val(JSON.stringify(getTypesSelectionValue()));
             return valid;
         }
 
@@ -793,7 +794,8 @@
                         'function': $(row).find('.function-selection').val(),
                         'category': category,
                         'feature': $(row).find('.function-feature').val(),
-                        'attributes': $(row).find('.function-attributes').val()
+                        'attributes': $(row).find('.function-attributes').val(),
+                        'type': $(row).find('.function-selection').data('type')
                     }
                 }
             });
@@ -830,9 +832,6 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
-
-            // tags
-            $("#types").val(JSON.stringify(getTypesSelectionValue()));
         });
 
         var campaignMap = L.map('campaign-map');
@@ -1038,20 +1037,13 @@
             if ($(event).val() !== '') {
                 var need_feature = 'false';
                 var need_required_attributes = 'false';
-                var features = null;
                 if (typeof functions[$(event).val()] !== 'undefined') {
                     need_feature = functions[$(event).val()]['need_feature'];
                     need_required_attributes = functions[$(event).val()]['need_required_attributes'];
-                    features = functions[$(event).val()]['features'];
                 }
 
-                if (features && need_feature === 'true') {
+                if (need_feature === 'true') {
                     getFormElement($event, '.function-feature').show();
-                    $.each(features, function (index, feature) {
-                        getFormElement($event, '.function-feature').append(
-                                "<option value='" + feature + "'>" + feature + "</option>"
-                        );
-                    });
                 }
                 if (need_required_attributes === 'true') {
                     getFormElement($event, '.function-attributes').show();
@@ -1069,7 +1061,7 @@
 
         {% if form.types.data %}
             var selected_types_data = {{ form.types.data | safe }};
-            $.each(selected_types_data, function (index, type){
+            $.each(selected_types_data, function (index, type) {
                 var selected_type = selected_types_data[index]['type'];
                 addedTypes.push(selected_type);
                 addTypes(selected_type);
@@ -1082,8 +1074,8 @@
             // GET SELECTED TYPES
             var types_value = {};
 
-            $.each(addedTypes, function(index, addedType){
-                if(addedType) {
+            $.each(addedTypes, function (index, addedType) {
+                if (addedType) {
                     types_value['type-' + (index + 1)] = {
                         type: addedType,
                         tags: []
@@ -1091,6 +1083,29 @@
                 }
             });
 
+            {# also render insights function #}
+            $('#quality-function .function-form').html('');
+            var index = 0;
+            $.each(types_value, function (key, value) {
+                var type = value['type'];
+                var survey = types[type];
+                var feature = survey['feature'];
+                var tags = survey['tags'];
+                if (tags[feature]) {
+                    feature += '=' + tags[feature]
+                }
+                var default_insights = types[type]['insights'];
+                $.each(default_insights, function (insight_index, insight) {
+                    $('#quality-function-add').click();
+                    var row = $('#quality-function .function-form').find('.function-form-row')[index];
+                    $(row).find('.function-selection').val(insight);
+                    $(row).find('.function-selection').trigger('change');
+                    $(row).find('.function-selection').data('type', type);
+                    $(row).find('.function-feature').val(feature);
+                    $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
+                    index += 1;
+                });
+            });
             return types_value
         }
 
@@ -1116,7 +1131,7 @@
             column.append(select);
             select.change(onTypesChange);
 
-            if(value) {
+            if (value) {
                 // Add empty value with no default selection
                 select.prepend('<option value="">Select type</option>');
                 select.children().removeAttr('selected');
@@ -1165,7 +1180,6 @@
                         'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                         '<i class="fa fa-minus"></i></button></div>');
             }
-
             var typeIndex = row.index();
             addedTypes[typeIndex] = selected_type;
         }
