@@ -127,6 +127,7 @@
                                 <div class="form-body col-lg-4">
                                     <div class="form-group">
                                         <label for="types">Types</label>
+                                        <div class="types-required-message">This field is required</div>
                                     </div>
                                 </div>
                                 <div class="form-body col-lg-7">
@@ -691,6 +692,11 @@
                 $('.error-managers').show();
             }
 
+            if (Object.keys(getTypesSelectionValue()).length === 0) {
+                valid = false;
+                $('.types-required-message').show();
+            }
+
             return valid;
         }
 
@@ -1059,6 +1065,8 @@
 
         //----------------- Types & Tags -----------------//
 
+        var addedTypes = [];
+
         {% if form.types.data %}
             var selected_types_data = {{ form.types.data | safe }};
             $.each(selected_types_data, function (index, type){
@@ -1072,26 +1080,17 @@
         function getTypesSelectionValue() {
             // GET SELECTED TYPES
             var types_value = {};
-            $("#typesTagsContainer").find('.row').each(function (index, element) {
-                var $select = $(element).find('.type-selection select');
-                if ($select.val()) {
-                    var tags = [];
-                    $(element).find('.row-tags span.selected').each(function (index, spanElement) {
-                        tags.push($(spanElement).text().trim())
-                    });
+
+            $.each(addedTypes, function(index, addedType){
+                if(addedType) {
+                    var tags = types[addedType]['tags'];
                     types_value['type-' + (index + 1)] = {
-                        type: $select.val(),
+                        type: addedType,
                         tags: tags
                     }
                 }
             });
-            if (jQuery.isEmptyObject(types_value)) {
-                showNotifications('Need at least one type for campaign.', 'danger');
-                $('.map-wrapper').data('error', 'Need at least one type for campaign.');
-            } else {
-                clearNotification();
-                $('.map-wrapper').data('error', '');
-            }
+
             return types_value
         }
 
@@ -1103,7 +1102,6 @@
             column.addClass("col-lg-4");
             column.addClass("form-group");
             column.addClass("type-selection");
-            column.addClass("required-form");
             row.append(column);
 
             var select = $("<select />");
@@ -1111,6 +1109,9 @@
             select.attr('id', 'types_options');
             select.attr('name', 'types_options');
             select.html('{{ form.types_options }}');
+
+            var addedTypesIndex = addedTypes.length;
+            addedTypes[addedTypesIndex] = '';
 
             {% if form.types.data %}
                 // Add empty value with no default selection
@@ -1126,10 +1127,11 @@
             $("#typesTagsContainer").append(row);
 
             select.change(onTypesChange);
-            select.trigger('change');
         }
 
         function onTypesChange() {
+
+            $('.types-required-message').hide();
 
             var selected_type = this.value;
 
@@ -1155,13 +1157,15 @@
                     div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
                 }
                 column.html(div);
+
+                row.append('<div class="col-lg-1 row-tags">' +
+                        '<button class="btn btn-danger btn-sm btn-block"' +
+                        'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
+                        '<i class="fa fa-minus"></i></button></div>');
             }
 
-            row.append('<div class="col-lg-1 row-tags">' +
-                    '<button class="btn btn-danger btn-sm btn-block"' +
-                    'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
-                    '<i class="fa fa-minus"></i></button></div>');
-            getTypesSelectionValue()
+            var typeIndex = row.index();
+            addedTypes[typeIndex] = selected_type;
         }
 
         function removeTags(event, type) {

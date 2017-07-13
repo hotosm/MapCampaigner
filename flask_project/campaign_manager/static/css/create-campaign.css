@@ -458,3 +458,8 @@ input#btn-add {
 .type-selection.required-form.error {
     color: #ac3232;
 }
+
+.types-required-message {
+    display: none;
+    color: #ac3232;
+}
