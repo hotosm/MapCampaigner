@@ -1054,7 +1054,6 @@
         addTypes();
 
         function addTypes() {
-
             var row = $("<div/>");
             row.addClass("row");
 
@@ -1093,7 +1092,7 @@
 
             var column = $("<div/>");
             column.addClass("row-tags");
-            column.addClass("col-lg-7");
+            column.addClass("col-lg-6");
 
             row.append(column);
 
@@ -1104,6 +1103,19 @@
                 div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
             }
             column.html(div);
+
+            row.append('<div class="col-lg-1 row-tags">' +
+                        '<button class="btn btn-danger btn-sm btn-block"' +
+                        'type=button onclick="removeTags(this, \''+selected_type+'\')">'+
+                        '<i class="fa fa-minus"></i></button></div>');
+        }
+
+        function removeTags(event, type) {
+            $(event).parent().parent().remove();
+            addedTypes.splice($.inArray(type, addedTypes), 1);
+            if(addedTypes.length < 1) {
+                addTypes();
+            }
         }
 
     </script>
