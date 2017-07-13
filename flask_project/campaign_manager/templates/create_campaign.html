@@ -1071,6 +1071,7 @@
             var selected_types_data = {{ form.types.data | safe }};
             $.each(selected_types_data, function (index, type){
                 var selected_type = selected_types_data[index]['type'];
+                addedTypes.push(selected_type);
                 addTypes(selected_type);
             });
         {% else %}
@@ -1083,10 +1084,9 @@
 
             $.each(addedTypes, function(index, addedType){
                 if(addedType) {
-                    var tags = types[addedType]['tags'];
                     types_value['type-' + (index + 1)] = {
                         type: addedType,
-                        tags: tags
+                        tags: []
                     }
                 }
             });
@@ -1113,20 +1113,22 @@
             var addedTypesIndex = addedTypes.length;
             addedTypes[addedTypesIndex] = '';
 
-            {% if form.types.data %}
+            column.append(select);
+            select.change(onTypesChange);
+
+            if(value) {
                 // Add empty value with no default selection
                 select.prepend('<option value="">Select type</option>');
                 select.children().removeAttr('selected');
-                select.find('option[value="'+value+'"]').prop('selected', true);
-            {% else %}
+                select.find('option[value="' + value + '"]').prop('selected', true);
+                select.trigger('change');
+            } else {
                 // Add empty value with default selection
                 select.prepend('<option value="" selected="selected">Select type</option>');
-            {% endif %}
-            column.append(select);
+            }
 
             $("#typesTagsContainer").append(row);
 
-            select.change(onTypesChange);
         }
 
         function onTypesChange() {
