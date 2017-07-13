@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
+import json
 from abc import ABCMeta
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -33,6 +34,17 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
             self.feature = self.FEATURES_MAPPING[self.feature]
         if 'type' in additional_data:
             self.type = additional_data['type']
+
+    def get_required_attributes(self):
+        """Parsing required attributes
+        """
+        required_attributes = json.loads(self.required_attributes)
+        survey_attributes = self.campaign.get_json_type(self.type)
+        if not required_attributes:
+            required_attributes = [
+                tag for tag in survey_attributes['tags']
+                ]
+        return required_attributes
 
     def name(self):
         """Name of insight functions
