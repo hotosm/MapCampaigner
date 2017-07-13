@@ -1188,6 +1188,8 @@
                         'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                         '<i class="fa fa-minus"></i></button></div>');
             }
+            var typeIndex = row.index();
+            addedTypes[typeIndex] = selected_type;
         }
 
         function removeTags(event, type) {

@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 import json
+from json.decoder import JSONDecodeError
 from abc import ABCMeta
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -38,12 +39,15 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     def get_required_attributes(self):
         """Parsing required attributes
         """
-        required_attributes = json.loads(self.required_attributes)
-        survey_attributes = self.campaign.get_json_type(self.type)
-        if not required_attributes:
-            required_attributes = [
-                tag for tag in survey_attributes['tags']
-                ]
+        try:
+            required_attributes = json.loads(self.required_attributes)
+            survey_attributes = self.campaign.get_json_type(self.type)
+            if not required_attributes:
+                required_attributes = [
+                    tag for tag in survey_attributes['tags']
+                    ]
+        except JSONDecodeError:
+            required_attributes = []
         return required_attributes
 
     def name(self):
