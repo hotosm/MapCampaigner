@@ -101,10 +101,10 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
 
         tags = feature_data['tags']
         for required_attribute in required_attributes:
-            required_attribute = required_attribute.lower()
+            required_attribute = required_attribute.lower().strip()
             try:
-                survey_values = survey_attributes[required_attribute]
-            except KeyError:
+                survey_values = survey_attributes['tags'][required_attribute]
+            except KeyError as e:
                 survey_values = []
 
             if required_attribute not in tags:
