@@ -20,16 +20,7 @@ The OSM user identity is used in this project. All actions are performed as such
 
 # How to build field-campaigner
 
-Go to root of project, which is /osm-reporter
-Update all submodules to retrieve all the code
-```
-git remote update
-git submodule init
-git submodule sync
-git submodule update
-```
-
-After that, go to /osm-reporter/deployment
+Go to /osm-reporter/deployment
 ```
 make build
 make run
