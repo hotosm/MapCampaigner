@@ -39,9 +39,9 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         """Parsing required attributes
         """
         try:
-            required_attributes = json.loads(self.required_attributes)
+            required_attributes = self.required_attributes.split(',')
             survey_attributes = self.campaign.get_json_type(self.type)
-            if not required_attributes:
+            if not required_attributes or required_attributes[0] == 'all':
                 required_attributes = [
                     tag for tag in survey_attributes['tags']
                     ]
