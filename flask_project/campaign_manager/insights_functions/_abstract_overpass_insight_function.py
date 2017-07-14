@@ -55,6 +55,8 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :return: string of name
         """
         name = self.function_name
+        if self.type:
+            name = '%s for %s' % (name, self.type)
         return name
 
     def get_data_from_provider(self):

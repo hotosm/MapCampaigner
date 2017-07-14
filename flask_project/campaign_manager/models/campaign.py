@@ -85,10 +85,14 @@ class Campaign(JsonModel):
             try:
                 SelectedFunction = getattr(
                     insights_functions, value['function'])
+                additional_data = {}
+                if 'type' in value:
+                    additional_data['type'] = value['type']
                 selected_function = SelectedFunction(
                     self,
                     feature=value['feature'],
-                    required_attributes=value['attributes'])
+                    required_attributes=value['attributes'],
+                    additional_data=additional_data)
 
                 value['type_required'] = \
                     ('%s' % selected_function.type_required).lower()
