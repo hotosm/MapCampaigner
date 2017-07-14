@@ -711,12 +711,11 @@ def about():
     return render_template('about.html')
 
 
-
 @campaign_manager.route('/how-it-works')
 def how_it_works():
     return render_template('how_it_works.html')
 
-  
+
 def not_found_page(error):
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
