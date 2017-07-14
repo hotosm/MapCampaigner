@@ -99,6 +99,7 @@
                                     <div class="form-group">
                                         {{ form.description }}
                                     </div>
+                                    <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
                                     <br/>
                                     <div class="form-group map-input">
                                         {{ form.map_type }}
@@ -804,9 +805,6 @@
             return functions;
         }
 
-        //------------------ MAP ------------------//
-
-
         $("#campaign-form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
 
@@ -821,6 +819,8 @@
             for (var key in addedLayers) {
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
+
+            $('#campaign_status').val('Start');
 
             // Processing selected function
             var selected_functions = {};
@@ -898,6 +898,7 @@
 
         $("#start_date").attr('data-language', 'en');
         $("#end_date").attr('data-language', 'en');
+
         $("#start_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
@@ -906,6 +907,7 @@
                 $("#end_date").datepicker({minDate: new Date(date)})
             }
         });
+
         $("#end_date").datepicker({
             dateFormat: 'yyyy-mm-dd',
             autoClose: true,
