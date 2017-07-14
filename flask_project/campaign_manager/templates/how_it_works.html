@@ -1,0 +1,202 @@
+{% extends 'new_base.html' %}
+
+{% block header_content %}
+    <div class="home-header"><h1 style="font-weight: 700">HOW IT WORKS?</h1> </div>
+{% endblock %}
+
+{% block content %}
+    <style>
+        .page-header {
+            background-color: #f5f5f5;
+            font-size: 20pt;
+            color: black;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+
+        .welcome-title {
+            margin-top: 30px;
+            font-size: 24pt;
+            font-weight: 600;
+        }
+
+        .sub-page {
+            background-color: #e5e5e5;
+            font-size: 16pt;
+            color: black;
+            font-weight: 600;
+            border: 1px solid #cecece;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .page-descriptions {
+            border: 1px solid #cecece;
+            background-color: white;
+            margin-top: 10px;
+            margin-left: -21px;
+            margin-right: -21px;
+            margin-bottom: -11px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            padding: 20px 20px;
+            font-weight: normal;
+            font-size: 12pt;
+        }
+
+        img {
+           margin-bottom: 10px;
+        }
+
+        .page-descriptions li {
+            margin-left: 30px;
+            line-height: inherit;
+        }
+
+        h2 {
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        c {
+            background-color: #f5f5f5;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        function pageToggle(clickedID) {
+            $('#'+clickedID).children().toggle();
+            $('#'+clickedID).next().toggle();
+        }
+
+        function buttonClick(clickedID) {
+            $('#'+clickedID).children().toggle();
+        }
+
+    </script>
+
+    <div id="page-wrapper" class="panel-custom" style="padding-left: 50px; padding-right: 50px; background-color: white;">
+        <div class="welcome-title">Welcome to the Field Campaigner!</div><br/>
+        <div>
+            <p>For campaign managers, please navigate to <b>For Campaign Managers</b>.</p>
+            <p>For participants, please navigate to <b>For Participants</b>.</p>
+        </div>
+        <div class="page-header" type="button" id="btn1" onclick="pageToggle(this.id)">For Campaign Managers<i class="fa fa-angle-down pull-right" style="margin-top: 10pt"></i><i class="fa fa-angle-up pull-right" style="margin-top: 10pt; display: none;"></i></div>
+        <div id="managers-page" class="page-body" style="display: none">
+            <div class="sub-page" id="add-campaign" onclick="buttonClick(this.id)" type="button">
+                Add Campaign
+                <i class="fa fa-angle-down pull-right" style="margin-top: 7pt"></i><i class="fa fa-angle-up pull-right" style="margin-top: 7pt; display: none;"></i>
+                <div class="page-descriptions" style="display: none" onclick="null">
+                    <p>To add a campaign, click on <b>Start a Campaign</b> button on the home page. It will take you to the add campaign page. You need to login with your OSM account to do this.</p>
+                    <img src="static/img/1-landing-page.png" alt="landing page" style="height: auto; width: 600px;">
+                    <p>There are 2 modes available here, <b>Basic</b> and <b>Advance</b>.</p>
+                    <p>In <b>Basic</b> mode, you can use the default settings for the campaign; while in <b>Advance</b> mode, you can customise the insight functions to suit your needs.</p>
+                    <img src="static/img/2-add-campaign-basic.png" alt="add campaign basic" style="height: 400px; width: auto; float: none;" class="col-lg-6">
+                    <img src="static/img/3-add-campaign-advance.png" alt="add campaign advance" style="height: 400px; width: auto; float: none;" class="col-lg-6">
+                    <h2>General Information</h2>
+                    <p><b>Campaign Status</b> indicates the status of your campaign, since it is a new campaign so it is inactive.</p>
+                    <p>Use the appropriate box to fill the information of your new campaign:
+                        <li><p>Your <b>campaign name</b></p></li>
+                        <li><p><b>Start date</b> and <b>end date</b> of your campaign</p></li>
+                        <li><p><b>Campaign status</b>: the status of your campaign</p></li>
+                        <li><b>Types</b><p>You can select type of your campaign from a dropdown menu. Each type comes with a set of tags which you can customise in <b>Advance</b> mode. You can add more types using <b>+ Add type</b> button.</p></li>
+                        <li><b>Managers</b><p>The creator of this campaign is chosen as manager of this campaign by default. You can add more managers by searching the OSM username of the person you want to add in the search box.</p></li>
+                    <h2>Create AOI</h2>
+                    <p>You can create AOI by using map tools or by uploading the shape file.</p>
+                    <img src="static/img/4-create-aoi.png" alt="create aoi" style="height: auto; width: 600px;">
+                    <h2>Remote Mapping</h2>
+                    <p>You can search a project and add the coverage to your campaign.</p>
+                    <img src="static/img/5-remote-mapping.png" alt="remote mapping" style="height: auto; width: 600px;">
+                    <h2>Coverage Function</h2>
+                    <p>You may add add the coverage function to your campaign.</p>
+                    <img src="static/img/6-coverage-function.png" alt="coverage function" style="height: auto; width: 600px;">
+                    <h2>Quality Function (Advanced)</h2>
+                    <p>The quality function is automatically populated according to which type did you chose on the first step. Though, you may customise the quality functions for your campaign in advance mode.</p>
+                    <img src="static/img/7-quality-function.png" alt="quality function" style="height: auto; width: 600px;">
+                    <h2>Error Function (Advanced)</h2>
+                    <p>This Function is customisable in the advanced mode. You may add error functions to your campaign.</p>
+                    <img src="static/img/8-error-function.png" alt="error function" style="height: auto; width: 600px;">
+                    <h2>Engagement Function (Advanced)</h2>
+                    <p>This Function is customisable in the advanced mode. You may add engagement functions to your campaign.</p>
+                    <img src="static/img/9-engagement-function.png" alt="engagement function" style="height: auto; width: 600px;">
+                </div>
+            </div>
+
+            <div class="sub-page" id="edit-campaign" onclick="buttonClick(this.id)" type="button">
+                Edit Campaign
+                <i class="fa fa-angle-down pull-right" style="margin-top: 7pt"></i>
+                <i class="fa fa-angle-up pull-right" style="margin-top: 7pt; display: none;"></i>
+                <div class="page-descriptions" style="display: none">
+                    <p>To edit the campaign, click on <b>Manage</b> button in your campaign details page to edit the campaign. It will take you to the edit campaign page.</p>
+                    <img src="static/img/campaign-details.png" alt="campaign details" style="height: auto; width: 600px;">
+                </div>
+            </div>
+
+            <div class="sub-page" id="campaign-insights" onclick="buttonClick(this.id)" type="button">
+                Campaign Insights
+                <i class="fa fa-angle-down pull-right" style="margin-top: 7pt"></i>
+                <i class="fa fa-angle-up pull-right" style="margin-top: 7pt; display: none;"></i>
+                <div class="page-descriptions" style="display: none">
+                    <p style="text-align: justify">The core goals of Campaign Managers are to communicate the desired data collection outcomes as well as draw insights from the ongoing mapping efforts.
+                        The system needs to be able to respond to very different insights requirements. Some of these have been mapped and more may emerge as the project continues.
+                        As such we are looking for a flexible extensible approach, which can cater a wide variety of Campaign Manager needs.</p>
+                    <h2>Insight Functions</h2>
+                    <p>During the Campaign creation process, Insight Functions are selected and configured to suit the needs of the Campaign.</p>
+                    <p>The Insights Functions should be configurable, i.e. the underlying Insights Function might be: "Showing feature completeness" and the feature to extract might be "amenity=bank,banking_agent".</p>
+                    <p>Insights Functions offer the insights gained in the following ways:
+                    <li>As a graphic on the Campaign's Dashboard page.</li>
+                    <li>On the Campaign Dashboard map.</li>
+                    <li>As detailed text with links to where this can be viewed/fixed.</li>
+                    <li>As rationale. (This might be useful for complex insights.)</li>
+                    </p>
+                    <h2>Data Provider</h2>
+                    <p style="text-align: justify">
+                        The Insights Function data is sourced from a Data Provider.
+                        The purpose of the data provider is to aggregate queries to third party sources.
+                        These queries will be cached for a reasonable amount of time (current thinking is 15 mins).
+                        The insights functions then draw this data.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sub-page" id="insight-functions" onclick="buttonClick(this.id)" type="button">
+                Insight Functions
+                <i class="fa fa-angle-down pull-right" style="margin-top: 7pt"></i>
+                <i class="fa fa-angle-up pull-right" style="margin-top: 7pt; display: none;"></i>
+                <div class="page-descriptions" style="display: none">
+                    <p style="text-align: justify">Insights function is a specific function that handled data that will be shown.
+                        During the Campaign creation process, Insight Functions are selected and configured to suit the needs of the Campaign.</p>
+                    <p>Several insight functions those are available now are:</p>
+                    <h2>1. Count Feature</h2>
+                    <p>This insight function has purpose for showing pie chart and counting by feature type. For example, for building, it will count how many feature by it's type (hospital, school, etc).</p>
+                    <h2>2. Feature Attribute Completeness</h2>
+                    <p>
+                        This function will show in percentage, showing what feature that has attributes that defined in form. On the form, fill attribute input with desired attributes that need to be looked. For example:
+                    <li><c> name= </c>&nbsp;: it will check all of feature that has name in it, and count how many has name and how many doesn't.</li>
+                    <li><c> name=Center </c>&nbsp;: it will check all of feature that has name in it, and count how many has name is 'Center' and how many doesn't.</li>
+                    <li><c> name=Center;building=hospital </c>&nbsp;: it will check all of feature that has name and building in it, and count how many has name is Center and building is hospital and how many doesn't. This function will show in percentage of how many feature that fullfill the attributes and how many doesn't. And it also shows details of these features in table that directed to osm.</li>
+                    </p>
+                    <h2>3. Upload Coverage</h2>
+                    <p>This function is handling coverage for campaing. It will ask for uploading coverage in shapefile and also showing it on dashboard.</p>
+                    <h2>4. OSMCHA error</h2>
+                    <p>This function is showing changeset error from osmcha within geometry of campaing. But because osmcha needs bbox instead polygon, some of data can be out of campaign.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="page-header" type="button" id="btn2" onclick="pageToggle(this.id)">For Participants<i class="fa fa-angle-down pull-right" style="margin-top: 10pt"></i><i class="fa fa-angle-up pull-right" style="margin-top: 10pt; display: none;"></i></div>
+        <div id="participants-page" class="page-body" style="display: none">
+            <div class="sub-page" id="edit-campaign" onclick="buttonClick(this.id)" type="button">
+                <i class="fa fa-wrench"></i> Under Development
+            </div>
+        </div>
+    </div>
+{% endblock %}
