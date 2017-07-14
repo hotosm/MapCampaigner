@@ -13,13 +13,14 @@
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
-                {% if form.name.data %}
+                <div id="campaign-active">
                     <span class="campaign-status-icon status-active"><i class="fa fa-circle" aria-hidden="true"></i></span>
                     <span class="campaign-status">&nbsp;Active</span>
-                {% else %}
+                </div>
+                <div id="campaign-inactive">
                     <span class="campaign-status-icon status-inactive"><i class="fa fa-circle" aria-hidden="true"></i></span>
                     <span class="campaign-status">&nbsp;Inactive</span>
-                {% endif %}
+                </div>
             </div>
             <div class="cc-nav-steps" style="background-color: white;">
                 <div class="panel panel-default panel-header cc-nav active" data-step="1">
@@ -346,6 +347,23 @@
         {% if google_api_key %}
             google_api_key = "{{ google_api_key }}";
         {% endif %}
+
+        var start_date = '{{ form.start_date.data }}';
+        var end_date = '{{ form.end_date.data }}';
+        var remaining_days = 0;
+
+        if(start_date==='None' || end_date==='None') {
+            remaining_days = 0;
+        } else {
+            end_date = moment(end_date.split(' ')[0], 'YYYY-MM-DD', true);
+            remaining_days = end_date.diff(moment(), 'days') + 1;
+        }
+
+        if(remaining_days > 0) {
+            $('#campaign-active').show();
+        } else {
+            $('#campaign-inactive').show();
+        }
 
     </script>
 
