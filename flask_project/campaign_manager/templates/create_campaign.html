@@ -571,6 +571,7 @@
                         aoiMap.invalidateSize();
                         if (drawnItems.getLayers().length > 0) {
                             aoiMap.fitBounds(drawnItems.getBounds());
+                            getAreaSize();
                         } else {
                             aoiMap.setView([0, 0], 2);
                         }
