@@ -220,6 +220,8 @@ class Campaign(JsonModel):
         :return: json surveys of types
         :rtype: dict
         """
+        if not type:
+            return {}
         # getting features and required attributes from types
         survey_folder = os.path.join(
             module_path(),
