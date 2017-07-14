@@ -102,10 +102,24 @@
 .btn-share {
     background-color: #00aced;
     border: 0;
-    font-weight: bold;
-    border-radius: 15px;
-    padding-left: 30px !important;
-    padding-right: 30px !important;
+    font-size: 8pt;
+    border-radius: 3px;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+    margin-right: 10px;
+    margin-top:10px;
+}
+
+.fb-share-button {
+    margin-top:10px;
+}
+
+.btn-share-fb {
+    background-color: #4267b2;
+}
+
+.btn-share-fb:hover {
+    background-color: #365899 !important;
 }
 
 .btn-share:hover {
