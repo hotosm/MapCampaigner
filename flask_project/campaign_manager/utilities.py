@@ -113,17 +113,22 @@ def load_osm_document_cached(file_path, url_path):
         file_time = os.path.getmtime(file_path)  # in unix epoch
         elapsed_seconds = current_time - file_time
 
+    osm_data = {'elements': []}
     if elapsed_seconds > limit_seconds or not os.path.exists(file_path):
         if not os.path.exists(file_path):
             try:
                 fetch_osm(file_path, url_path)
             except OverpassBadRequestException:
-                return {'elements': []}, file_time, updating_status
+                return osm_data, file_time, updating_status
         else:
             FetchOsmThread(file_path, url_path).start()
             updating_status = True
     file_handle = open(file_path, 'rb')
-    return json.loads(file_handle.read()), file_time, updating_status
+    try:
+        osm_data = json.loads(file_handle.read())
+    except ValueError:
+        pass
+    return osm_data, file_time, updating_status
 
 
 def multi_feature_to_polygon(geojson):

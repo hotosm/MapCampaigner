@@ -711,7 +711,7 @@ def about():
     return render_template('about.html')
 
 
-def not_found_in_campaign(error):
+def not_found_page(error):
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET

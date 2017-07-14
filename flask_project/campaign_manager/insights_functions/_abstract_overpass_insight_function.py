@@ -19,7 +19,7 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     }
     icon = 'list'
     tag = {}
-    type = None
+    feature_type = None
 
     last_update = ''
     is_updating = False
@@ -34,14 +34,14 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         if self.feature in self.FEATURES_MAPPING:
             self.feature = self.FEATURES_MAPPING[self.feature]
         if 'type' in additional_data:
-            self.type = additional_data['type']
+            self.feature_type = additional_data['type']
 
     def get_required_attributes(self):
         """Parsing required attributes
         """
         try:
             required_attributes = self.required_attributes.split(',')
-            survey_attributes = self.campaign.get_json_type(self.type)
+            survey_attributes = self.campaign.get_json_type(self.feature_type)
             if not required_attributes or required_attributes[0] == 'all':
                 required_attributes = [
                     tag for tag in survey_attributes['tags']
@@ -55,8 +55,13 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         :return: string of name
         """
         name = self.function_name
-        if self.type:
-            name = '%s for %s' % (name, self.type)
+
+        # Feature type is based on additional data that used
+        # for example if insight is for Healthsites Facilities
+        # than feature type is Healthsites Facilities
+
+        if self.feature_type:
+            name = '%s for %s' % (name, self.feature_type)
         return name
 
     def get_data_from_provider(self):

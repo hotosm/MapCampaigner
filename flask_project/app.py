@@ -2,8 +2,7 @@ import os
 from flask import Flask
 from reporter import reporter
 from campaign_manager import campaign_manager
-from campaign_manager.views import not_found_in_campaign
-from flask import render_template
+from campaign_manager.views import not_found_page
 
 osm_app = Flask(__name__, static_folder='./reporter/static')
 osm_app.register_blueprint(reporter)
@@ -19,4 +18,4 @@ except KeyError:
 
 @osm_app.errorhandler(404)
 def not_found(error):
-    return not_found_in_campaign(error)
+    return not_found_page(error)
