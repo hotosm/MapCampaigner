@@ -657,12 +657,10 @@
                 $('.error-managers').show();
             }
 
-            if (addedTypes.length <= 0) {
+            var _addedTypes = addedTypes.filter(function(v){return v!==''});
+            if (_addedTypes.length < 1) {
                 valid = false;
                 $('.types-required-message').show();
-            }
-            if(valid) {
-               activateStep(1);
             }
 
             $("#types").val(JSON.stringify(getTypesSelectionValue()));
@@ -685,9 +683,7 @@
                 showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
                 valid = false;
             }
-            if(valid) {
-                activateStep(2);
-            }
+
             return valid;
         }
 
@@ -696,16 +692,14 @@
             // change icons
             currentActiveStep.find('.cc-nav-icon').addClass('activated');
             currentActiveStep.addClass('clickable-menu');
+            currentActiveStep.click(function() {
+                var nextStep = $(this).data('step');
+                var currentStep = $('.cc-nav-steps').find('.active').data('step');
+                showStep(currentStep, nextStep, false);
+            })
         }
 
-        $('.clickable-menu').click(function() {
-            var nextStep = $(this).data('step');
-            var currentStep = $('.cc-nav-steps').find('.active').data('step');
-
-            showStep(currentStep, nextStep);
-        });
-
-        function showStep(previousStep, nextStep) {
+        function showStep(previousStep, nextStep, activatePrevStep) {
             if(previousStep === nextStep) {
                 return false;
             }
@@ -717,7 +711,9 @@
 
             $prevFieldset.fadeOut(400, function () {
                 $prevNavStep.removeClass('active');
-                $prevNavStep.find('cc-nav-icon').addClass('activated');
+                if(activatePrevStep) {
+                    activateStep(previousStep);
+                }
                 $nextNavStep.addClass('active');
 
                 $nextFieldset.fadeIn();
@@ -760,7 +756,7 @@
 
             if (isNextStep && nameDateValid) {
                 $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-                showStep(currentFieldsetNumber, currentFieldsetNumber+1);
+                showStep(currentFieldsetNumber, currentFieldsetNumber+1, true);
             }
         }
 
@@ -774,7 +770,7 @@
             if (currentStep === 1) return;
 
             $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-            showStep(currentFieldsetNumber, currentFieldsetNumber-1);
+            showStep(currentFieldsetNumber, currentFieldsetNumber-1, false);
         }
 
         function checkFormHeader() {
