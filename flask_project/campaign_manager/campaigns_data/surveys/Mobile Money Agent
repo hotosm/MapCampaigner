@@ -1,58 +1,59 @@
-FEATURE:amenity
-amenity
-  - mobile_money_agent
-network
-  - Airtel Money
-  - Africell Money
-  - MTN Mobile Money
-  - UTL M-Sente
-  - SMART Mobile Money
-  - Vodacom M-Pesa
-  - Safaricom M-Pesa
-name
-male
-  - yes
-  - no
-female
-  - yes
-  - no
-opening_hours
-phone
-addr:city
-addr:street
-addr:housenumber
-level
-shop
-  - alcohol
-  - art
-  - bakery
-  - beauty
-  - beverages
-  - bicycle
-  - books
-  - butcher
-  - car
-  - car_parts
-  - car_repair
-  - charcoal
-  - chemist
-  - clothes
-  - convenience
-  - copyshop
-  - cosmetics
-  - doityourself
-  - electronics
-  - furniture
-  - greengrocer
-  - hairdresser
-  - houseware
-  - jewelry
-  - kiosk
-  - mobile_phone
-  - pastry
-  - shoes
-  - stationary
-  - supermarket
-  - tailor
-  - yes
-description
+feature: amenity
+tags:
+    - amenity:
+        - mobile_money_agent
+    - network:
+        - Airtel Money
+        - Africell Money
+        - MTN Mobile Money
+        - UTL M-Sente
+        - SMART Mobile Money
+        - Vodacom M-Pesa
+        - Safaricom M-Pesa
+    - name
+    - male:
+        - yes
+        - no
+    - female:
+        - yes
+        - no
+    - opening_hours
+    - phone
+    - addr:city
+    - addr:street
+    - addr:housenumber
+    - level
+    - shop:
+        - alcohol
+        - art
+        - bakery
+        - beauty
+        - beverages
+        - bicycle
+        - books
+        - butcher
+        - car
+        - car_parts
+        - car_repair
+        - charcoal
+        - chemist
+        - clothes
+        - convenience
+        - copyshop
+        - cosmetics
+        - doityourself
+        - electronics
+        - furniture
+        - greengrocer
+        - hairdresser
+        - houseware
+        - jewelry
+        - kiosk
+        - mobile_phone
+        - pastry
+        - shoes
+        - stationary
+        - supermarket
+        - tailor
+        - yes
+    - description

@@ -537,7 +537,8 @@ def create_campaign():
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
-    context['types'] = get_types()
+    context['types'] = json.dumps(
+        get_types()).replace('True', 'true').replace('False', 'false')
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -603,7 +604,8 @@ def edit_campaign(uuid):
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
-    context['types'] = get_types()
+    context['types'] = json.dumps(
+        get_types()).replace('True', 'true').replace('False', 'false')
     return render_template(
         'create_campaign.html', form=form, **context)
 

@@ -1,14 +1,15 @@
-FEATURE:amenity
-INSIGHTS
-  - FeatureAttributeCompleteness
-name
-amenity
-  - college
-  - kindergarten
-  - school
-  - university
-opening_hours
-addr:city
-addr:street
-addr:housenumber
-description
+feature: amenity
+insights:
+    - FeatureAttributeCompleteness
+tags:
+    - name
+    - amenity:
+        - college
+        - kindergarten
+        - school
+        - university
+    - opening_hours
+    - addr:city
+    - addr:street
+    - addr:housenumber
+    - description
