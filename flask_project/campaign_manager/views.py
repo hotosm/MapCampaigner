@@ -7,7 +7,7 @@ from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
 
 from bs4 import BeautifulSoup
-from flask import request, render_template, Response
+from flask import request, render_template, Response, abort
 
 from app_config import Config
 from campaign_manager import campaign_manager
@@ -107,7 +107,7 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
         )
         return Response(rendered_html)
     except Campaign.DoesNotExist:
-        return Response('Campaign not found')
+        abort(404)
 
 
 def check_geojson_is_polygon(geojson):
@@ -167,7 +167,7 @@ def campaign_boundary_upload_chunk_success(uuid):
             'data': geojson,
         }))
     except Campaign.DoesNotExist:
-        return Response('Campaign not found')
+        abort(404)
     except ShapefileProvider.MultiPolygonFound as e:
         return Response(json.dumps({
             'success': False,
@@ -224,7 +224,7 @@ def campaign_coverage_upload_chunk_success(uuid):
             'files': coverage_function.get_coverage_files()
         }))
     except Campaign.DoesNotExist:
-        return Response('Campaign not found')
+        abort(404)
 
 
 def upload_chunk(_file, filename):
@@ -294,7 +294,7 @@ def campaign_coverage_upload_chunk(uuid):
         )
         return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
-        return Response('Campaign not found')
+        abort(404)
 
 
 @campaign_manager.route(
@@ -326,7 +326,7 @@ def campaign_boundary_upload_chunk(uuid):
         )
         return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
-        return Response('Campaign not found')
+        abort(404)
 
 
 @campaign_manager.route('/campaign/<uuid>')
@@ -383,12 +383,7 @@ def get_campaign(uuid):
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
-        context = dict(
-            oauth_consumer_key=OAUTH_CONSUMER_KEY,
-            oauth_secret=OAUTH_SECRET
-        )
-        return render_template(
-            'campaign_not_found.html', **context)
+        abort(404)
 
 
 def get_selected_functions():
@@ -692,3 +687,17 @@ if __name__ == '__main__':
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()
+
+
+@campaign_manager.route('/about')
+def about():
+    return render_template('about.html')
+
+
+def not_found_page(error):
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+    return render_template(
+        '404.html', **context)

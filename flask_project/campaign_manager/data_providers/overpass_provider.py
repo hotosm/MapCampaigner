@@ -93,10 +93,8 @@ class OverpassProvider(AbstractDataProvider):
         url_path = '%s%s' % (server_url, encoded_query)
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
         file_path = os.path.join(config.CACHE_DIR, safe_name)
-        osm_doc, osm_doc_time, updating = load_osm_document_cached(
+        osm_data, osm_doc_time, updating = load_osm_document_cached(
             file_path, url_path)
-
-        osm_data = json.loads(osm_doc.read())
 
         regex = 'runtime error:'
         if 'remark' in osm_data:

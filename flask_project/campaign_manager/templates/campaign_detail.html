@@ -1,5 +1,16 @@
 {% extends 'new_base.html' %}
 
+{% block extra_title %}
+    - {{ name }}
+{% endblock %}
+
+{% block extra_head %}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Map Campaigner" />
+    <meta property="og:description" content="{{ description }}" />
+    <meta property="og:image"  content="/campaign_manager/static/img/kartoza-logo.png" />
+{% endblock %}
+
 {% block header_content %}
 
     <!-- Custom CSS -->
@@ -85,6 +96,19 @@
                         </p>
                     </div>
                     <div class="detail-button-wrapper">
+                        <button class="btn btn-info btn-share pull-left" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
+                        <div id="fb-root"></div>
+                        <script>(function(d, s, id) {
+                            var js, fjs = d.getElementsByTagName(s)[0];
+                            if (d.getElementById(id)) return;
+                            js = d.createElement(s); js.id = id;
+                            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                            fjs.parentNode.insertBefore(js, fjs);
+                          }(document, 'script', 'facebook-jssdk'));</script>
+                        <div class="fb-share-button pull-left"
+                            data-href="{{ request.url }}"
+                            data-layout="button_count">
+                        </div>
                         <button class="btn btn-info btn-manage pull-right" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
                     </div>
                 </div>
@@ -480,6 +504,13 @@
         }
         function zoomToFeature(e) {
             map.fitBounds(e.target.getBounds());
+        }
+
+        function shareTweet(uuid) {
+            var host = window.location.origin;
+            var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+            windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
+                    host + '/campaign_manager/campaign/' + uuid;
         }
 
     </script>

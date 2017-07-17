@@ -13,13 +13,14 @@
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
-                {% if form.name.data %}
+                <div id="campaign-active">
                     <span class="campaign-status-icon status-active"><i class="fa fa-circle" aria-hidden="true"></i></span>
                     <span class="campaign-status">&nbsp;Active</span>
-                {% else %}
+                </div>
+                <div id="campaign-inactive">
                     <span class="campaign-status-icon status-inactive"><i class="fa fa-circle" aria-hidden="true"></i></span>
                     <span class="campaign-status">&nbsp;Inactive</span>
-                {% endif %}
+                </div>
             </div>
             <div class="cc-nav-steps" style="background-color: white;">
                 <div class="panel panel-default panel-header cc-nav active" data-step="1">
@@ -99,6 +100,7 @@
                                     <div class="form-group">
                                         {{ form.description }}
                                     </div>
+                                    <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
                                     <br/>
                                     <div class="form-group map-input">
                                         {{ form.map_type }}
@@ -112,13 +114,6 @@
                                         <p class="help-block">Change map display, leave blank to use default</p>
                                     </div>
                                     <br/>
-                                </div>
-                                <div class="form-body col-lg-3">
-                                    <div class="form-group required-form">
-                                        <label for="campaign_status">Campaign status</label>
-                                        {{ form.campaign_status }}
-                                        <p class="help-block">Status of the campaign</p>
-                                    </div>
                                 </div>
                             </div>
                             <select id="remote_projects" multiple name="remote_projects" style="display: none;"></select>
@@ -345,11 +340,37 @@
         {% if form.remote_projects.data %}
             remote_projects_list = {{ form.remote_projects.data | safe }};
         {% endif %}
+
+        var google_api_key = null;
+        var maxAreaSize = {{ maximum_area_size }};
+
+        {% if google_api_key %}
+            google_api_key = "{{ google_api_key }}";
+        {% endif %}
+
+        var start_date = '{{ form.start_date.data }}';
+        var end_date = '{{ form.end_date.data }}';
+        var remaining_days = 0;
+
+        if(start_date==='None' || end_date==='None') {
+            remaining_days = 0;
+        } else {
+            end_date = moment(end_date.split(' ')[0], 'YYYY-MM-DD', true);
+            remaining_days = end_date.diff(moment(), 'days') + 1;
+        }
+
+        if(remaining_days > 0) {
+            $('#campaign-active').show();
+        } else {
+            $('#campaign-inactive').show();
+        }
+
     </script>
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/remote-mapping.js"></script>
+    <script type="text/javascript" src="/campaign_manager/static/js/create/map.js"></script>
+    <script type="text/javascript" src="/campaign_manager/static/js/create/remote-mapping.js"></script>
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
@@ -396,7 +417,6 @@
                 $('.cc-functions').addClass('hide');
             }
         }
-        ;
 
         var remote_projects_list = [];
         var types = {{ types|safe }};
@@ -547,11 +567,13 @@
                     $('#fieldset-' + (parseInt(currentFieldsetNumber) + 1)).children().find('button').removeAttr('disabled');
 
                     if (currentFieldsetNumber + 1 === 2) {
-                        campaignMap.invalidateSize();
+                        var aoiMap = getAOIMap();
+                        aoiMap.invalidateSize();
                         if (drawnItems.getLayers().length > 0) {
-                            campaignMap.fitBounds(drawnItems.getBounds());
+                            aoiMap.fitBounds(drawnItems.getBounds());
+                            getAreaSize();
                         } else {
-                            campaignMap.setView([0, 0], 2);
+                            aoiMap.setView([0, 0], 2);
                         }
                     } else if (currentFieldsetNumber + 1 === 3) {
                         remoteMap.invalidateSize();
@@ -802,14 +824,6 @@
             return functions;
         }
 
-        //------------------ MAP ------------------//
-
-        var drawnItems = new L.geoJSON();
-        var bounds = [
-            [-34.053726, 20.411482],
-            [-34.009483, 20.467358]
-        ];
-
         $("#campaign-form").submit(function (event) {
             $("#uploader").val($("#profile-name").html());
 
@@ -825,6 +839,8 @@
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
 
+            $('#campaign_status').val('Start');
+
             // Processing selected function
             var selected_functions = {};
             selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
@@ -833,166 +849,6 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
         });
-
-        var campaignMap = L.map('campaign-map');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
-            'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-            maxZoom: 18
-        }).addTo(campaignMap);
-
-        {% if google_api_key %}
-            new L.Control.GPlaceAutocomplete({
-                position: "topright",
-                callback: function (location) {
-                    campaignMap.fitBounds([
-                        [
-                            location.geometry.viewport.getSouthWest().lat(),
-                            location.geometry.viewport.getSouthWest().lng()
-                        ],
-                        [
-                            location.geometry.viewport.getNorthEast().lat(),
-                            location.geometry.viewport.getNorthEast().lng()
-                        ]
-                    ]);
-                }
-            }).addTo(campaignMap);
-        {% endif %}
-
-        // Get user location
-        {% if action == 'create' %}
-            navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
-        {% endif %}
-
-        function successGetBrowserLocation(position) {
-            var zoom = 10;
-            var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
-            campaignMap.setView(userLocation, zoom);
-        }
-
-        function errorGetBrowserLocation() {
-            console.log('Error get browser location');
-        }
-
-        $("#submit").click(function () {
-            $("#form").submit();
-        });
-
-        $("#start_date").attr('data-language', 'en');
-        $("#end_date").attr('data-language', 'en');
-        $("#start_date").datepicker({
-            dateFormat: 'yyyy-mm-dd',
-            autoClose: true,
-            onSelect: function (date) {
-                $("#end_date").val(date);
-                $("#end_date").datepicker({minDate: new Date(date)})
-            }
-        });
-        $("#end_date").datepicker({
-            dateFormat: 'yyyy-mm-dd',
-            autoClose: true,
-            position: 'bottom right',
-            onSelect: function (date) {
-                $("#start_date").val(date);
-                $("#start_date").datepicker({maxDate: new Date(date)})
-            }
-        });
-
-        campaignMap.fitBounds(bounds);
-
-        if ($("#geometry").val()) {
-            drawnItems = L.geoJSON($.parseJSON($("#geometry").val()));
-            campaignMap.fitBounds(drawnItems.getBounds());
-        }
-        campaignMap.addLayer(drawnItems);
-
-        var drawControl = new L.Control.Draw({
-            draw: {
-                polyline: false,
-                marker: false,
-                circle: false
-            },
-            edit: {
-                featureGroup: drawnItems
-            },
-            remove: {
-                featureGroup: drawnItems
-            }
-        }, this);
-
-        campaignMap.addControl(drawControl);
-        campaignMap.on('draw:created', saveLayer);
-        campaignMap.on('draw:edited', editLayer);
-        campaignMap.on('draw:deleted', deleteLayer);
-        campaignMap.on('draw:drawstart', startDraw);
-        campaignMap.on('draw:drawstop', stopDraw);
-
-        var temporaryDrawnLayers = null;
-
-        function saveLayer(e) {
-            temporaryDrawnLayers = null;
-            var layer = e.layer;
-            drawnItems.addLayer(layer);
-            getAreaSize();
-            stringfyGeometry();
-        }
-
-        function editLayer(e) {
-            var layers = e.layers;
-            getAreaSize();
-            stringfyGeometry();
-        }
-
-        function deleteLayer(e) {
-            var layers = e.layers;
-            layers.eachLayer(function (feature) {
-                drawnItems.removeLayer(feature);
-            });
-            getAreaSize();
-            stringfyGeometry();
-        }
-
-        function startDraw(e) {
-            temporaryDrawnLayers = jQuery.extend(true, {}, drawnItems);
-            drawnItems.clearLayers();
-        }
-
-        function stopDraw(e) {
-            if (temporaryDrawnLayers !== null) {
-                var temporaryLayers = temporaryDrawnLayers._layers;
-                for (var key in temporaryLayers) {
-                    drawnItems.addLayer(temporaryLayers[key]);
-                }
-                temporaryDrawnLayers = null;
-            }
-        }
-
-        function stringfyGeometry() {
-            var json = drawnItems.toGeoJSON();
-            $("#geometry").val(JSON.stringify(json));
-        }
-
-        var maxAreaSize = {{ maximum_area_size }};
-        function getAreaSize() {
-            var totalAreaSize = 0;
-            drawnItems.eachLayer(function (layer) {
-                totalAreaSize += L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-            });
-
-            var kmSquare = parseFloat(totalAreaSize / 1000000);
-            $('#campaign-map-area-size').html('Area size : ' + kmSquare.toFixed(2) + ' km<sup>2</sup>');
-            if (totalAreaSize > maxAreaSize) {
-                showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
-                $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
-                $('#campaign-map-area-size').removeClass('label-success');
-                $('#campaign-map-area-size').addClass('label-danger');
-            } else {
-                clearNotification();
-                $('.map-wrapper').data('error', '');
-                $('#campaign-map-area-size').removeClass('label-danger');
-                $('#campaign-map-area-size').addClass('label-success');
-            }
-        }
 
         function getFormElement(event, className) {
             return $(event).closest("div").find(className);
@@ -1055,6 +911,32 @@
             $(event).parent().parent().parent().remove();
         }
 
+        $("#submit").click(function () {
+            $("#form").submit();
+        });
+
+        $("#start_date").attr('data-language', 'en');
+        $("#end_date").attr('data-language', 'en');
+
+        $("#start_date").datepicker({
+            dateFormat: 'yyyy-mm-dd',
+            autoClose: true,
+            onSelect: function (date) {
+                $("#end_date").val(date);
+                $("#end_date").datepicker({minDate: new Date(date)})
+            }
+        });
+
+        $("#end_date").datepicker({
+            dateFormat: 'yyyy-mm-dd',
+            autoClose: true,
+            position: 'bottom right',
+            onSelect: function (date) {
+                $("#start_date").val(date);
+                $("#start_date").datepicker({maxDate: new Date(date)})
+            }
+        });
+
         //----------------- Types & Tags -----------------//
 
         var addedTypes = [];
@@ -1094,6 +976,10 @@
                 if (tags[feature]) {
                     feature += '=' + tags[feature]
                 }
+                var attibutes_on_insights = 'all';
+                if (value['tags'].length != 0) {
+                    attibutes_on_insights = value['tags'].join()
+                }
                 var default_insights = types[type]['insights'];
                 $.each(default_insights, function (insight_index, insight) {
                     $('#quality-function-add').click();
@@ -1102,7 +988,7 @@
                     $(row).find('.function-selection').trigger('change');
                     $(row).find('.function-selection').data('type', type);
                     $(row).find('.function-feature').val(feature);
-                    $(row).find('.function-attributes').val(JSON.stringify(value['tags']));
+                    $(row).find('.function-attributes').val(attibutes_on_insights);
                     index += 1;
                 });
             });

@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '16/05/17'
 
+import json
 import os
 import threading
 from utilities import absolute_path
@@ -9,6 +10,7 @@ import time
 
 from reporter.osm import fetch_osm
 from app_config import Config
+from reporter.exceptions import OverpassBadRequestException
 
 
 def module_path(*args):
@@ -101,26 +103,35 @@ def load_osm_document_cached(file_path, url_path):
     :param url_path: Path of the file
     :type url_path: str
 
-    :returns: Dictionary that contains file, last_update, and updating status.
+    :returns: Dictionary that contains json on the file,
+    last_update, and updating status.
     :rtype: dict
     """
     elapsed_seconds = 0
     limit_seconds = 900  # 15 minutes
-    file_time = 0
+    file_time = time.time()
     updating_status = False
     if os.path.exists(file_path):
         current_time = time.time()  # in unix epoch
         file_time = os.path.getmtime(file_path)  # in unix epoch
         elapsed_seconds = current_time - file_time
 
+    osm_data = {'elements': []}
     if elapsed_seconds > limit_seconds or not os.path.exists(file_path):
         if not os.path.exists(file_path):
-            fetch_osm(file_path, url_path)
+            try:
+                fetch_osm(file_path, url_path)
+            except OverpassBadRequestException:
+                return osm_data, file_time, updating_status
         else:
             FetchOsmThread(file_path, url_path).start()
             updating_status = True
     file_handle = open(file_path, 'rb')
-    return file_handle, file_time, updating_status
+    try:
+        osm_data = json.loads(file_handle.read())
+    except ValueError:
+        pass
+    return osm_data, file_time, updating_status
 
 
 def multi_feature_to_polygon(geojson):

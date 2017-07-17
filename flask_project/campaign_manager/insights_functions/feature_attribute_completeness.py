@@ -12,7 +12,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     icon = 'list'
     _function_good_data = None  # cleaned data
     nodes = {}
-    type = None
 
     # attribute of insight function
     need_feature = True
@@ -50,11 +49,11 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         list_good_data = []
         self._function_good_data = []
 
-        if not raw_data or not self.type:
+        if not raw_data or not self.feature_type:
             return []
         try:
             required_attributes = self.get_required_attributes()
-            survey_attributes = self.campaign.get_json_type(self.type)
+            survey_attributes = self.campaign.get_json_type(self.feature_type)
             for value in raw_data:
                 if value['type'] == 'node':
                     continue

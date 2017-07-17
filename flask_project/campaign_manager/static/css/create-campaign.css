@@ -203,6 +203,10 @@
     color: green;
 }
 
+#campaign-inactive, #campaign-active {
+    display: none;
+}
+
 .panel-header-info {
     color: #898989;
     font-size: 8pt !important;
