@@ -33,6 +33,7 @@ class Campaign(JsonModel):
     description = ''
     _content_json = None
     map_type = ''
+    dashboard_settings = ''
 
     def __init__(self, uuid=None):
         if uuid:
