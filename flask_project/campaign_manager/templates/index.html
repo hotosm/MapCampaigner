@@ -336,12 +336,18 @@
         function getCampaigns(url, user) {
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+
             if(!url) {
                 url = "/campaign_manager/campaigns";
             }
             {% if all %}
                 url = "/campaign_manager/campaigns";
             {% endif %}
+
+            var campaign_status = '/active';
+
+            url += campaign_status;
+
             if(tag) {
                 url += '/'+tag;
             }
