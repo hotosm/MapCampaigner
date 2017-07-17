@@ -506,6 +506,7 @@ def create_campaign():
         data = form.data
         data.pop('csrf_token')
         data.pop('submit')
+        data.pop('types_options')
 
         data['uuid'] = uuid.uuid4().hex
         Campaign.create(data, form.uploader.data)
@@ -537,8 +538,12 @@ def create_campaign():
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
-    context['types'] = json.dumps(
-        get_types()).replace('True', 'true').replace('False', 'false')
+    context['types'] = {}
+    try:
+        context['types'] = json.dumps(
+            get_types()).replace('True', 'true').replace('False', 'false')
+    except ValueError:
+        pass
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -575,6 +580,7 @@ def edit_campaign(uuid):
             form = CampaignForm(request.form)
             if form.validate_on_submit():
                 data = form.data
+                data.pop('types_options')
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
@@ -604,8 +610,12 @@ def edit_campaign(uuid):
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
-    context['types'] = json.dumps(
-        get_types()).replace('True', 'true').replace('False', 'false')
+    context['types'] = {}
+    try:
+        context['types'] = json.dumps(
+            get_types()).replace('True', 'true').replace('False', 'false')
+    except ValueError:
+        pass
     return render_template(
         'create_campaign.html', form=form, **context)
 
