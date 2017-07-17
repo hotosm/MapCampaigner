@@ -79,7 +79,7 @@
             }
         });
 
-        $('.chart-legends').html(myDoughnutChart.generateLegend());
+        $wrapper.find('.chart-legends').html(myDoughnutChart.generateLegend());
     } else {
         $wrapper.find('.piechart-wrapper').addClass('error');
         $wrapper.find('.piechart-wrapper').html(
