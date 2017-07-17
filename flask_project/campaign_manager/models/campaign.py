@@ -352,6 +352,7 @@ class Campaign(JsonModel):
                 except Campaign.DoesNotExist:
                     pass
         return campaigns
+
     @staticmethod
     def nearest_campaigns(coordinate, campaign_status, **kwargs):
         """Return nearest campaigns based on coordinate
