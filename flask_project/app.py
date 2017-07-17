@@ -2,10 +2,7 @@ import os
 from flask import Flask
 from reporter import reporter
 from campaign_manager import campaign_manager
-<<<<<<< HEAD
-=======
 from campaign_manager.views import not_found_page
->>>>>>> a0aa91420ada7d95253e4c7575de5b9c0712bb6a
 
 osm_app = Flask(__name__, static_folder='./reporter/static')
 osm_app.register_blueprint(reporter)
