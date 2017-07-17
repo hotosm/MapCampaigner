@@ -467,3 +467,7 @@ input#btn-add {
     display: none;
     color: #ac3232;
 }
+
+.clickable-menu:hover {
+    cursor: pointer;
+}
