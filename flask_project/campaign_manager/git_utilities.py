@@ -15,11 +15,13 @@ def git_pull():
     """ Pulling git.
     """
     os.chdir(git_folder)
+    branch = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode("utf-8")
     call(
         ["git",
          "pull",
-         "git@github.com:hotosm/field-campaigner.git",
-         "develop"]
+         "origin",
+         branch]
     )
 
 

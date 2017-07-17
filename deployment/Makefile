@@ -1,5 +1,5 @@
 PROJECT_ID := osmreporter
-CAMPAIGN_DATA := /home/meomancer/Development/field-campaigner-data
+CAMPAIGN_DATA :=
 
 SHELL := /bin/bash
 
