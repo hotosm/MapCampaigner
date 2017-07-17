@@ -37,13 +37,6 @@ def git_commit(commit_message=''):
     :type commit_name: str
     """
     os.chdir(git_folder)
-    if not commit_message:
-        username = subprocess.check_output(
-            ['git', 'config', '--global', 'user.name']).decode("utf-8")
-        username = username.replace('\n', '')
-        now_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        commit_message = "%s - %s" % (username, now_date)
-
     call(["git", "commit", "-m", commit_message])
 
 
