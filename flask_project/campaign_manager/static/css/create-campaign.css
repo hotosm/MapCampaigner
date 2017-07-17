@@ -474,3 +474,10 @@ input#btn-add {
 .clickable-menu:hover {
     cursor: pointer;
 }
+
+.select-tag {
+    background: none;
+    border: none !important;
+    box-shadow: none !important;
+    -moz-box-shadow: none;
+}
