@@ -576,6 +576,7 @@ def edit_campaign(uuid):
             if campaign.end_date:
                 form.end_date.data = datetime.datetime.strptime(
                     campaign.end_date, '%Y-%m-%d')
+            form.dashboard_settings.data = campaign.dashboard_settings
         else:
             form = CampaignForm(request.form)
             if form.validate_on_submit():

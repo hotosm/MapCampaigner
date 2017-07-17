@@ -55,10 +55,9 @@
             </div>
             <div class="panel panel-default panel-header" style="border-top: 1px solid #ddd !important;">
                 <span class="panel-header-info">DASHBOARD SETTINGS</span><br/>
-                <select class="dashboard-settings minimal" id="dashboard-settings" onchange="changeDashboard()">
-                    <option value="basic">Basic</option>
-                    <option value="advanced">Advanced</option>
-                </select>
+                <div class="dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
+                    {{ form.dashboard_settings(form="campaign-form") }}
+                </div>
             </div>
         </div>
         <div class="col-lg-10">
@@ -422,7 +421,7 @@
 
         //------------------ DASHBOARD SETTINGS -----------------//
         function changeDashboard() {
-            var setting = $('#dashboard-settings option:selected').text();
+            var setting = $('#dashboard_settings option:selected').text();
             if (setting.toLowerCase() == 'advanced') {
                 $('.cc-functions').addClass('show');
                 $('.cc-functions').removeClass('hide');
@@ -432,6 +431,12 @@
                 $('.cc-functions').addClass('hide');
             }
         }
+
+        $(function () {
+            {% if form.dashboard_settings.data %}
+                changeDashboard();
+            {% endif %}
+        });
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
