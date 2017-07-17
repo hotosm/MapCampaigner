@@ -180,7 +180,7 @@
     background-color: #dedede;
 }
 
-.remove-manager {
+.remove-manager, .remove-tags {
     padding-left: 8px;
     color: #ac3232;
 }
@@ -444,7 +444,10 @@ input#btn-add {
     padding: 5px;
     margin: 5px;
     margin-left: 0px !important;
-    line-height: 40px;
+}
+
+.show-remove-tag {
+    display: inline;
 }
 
 #TypesTagsContainer {

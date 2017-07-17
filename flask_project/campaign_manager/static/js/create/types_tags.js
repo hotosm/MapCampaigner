@@ -114,7 +114,7 @@ function onTypesChange() {
             var tags = types[selected_type]['tags'];
             var key_tags = Object.keys(tags);
             for (var j = 0; j < key_tags.length; j++) {
-                div.append('<span class="key-tags">' + key_tags[j] + ' </span>');
+                div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \''+ key_tags[j] + '\')" aria-hidden="true"></i>' +' </span>');
             }
             column.html(div);
 
@@ -135,4 +135,8 @@ function removeTags(event, type) {
     if (addedTypes.length < 1) {
         addTypes();
     }
+}
+
+function removeIndividualTag(event, type) {
+    $(event).parent().remove();
 }
