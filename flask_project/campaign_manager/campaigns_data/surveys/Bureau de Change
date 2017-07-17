@@ -1,10 +1,11 @@
-FEATURE:amenity
-amenity
-  - bureau_de_change
-name
-operator
-opening_hours
-addr:city
-addr:street
-addr:housenumber
-description
+feature: amenity
+tags:
+    - amenity:
+        - bureau_de_change
+    - name
+    - operator
+    - opening_hours
+    - addr:city
+    - addr:street
+    - addr:housenumber
+    - description
