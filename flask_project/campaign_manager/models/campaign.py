@@ -388,14 +388,17 @@ class Campaign(JsonModel):
                                 elif value not in campaign_dict[key]:
                                     allowed = False
 
-                        end_datetime = datetime.strptime(
-                                campaign_dict['end_date'],
-                                "%Y-%m-%d")
+                        if campaign.end_date:
+                            end_datetime = datetime.strptime(
+                                    campaign.end_date,
+                                    "%Y-%m-%d")
 
-                        if campaign_status == 'active':
-                            allowed = end_datetime.date() > date.today()
-                        elif campaign_status == 'inactive':
-                            allowed = end_datetime.date() <= date.today()
+                            if campaign_status == 'active':
+                                allowed = end_datetime.date() > date.today()
+                            elif campaign_status == 'inactive':
+                                allowed = end_datetime.date() <= date.today()
+                        else:
+                            allowed = False
 
                         if allowed:
                             campaigns.append(campaign)
