@@ -11,15 +11,15 @@ api = Api(campaign_manager)
 class CampaignList(Resource):
     """Shows a list of all campaigns"""
 
-    def get_all_campaign(self):
+    def get_all_campaign(self, campaign_status):
         """Returns all campaign from model.
         """
-        return Campaign.all()
+        return Campaign.all(campaign_status=campaign_status)
 
-    def get(self):
+    def get(self, campaign_status):
         """Get all campaigns.
         """
-        campaigns = self.get_all_campaign()
+        campaigns = self.get_all_campaign(campaign_status)
         campaigns_json = []
 
         for campaign in campaigns:
@@ -30,21 +30,27 @@ class CampaignList(Resource):
 
 class CampaignNearestList(Resource):
     """Show a list of nearest campaigns"""
-    def get_nearest_campaigns(self, coordinate):
+    def get_nearest_campaigns(self, coordinate, campaign_status):
         """Returns all nearest campaign.
+
+        :param campaign_status: status of campaign, active or inactive
+        :type campaign_status: str
 
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str.
         """
-        return Campaign.nearest_campaigns(coordinate)
+        return Campaign.nearest_campaigns(coordinate, campaign_status)
 
-    def get(self, coordinate):
+    def get(self, campaign_status, coordinate):
         """Get all nearest campaigns.
 
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str.
         """
-        campaigns = self.get_nearest_campaigns(coordinate)
+        campaigns = self.get_nearest_campaigns(
+                coordinate,
+                campaign_status
+        )
         campaigns_json = []
 
         for campaign in campaigns:
@@ -110,7 +116,7 @@ class CampaignTotal(Resource):
     def get_campaigns(self):
         """Returns campaigns.
         """
-        return Campaign.all()
+        return Campaign.all(campaign_status='active')
 
     def get(self):
         """Get total of campaign and participants."""
@@ -166,13 +172,21 @@ class CampaignContributors(Resource):
 
 
 # Setup the Api resource routing here
-api.add_resource(CampaignList, '/campaigns')
-api.add_resource(CampaignTagList, '/campaigns/<string:tag>')
-api.add_resource(CampaignNearestList, '/nearest_campaigns/<string:coordinate>')
+api.add_resource(
+        CampaignList,
+        '/campaigns/<string:campaign_status>')
+api.add_resource(
+        CampaignTagList,
+        '/campaigns/<string:tag>')
+api.add_resource(
+        CampaignNearestList,
+        '/nearest_campaigns/<string:coordinate>/<string:campaign_status>')
 api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')
-api.add_resource(CampaignTotal, '/total_campaigns')
+api.add_resource(
+        CampaignTotal,
+        '/total_campaigns')
 api.add_resource(
         CampaignContributors,
         '/campaign/total_contributors/<string:uuid>/<string:feature>')

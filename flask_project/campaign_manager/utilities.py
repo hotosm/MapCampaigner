@@ -7,6 +7,7 @@ import threading
 from utilities import absolute_path
 import tempfile
 import time
+import yaml
 
 from reporter.osm import fetch_osm
 from app_config import Config
@@ -172,35 +173,18 @@ def get_survey_json(survey_file):
     :return: json of survey of type
     :rtype: dict
     """
-    surveys = {
-        'feature': None,
-        'insights': [],
-        'tags': {}
-    }
+    surveys = {}
     if os.path.isfile(survey_file):
-        with open(survey_file) as f:
-            line_number = 0
-            last_tag = None
-            for line in f:
-                line = line.replace('\n', '').strip()
-                if line_number == 0:
-                    if line:
-                        surveys['feature'] = line.replace('FEATURE:', '')
-                else:
-                    if line == 'INSIGHTS':
-                        last_tag = line
-                    else:
-                        if line[0] != '-':
-                            if line not in surveys['tags']:
-                                surveys['tags'][line] = []
-                            last_tag = line
-                        else:
-                            line = line.replace('-', '').strip()
-                            if last_tag == 'INSIGHTS':
-                                surveys['insights'].append(line)
-                            else:
-                                if last_tag:
-                                    surveys['tags'][last_tag].append(line)
+        surveys = yaml.load(open(survey_file, 'r'))
+        if isinstance(surveys, str):
+            raise yaml.YAMLError
 
-                line_number += 1
+        tags = {}
+        if 'tags' in surveys:
+            for tag in surveys['tags']:
+                if isinstance(tag, str):
+                    tags[tag] = []
+                else:
+                    tags.update(tag)
+        surveys['tags'] = tags
     return surveys

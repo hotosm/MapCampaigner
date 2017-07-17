@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
+from datetime import datetime, date
 import bisect
 import copy
 import json
@@ -37,6 +38,7 @@ class Campaign(JsonModel):
     description = ''
     _content_json = None
     map_type = ''
+    dashboard_settings = ''
 
     def __init__(self, uuid=None):
         if uuid:
@@ -325,8 +327,11 @@ class Campaign(JsonModel):
             print(e)
 
     @staticmethod
-    def all(**kwargs):
+    def all(campaign_status=None, **kwargs):
         """Get all campaigns
+
+        :param campaign_status: status of campaign, active or inactive
+        :type campaign_status: str
 
         :return: Campaigns that found or none
         :rtype: [Campaign]
@@ -345,6 +350,20 @@ class Campaign(JsonModel):
                                 allowed = False
                             elif value not in campaign_dict[key]:
                                 allowed = False
+
+                    if campaign.end_date:
+                        end_datetime = datetime.strptime(
+                                campaign.end_date,
+                                "%Y-%m-%d")
+
+                        if campaign_status:
+                            if campaign_status == 'active':
+                                allowed = end_datetime.date() > date.today()
+                            elif campaign_status == 'inactive':
+                                allowed = end_datetime.date() <= date.today()
+                    else:
+                        allowed = False
+
                     if allowed:
                         position = bisect.bisect(name_list, campaign.name)
                         bisect.insort(name_list, campaign.name)
@@ -354,8 +373,11 @@ class Campaign(JsonModel):
         return campaigns
 
     @staticmethod
-    def nearest_campaigns(coordinate, **kwargs):
+    def nearest_campaigns(coordinate, campaign_status, **kwargs):
         """Return nearest campaigns based on coordinate
+
+        :param campaign_status: status of campaign, active or inactive
+        :type campaign_status: str
 
         :param coordinate: lat, long coordinate string
         :type coordinate: str
@@ -375,13 +397,28 @@ class Campaign(JsonModel):
                         campaign.corrected_coordinates())
                     if circle_buffer.contains(polygon):
                         campaign_dict = campaign.to_dict()
+
                         allowed = True
+
                         if kwargs:
                             for key, value in kwargs.items():
                                 if key not in campaign_dict:
                                     allowed = False
                                 elif value not in campaign_dict[key]:
                                     allowed = False
+
+                        if campaign.end_date:
+                            end_datetime = datetime.strptime(
+                                    campaign.end_date,
+                                    "%Y-%m-%d")
+
+                            if campaign_status == 'active':
+                                allowed = end_datetime.date() > date.today()
+                            elif campaign_status == 'inactive':
+                                allowed = end_datetime.date() <= date.today()
+                        else:
+                            allowed = False
+
                         if allowed:
                             campaigns.append(campaign)
                 except Campaign.DoesNotExist:
