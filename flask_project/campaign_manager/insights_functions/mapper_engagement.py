@@ -7,6 +7,7 @@ from campaign_manager.insights_functions._abstract_overpass_user_function \
 class MapperEngagement(AbstractOverpassUserFunction):
     function_name = "Show length of mapper engagement"
     category = ['engagement']
+    need_feature = True
 
     def get_ui_html_file(self):
         """ Get ui name in templates
