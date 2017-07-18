@@ -1,23 +1,15 @@
 function renderInsightFunctions(username) {
 
-    renderInsightFunctionsTypes(username);
-
-    return false;
-
-    var $insightTabs = $('.insight-tabs');
-    var $insightContent = $('.insight-content');
-    var $insightFunctionPanel = $('.insight-function-panel');
-    var index = 0;
-
-    if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
-        $insightFunctionPanel.html(
-            '<h4 class="grey-italic">No insight Function</h4>'
-        )
-    } else {
-        $insightTabs.show();
-    }
-
     $.each(selected_functions, function (key, selected_function) {
+
+        var insightPanel = $('.advance-insights').clone()[0];
+        var $insightPanel = $(insightPanel);
+        $('#page-wrapper').append($insightPanel);
+        $insightPanel.show();
+
+        var $insightTitle = $insightPanel.find('.panel-heading');
+        var $insightContent = $insightPanel.find('.panel-body');
+
         if (selected_function['name']) {
             var allow_function = true;
             if (selected_function['manager_only']) {
@@ -28,28 +20,16 @@ function renderInsightFunctions(username) {
             if (allow_function) {
                 var tab_id = key;
                 var tab_name = selected_function['name'];
-                var active = '';
-                if (index === 0) {
-                    active = 'active';
-                }
-                $insightTabs.find('a[href="#' + tab_id + '"]').closest('li').remove();
-                $insightTabs.append(
-                        '<li class="' + active + '">' +
-                        '<a href="#' + tab_id + '" data-toggle="tab" aria-expanded="true">' +
-                        tab_name + '</a>' +
-                        '</li>'
-                );
-                $insightContent.find('#' + key).remove();
+                $insightTitle.html(tab_name);
                 $insightContent.append(
-                        '<div class="tab-pane fade ' + active + ' in" id="' + tab_id + '">' +
+                    '<div id="' + tab_id + '">' +
                         '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
-                        '</div>'
+                    '</div>'
                 );
                 getInsightFunctions(key);
                 if (!containsObject(selected_function['feature'], feature_collected)) {
                     feature_collected.push(selected_function['feature']);
                 }
-                index++;
             }
         }
     });
@@ -58,7 +38,7 @@ function renderInsightFunctions(username) {
         calculateContributors(feature_collected[i]);
     }
 
-    renderRemoteProjects(index);
+    renderRemoteProjects();
 }
 
 function calculateCampaignProgress() {
@@ -150,6 +130,7 @@ function renderInsightFunctionsTypes(username) {
             if(selected_functions[selectedKey]['type'] === campaign_types[key]['type']) {
                 campaignTypes[campaign_types[key]['type']][selectedKey] =
                     selected_functions[selectedKey];
+                delete selected_functions[selectedKey];
             }
         }
     }
@@ -221,12 +202,13 @@ function renderInsightFunctionsTypes(username) {
                     if (!containsObject(selected_function['feature'], feature_collected)) {
                         feature_collected.push(selected_function['feature']);
                     }
-                    index++;
                 }
             }
         });
 
-        // Put table to bottom
-        console.log($typeContents.find('.table-insight-view'));
+        index++;
     }
+
+    renderInsightFunctions(username);
 }
+

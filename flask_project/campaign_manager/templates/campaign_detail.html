@@ -133,6 +133,18 @@
         </div>
     </div>
 
+    <div class="advance-insights">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default detail-panel-insights">
+                    <div class="panel-heading">
+                        Test
+                    </div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
@@ -161,17 +173,13 @@
             'BADIMAGERY': '#d2a29e'
         };
 
-        function renderRemoteProjects(index) {
+        function renderRemoteProjects() {
 
             if (remote_projects.length === 0) {
                 return;
             }
 
             var active = '';
-
-            if (index === 0) {
-                active = 'active';
-            }
 
             $('.insight-tabs').append(
                     '<li class="' + active + '">' +
@@ -181,7 +189,7 @@
             );
 
             $('.insight-content').append(
-                    '<div class="tab-pane fade ' + active + ' in" id="remote-mapper-content">' +
+                    '<div class="tab-pane fade in" id="remote-mapper-content">' +
                     '</div>'
             );
 
@@ -243,7 +251,7 @@
         }
 
         function updated(user) {
-            renderInsightFunctions(user.display_name);
+            renderInsightFunctionsTypes(user.display_name);
             var managers = {{ campaign_managers | safe }};
             // Shows manage button if current user is one of the manager
             if ($.inArray(user.display_name, managers) > -1) {
@@ -252,12 +260,12 @@
         }
 
         function loginError() {
-            renderInsightFunctions('');
+            renderInsightFunctionsTypes('');
         }
 
         function logoutSuccess() {
             $('.btn-manage').hide();
-            renderInsightFunctions('');
+            renderInsightFunctionsTypes('');
         }
 
         $(function () {

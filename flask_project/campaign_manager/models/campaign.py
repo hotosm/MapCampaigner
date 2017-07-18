@@ -74,7 +74,7 @@ class Campaign(JsonModel):
         for key, value in data.items():
             setattr(self, key, value)
         self.geometry = json.loads(self.geometry)
-        self.types = json.loads(self.types)
+        self.types = json.loads(self.types.replace('\'', '"'))
         self.selected_functions = json.loads(self.selected_functions)
         self.save(uploader)
 
