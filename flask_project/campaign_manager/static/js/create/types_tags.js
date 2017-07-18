@@ -84,7 +84,7 @@ function addTypes(value) {
     select.addClass('select-types');
     select.attr('id', 'types_options');
     select.attr('name', 'types_options');
-    select.html(typesOptions)
+    select.html(typesOptions);
 
     column.append(select);
     select.change(onTypesChange);
@@ -127,10 +127,26 @@ function onTypesChange() {
     var div = $("<div />");
     div.addClass("row-tags-wrapper");
 
+    var selected_tags;
+    if(typeof selected_types_data !== 'undefined'){
+        $.each(selected_types_data, function (index, type) {
+            if(type['type']==selected_type){
+                selected_tags = type['tags'];
+            }
+        });
+    }
+
     if (typeof types !== 'undefined') {
         if (types[selected_type]) {
+            var key_tags;
             var tags = types[selected_type]['tags'];
-            var key_tags = Object.keys(tags);
+            var key_tags_default = Object.keys(tags);
+
+            if(typeof selected_tags != 'undefined' && JSON.stringify(selected_tags) != '[]'){
+                key_tags = selected_tags;
+            }else {
+                key_tags = Object.keys(tags);
+            }
 
             for (var j = 0; j < key_tags.length; j++) {
                 div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + key_tags[j] + '\')" aria-hidden="true"></i>' + ' </span>');
@@ -140,8 +156,8 @@ function onTypesChange() {
             select_tag.addClass('select-tag');
             var span_select = $("<ul />");
             span_select.addClass('additional-key-tags');
-            for (var j = 0; j < key_tags.length; j++) {
-                span_select.append('<li onclick="addTag(this)">' + key_tags[j] + '</li>')
+            for (var j = 0; j < key_tags_default.length; j++) {
+                span_select.append('<li onclick="addTag(this)">' + key_tags_default[j] + '</li>')
             }
             select_tag.html(span_select);
 
@@ -181,12 +197,15 @@ function onAddTagsFInish(element) {
     $('.additional-key-tags').hide();
 }
 function addTag(wrapper) {
+    $('#warning-tag').html('');
     var $tagWrapper = $(wrapper).closest('.row-tags-wrapper');
     var tag = $(wrapper).text();
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
             '<span class="key-tags" style="display: inline-block">' + $(wrapper).text() + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + ' </span>')
+    }else{
+        $('#warning-tag').html('Tag is already selected, please select another.');
     }
 }
 function removeTags(event, type) {
