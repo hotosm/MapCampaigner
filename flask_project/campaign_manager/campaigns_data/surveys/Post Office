@@ -1,12 +1,13 @@
-FEATURE:amenity
-INSIGHTS
+feature: amenity
+insights:
   - FeatureAttributeCompleteness
-amenity
-  - post_office
-name
-operator
-opening_hours
-addr:city
-addr:street
-addr:housenumber
-description
+tags:
+    - amenity:
+        - post_office
+    - name
+    - operator
+    - opening_hours
+    - addr:city
+    - addr:street
+    - addr:housenumber
+    - description

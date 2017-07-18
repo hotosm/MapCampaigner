@@ -9,7 +9,8 @@ from wtforms.fields import (
     SubmitField,
     HiddenField,
     TextAreaField,
-    RadioField
+    RadioField,
+    SelectField
 )
 from wtforms.validators import DataRequired, Optional, ValidationError
 from urllib.parse import urlparse
@@ -85,6 +86,11 @@ class CampaignForm(FlaskForm):
         description='Campaign manager may change the map view',
         validators=[validate_map],
         render_kw={'placeholder': 'Campaign map'}
+    )
+    dashboard_settings = SelectField(
+        u'Display Mode',
+        choices=[('basic', 'Basic'), ('advanced', 'Advanced')],
+        default='basic'
     )
     selected_functions = HiddenField(
         u'Selected Functions')
