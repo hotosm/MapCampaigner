@@ -186,3 +186,7 @@
 .project-detail-name:hover{
     cursor: pointer;
 }
+
+.insight-type-sub-content {
+    padding: 20px;
+}

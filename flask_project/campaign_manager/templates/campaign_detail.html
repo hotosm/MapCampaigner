@@ -148,6 +148,9 @@
         var selected_functions = {{ selected_functions | safe }};
         var feature_collected = [];
         var feature_collected_count = 0;
+        var campaign_types = {{ types | safe}};
+        var start_date = "{{ start_date }}";
+        var end_date = "{{ end_date }}";
         var remote_projects = {{ remote_projects|safe }};
         var addedLayers = {};
         var taskStatusFillColor = {
@@ -234,107 +237,13 @@
             map.fitBounds(layer.getBounds());
         }
 
-        function render_selected_functions(username) {
-            $('.insight-tabs').html('');
-            $('.insight-content').html('');
-            var index = 0;
-
-            if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
-                $('.insight-function-panel').html('<h4 class="grey-italic">No insight Function</h4>')
-            } else {
-                $('.insight-tabs').show();
-            }
-
-            $.each(selected_functions, function (key, selected_function) {
-                if (selected_function['name']) {
-                    var allow_function = true;
-                    if (selected_function['manager_only']) {
-                        if ($.inArray(username, managers) === -1) {
-                            allow_function = false;
-                        }
-                    }
-                    if (allow_function) {
-                        var tab_id = key;
-                        var tab_name = selected_function['name'];
-                        var active = '';
-                        if (index === 0) {
-                            active = 'active';
-                        }
-                        $('.insight-tabs').find('a[href="#' + tab_id + '"]').closest('li').remove();
-                        $('.insight-tabs').append(
-                                '<li class="' + active + '">' +
-                                '<a href="#' + tab_id + '" data-toggle="tab" aria-expanded="true">' +
-                                tab_name + '</a>' +
-                                '</li>'
-                        );
-                        $('.insight-content').find('#' + key).remove();
-                        $('.insight-content').append(
-                                '<div class="tab-pane fade ' + active + ' in" id="' + tab_id + '">' +
-                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
-                                '</div>'
-                        );
-                        get_function(key);
-                        if (!containsObject(selected_function['feature'], feature_collected)) {
-                            feature_collected.push(selected_function['feature']);
-                        }
-                        index++;
-                    }
-                }
-            });
-
-
-            for (var i = 0; i < feature_collected.length; i++) {
-                calculateContributors(feature_collected[i]);
-            }
-
-            renderRemoteProjects(index);
-        }
-
-        function calculateProgress() {
-
-            var start_date = "{{ start_date }}";
-            var end_date = "{{ end_date }}";
-
-            if (start_date === 'None' || end_date === 'None') {
-                $('.detail-campaign-status label').html('-');
-                return;
-            }
-
-            start_date = moment(start_date, 'YYYY-MM-DD', true);
-            end_date = moment(end_date, 'YYYY-MM-DD', true);
-
-            var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
-
-            if (campaign_range < 0) {
-                $('.detail-campaign-status label').html('-');
-                return;
-            }
-
-            var remaining_days = end_date.diff(moment(), 'days') + 1;
-
-            var progress = 0;
-
-            if (remaining_days <= 0) {
-                progress = 100;
-                $('.detail-campaign-status').removeClass('running');
-                $('.detail-campaign-status').addClass('finished');
-                $('.detail-campaign-status label').html('Finished');
-            } else {
-                progress = remaining_days / campaign_range * 100;
-            }
-
-            $('#campaign-progress').css({
-                'width': progress + '%'
-            })
-        }
-
         //------------------ EVENT ------------------//
 
         function loginSuccess(user) {
         }
 
         function updated(user) {
-            render_selected_functions(user.display_name);
+            renderInsightFunctions(user.display_name);
             var managers = {{ campaign_managers | safe }};
             // Shows manage button if current user is one of the manager
             if ($.inArray(user.display_name, managers) > -1) {
@@ -343,12 +252,12 @@
         }
 
         function loginError() {
-            render_selected_functions('');
+            renderInsightFunctions('');
         }
 
         function logoutSuccess() {
             $('.btn-manage').hide();
-            render_selected_functions('');
+            renderInsightFunctions('');
         }
 
         $(function () {
@@ -357,7 +266,7 @@
                 update();
             }
 
-            calculateProgress();
+            calculateCampaignProgress();
         });
 
         var total_contributors = 0;
@@ -468,24 +377,8 @@
             map.fitBounds(drawnItems.getBounds());
         {% endif %}
 
-        var first_function = true;
-        function get_function(function_id) {
-            var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
-            $.ajax({
-                url: url,
-                success: function (data) {
-                    var active = '';
-                    if (first_function) {
-                        active = 'active';
-                        first_function = false;
-                    }
-                    var tab_id = function_id;
-                    $('#' + tab_id).html(data);
-                }
-            });
-        }
         function highlightFeature(e) {
-            var layer = e.target;
+            var layer    = e.target;
 
             layer.setStyle({
                 weight: 3,
@@ -514,4 +407,7 @@
         }
 
     </script>
+
+    <script src="/campaign_manager/static/js/detail/insight_functions.js"></script>
+
 {% endblock %}
