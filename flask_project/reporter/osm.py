@@ -177,10 +177,10 @@ def load_osm_document(file_path, url_path):
         elapsed_seconds = current_time - file_time
         if elapsed_seconds > 3600:
             os.remove(file_path)
-    # if elapsed_seconds > 3600 or not os.path.exists(file_path):
-    #     fetch_osm(file_path, url_path)
-    #     message = ('fetched %s' % file_path)
-    #     LOGGER.info(message)
+    if elapsed_seconds > 3600 or not os.path.exists(file_path):
+        fetch_osm(file_path, url_path)
+        message = ('fetched %s' % file_path)
+        LOGGER.info(message)
     file_handle = open(file_path, 'rb')
     return file_handle
 
