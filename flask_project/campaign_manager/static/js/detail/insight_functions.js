@@ -19,7 +19,7 @@ function renderInsightFunctions(username) {
             }
             if (allow_function) {
                 var tab_id = key;
-                var tab_name = selected_function['name'];
+                var tab_name = selected_function['name'] + ' for ' + selected_function['feature'];
                 $insightTitle.html(tab_name);
                 $insightContent.append(
                     '<div id="' + tab_id + '">' +
