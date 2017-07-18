@@ -8,21 +8,21 @@ tags:
         - residential
         - footway
     - name
-    - surface
+    - surface:
         - asphalt
         - concrete
         - unpaved
-    - smoothness
+    - smoothness:
         - good
         - intermediate
         - bad
         - very_bad
         - horrible
     - width
-    - oneway
+    - oneway:
         - yes
         - no
-    - bridge
+    - bridge:
         - yes
         - viaduct
     - description
