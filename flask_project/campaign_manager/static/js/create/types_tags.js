@@ -145,9 +145,9 @@ function onTypesChange() {
             }
             select_tag.html(span_select);
 
-            div.append('<button class="btn btn-danger btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
+            div.append('<div class="btn btn-danger btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
                 '<i class="fa fa-plus" style="font-size: 8pt"></i> Add tag' + select_tag.html() +
-                '</button>' +
+                '</div>' +
                 '</span>');
             column.html(div);
 
@@ -171,8 +171,11 @@ function onTypesChange() {
 }
 
 function onAddTags(element) {
-    $('.additional-key-tags').hide();
-    $(element).find('.additional-key-tags').show();
+    if (!$(element).find('.additional-key-tags').is(":visible")) {
+        $(element).find('.additional-key-tags').show();
+    } else {
+        $('.additional-key-tags').hide();
+    }
 }
 function onAddTagsFInish(element) {
     $('.additional-key-tags').hide();
