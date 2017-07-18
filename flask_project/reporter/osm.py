@@ -39,6 +39,17 @@ from urllib.parse import quote
 # noinspection PyPep8Naming
 from urllib.error import HTTPError
 
+query_with_value = (
+    '('
+    'way["{key}"~"{value}"]'
+    '(poly:"{polygon}");'
+    'relation["{key}"~"{value}"]'
+    '(poly:"{polygon}");'
+    ');'
+    '(._;>;);'
+    'out {print_mode};'
+)
+
 
 def get_osm_file(
         coordinates,
@@ -104,10 +115,19 @@ def get_osm_file(
 
     if use_polygon:
         parameters['polygon'] = coordinates
-        query = OVERPASS_QUERY_MAP_POLYGON[feature].format(**parameters)
     else:
         parameters.update(coordinates)
-        query = OVERPASS_QUERY_MAP[feature].format(**parameters)
+
+    if '=' in feature:
+        feature_keys = feature.split('=')
+        parameters['key'] = feature_keys[0]
+        parameters['value'] = feature_keys[1].replace(',', '|')
+        query = query_with_value.format(**parameters)
+    else:
+        if use_polygon:
+            query = OVERPASS_QUERY_MAP_POLYGON[feature].format(**parameters)
+        else:
+            query = OVERPASS_QUERY_MAP[feature].format(**parameters)
 
     if date_from and date_to:
         try:
@@ -157,10 +177,10 @@ def load_osm_document(file_path, url_path):
         elapsed_seconds = current_time - file_time
         if elapsed_seconds > 3600:
             os.remove(file_path)
-    if elapsed_seconds > 3600 or not os.path.exists(file_path):
-        fetch_osm(file_path, url_path)
-        message = ('fetched %s' % file_path)
-        LOGGER.info(message)
+    # if elapsed_seconds > 3600 or not os.path.exists(file_path):
+    #     fetch_osm(file_path, url_path)
+    #     message = ('fetched %s' % file_path)
+    #     LOGGER.info(message)
     file_handle = open(file_path, 'rb')
     return file_handle
 

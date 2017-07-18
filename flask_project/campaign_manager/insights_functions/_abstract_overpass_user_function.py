@@ -63,9 +63,14 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                 error = 'Bad request.'
             else:
                 try:
+                    tag_name = ''
+                    if '=' in self.feature:
+                        tag_name = self.feature.split('=')[0]
+                    else:
+                        tag_name = TAG_MAPPING_REVERSE[self.feature]
                     sorted_user_list = osm_object_contributions(
                         file_handle,
-                        TAG_MAPPING_REVERSE[self.feature],
+                        tag_name,
                         start_date,
                         end_date)
                 except xml.sax.SAXParseException:
