@@ -423,20 +423,14 @@
         function changeDashboard() {
             var setting = $('#dashboard_settings option:selected').text();
             if (setting.toLowerCase() == 'advanced') {
-                $('.cc-functions').addClass('show');
-                $('.cc-functions').removeClass('hide');
-                $('.remove-tags').addClass('show-remove-tag');
-                $('.remove-tags').removeClass('hide');
-                $('.btn-add-tag').addClass('show-remove-tag');
-                $('.btn-add-tag').removeClass('hide');
+                $('.cc-functions').addClass('show').removeClass('hide');
+                $('.remove-tags').addClass('show-remove-tag').removeClass('hide');
+                $('.btn-add-tag').addClass('show-remove-tag').removeClass('hide');
             }
             else {
-                $('.cc-functions').removeClass('show');
-                $('.cc-functions').addClass('hide');
-                $('.remove-tags').removeClass('show-remove-tag');
-                $('.remove-tags').addClass('hide');
-                $('.btn-add-tag').removeClass('show-remove-tag');
-                $('.btn-add-tag').addClass('hide');
+                $('.cc-functions').removeClass('show').addClass('hide');
+                $('.remove-tags').removeClass('show-remove-tag').addClass('hide');
+                $('.btn-add-tag').removeClass('show-remove-tag').addClass('hide');
             }
         }
 

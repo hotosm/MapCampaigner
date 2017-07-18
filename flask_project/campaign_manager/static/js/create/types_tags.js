@@ -113,11 +113,19 @@ function onTypesChange() {
         if (types[selected_type]) {
             var tags = types[selected_type]['tags'];
             var key_tags = Object.keys(tags);
+
             for (var j = 0; j < key_tags.length; j++) {
                 div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \''+ key_tags[j] + '\')" aria-hidden="true"></i>' +' </span>');
             }
-            div.append('<span style="line-height: 40px;">'+'<button class="btn btn-danger btn-add-tag" type="button" onclick="addTags(this, \'' + selected_type + '\')" style="display: inline-block; margin-left: 5px;"><i class="fa fa-plus" style="font-size: 8pt"></i> Add tag</button></span>');
+            div.append('<span style="line-height: 40px;">'+'<button class="btn btn-danger btn-add-tag" type="button" onclick="addTags(this, \'' + selected_type + '\')" style="margin-left: 5px;"><i class="fa fa-plus" style="font-size: 8pt"></i> Add tag</button></span>');
             column.html(div);
+
+            // Hide add/remove tags when basic mode.
+            var setting = $('#dashboard_settings option:selected').text();
+            if(setting.toLowerCase()!='advanced'){
+                $('.remove-tags').addClass('hide');
+                $('.btn-add-tag').addClass('hide');
+            }
 
             row.append('<div class="col-lg-1 row-tags">' +
                     '<button class="btn btn-danger btn-sm btn-block"' +
