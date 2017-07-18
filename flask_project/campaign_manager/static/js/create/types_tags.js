@@ -6,9 +6,29 @@ function getTypesSelectionValue() {
     var types_value = {};
     $.each(addedTypes, function (index, addedType) {
         if (addedType) {
+            var $wrapper = $('#typesTagsContainer').children().eq(index);
+            var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
+            var tags = [];
+            var survey = types[addedType];
+            var surveyTags = Object.keys(survey['tags']);
+            $.each($tags, function (index, value) {
+                var tag = $(value).text();
+                tags.push($.trim(tag));
+            });
+
+            var is_same = true;
+            for (var i = 0; i < surveyTags.length; i++) {
+                if ($.inArray(surveyTags[i], tags) < 0) {
+                    is_same = false;
+                    break
+                }
+            }
+            if (is_same) {
+                tags = [];
+            }
             types_value['type-' + (index + 1)] = {
                 type: addedType,
-                tags: []
+                tags: tags
             }
         }
     });
