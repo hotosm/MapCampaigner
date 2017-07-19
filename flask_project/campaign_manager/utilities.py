@@ -92,7 +92,7 @@ class FetchOsmThread(threading.Thread):
             running_thread.remove(self.threadID)
 
 
-def load_osm_document_cached(file_path, url_path):
+def load_osm_document_cached(file_path, url_path, returns_json=True):
     """Load an cached osm document, update the results if 15 minutes old.
 
     :type file_path: basestring
@@ -100,6 +100,9 @@ def load_osm_document_cached(file_path, url_path):
 
     :param url_path: Path of the file
     :type url_path: str
+
+    :param returns_json: Returns as a dictionary from json file
+    :type returns_json: bool
 
     :returns: Dictionary that contains json on the file,
     last_update, and updating status.
@@ -125,10 +128,15 @@ def load_osm_document_cached(file_path, url_path):
             FetchOsmThread(file_path, url_path).start()
             updating_status = True
     file_handle = open(file_path, 'rb')
-    try:
-        osm_data = json.loads(file_handle.read())
-    except ValueError:
-        pass
+
+    if returns_json:
+        try:
+            osm_data = json.loads(file_handle.read())
+        except ValueError:
+            pass
+    else:
+        osm_data = file_handle
+
     return osm_data, file_time, updating_status
 
 

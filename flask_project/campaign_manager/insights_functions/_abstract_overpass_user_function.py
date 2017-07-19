@@ -14,8 +14,8 @@ from reporter.utilities import (
     osm_object_contributions,
     split_polygon
 )
+from campaign_manager.data_providers.overpass_provider import OverpassProvider
 from reporter.queries import TAG_MAPPING_REVERSE
-from reporter.osm import get_osm_file
 
 
 class AbstractOverpassUserFunction(AbstractInsightsFunction):
@@ -26,33 +26,47 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
 
     def get_data_from_provider(self):
         """ Get required attrbiutes for function provider.
-        :return: list of required attributes
-        :rtype: [str]
+        :return: dict of user list and update status
+        :rtype: dict
         """
         sorted_user_list = []
+        last_update = None
+        is_updating = False
 
         if self.feature:
-            coordinates = self.campaign.geometry['features'][0]
-            coordinates = coordinates['geometry']['coordinates'][0]
-            correct_coordinates = []
-            for coordinate in coordinates:
-                correct_coordinates.append(
-                    [coordinate[1], coordinate[0]]
-                )
             start_date = calendar.timegm(datetime.datetime.strptime(
                     self.campaign.start_date, '%Y-%m-%d').timetuple()) * 1000
             end_date = calendar.timegm(datetime.datetime.strptime(
                     self.campaign.end_date, '%Y-%m-%d').timetuple()) * 1000
-            polygon_string = split_polygon(correct_coordinates)
 
             try:
-                file_handle = get_osm_file(
-                        polygon_string,
-                        self.feature,
-                        'meta',
-                        str(start_date),
-                        str(end_date),
-                        True)
+                features = self.feature.split('=')
+                if len(features) == 0:
+                    return []
+                elif len(features) == 2:
+                    feature_key = features[0]
+                    feature_values = features[1].split(',')
+                    overpass_data = OverpassProvider().get_data(
+                        polygon=self.campaign.corrected_coordinates(),
+                        overpass_verbosity='meta',
+                        feature_key=feature_key,
+                        feature_values=feature_values,
+                        date_from=str(start_date),
+                        date_to=str(end_date),
+                        returns_json=False
+                    )
+                else:
+                    feature_key = features[0]
+                    overpass_data = OverpassProvider().get_data(
+                        polygon=self.campaign.corrected_coordinates(),
+                        overpass_verbosity='meta',
+                        feature_key=feature_key,
+                        date_from=str(start_date),
+                        date_to=str(end_date),
+                        returns_json=False
+                    )
+                last_update = overpass_data['last_update']
+                is_updating = overpass_data['updating_status']
             except OverpassTimeoutException:
                 error = 'Timeout, try a smaller area.'
             except OverpassBadRequestException:
@@ -69,7 +83,7 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     else:
                         tag_name = TAG_MAPPING_REVERSE[self.feature]
                     sorted_user_list = osm_object_contributions(
-                        file_handle,
+                        overpass_data['file'],
                         tag_name,
                         start_date,
                         end_date)
@@ -77,6 +91,10 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
                         'later.')
-            return sorted_user_list
+            return {
+                'user_list': sorted_user_list,
+                'last_update': last_update,
+                'is_updating': is_updating
+            }
         else:
             return []
