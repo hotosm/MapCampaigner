@@ -184,7 +184,11 @@
     $wrapper.find('.feature-list-table').DataTable({
         "bSortClasses": false,
         "aLengthMenu": [5, 10, 25, 50, "All"],
-        "iDisplayLength": 5
+        "iDisplayLength": 5,
+        "rowReorder": {
+            selector: 'td:nth-child(2)'
+        },
+        "responsive": true
     });
     $wrapper.find('.feature-list-table').show();
     function see_completeness_details(event) {
