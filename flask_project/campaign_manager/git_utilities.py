@@ -5,21 +5,23 @@ import datetime
 import os
 import subprocess
 from subprocess import call
+from app_config import Config
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-git_folder = os.path.join(
-    file_path, os.pardir)
+git_folder = Config.campaigner_data_folder
 
 
 def git_pull():
     """ Pulling git.
     """
     os.chdir(git_folder)
+    branch = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode("utf-8")
     call(
         ["git",
          "pull",
-         "git@github.com:hotosm/field-campaigner.git",
-         "develop"]
+         "origin",
+         branch]
     )
 
 
@@ -37,13 +39,6 @@ def git_commit(commit_message=''):
     :type commit_name: str
     """
     os.chdir(git_folder)
-    if not commit_message:
-        username = subprocess.check_output(
-            ['git', 'config', '--global', 'user.name']).decode("utf-8")
-        username = username.replace('\n', '')
-        now_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        commit_message = "%s - %s" % (username, now_date)
-
     call(["git", "commit", "-m", commit_message])
 
 

@@ -10,6 +10,8 @@ osm_app.register_blueprint(campaign_manager, url_prefix='/campaign_manager')
 
 try:
     osm_app.config.from_object(os.environ['APP_SETTINGS'])
+
+    print('config %s ' % osm_app.config['DEBUG'])
 except KeyError:
     from app_config import DevelopmentConfig
 

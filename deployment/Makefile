@@ -1,17 +1,24 @@
 PROJECT_ID := osmreporter
+CAMPAIGN_DATA :=
 
 SHELL := /bin/bash
 
 # ----------------------------------------------------------------------------
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
-
 run:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up -d web
+	@if [ ! $(CAMPAIGN_DATA) ]; then\
+        read -p "Enter campaign path data:" path; \
+        CAMPAIGN_DATA=$$path; \
+        export CAMPAIGN_DATA=$$CAMPAIGN_DATA; \
+        else\
+            export CAMPAIGN_DATA=$(CAMPAIGN_DATA);\
+    fi;\
+    docker-compose -p $(PROJECT_ID) up -d web
 
 build:
 	@echo
@@ -84,7 +91,14 @@ run-dev:
 	@echo "Running in development mode"
 	@echo "You can access it on http://localhost:64002"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up -d dev
+	@if [ ! $(CAMPAIGN_DATA) ]; then\
+        read -p "Enter campaign path data:" path; \
+        CAMPAIGN_DATA=$$path; \
+        export CAMPAIGN_DATA=$$CAMPAIGN_DATA; \
+        else\
+            export CAMPAIGN_DATA=$(CAMPAIGN_DATA);\
+    fi;\
+	docker-compose -p $(PROJECT_ID) up -d dev
 
 log:
 	@echo

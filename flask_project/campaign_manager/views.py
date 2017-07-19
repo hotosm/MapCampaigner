@@ -1,32 +1,30 @@
-import json
 import inspect
+import json
 import os
 import shutil
 from datetime import datetime
+from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
+
 from bs4 import BeautifulSoup
 from flask import request, render_template, Response, abort
 
 from app_config import Config
 from campaign_manager import campaign_manager
-from campaign_manager.git_utilities import (
-    save_with_git
-)
-from reporter import LOGGER
-from reporter.static_files import static_file
 from campaign_manager.utilities import (
-    module_path,
-    temporary_folder,
     get_types
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
+from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
+from campaign_manager.api import CampaignNearestList, CampaignList
 
-from urllib import request as urllibrequest
+from reporter import LOGGER
+from reporter.static_files import static_file
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -117,7 +115,7 @@ def check_geojson_is_polygon(geojson):
     """Checking geojson is polygon"""
     types = ["Polygon", "MultiPolygon"]
     for feature in geojson['features']:
-        if feature['geometry']['type'] not in types:
+        if feature['geometry'] and feature['geometry']['type'] not in types:
             return False
     return True
 
@@ -129,7 +127,7 @@ def campaign_boundary_upload_chunk_success(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
-    # validate coverage
+    # validate boundary
     try:
         # folder for this campaign
         folder = os.path.join(
@@ -280,8 +278,7 @@ def campaign_coverage_upload_chunk(uuid):
         filenames = os.path.splitext(filename)
         # folder for this campaign
         filename = os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'coverage',
             uuid
         )
@@ -345,19 +342,8 @@ def get_campaign(uuid):
         context['oauth_secret'] = OAUTH_SECRET
         context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign.geometry)
-        context['campaigns'] = Campaign.all()
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
-
-        # Calculate remaining day
-        try:
-            current = datetime.now()
-            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
-            remaining = end_date - current
-            context['remaining_days'] = remaining.days if \
-                remaining.days > 0 else 0
-        except TypeError:
-            context['remaining_days'] = '-'
 
         # Start date
         try:
@@ -370,7 +356,7 @@ def get_campaign(uuid):
 
         # End date
         try:
-            start_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
             context['end_date_date'] = end_date.strftime('%d %b')
             context['end_date_year'] = end_date.strftime('%Y')
         except TypeError:
@@ -387,6 +373,66 @@ def get_campaign(uuid):
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
+        abort(404)
+
+
+@campaign_manager.route('/participate')
+def participate():
+    """Action from participate button, return nearest/recent/active campaign.
+    """
+    campaign_to_participate = None
+    user_coordinate = request.args.get('coordinate', None)
+    campaign_status = 'active'
+
+    if user_coordinate:
+        # Get nearest campaign
+        campaigns = CampaignNearestList().\
+            get_nearest_campaigns(user_coordinate, campaign_status)
+    else:
+        campaigns = CampaignList().get_all_campaign(campaign_status)
+
+    # Get most recent
+    for campaign in campaigns:
+        if not campaign_to_participate:
+            campaign_to_participate = campaign
+            continue
+
+        campaign_edited_date = datetime.strptime(
+            campaign_to_participate.edited_at,
+            '%a %b %d %H:%M:%S %Y'
+        )
+
+        campaign_to_compare = datetime.strptime(
+            campaign.edited_at,
+            '%a %b %d %H:%M:%S %Y'
+        )
+
+        if campaign_to_compare > campaign_edited_date:
+            campaign_to_participate = campaign
+
+    if campaign_to_participate:
+        context = campaign_to_participate.to_dict()
+        context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
+        context['oauth_secret'] = OAUTH_SECRET
+        context['google_api_key'] = GOOGLE_API_KEY
+        context['geometry'] = json.dumps(campaign_to_participate.geometry)
+        context['selected_functions'] = \
+            campaign_to_participate.get_selected_functions_in_string()
+
+        # Participant
+        context['participants'] = len(
+            campaign_to_participate.campaign_managers
+        )
+
+        # Map attribution
+        if campaign_to_participate.map_type != '':
+            context['attribution'] = find_attribution(
+                    campaign_to_participate.map_type
+            )
+
+        return render_template(
+                'campaign_detail.html', **context)
+    else:
         abort(404)
 
 
@@ -501,6 +547,9 @@ def create_campaign():
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
+    if not os.path.exists(Campaign.get_json_folder()):
+        return Response('DATA_SOURCE not found or not valid.')
+
     form = CampaignForm(request.form)
     if form.validate_on_submit():
         data = form.data
@@ -510,14 +559,6 @@ def create_campaign():
 
         data['uuid'] = uuid.uuid4().hex
         Campaign.create(data, form.uploader.data)
-
-        # create commit as git
-        try:
-            save_with_git(
-                'Create campaign - %s' % data['uuid']
-            )
-        except Exception as e:
-            print(e)
 
         return redirect(
             url_for(
@@ -585,14 +626,6 @@ def edit_campaign(uuid):
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
-
-                # create commit as git
-                try:
-                    save_with_git(
-                        'Update campaign - %s' % data['uuid']
-                    )
-                except Exception as e:
-                    print(e)
 
                 return redirect(
                     url_for('campaign_manager.get_campaign',

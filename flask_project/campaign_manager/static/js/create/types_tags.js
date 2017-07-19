@@ -128,9 +128,9 @@ function onTypesChange() {
     div.addClass("row-tags-wrapper");
 
     var selected_tags;
-    if(typeof selected_types_data !== 'undefined'){
+    if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {
-            if(type['type']==selected_type){
+            if (type['type'] == selected_type) {
                 selected_tags = type['tags'];
             }
         });
@@ -142,9 +142,9 @@ function onTypesChange() {
             var tags = types[selected_type]['tags'];
             var key_tags_default = Object.keys(tags);
 
-            if(typeof selected_tags != 'undefined' && JSON.stringify(selected_tags) != '[]'){
+            if (typeof selected_tags != 'undefined' && JSON.stringify(selected_tags) != '[]') {
                 key_tags = selected_tags;
-            }else {
+            } else {
                 key_tags = Object.keys(tags);
             }
 
@@ -188,6 +188,7 @@ function onTypesChange() {
 
 function onAddTags(element) {
     if (!$(element).find('.additional-key-tags').is(":visible")) {
+        onAddTagsFInish();
         $(element).find('.additional-key-tags').show();
     } else {
         $('.additional-key-tags').hide();
@@ -204,7 +205,7 @@ function addTag(wrapper) {
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
             '<span class="key-tags" style="display: inline-block">' + $(wrapper).text() + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + ' </span>')
-    }else{
+    } else {
         $('#warning-tag').html('Tag is already selected, please select another.');
     }
 }
