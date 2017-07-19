@@ -105,8 +105,9 @@
     border: 0;
     font-weight: bold;
     border-radius: 15px;
-    padding-left: 30px !important;
-    padding-right: 30px !important;
+    font-size: 13pt;
+    padding-left: 50px !important;
+    padding-right: 50px !important;
 }
 
 .btn-share {
@@ -118,6 +119,18 @@
     padding-bottom: 3px !important;
     margin-right: 10px;
     margin-top:10px;
+}
+
+
+@media (max-width: 450px) {
+    .btn-share-group .btn {
+        font-size: 11px !important;
+    }
+}
+
+.button-manage {
+    padding-top: 30px;
+    text-align: center;
 }
 
 .fb-share-button {

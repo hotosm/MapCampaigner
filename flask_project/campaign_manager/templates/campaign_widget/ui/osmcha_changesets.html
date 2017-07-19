@@ -82,7 +82,11 @@
             "filter": false,
             "pageLength": 15,
             "paging": false,
-            "info": false
+            "info": false,
+            "rowReorder": {
+                selector: 'td:nth-child(2)'
+            },
+            "responsive": true
         });
         $wrapper.find('.dataTables_wrapper').show();
         $wrapper.find(".pager-button").click(function (event) {

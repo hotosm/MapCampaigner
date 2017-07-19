@@ -4,7 +4,7 @@ function renderInsightFunctions(username) {
 
         var insightPanel = $('.advance-insights').clone()[0];
         var $insightPanel = $(insightPanel);
-        $('#page-wrapper').append($insightPanel);
+        $('.advance-insights-wrapper').append($insightPanel);
         $insightPanel.show();
 
         var $insightTitle = $insightPanel.find('.panel-heading');
@@ -19,7 +19,10 @@ function renderInsightFunctions(username) {
             }
             if (allow_function) {
                 var tab_id = key;
-                var tab_name = selected_function['name'] + ' for ' + selected_function['feature'];
+                var tab_name = selected_function['name']
+                if(selected_function['feature']) {
+                    tab_name += ' for ' + selected_function['feature'];
+                }
                 $insightTitle.html(tab_name);
                 $insightContent.append(
                     '<div id="' + tab_id + '">' +
