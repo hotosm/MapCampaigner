@@ -59,15 +59,6 @@
                     {{ form.dashboard_settings(form="campaign-form") }}
                 </div>
             </div>
-            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
-                <div class="panel-header-info panel-section">SUBMIT FORM TO</div>
-                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings">
-                    <div class="btn-group">
-                        <button class="btn btn-danger btn-add-tag" onclick="openOtherDataCollectonForm(this)">Maps.me</button>
-                        <button class="btn btn-danger btn-add-tag" onclick="openOtherDataCollectonForm(this)">OpenMapKit</button>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="col-lg-10">
             <div class="panel panel-default cc-panel">
@@ -418,38 +409,6 @@
     </script>
 
     <script type="text/javascript">
-        var isMobile = {
-            Windows: function () {
-                return /IEMobile/i.test(navigator.userAgent);
-            },
-            Android: function () {
-                return /Android/i.test(navigator.userAgent);
-            },
-            BlackBerry: function () {
-                return /BlackBerry/i.test(navigator.userAgent);
-            },
-            iOS: function () {
-                return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            },
-            any: function () {
-                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
-            }
-        };
-
-        var formLink = {
-            "OpenMapKit": {
-                Windows: '',
-                Android: 'https://play.google.com/store/apps/details?id=org.redcross.openmapkit',
-                BlackBerry: '',
-                iOS: ''
-            },
-            "Maps.me": {
-                Windows: '',
-                Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
-                BlackBerry: '',
-                iOS: ''
-            }
-        };
         typesOptions = '{{ form.types_options }}';
         var types = {{ types|safe }};
 
@@ -1014,19 +973,6 @@
                 $("#start_date").datepicker({maxDate: new Date(date)})
             }
         });
-
-        function openOtherDataCollectonForm(element) {
-            var app = $(element).html();
-            if (isMobile.Android()) {
-                window.open(formLink[app]['Android'], '_blank');
-            } else if (isMobile.Windows()) {
-                window.open(formLink[app]['Windows'], '_blank');
-            } else if (isMobile.iOS()) {
-                window.open(formLink[app]['iOS'], '_blank');
-            } else if (isMobile.BlackBerry()) {
-                window.open(formLink[app]['BlackBerry'], '_blank');
-            }
-        }
 
     </script>
 
