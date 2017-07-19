@@ -384,7 +384,7 @@
                             type=button onclick="removeFunction(this)">
                         <i class="fa fa-minus"></i></button>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <select class="form-control function-selection" data-toggle="tooltip" data-placement="top"
                             data-original-title="Select insight function"
                             onchange="functionOnSelected(this)">
@@ -394,12 +394,17 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-2">
+                    <select class="form-control function-type" data-toggle="tooltip" data-placement="top"
+                            data-original-title="Select type for this insight function" style="display: none">
+                    </select>
+                </div>
+                <div class="col-lg-2">
                     <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
                            data-original-title="Put feature to extract"
                            style="display: none">
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
                            data-original-title="Additional attributes for this function"
                            style="display: none">
@@ -708,6 +713,12 @@
             })
         }
 
+        function preprocessStep(currentStep) {
+            if (currentStep == 5) {
+                rerender_quality_function();
+            }
+        }
+
         function showStep(previousStep, nextStep, activatePrevStep) {
             if (previousStep === nextStep) {
                 return false;
@@ -718,6 +729,7 @@
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
+            preprocessStep(nextStep);
             $prevFieldset.fadeOut(400, function () {
                 $prevNavStep.removeClass('active');
                 if (activatePrevStep) {
@@ -855,7 +867,7 @@
                         'category': category,
                         'feature': $(row).find('.function-feature').val(),
                         'attributes': $(row).find('.function-attributes').val(),
-                        'type': $(row).find('.function-selection').data('type')
+                        'type': $(row).find('.function-type').val()
                     }
                 }
             });
@@ -912,9 +924,20 @@
                 }
             });
 
+            // render types
+            var uniqueNames = [];
+            var $function_type = getFormElement(row, '.function-type');
+            $function_type.append('<option value="">---------------------------------</option>');
+            $.each(addedTypes, function (index, addedType) {
+                if ($.inArray(addedType, uniqueNames) === -1) {
+                    uniqueNames.push(addedType);
+                    $function_type.append('<option value="' + addedType + '">' + addedType + '</option>')
+                }
+            });
             if (data) {
                 getFormElement(row, '.function-selection').val(data['function']);
                 functionOnSelected(getFormElement(row, '.function-selection'));
+                getFormElement(row, '.function-type').val(data['type']);
                 getFormElement(row, '.function-feature').val(data['feature']);
                 getFormElement(row, '.function-attributes').val(data['attributes']);
             }
@@ -927,6 +950,7 @@
             getFormElement($event, '.function-attributes').val('');
             getFormElement($event, '.function-feature').hide();
             getFormElement($event, '.function-attributes').hide();
+            getFormElement($event, '.function-type').hide();
 
             if ($(event).val() !== '') {
                 var need_feature = 'false';
@@ -937,6 +961,7 @@
                 }
 
                 if (need_feature === 'true') {
+                    getFormElement($event, '.function-type').show();
                     getFormElement($event, '.function-feature').show();
                 }
                 if (need_required_attributes === 'true') {
