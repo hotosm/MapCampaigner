@@ -98,6 +98,7 @@
 #campaign-map-detail {
     height: 500px;
     margin-top: 4px;
+    margin-left: -15px !important;
 }
 
 .insight-function-panel a {
@@ -204,4 +205,41 @@
 
 .insight-type-sub-content {
     padding: 20px;
+}
+
+.map-side-panel {
+    background-color: #eae8e8;
+    margin-top: 4px;
+    height: 500px;
+}
+
+.map-side-list {
+    border-bottom: 1px solid #cdcdcd;
+}
+
+.map-side-list-name {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #565656;
+}
+
+.map-side-list-number {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #739da6;
+}
+
+.map-side-list-action {
+    border-left: 1px solid #cdcdcd;
+    font-size: 12pt;
+    text-align: center;
+    height: 55px;
+}
+
+.side-action {
+    margin-top: 15px;
 }

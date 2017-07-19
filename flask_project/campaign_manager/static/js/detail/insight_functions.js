@@ -27,15 +27,15 @@ function renderInsightFunctions(username) {
                     '</div>'
                 );
                 getInsightFunctions(key);
-                if (!containsObject(selected_function['feature'], feature_collected)) {
-                    feature_collected.push(selected_function['feature']);
+                if (!containsObject(selected_function['feature'], feature_type_collected)) {
+                    feature_type_collected.push(selected_function['feature']);
                 }
             }
         }
     });
 
-    for (var i = 0; i < feature_collected.length; i++) {
-        calculateContributors(feature_collected[i]);
+    for (var i = 0; i < feature_type_collected.length; i++) {
+        calculateContributors(feature_type_collected[i]);
     }
 
     renderRemoteProjects();
@@ -95,6 +95,11 @@ function getInsightFunctions(function_id) {
             var $subContent = $divFunction.parent().next();
             if($divFunction.find('.table-insight-view').length > 0) {
                 $subContent.html($divFunction.find('.table-insight-view'));
+            }
+
+            if($divFunction.find('.total-features').length > 0) {
+                total_features_collected += parseInt($divFunction.find('.total-features').html());
+                $('#features-collected').html(total_features_collected);
             }
         }
     });
@@ -199,8 +204,8 @@ function renderInsightFunctionsTypes(username) {
                     );
 
                     getInsightFunctions(insightId);
-                    if (!containsObject(selected_function['feature'], feature_collected)) {
-                        feature_collected.push(selected_function['feature']);
+                    if (!containsObject(selected_function['feature'], feature_type_collected)) {
+                        feature_type_collected.push(selected_function['feature']);
                     }
                 }
             }

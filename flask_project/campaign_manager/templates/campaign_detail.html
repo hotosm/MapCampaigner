@@ -77,10 +77,6 @@
                             </span>
                         </p>
                         <p>
-                            <span class="grey-italic">Total Contributors :</span>
-                            <span id="contributors"><span class="grey-italic">Loading data...</span></span>
-                        </p>
-                        <p>
                             <span class="grey-italic">Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
                                 <span id="map-default" style="display: none">
@@ -120,7 +116,43 @@
         <div class="col-lg-12">
             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div id="campaign-map-detail"></div>
+                    <div class="row" style="padding-left: 20px;">
+                        <div class="col-lg-3 map-side-panel">
+                            <div class="map-side-list row">
+                                <div class="col-lg-10">
+                                    <span class="pull-left map-side-list-name">
+                                        Users engaged
+                                    </span>
+                                    <span class="pull-right map-side-list-number">
+                                        <span id="contributors"><span class="grey-italic">Loading data...</span></span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 map-side-list-action">
+                                    <div class="side-action">
+                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="map-side-list row">
+                                <div class="col-lg-10">
+                                    <span class="pull-left map-side-list-name">
+                                        Features collected
+                                    </span>
+                                    <span class="pull-right map-side-list-number">
+                                        <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 map-side-list-action">
+                                    <div class="side-action">
+                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div id="campaign-map-detail"></div>
+                        </div>
+                    </div>
 
                     <div class="insight-function-panel">
                         <ul class="nav nav-tabs insight-tabs" style="display: none;">
@@ -138,7 +170,6 @@
             <div class="col-lg-12">
                 <div class="panel panel-default detail-panel-insights">
                     <div class="panel-heading">
-                        Test
                     </div>
                     <div class="panel-body">
                     </div>
@@ -158,8 +189,11 @@
         var uuid = '{{ uuid }}';
         var managers = {{ campaign_managers|safe }};
         var selected_functions = {{ selected_functions | safe }};
-        var feature_collected = [];
-        var feature_collected_count = 0;
+        var total_features_collected = 0;
+
+        var feature_type_collected = [];
+        var feature_type_collected_count = 0;
+
         var campaign_types = {{ types | safe}};
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
