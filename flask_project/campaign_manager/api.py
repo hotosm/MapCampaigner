@@ -155,7 +155,7 @@ class CampaignContributors(Resource):
         mapper.run()
         data = mapper.get_function_data()
 
-        for entry in data:
+        for entry in data['user_list']:
             if entry['name'] not in user:
                 user.append(entry['name'])
 
