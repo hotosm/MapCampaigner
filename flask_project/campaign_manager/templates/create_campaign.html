@@ -40,15 +40,15 @@
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
                 </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="5">
+                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="5">
                     <div><i class="fa fa-star-half-o"></i><span>&nbsp;&nbsp;Quality Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="6">
+                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="6">
                     <div><i class="fa fa-exclamation-triangle"></i><span>&nbsp;&nbsp;Error Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav hide" data-step="7">
+                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="7">
                     <div><i class="fa fa-link"></i><span>&nbsp;&nbsp;Engagement Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
@@ -126,7 +126,8 @@
                                 </div>
                                 <div class="form-body col-lg-7">
                                     <div class="form-group">
-                                        <label>Tags</label>
+                                        <label>Tags</label><br/>
+                                        <span id="warning-tag" style="color: #ac3232"></span>
                                     </div>
                                 </div>
                             </div>
@@ -318,7 +319,7 @@
                                     </div>
                                     <div class="col-lg-4">
                                         {% if loop.index < categories|length %}
-                                            <button type="button" class="btn btn-next pull-right cc-functions hide">Next <span class="pull-right"> > </span></button>
+                                            <button type="button" class="btn btn-next pull-right cc-functions">Next <span class="pull-right"> > </span></button>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -354,14 +355,14 @@
         var end_date = '{{ form.end_date.data }}';
         var remaining_days = 0;
 
-        if(start_date==='None' || end_date==='None') {
+        if (start_date === 'None' || end_date === 'None') {
             remaining_days = 0;
         } else {
             end_date = moment(end_date.split(' ')[0], 'YYYY-MM-DD', true);
             remaining_days = end_date.diff(moment(), 'days') + 1;
         }
 
-        if(remaining_days > 0) {
+        if (remaining_days > 0) {
             $('#campaign-active').show();
         } else {
             $('#campaign-inactive').show();
@@ -423,19 +424,19 @@
         function changeDashboard() {
             var setting = $('#dashboard_settings option:selected').text();
             if (setting.toLowerCase() == 'advanced') {
-                $('.cc-functions').addClass('show');
-                $('.cc-functions').removeClass('hide');
+                $('.cc-functions').show();
+                $('.remove-tags').show();
+                $('.btn-add-tag').show();
             }
             else {
-                $('.cc-functions').removeClass('show');
-                $('.cc-functions').addClass('hide');
+                $('.cc-functions').hide();
+                $('.remove-tags').hide();
+                $('.btn-add-tag').hide();
             }
         }
 
         $(function () {
-            {% if form.dashboard_settings.data %}
-                changeDashboard();
-            {% endif %}
+            changeDashboard();
         });
 
         var remote_projects_list = [];
@@ -579,9 +580,9 @@
         //------------------ STEPS ------------------//
 
         // If in edit mode, activate all steps
-        if(!isInCreateMode) {
+        if (!isInCreateMode) {
             var totalSteps = $('.cc-nav-steps').children('.cc-nav').length;
-            for(var i=1; i<totalSteps+1; i++) {
+            for (var i = 1; i < totalSteps + 1; i++) {
                 activateStep(i);
             }
         }
@@ -662,13 +663,12 @@
                 $('.error-managers').show();
             }
 
-            var _addedTypes = addedTypes.filter(function(v){return v!==''});
-            if (_addedTypes.length < 1) {
+            var types_value = getTypesSelectionValue();
+            $("#types").val(JSON.stringify(types_value));
+            if (jQuery.isEmptyObject(types_value)) {
                 valid = false;
                 $('.types-required-message').show();
             }
-
-            $("#types").val(JSON.stringify(getTypesSelectionValue()));
 
             return valid;
         }
@@ -693,30 +693,34 @@
         }
 
         function activateStep(step) {
-            var currentActiveStep = $(".cc-nav-steps").find('[data-step="'+step+'"]');
+            var currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
             // change icons
             currentActiveStep.find('.cc-nav-icon').addClass('activated');
             currentActiveStep.addClass('clickable-menu');
-            currentActiveStep.click(function() {
+            currentActiveStep.click(function () {
                 var nextStep = $(this).data('step');
                 var currentStep = $('.cc-nav-steps').find('.active').data('step');
-                showStep(currentStep, nextStep, false);
+                var isNextStep = checkSteps(currentStep);
+                var nameDateValid = checkFormHeader();
+                if (isNextStep && nameDateValid) {
+                    showStep(currentStep, nextStep, false);
+                }
             })
         }
 
         function showStep(previousStep, nextStep, activatePrevStep) {
-            if(previousStep === nextStep) {
+            if (previousStep === nextStep) {
                 return false;
             }
             var $prevFieldset = $('#fieldset-' + previousStep);
             var $nextFieldset = $('#fieldset-' + nextStep);
 
-            var $nextNavStep = $(".cc-nav-steps").find('[data-step="'+nextStep+'"]');
-            var $prevNavStep = $(".cc-nav-steps").find('[data-step="'+previousStep+'"]');
+            var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
+            var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
             $prevFieldset.fadeOut(400, function () {
                 $prevNavStep.removeClass('active');
-                if(activatePrevStep) {
+                if (activatePrevStep) {
                     activateStep(previousStep);
                 }
                 $nextNavStep.addClass('active');
@@ -761,7 +765,7 @@
 
             if (isNextStep && nameDateValid) {
                 $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-                showStep(currentFieldsetNumber, currentFieldsetNumber+1, true);
+                showStep(currentFieldsetNumber, currentFieldsetNumber + 1, true);
             }
         }
 
@@ -775,7 +779,7 @@
             if (currentStep === 1) return;
 
             $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-            showStep(currentFieldsetNumber, currentFieldsetNumber-1, false);
+            showStep(currentFieldsetNumber, currentFieldsetNumber - 1, false);
         }
 
         function checkFormHeader() {
