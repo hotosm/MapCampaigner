@@ -312,6 +312,7 @@
 
             var remaining_days = end_date.diff(moment(), 'days') + 1;
 
+
             var progress = 0;
 
             if (remaining_days <= 0) {
@@ -320,7 +321,7 @@
                 $('.detail-campaign-status').addClass('finished');
                 $('.detail-campaign-status label').html('Finished');
             } else {
-                progress = remaining_days / campaign_range * 100;
+                progress = 100 - (remaining_days / campaign_range * 100);
             }
 
             $('#campaign-progress').css({
