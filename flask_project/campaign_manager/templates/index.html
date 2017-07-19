@@ -8,7 +8,7 @@
                         <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-home btn-lg btn-block">Participate</button>
+                        <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>
                     </div>
                 </div>
             </div>
@@ -234,6 +234,14 @@
             }
         });
 
+        function participate() {
+            var participateUrl = "/campaign_manager/participate"
+            if(userCoordinate) {
+                participateUrl += "?coordinate="+userCoordinate;
+            }
+            window.location.href = participateUrl;
+        }
+
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
@@ -312,6 +320,7 @@
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
                 var url = "/campaign_manager/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
                 getCampaigns(url);
+                userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
             }
 

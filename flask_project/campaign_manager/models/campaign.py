@@ -16,7 +16,10 @@ from app_config import Config
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
 from campaign_manager.git_utilities import save_with_git
-from campaign_manager.utilities import get_survey_json, module_path
+from campaign_manager.utilities import (
+    get_survey_json,
+    parse_json_string
+)
 
 
 class Campaign(JsonModel):
@@ -85,9 +88,9 @@ class Campaign(JsonModel):
         """
         for key, value in data.items():
             setattr(self, key, value)
-        self.geometry = json.loads(self.geometry)
-        self.types = json.loads(self.types)
-        self.selected_functions = json.loads(self.selected_functions)
+        self.geometry = parse_json_string(self.geometry)
+        self.types = parse_json_string(self.types.replace('\'', '"'))
+        self.selected_functions = parse_json_string(self.selected_functions)
         self.save(uploader)
 
     def get_selected_functions_in_string(self):
@@ -126,7 +129,7 @@ class Campaign(JsonModel):
             try:
                 _file = open(self.json_path, 'r')
                 content = _file.read()
-                content_json = json.loads(content)
+                content_json = parse_json_string(content)
                 Campaign.validate(content_json, self.uuid)
                 self._content_json = content_json
                 attributes = self.get_attributes()
@@ -306,9 +309,10 @@ class Campaign(JsonModel):
 
         uuid = data['uuid']
         Campaign.validate(data, uuid)
-        data['geometry'] = json.loads(data['geometry'])
-        data['types'] = json.loads(data['types'])
-        data['selected_functions'] = json.loads(data['selected_functions'])
+        data['geometry'] = parse_json_string(data['geometry'])
+        data['types'] = parse_json_string(data['types'])
+        data['selected_functions'] = parse_json_string(
+                data['selected_functions'])
 
         json_str = Campaign.serialize(data)
         json_path = os.path.join(

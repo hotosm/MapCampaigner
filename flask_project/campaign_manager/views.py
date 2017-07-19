@@ -21,6 +21,7 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
+from campaign_manager.api import CampaignNearestList, CampaignList
 
 from reporter import LOGGER
 from reporter.static_files import static_file
@@ -341,19 +342,8 @@ def get_campaign(uuid):
         context['oauth_secret'] = OAUTH_SECRET
         context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign.geometry)
-        context['campaigns'] = Campaign.all()
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
-
-        # Calculate remaining day
-        try:
-            current = datetime.now()
-            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
-            remaining = end_date - current
-            context['remaining_days'] = remaining.days if \
-                remaining.days > 0 else 0
-        except TypeError:
-            context['remaining_days'] = '-'
 
         # Start date
         try:
@@ -366,7 +356,7 @@ def get_campaign(uuid):
 
         # End date
         try:
-            start_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
             context['end_date_date'] = end_date.strftime('%d %b')
             context['end_date_year'] = end_date.strftime('%Y')
         except TypeError:
@@ -383,6 +373,66 @@ def get_campaign(uuid):
         return render_template(
             'campaign_detail.html', **context)
     except Campaign.DoesNotExist:
+        abort(404)
+
+
+@campaign_manager.route('/participate')
+def participate():
+    """Action from participate button, return nearest/recent/active campaign.
+    """
+    campaign_to_participate = None
+    user_coordinate = request.args.get('coordinate', None)
+    campaign_status = 'active'
+
+    if user_coordinate:
+        # Get nearest campaign
+        campaigns = CampaignNearestList().\
+            get_nearest_campaigns(user_coordinate, campaign_status)
+    else:
+        campaigns = CampaignList().get_all_campaign(campaign_status)
+
+    # Get most recent
+    for campaign in campaigns:
+        if not campaign_to_participate:
+            campaign_to_participate = campaign
+            continue
+
+        campaign_edited_date = datetime.strptime(
+            campaign_to_participate.edited_at,
+            '%a %b %d %H:%M:%S %Y'
+        )
+
+        campaign_to_compare = datetime.strptime(
+            campaign.edited_at,
+            '%a %b %d %H:%M:%S %Y'
+        )
+
+        if campaign_to_compare > campaign_edited_date:
+            campaign_to_participate = campaign
+
+    if campaign_to_participate:
+        context = campaign_to_participate.to_dict()
+        context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
+        context['oauth_secret'] = OAUTH_SECRET
+        context['google_api_key'] = GOOGLE_API_KEY
+        context['geometry'] = json.dumps(campaign_to_participate.geometry)
+        context['selected_functions'] = \
+            campaign_to_participate.get_selected_functions_in_string()
+
+        # Participant
+        context['participants'] = len(
+            campaign_to_participate.campaign_managers
+        )
+
+        # Map attribution
+        if campaign_to_participate.map_type != '':
+            context['attribution'] = find_attribution(
+                    campaign_to_participate.map_type
+            )
+
+        return render_template(
+                'campaign_detail.html', **context)
+    else:
         abort(404)
 
 
