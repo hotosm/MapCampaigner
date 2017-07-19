@@ -6,6 +6,10 @@ try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
 except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
+try:
+    DATA_FOLDER = os.environ['DATA_FOLDER']
+except KeyError:
+    DATA_FOLDER = '/home/web/field-campaigner-data'
 
 
 class Config(object):
@@ -22,7 +26,7 @@ class Config(object):
     OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
 
     # CAMPAIGN DATA
-    campaigner_data_folder = '/home/web/field-campaigner-data'
+    campaigner_data_folder = DATA_FOLDER
 
 
 class ProductionConfig(Config):
