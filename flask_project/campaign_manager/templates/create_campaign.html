@@ -670,6 +670,7 @@
 
             var types_value = getTypesSelectionValue();
             $("#types").val(JSON.stringify(types_value));
+            rerender_quality_function();
             if (jQuery.isEmptyObject(types_value)) {
                 valid = false;
                 $('.types-required-message').show();
@@ -713,12 +714,6 @@
             })
         }
 
-        function preprocessStep(currentStep) {
-            if (currentStep == 5) {
-                rerender_quality_function();
-            }
-        }
-
         function showStep(previousStep, nextStep, activatePrevStep) {
             if (previousStep === nextStep) {
                 return false;
@@ -729,7 +724,6 @@
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
-            preprocessStep(nextStep);
             $prevFieldset.fadeOut(400, function () {
                 $prevNavStep.removeClass('active');
                 if (activatePrevStep) {

@@ -4,6 +4,10 @@ var typesOptions = '';
 
 function rerender_quality_function() {
     // Also render insights function
+    var function_form_content = $('#quality-function .function-form').html().trim();
+    if (function_form_content.length > 0) {
+        return;
+    }
     types_value = JSON.parse($("#types").val());
     $('#quality-function .function-form').html('');
     var index = 0;
