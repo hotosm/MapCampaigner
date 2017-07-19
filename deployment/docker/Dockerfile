@@ -24,5 +24,9 @@ RUN pip install -r requirements.txt
 # Open port 8080 so linked containers can see them
 EXPOSE 8080
 
+RUN apt-get -y install openssh-client
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
 WORKDIR /home/web/osm_reporter
 CMD ["python", "server.py"]

@@ -5,10 +5,12 @@ import json
 import os
 import threading
 from utilities import absolute_path
+import tempfile
 import time
 import yaml
 
 from reporter.osm import fetch_osm
+from app_config import Config
 from reporter.exceptions import OverpassBadRequestException
 
 
@@ -27,12 +29,13 @@ def module_path(*args):
 def temporary_folder():
     """Get an absolute path for temp folder which
     is relative to the root."""
-
-    return os.path.join(
-        module_path(),
-        'campaigns_data',
-        'temp'
-    )
+    temporary_folder = os.path.join(
+        tempfile.gettempdir(), 'campaign-data')
+    try:
+        os.mkdir(temporary_folder)
+    except OSError as e:
+        pass
+    return temporary_folder
 
 
 def get_osm_user():
@@ -52,22 +55,22 @@ def get_types():
     :rtype: dict
     """
     survey_folder = os.path.join(
-        module_path(),
-        'campaigns_data',
+        Config.campaigner_data_folder,
         'surveys'
     )
     surveys = {}
-    for filename in os.listdir(survey_folder):
-        if '.gitkeep' in filename:
-            continue
+    if os.path.exists(survey_folder):
+        for filename in os.listdir(survey_folder):
+            if '.gitkeep' in filename:
+                continue
 
-        # check the json for each file
-        survey_path = os.path.join(
-            survey_folder,
-            filename
-        )
-        survey = get_survey_json(survey_path)
-        surveys[filename] = survey
+            # check the json for each file
+            survey_path = os.path.join(
+                survey_folder,
+                filename
+            )
+            survey = get_survey_json(survey_path)
+            surveys[filename] = survey
     return surveys
 
 

@@ -1,11 +1,3 @@
-db:
-  image: kartoza/postgis:9.4-2.1
-  hostname: db
-  container_name: osmreporter_db
-  environment:
-    - USERNAME=docker
-    - PASS=docker
-
 web:
   #image: kartoza/osm-reporter
   build: docker
@@ -17,12 +9,12 @@ web:
     - PGHOST=db
     - APP_SETTINGS=app_config.ProductionConfig
     - DATABASE_URL=postgresql://db/gis
+    - DATA_FOLDER=/home/web/field-campaigner-data
   ports:
     - "64000:8080"
-  links:
-    - db:db
   volumes:
     - ../flask_project:/home/web/osm_reporter
+    - ${CAMPAIGN_DATA}:/home/web/field-campaigner-data
   restart: on-failure:5
   user: root
 
@@ -37,12 +29,12 @@ dev:
     - PGHOST=db
     - APP_SETTINGS=app_config.DevelopmentConfig
     - DATABASE_URL=postgresql://db/gis
+    - DATA_FOLDER=/home/web/field-campaigner-data
   ports:
     - "64002:5000"
-  links:
-    - db:db
   volumes:
     - ../flask_project:/home/web/osm_reporter
+    - ${CAMPAIGN_DATA}:/home/web/field-campaigner-data
 
 test:
   build: docker
@@ -55,9 +47,8 @@ test:
     - PGHOST=db
     - APP_SETTINGS=app_config.DevelopmentConfig
     - DATABASE_URL=postgresql://db/gis
+    - DATA_FOLDER=/home/web/field-campaigner-data
   ports:
     - "64001:8080"
-  links:
-    - db:db
   volumes:
     - ../flask_project:/home/web/osm_reporter

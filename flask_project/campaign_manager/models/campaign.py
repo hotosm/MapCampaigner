@@ -8,13 +8,16 @@ import json
 import os
 import pygeoj
 import time
-from shapely import geometry as shapely_geometry
-import campaign_manager.insights_functions as insights_functions
+
 from flask import render_template
+from shapely import geometry as shapely_geometry
+
+from app_config import Config
+import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
+from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
     get_survey_json,
-    module_path,
     parse_json_string
 )
 
@@ -65,6 +68,14 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+        # create commit as git
+        try:
+            save_with_git(
+                'Update campaign - %s' % self.uuid
+            )
+        except Exception as e:
+            print(e)
 
     def update_data(self, data, uploader):
         """ Update data with new dict.
@@ -161,7 +172,7 @@ class Campaign(JsonModel):
                 required_attributes=function['attributes'],
                 additional_data=additional_data
             )
-        except AttributeError as e:
+        except (AttributeError, KeyError) as e:
             return campaing_ui
 
         # render UI
@@ -234,8 +245,7 @@ class Campaign(JsonModel):
             return {}
         # getting features and required attributes from types
         survey_folder = os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'surveys'
         )
         survey_file = os.path.join(
@@ -253,8 +263,7 @@ class Campaign(JsonModel):
         :rtype: str
         """
         return os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'coverage',
             self.uuid
         )
@@ -262,7 +271,7 @@ class Campaign(JsonModel):
     @staticmethod
     def get_json_folder():
         return os.path.join(
-            module_path(), 'campaigns_data', 'campaign')
+            Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
     def serialize(data):
@@ -312,6 +321,14 @@ class Campaign(JsonModel):
         _file = open(json_path, 'w+')
         _file.write(json_str)
         _file.close()
+
+        # create commit as git
+        try:
+            save_with_git(
+                'Create campaign - %s' % data['uuid']
+            )
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def all(campaign_status=None, **kwargs):

@@ -18,6 +18,16 @@ This project is based on the original work done in the osm-reporter. The project
 
 The OSM user identity is used in this project. All actions are performed as such. A list of authorized admin users is maintained in the settings file. 
 
+# How to build field-campaigner
+
+Go to /osm-reporter/deployment
+```
+make build
+make run
+```
+
+For testing, please for in the .modules file, and edit .modules file to your repo.
+
 # User Interface
 
 ## Starting a Campaign

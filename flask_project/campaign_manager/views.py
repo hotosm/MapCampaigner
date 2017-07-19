@@ -1,33 +1,30 @@
-import json
 import inspect
+import json
 import os
 import shutil
 from datetime import datetime
+from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
+
 from bs4 import BeautifulSoup
 from flask import request, render_template, Response, abort
 
 from app_config import Config
 from campaign_manager import campaign_manager
-from campaign_manager.git_utilities import (
-    save_with_git
-)
-from reporter import LOGGER
-from reporter.static_files import static_file
 from campaign_manager.utilities import (
-    module_path,
-    temporary_folder,
     get_types
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
+from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 
-from urllib import request as urllibrequest
+from reporter import LOGGER
+from reporter.static_files import static_file
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -118,7 +115,7 @@ def check_geojson_is_polygon(geojson):
     """Checking geojson is polygon"""
     types = ["Polygon", "MultiPolygon"]
     for feature in geojson['features']:
-        if feature['geometry']['type'] not in types:
+        if feature['geometry'] and feature['geometry']['type'] not in types:
             return False
     return True
 
@@ -130,7 +127,7 @@ def campaign_boundary_upload_chunk_success(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
-    # validate coverage
+    # validate boundary
     try:
         # folder for this campaign
         folder = os.path.join(
@@ -281,8 +278,7 @@ def campaign_coverage_upload_chunk(uuid):
         filenames = os.path.splitext(filename)
         # folder for this campaign
         filename = os.path.join(
-            module_path(),
-            'campaigns_data',
+            Config.campaigner_data_folder,
             'coverage',
             uuid
         )
@@ -551,6 +547,9 @@ def create_campaign():
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
+    if not os.path.exists(Campaign.get_json_folder()):
+        return Response('DATA_SOURCE not found or not valid.')
+
     form = CampaignForm(request.form)
     if form.validate_on_submit():
         data = form.data
@@ -560,14 +559,6 @@ def create_campaign():
 
         data['uuid'] = uuid.uuid4().hex
         Campaign.create(data, form.uploader.data)
-
-        # create commit as git
-        try:
-            save_with_git(
-                'Create campaign - %s' % data['uuid']
-            )
-        except Exception as e:
-            print(e)
 
         return redirect(
             url_for(
@@ -635,14 +626,6 @@ def edit_campaign(uuid):
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
-
-                # create commit as git
-                try:
-                    save_with_git(
-                        'Update campaign - %s' % data['uuid']
-                    )
-                except Exception as e:
-                    print(e)
 
                 return redirect(
                     url_for('campaign_manager.get_campaign',
