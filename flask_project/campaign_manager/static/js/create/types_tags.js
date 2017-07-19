@@ -1,6 +1,43 @@
 var addedTypes = [];
+var types_value = {};
 var typesOptions = '';
 
+function rerender_quality_function() {
+    // Also render insights function
+    var function_form_content = $('#quality-function .function-form').html().trim();
+    if (function_form_content.length > 0) {
+        return;
+    }
+    types_value = JSON.parse($("#types").val());
+    $('#quality-function .function-form').html('');
+    var index = 0;
+    $.each(types_value, function (key, value) {
+        var type = value['type'];
+        var survey = types[type];
+        var feature = survey['feature'];
+        var tags = survey['tags'];
+        if (tags[feature]) {
+            feature += '=' + tags[feature]
+        }
+        var attibutes_on_insights = 'all';
+        if (value['tags'].length !== 0) {
+            attibutes_on_insights = value['tags'].join()
+        }
+        var default_insights = types[type]['insights'];
+        $.each(default_insights, function (insight_index, insight) {
+            $('#quality-function-add').click();
+            var row = $('#quality-function .function-form').find('.function-form-row')[index];
+            $(row).find('.function-selection').val(insight);
+            $(row).find('.function-selection').trigger('change');
+            $(row).find('.function-feature').val(feature);
+            $(row).find('.function-attributes').val(attibutes_on_insights);
+
+            // select type
+            $(row).find('.function-type').val(type);
+            index += 1;
+        });
+    });
+}
 function getTypesSelectionValue() {
     // GET SELECTED TYPES
     var types_value = {};
@@ -31,34 +68,6 @@ function getTypesSelectionValue() {
                 tags: tags
             }
         }
-    });
-
-    // Also render insights function
-    $('#quality-function .function-form').html('');
-    var index = 0;
-    $.each(types_value, function (key, value) {
-        var type = value['type'];
-        var survey = types[type];
-        var feature = survey['feature'];
-        var tags = survey['tags'];
-        if (tags[feature]) {
-            feature += '=' + tags[feature]
-        }
-        var attibutes_on_insights = 'all';
-        if (value['tags'].length !== 0) {
-            attibutes_on_insights = value['tags'].join()
-        }
-        var default_insights = types[type]['insights'];
-        $.each(default_insights, function (insight_index, insight) {
-            $('#quality-function-add').click();
-            var row = $('#quality-function .function-form').find('.function-form-row')[index];
-            $(row).find('.function-selection').val(insight);
-            $(row).find('.function-selection').trigger('change');
-            $(row).find('.function-selection').data('type', type);
-            $(row).find('.function-feature').val(feature);
-            $(row).find('.function-attributes').val(attibutes_on_insights);
-            index += 1;
-        });
     });
     return types_value
 }
