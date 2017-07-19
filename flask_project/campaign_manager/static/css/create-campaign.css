@@ -103,6 +103,11 @@
     margin-right: 15px;
 }
 
+.panel-header-info.panel-section {
+    margin-left: 25px;
+    padding-top: 10px;
+}
+
 .dashboard-settings, .campaign-name-header, .campaign-status, .form-group > label {
     font-weight: 700;
     font-size: 12pt;

@@ -35,7 +35,7 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div style="margin-top: 10px"><span class="panel-header-info" style="margin-left: 25px;">FUNCTIONS</span></div>
+                <div class="panel-header-info panel-section">FUNCTIONS</div>
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
@@ -53,10 +53,19 @@
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
             </div>
-            <div class="panel panel-default panel-header" style="border-top: 1px solid #ddd !important;">
-                <span class="panel-header-info">DASHBOARD SETTINGS</span><br/>
-                <div class="dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
+            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
+                <div class="panel-header-info panel-section">DASHBOARD SETTINGS</div>
+                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
                     {{ form.dashboard_settings(form="campaign-form") }}
+                </div>
+            </div>
+            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
+                <div class="panel-header-info panel-section">SUBMIT FORM TO</div>
+                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings">
+                    <div class="btn-group">
+                        <button class="btn btn-danger btn-add-tag" onclick="openOtherDataCollectonForm(this)">Maps.me</button>
+                        <button class="btn btn-danger btn-add-tag" onclick="openOtherDataCollectonForm(this)">OpenMapKit</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -409,7 +418,38 @@
     </script>
 
     <script type="text/javascript">
+        var isMobile = {
+            Windows: function () {
+                return /IEMobile/i.test(navigator.userAgent);
+            },
+            Android: function () {
+                return /Android/i.test(navigator.userAgent);
+            },
+            BlackBerry: function () {
+                return /BlackBerry/i.test(navigator.userAgent);
+            },
+            iOS: function () {
+                return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
+            }
+        };
 
+        var formLink = {
+            "OpenMapKit": {
+                Windows: '',
+                Android: 'https://play.google.com/store/apps/details?id=org.redcross.openmapkit',
+                BlackBerry: '',
+                iOS: ''
+            },
+            "Maps.me": {
+                Windows: '',
+                Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
+                BlackBerry: '',
+                iOS: ''
+            }
+        };
         typesOptions = '{{ form.types_options }}';
         var types = {{ types|safe }};
 
@@ -975,6 +1015,18 @@
             }
         });
 
+        function openOtherDataCollectonForm(element) {
+            var app = $(element).html();
+            if (isMobile.Android()) {
+                window.open(formLink[app]['Android'], '_blank');
+            } else if (isMobile.Windows()) {
+                window.open(formLink[app]['Windows'], '_blank');
+            } else if (isMobile.iOS()) {
+                window.open(formLink[app]['iOS'], '_blank');
+            } else if (isMobile.BlackBerry()) {
+                window.open(formLink[app]['BlackBerry'], '_blank');
+            }
+        }
 
     </script>
 
