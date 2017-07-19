@@ -147,24 +147,17 @@ class CampaignContributors(Resource):
         """Get total contributors."""
 
         campaign = self.get_campaign(uuid)
-        features = [
-            'evacuation-centers',
-            'buildings',
-            'flood-prone',
-            'roads',
-        ]
 
         user = []
 
-        if feature in features:
-            mapper = MapperEngagement(
-                campaign=campaign, feature=feature)
-            mapper.run()
-            data = mapper.get_function_data()
+        mapper = MapperEngagement(
+            campaign=campaign, feature=feature)
+        mapper.run()
+        data = mapper.get_function_data()
 
-            for entry in data:
-                if entry['name'] not in user:
-                    user.append(entry['name'])
+        for entry in data:
+            if entry['name'] not in user:
+                user.append(entry['name'])
 
         contributors_total = len(user)
 

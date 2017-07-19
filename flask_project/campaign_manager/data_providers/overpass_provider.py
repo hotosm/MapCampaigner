@@ -41,7 +41,15 @@ class OverpassProvider(AbstractDataProvider):
         'out {print_mode};'
     )
 
-    def get_data(self, polygon, feature_key, feature_values=None):
+    def get_data(
+            self,
+            polygon,
+            feature_key,
+            overpass_verbosity='body',
+            feature_values=None,
+            date_from=None,
+            date_to=None,
+            returns_json=True):
         """Get osm data.
 
         :param polygon: list of array describing polygon area e.g.
@@ -53,8 +61,21 @@ class OverpassProvider(AbstractDataProvider):
             buildings, building-points, roads, potential-idp, boundary-[1,11]
         :type feature_key: str
 
+        :param overpass_verbosity: Output verbosity in Overpass.
+            It can be body, skeleton, ids_only or meta.
+        :type overpass_verbosity: str
+
         :param feature_values: The value of features as query
         :type feature_values: list
+
+        :param date_from: First date for date range.
+        :type date_from: str
+
+        :param returns_json: Returns as an object from json
+        :type returns_json: bool
+
+        :param date_to: Second date for date range.
+        :type date_to: str
 
         :raises: OverpassTimeoutException
 
@@ -62,8 +83,6 @@ class OverpassProvider(AbstractDataProvider):
         :rtype: dict
         """
         server_url = 'http://overpass-api.de/api/interpreter?data='
-
-        overpass_verbosity = 'body'
 
         try:
             polygon_string = split_polygon(polygon)
@@ -86,25 +105,50 @@ class OverpassProvider(AbstractDataProvider):
             }
         query = query.format(**parameters)
 
+        if date_from and date_to:
+            try:
+                datetime_from = datetime.datetime.utcfromtimestamp(
+                        float(date_from) / 1000.)
+                datetime_to = datetime.datetime.utcfromtimestamp(
+                        float(date_to) / 1000.)
+                date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+                diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
+                        date_from=datetime_from.strftime(date_format),
+                        date_to=datetime_to.strftime(date_format)
+                )
+                query = diff_query + query
+            except ValueError as e:
+                pass
+
         # Query to returns json string
-        query = '[out:json];' + query
+        if returns_json:
+            query = '[out:json];' + query
 
         encoded_query = quote(query)
         url_path = '%s%s' % (server_url, encoded_query)
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
         file_path = os.path.join(config.CACHE_DIR, safe_name)
         osm_data, osm_doc_time, updating = load_osm_document_cached(
-            file_path, url_path)
+            file_path, url_path, returns_json)
 
-        regex = 'runtime error:'
-        if 'remark' in osm_data:
-            if re.search(regex, osm_data['remark']):
-                raise OverpassTimeoutException
+        if returns_json:
+            regex = 'runtime error:'
+            if 'remark' in osm_data:
+                if re.search(regex, osm_data['remark']):
+                    raise OverpassTimeoutException
 
-        return {
-            'features': osm_data['elements'],
-            'last_update': datetime.datetime.fromtimestamp(
-                osm_doc_time).strftime(
-                '%Y-%m-%d %H:%M:%S'),
-            'updating_status': updating
-        }
+            return {
+                'features': osm_data['elements'],
+                'last_update': datetime.datetime.fromtimestamp(
+                    osm_doc_time).strftime(
+                    '%Y-%m-%d %H:%M:%S'),
+                'updating_status': updating
+            }
+        else:
+            return {
+                'file': osm_data,
+                'last_update': datetime.datetime.fromtimestamp(
+                        osm_doc_time).strftime(
+                        '%Y-%m-%d %H:%M:%S'),
+                'updating_status': updating
+            }

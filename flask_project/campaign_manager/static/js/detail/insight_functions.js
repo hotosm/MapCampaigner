@@ -70,7 +70,7 @@ function calculateCampaignProgress() {
         $campaignStatus.addClass('finished');
         $campaignStatusLabel.html('Finished');
     } else {
-        progress = remaining_days / campaign_range * 100;
+        progress = 100 - (remaining_days / campaign_range * 100);
     }
 
     $('#campaign-progress').css({
