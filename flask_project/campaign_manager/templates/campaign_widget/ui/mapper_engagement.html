@@ -1,10 +1,10 @@
 <div class="row" style="padding: 20px;">
-    {% if data.user_list %}
+    {% if data['user_list'] %}
     <div class="col-lg-5">
         <canvas id="average-engagement" style="width: 100%; "></canvas>
     </div>
     <div class="col-lg-7 overview-container">
-        {% for entry in data.user_list %}
+        {% for entry in data['user_list'] %}
             <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
             Total Ways <span class="label label-primary">{{ entry.ways }}</span>
             <hr/>
@@ -37,7 +37,7 @@
 
 <script type="text/javascript">
     $(function () {
-        {% if data.user_list %}
+        {% if data['user_list'] %}
             $.fn.dataTable.moment( 'DD-MM-YYYY' );
 
             var chartData = {
@@ -49,7 +49,7 @@
                 }]
             };
 
-            {% for entry in data.user_list %}
+            {% for entry in data['user_list'] %}
                 chartData['labels'].push("{{ entry.name }}");
                 chartData['datasets'][0]['data'].push({{ entry.ways }});
                 chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
@@ -63,7 +63,7 @@
             });
 
             // User timeline charts
-            {% for entry in data.user_list %}
+            {% for entry in data['user_list'] %}
                 var d{{ loop.index }} = {{ entry.timeline|safe }};
                 var chartData{{ loop.index }} = {
                     labels: [],
