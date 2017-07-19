@@ -13,6 +13,8 @@
 
 {% block header_content %}
 
+    <script src="http://connect.facebook.net/en_US/all.js" async=""></script>
+
     <!-- Custom CSS -->
     <link href="/campaign_manager/static/css/campaign-detail.css" rel="stylesheet">
 
@@ -77,10 +79,6 @@
                             </span>
                         </p>
                         <p>
-                            <span class="grey-italic">Total Contributors :</span>
-                            <span id="contributors"><span class="grey-italic">Loading data...</span></span>
-                        </p>
-                        <p>
                             <span class="grey-italic">Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
                                 <span id="map-default" style="display: none">
@@ -96,22 +94,13 @@
                         </p>
                     </div>
                     <div class="detail-button-wrapper">
-                        <button class="btn btn-info btn-share pull-left" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
-                        <div id="fb-root"></div>
-                        <script>(function(d, s, id) {
-                            var js, fjs = d.getElementsByTagName(s)[0];
-                            if (d.getElementById(id)) return;
-                            js = d.createElement(s); js.id = id;
-                            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-                            fjs.parentNode.insertBefore(js, fjs);
-                          }(document, 'script', 'facebook-jssdk'));</script>
-                        <div class="fb-share-button pull-left"
-                            data-href="{{ request.url }}"
-                            data-layout="button_count">
+                        <div class="btn-group btn-share-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
+                            <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
+                            <button type="button" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                            <button type="button" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                         </div>
-                        <button class="btn btn-info btn-manage pull-right" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
-                        <button class="btn btn-info btn-open-app" onclick="openOtherDataCollectonForm(this)">Maps.me</button>
-                        <button class="btn btn-info btn-open-app" onclick="openOtherDataCollectonForm(this)">OpenMapKit</button>
+
                     </div>
                 </div>
             </div>
@@ -122,7 +111,43 @@
         <div class="col-lg-12">
             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div id="campaign-map-detail"></div>
+                    <div class="row side-panel-wrapper">
+                        <div class="col-lg-3 map-side-panel">
+                            <div class="map-side-list row">
+                                <div class="col-lg-10">
+                                    <span class="pull-left map-side-list-name">
+                                        Users engaged
+                                    </span>
+                                    <span class="pull-right map-side-list-number">
+                                        <span id="contributors"><span class="grey-italic">Loading data...</span></span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 map-side-list-action">
+                                    <div class="side-action">
+                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="map-side-list row">
+                                <div class="col-lg-10">
+                                    <span class="pull-left map-side-list-name">
+                                        Features collected
+                                    </span>
+                                    <span class="pull-right map-side-list-number">
+                                        <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 map-side-list-action">
+                                    <div class="side-action">
+                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div id="campaign-map-detail"></div>
+                        </div>
+                    </div>
 
                     <div class="insight-function-panel">
                         <ul class="nav nav-tabs insight-tabs" style="display: none;">
@@ -135,18 +160,23 @@
         </div>
     </div>
 
+    <div class="advance-insights-wrapper"></div>
+
     <div class="advance-insights">
         <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default detail-panel-insights">
                     <div class="panel-heading">
-                        Test
                     </div>
                     <div class="panel-body">
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="button-manage">
+        <button class="btn btn-info btn-manage" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
     </div>
 
 {% endblock %}
@@ -160,8 +190,11 @@
         var uuid = '{{ uuid }}';
         var managers = {{ campaign_managers|safe }};
         var selected_functions = {{ selected_functions | safe }};
-        var feature_collected = [];
-        var feature_collected_count = 0;
+        var total_features_collected = 0;
+
+        var feature_type_collected = [];
+        var feature_type_collected_count = 0;
+
         var campaign_types = {{ types | safe}};
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
@@ -285,8 +318,10 @@
             $.ajax({
                 url: url,
                 success: function (response) {
-                    total_contributors += parseInt(response['contributors_total']);
-                    $('#contributors').html(total_contributors);
+                    if(typeof response['contributors_total'] !== 'undefined') {
+                        total_contributors += parseInt(response['contributors_total']);
+                        $('#contributors').html(total_contributors);
+                    }
                 }
             });
         }
@@ -416,6 +451,16 @@
                     host + '/campaign_manager/campaign/' + uuid;
         }
 
+        function shareFacebook() {
+            var url = 'https://www.facebook.com/sharer/sharer.php?';
+            url += 'u='+document.URL;
+            url += '&amp;src=sdkpreparse&';
+            url += '&quote=Check+out+this+campaign+!';
+
+            window.open(url,'popup','width=600,height=500');
+            return false;
+        }
+
         // Apps
         var isMobile = {
             Android: function () {
@@ -444,12 +489,18 @@
             }
         };
 
-        function openOtherDataCollectonForm(element) {
-            var app = $(element).html();
+        function openOtherDataCollectonForm(element, app) {
+            var appUrl = '';
             if (isMobile.Android()) {
-                window.open(formLink[app]['Android'], '_blank');
+                appUrl = formLink[app]['Android'];
             } else if (isMobile.iOS()) {
-                window.open(formLink[app]['iOS'], '_blank');
+                appUrl = formLink[app]['iOS'];
+            }
+
+            if(appUrl) {
+                window.open(appUrl, '_blank');
+            } else {
+                showNotifications(app + ' is not available in your current device', 'danger');
             }
         }
 
