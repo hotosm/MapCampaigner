@@ -106,6 +106,8 @@
                             data-layout="button_count">
                         </div>
                         <button class="btn btn-info btn-manage pull-right" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
+                        <button class="btn btn-info btn-open-app" onclick="openOtherDataCollectonForm(this)">Maps.me</button>
+                        <button class="btn btn-info btn-open-app" onclick="openOtherDataCollectonForm(this)">OpenMapKit</button>
                     </div>
                 </div>
             </div>
@@ -446,6 +448,43 @@
             var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
             windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
                     host + '/campaign_manager/campaign/' + uuid;
+        }
+
+        // Apps
+        var isMobile = {
+            Android: function () {
+                return /Android/i.test(navigator.userAgent);
+            },
+            iOS: function () {
+                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
+            }
+        };
+
+        var formLink = {
+            "OpenMapKit": {
+                Windows: '',
+                Android: 'https://play.google.com/store/apps/details?id=org.redcross.openmapkit',
+                BlackBerry: '',
+                iOS: ''
+            },
+            "Maps.me": {
+                Windows: '',
+                Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
+                BlackBerry: '',
+                iOS: 'https://itunes.apple.com/app/id510623322'
+            }
+        };
+
+        function openOtherDataCollectonForm(element) {
+            var app = $(element).html();
+            if (isMobile.Android()) {
+                window.open(formLink[app]['Android'], '_blank');
+            } else if (isMobile.iOS()) {
+                window.open(formLink[app]['iOS'], '_blank');
+            }
         }
 
     </script>

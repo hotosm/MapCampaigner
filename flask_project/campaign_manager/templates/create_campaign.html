@@ -35,7 +35,7 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div style="margin-top: 10px"><span class="panel-header-info" style="margin-left: 25px;">FUNCTIONS</span></div>
+                <div class="panel-header-info panel-section">FUNCTIONS</div>
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
                     <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
@@ -53,9 +53,9 @@
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
             </div>
-            <div class="panel panel-default panel-header" style="border-top: 1px solid #ddd !important;">
-                <span class="panel-header-info">DASHBOARD SETTINGS</span><br/>
-                <div class="dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
+            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
+                <div class="panel-header-info panel-section">DASHBOARD SETTINGS</div>
+                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
                     {{ form.dashboard_settings(form="campaign-form") }}
                 </div>
             </div>
@@ -409,7 +409,6 @@
     </script>
 
     <script type="text/javascript">
-
         typesOptions = '{{ form.types_options }}';
         var types = {{ types|safe }};
 
@@ -974,7 +973,6 @@
                 $("#start_date").datepicker({maxDate: new Date(date)})
             }
         });
-
 
     </script>
 
