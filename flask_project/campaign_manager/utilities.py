@@ -185,3 +185,20 @@ def get_survey_json(survey_file):
                     tags.update(tag)
         surveys['tags'] = tags
     return surveys
+
+
+def parse_json_string(json_string):
+    """Parse json string to object, if it fails then return none
+
+    :param json_string: json in string format
+    :type json_string: str
+
+    :return: object or none
+    :rtype: dict/None
+    """
+    json_object = None
+    try:
+        json_object = json.loads(json_string)
+    except ValueError:
+        pass
+    return json_object
