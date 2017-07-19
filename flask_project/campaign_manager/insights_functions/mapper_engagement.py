@@ -5,7 +5,7 @@ from campaign_manager.insights_functions._abstract_overpass_user_function \
 
 
 class MapperEngagement(AbstractOverpassUserFunction):
-    function_name = "Show length of mapper engagement"
+    function_name = "Length of mapper engagement"
     category = ['engagement']
     need_feature = True
 
