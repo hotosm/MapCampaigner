@@ -81,7 +81,7 @@ function calculateCampaignProgress() {
     })
 }
 
-function getInsightFunctions(function_id) {
+function getInsightFunctions(function_id, type_id) {
     var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
     $.ajax({
@@ -101,8 +101,16 @@ function getInsightFunctions(function_id) {
             }
 
             if($divFunction.find('.total-features').length > 0) {
-                total_features_collected += parseInt($divFunction.find('.total-features').html());
+                var value = parseInt($divFunction.find('.total-features').html());
+                total_features_collected += value;
                 $('#features-collected').html(total_features_collected);
+
+                if(typeof type_id !== 'undefined') {
+                    var $currentTypeFeatureCollected = $('#features-collected-'+type_id);
+                    var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
+                    var totalValue = currentValue + value;
+                    $currentTypeFeatureCollected.html(totalValue);
+                }
             }
         }
     });
@@ -168,12 +176,22 @@ function renderInsightFunctionsTypes(username) {
             active = 'active';
         }
 
-        $insightTabs.find('a[href="#' + tabId + '"]').closest('li').remove();
-        $insightTabs.append(
-                '<li class="' + active + '">' +
-                '<a href="#' + tabId + '" data-toggle="tab" aria-expanded="true">' +
-                    tabName + '</a>' +
-                '</li>'
+        $('.map-side-panel').append(
+            '<div class="map-side-list map-side-type row">'+
+                '<div class="col-lg-10">'+
+                    '<span class="pull-left map-side-list-name">'+
+                            tabName +
+                    '</span>'+
+                    '<span class="pull-right map-side-list-number">'+
+                            '<span id="features-collected-'+tabId+'">Loading data...</span>'+
+                            '</span>'+
+                '</div>'+
+                '<div class="col-lg-2 map-side-list-action">'+
+                    '<div class="side-action '+ active +'">'+
+                        '<a href="#'+tabId+'" data-toggle="tab"><i class="fa fa-eye" aria-hidden="true" onclick="showInsightFunction(\''+tabId+'\')"></i></a> '+
+                    '</div>'+
+                '</div>'+
+            '</div>'
         );
 
         $insightContent.find('#' + key).remove();
@@ -187,6 +205,7 @@ function renderInsightFunctionsTypes(username) {
         $typeContents.append('<div class="row insight-type-sub-content"></div>');
 
         var $mainRowTypeContents = $('#'+tabId+ ' .insight-type-content');
+        $mainRowTypeContents.append('<div class="type-title">'+tabName+'</div>');
 
         $.each(campaignTypes[campaignType], function (key, selected_function) {
 
@@ -206,7 +225,7 @@ function renderInsightFunctionsTypes(username) {
                             '</div>'
                     );
 
-                    getInsightFunctions(insightId);
+                    getInsightFunctions(insightId, tabId);
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
                         feature_type_collected.push(selected_function['feature']);
                     }
@@ -220,3 +239,6 @@ function renderInsightFunctionsTypes(username) {
     renderInsightFunctions(username);
 }
 
+function showInsightFunction(tabId) {
+
+}

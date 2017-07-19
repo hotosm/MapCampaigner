@@ -121,6 +121,9 @@
     margin-top:10px;
 }
 
+.btn-share-group .btn{
+    border-radius: 0 !important;
+}
 
 @media (max-width: 450px) {
     .btn-share-group .btn {
@@ -224,6 +227,7 @@
     background-color: #eae8e8;
     margin-top: 4px;
     height: 500px;
+    border: 1px solid #cdcdcd;
 }
 
 .map-side-list {
@@ -259,6 +263,32 @@
 
 .side-panel-wrapper {
     padding-left: 20px;
+}
+
+.side-action {
+    color: #949494;
+}
+
+.side-action.active {
+    color: #565656;
+}
+
+.side-action.active:hover {
+    cursor: pointer;
+}
+
+.map-side-type {
+    background-color: white;
+}
+
+.type-title {
+    height: 50px;
+    font-size: 20pt;
+    margin-top: -10px;
+    color: #565656;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #949494;
 }
 
 @media (max-width: 1215px) {
