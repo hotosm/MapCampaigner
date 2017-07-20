@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -188,13 +188,13 @@
                         </div>
                         <div class="cc-buttons">
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
                             </div>
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -281,13 +281,13 @@
 
                         <div class="cc-buttons">
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
                             </div>
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-prev">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -312,14 +312,14 @@
                             <div class="cc-buttons">
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                        <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
                                     </div>
                                     <div class="col-lg-4">
                                         <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                                     </div>
                                     <div class="col-lg-4">
                                         {% if loop.index < categories|length %}
-                                            <button type="button" class="btn btn-next pull-right cc-functions">Next <span class="pull-right"> > </span></button>
+                                            <button type="button" class="btn btn-next pull-right cc-functions"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -453,14 +453,23 @@
         {% if form.campaign_managers.data %}
             managers_list = {{ form.campaign_managers.data | safe }};
         {% endif %}
+        {% if campaign_creator %}
+            var campaign_creator = '{{ campaign_creator }}';
+        {% endif %}
 
         $(function () {
             if (managers_list.length > 0) {
                 $.each(managers_list, function (index, value) {
-                    $('#managers-list').append(
+                    if(typeof campaign_creator !== 'undefined' && value==campaign_creator){
+                        $('#managers-list').append(
+                            '<span class="manager">' + value
+                        )
+                    }else {
+                        $('#managers-list').append(
                             '<span class="manager">' + value +
                             '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
-                    )
+                        )
+                    }
                 })
             }
         });
@@ -556,7 +565,7 @@
 
         //------------------ EVENT ------------------//
 
-        function reloadUpdated() {
+        function reloadUser() {
             var that = this;
             auth.xhr({
                 method: 'GET',
@@ -582,8 +591,7 @@
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
                 $('#managers-list').append(
-                        '<span class="manager">' + response.display_name +
-                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + response.display_name + '\')" aria-hidden="true"></i></span>'
+                        '<span class="manager">' + response.display_name
                 );
             {% endif %}
         }
@@ -684,7 +692,7 @@
             });
 
             if (managers_list.length === 0) {
-                reloadUpdated();
+                reloadUser();
             }
 
             var types_value = getTypesSelectionValue();
