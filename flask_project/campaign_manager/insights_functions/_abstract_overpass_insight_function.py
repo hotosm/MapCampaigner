@@ -35,20 +35,6 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         if 'type' in additional_data:
             self.feature_type = additional_data['type']
 
-    def get_required_attributes(self):
-        """Parsing required attributes
-        """
-        try:
-            required_attributes = self.required_attributes.split(',')
-            survey_attributes = self.campaign.get_json_type(self.feature_type)
-            if not required_attributes or required_attributes[0] == 'all':
-                required_attributes = [
-                    tag for tag in survey_attributes['tags']
-                    ]
-        except ValueError:
-            required_attributes = []
-        return required_attributes
-
     def name(self):
         """Name of insight functions
         :return: string of name

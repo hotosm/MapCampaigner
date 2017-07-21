@@ -39,7 +39,7 @@
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
                     <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-nav" data-step="5">
+                <div class="panel panel-default panel-header cc-nav" data-step="5" hidden>
                     <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Insight Functions</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
                 </div>
@@ -402,9 +402,9 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <select class="form-control function-type" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Select type for this insight function" style="display: none">
-                    </select>
+                    <input class="form-control function-type" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Put feature to extract"
+                           style="display: none">
                 </div>
                 <div class="col-lg-2">
                     <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
@@ -423,9 +423,9 @@
     <script type="text/javascript">
         typesOptions = '{{ form.types_options }}';
         var types = {{ types|safe }};
-
+        var selected_types_data = {};
         {% if form.types.data %}
-            var selected_types_data = {{ form.types.data | safe }};
+            selected_types_data = {{ form.types.data | safe }};
             addMultipleTypes(selected_types_data);
         {% endif %}
 
@@ -590,6 +590,8 @@
                 valid = checkStep1();
             } else if (step === 2) {
                 valid = checkStep2();
+            } else if (step === 5) {
+                valid = checkStep5();
             }
             var $currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
             if (!valid) {
@@ -688,7 +690,27 @@
                 showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
                 valid = false;
             }
+            if (error_format_before) {
+            }
 
+            return valid;
+        }
+        function checkStep5() {
+            var valid = true;
+            var mapErrorNotification = $('.map-wrapper').data('error');
+
+            clearNotification();
+
+            var campaignJson = $('#advanced-mode-textarea').val();
+            campaignJson = JSON.parse(campaignJson);
+            var rows = $('#insight-function').find('.function-form').find('.function-form-row');
+            $.each(rows, function (index, row) {
+                if (!$(row).find('.function-selection').val()) {
+                    var function_name = campaignJson['selected_functions']['function-' + (index + 1)]['function'];
+                    showNotifications(function_name + ' is not an insight function.', 'danger');
+                    valid = false;
+                }
+            });
             return valid;
         }
 
@@ -866,7 +888,7 @@
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
                         'feature': $(row).find('.function-feature').val(),
-                        'attributes': $(row).find('.function-attributes').val(),
+                        'attributes': JSON.parse($(row).find('.function-attributes').val()),
                         'type': $(row).find('.function-type').val()
                     }
                 }
@@ -876,7 +898,7 @@
         function checkingAllStep() {
             var valid = true;
             $("fieldset").each(function (index) {
-                var validStep = checkSteps(index);
+                var validStep = checkSteps(index + 1);
                 if (!validStep) {
                     valid = validStep;
                 }
@@ -933,19 +955,12 @@
 
             var row = $('#function-' + function_index);
 
-            // render types
-            var $function_type = getFormElement(row, '.function-type');
-            $function_type.append('<option value="">---------------------------------</option>');
-            var selevtedTypes = getSelectedTypes();
-            $.each(selevtedTypes, function (index, addedType) {
-                $function_type.append('<option value="' + addedType + '">' + addedType + '</option>')
-            });
             if (data) {
                 getFormElement(row, '.function-selection').val(data['function']);
                 functionOnSelected(getFormElement(row, '.function-selection'));
                 getFormElement(row, '.function-type').val(data['type']);
                 getFormElement(row, '.function-feature').val(data['feature']);
-                getFormElement(row, '.function-attributes').val(data['attributes']);
+                getFormElement(row, '.function-attributes').val(JSON.stringify(data['attributes']));
             }
             function_index += 1;
         }

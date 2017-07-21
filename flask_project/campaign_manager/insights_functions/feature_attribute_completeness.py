@@ -94,7 +94,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         :type feature_data: dict
 
         :param required_attributes: Required attributes
-        :type required_attributes: list
+        :type required_attributes: dict
 
         :param survey_attributes: Survey Attributes
         :type survey_attributes: dict
@@ -103,13 +103,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         error_message = []
 
         tags = feature_data['tags']
-        for required_attribute in required_attributes:
-            required_attribute = required_attribute.lower().strip()
-            try:
-                survey_values = survey_attributes['tags'][required_attribute]
-            except (KeyError, TypeError):
-                survey_values = []
-
+        for required_attribute, survey_values in required_attributes.items():
             if required_attribute not in tags:
                 error_message.append(
                     '%s not found' % required_attribute)

@@ -8,6 +8,7 @@ function rerender_quality_function() {
         return;
     }
     types_value = JSON.parse($("#types").val());
+    function_index = 1;
     $('#insight-function .function-form').html('');
     var index = 0;
     $.each(types_value, function (key, value) {
@@ -18,7 +19,15 @@ function rerender_quality_function() {
         if (tags[feature]) {
             feature += '=' + tags[feature]
         }
-        var attibutes_on_insights = value['tags'].join();
+        var attibutes_on_insights = value['tags'];
+        var attributes = {};
+        $.each(attibutes_on_insights, function (index, tag) {
+            if (tags[tag]) {
+                attributes[tag] = tags[tag];
+            } else {
+                attributes[tag] = [];
+            }
+        });
         var default_insights = types[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
             $('#insight-function-add').click();
@@ -26,7 +35,7 @@ function rerender_quality_function() {
             $(row).find('.function-selection').val(insight);
             $(row).find('.function-selection').trigger('change');
             $(row).find('.function-feature').val(feature);
-            $(row).find('.function-attributes').val(attibutes_on_insights);
+            $(row).find('.function-attributes').val(JSON.stringify(attributes));
 
             // select type
             $(row).find('.function-type').val(type);
@@ -42,23 +51,11 @@ function getTypesSelectionValue() {
             var $wrapper = $('#typesTagsContainer').children().eq(index);
             var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
             var tags = [];
-            var survey = types[addedType];
-            var surveyTags = Object.keys(survey['tags']);
             $.each($tags, function (index, value) {
                 var tag = $(value).text();
                 tags.push($.trim(tag));
             });
 
-            var is_same = true;
-            for (var i = 0; i < surveyTags.length; i++) {
-                if ($.inArray(surveyTags[i], tags) < 0) {
-                    is_same = false;
-                    break
-                }
-            }
-            if (is_same) {
-                tags = [];
-            }
             types_value['type-' + (index + 1)] = {
                 type: addedType,
                 tags: tags
@@ -160,7 +157,6 @@ function onTypesChange() {
             } else {
                 key_tags = Object.keys(tags);
             }
-
             for (var j = 0; j < key_tags.length; j++) {
                 div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + key_tags[j] + '\')" aria-hidden="true"></i>' + ' </span>');
             }
@@ -187,7 +183,7 @@ function onTypesChange() {
                 '<i class="fa fa-minus"></i></button></div>');
         }
     }
-    $('#insight-function .function-form').html('')
+    $('#insight-function .function-form').html('');
 }
 
 function onAddTags(element) {
@@ -203,7 +199,7 @@ function onAddTagsFInish(element) {
 }
 function addTag(wrapper) {
     $('#warning-tag').html('');
-    $('#insight-function .function-form').html('')
+    $('#insight-function .function-form').html('');
     var $tagWrapper = $(wrapper).closest('.row-tags-wrapper');
     var tag = $(wrapper).text();
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
@@ -216,8 +212,10 @@ function addTag(wrapper) {
 }
 function removeTags(event, type) {
     $(event).parent().parent().remove();
+    $('#insight-function .function-form').html('');
 }
 
 function removeIndividualTag(event, type) {
     $(event).parent().remove();
+    $('#insight-function .function-form').html('');
 }

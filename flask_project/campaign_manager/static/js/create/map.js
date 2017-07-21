@@ -1,5 +1,6 @@
 var campaignMap = L.map('campaign-map');
 var drawnItems = new L.geoJSON();
+var error_format_before = false;
 
 var bounds = [
     [-34.053726, 20.411482],
@@ -7,14 +8,14 @@ var bounds = [
 ];
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
-        'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-        maxZoom: 18
-    }).addTo(campaignMap);
+    attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
+    'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+    maxZoom: 18
+}).addTo(campaignMap);
 
 campaignMap.fitBounds(bounds);
 
-if(google_api_key) {
+if (google_api_key) {
     new L.Control.GPlaceAutocomplete({
         position: "topright",
         callback: function (location) {
@@ -102,6 +103,7 @@ function stopDraw(e) {
 function stringfyGeometry() {
     var json = drawnItems.toGeoJSON();
     $("#geometry").val(JSON.stringify(json));
+    error_format_before = false
 }
 
 function getAreaSize() {

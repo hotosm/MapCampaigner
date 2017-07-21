@@ -4,6 +4,7 @@ __date__ = '10/05/17'
 from flask_wtf import FlaskForm
 from wtforms.fields import (
     DateField,
+    SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
@@ -71,7 +72,7 @@ class CampaignForm(FlaskForm):
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
-    types_options = SelectMultipleField(
+    types_options = SelectField(
         u'Types of campaign',
         choices=[(key, key) for key, value in sorted(get_types().items())])
     types = HiddenField(u'Types that selected for this campaign')

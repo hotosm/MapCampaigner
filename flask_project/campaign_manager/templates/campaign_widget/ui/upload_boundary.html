@@ -57,6 +57,7 @@
     var boundary_info = null;
     var boundary_legend = null;
     var $boundary = $("#boundary-upload ");
+
     function added_file_indicator(filename, complete) {
         var complete_class = '';
         var percent = '0%';
@@ -140,11 +141,16 @@
         });
     });
     function rerender_boundary(geojson) {
-        drawnItems.clearLayers();
-        drawnItems.addData(geojson);
-        campaignMap.fitBounds(drawnItems.getBounds());
-        stringfyGeometry();
-        getAreaSize();
+        $("#geometry").val("");
+        try {
+            drawnItems.clearLayers();
+            drawnItems.addData(geojson);
+            campaignMap.fitBounds(drawnItems.getBounds());
+            stringfyGeometry();
+            getAreaSize();
+        } catch (err) {
+            error_format_before = true;
+        }
     }
     function upload_complete() {
         $.ajax({

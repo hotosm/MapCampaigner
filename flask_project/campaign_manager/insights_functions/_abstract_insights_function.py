@@ -111,19 +111,7 @@ class AbstractInsightsFunction(object):
     def get_required_attributes(self):
         """Parsing required attributes
         """
-        required_attributes = {}
-        # parsing attributes
-        if self.required_attributes:
-            for required_attribute in self.required_attributes.split(';'):
-                attrs = required_attribute.split('=')
-                if attrs[0]:
-                    required_attributes[attrs[0].strip()] = None
-                    if len(attrs) > 1:
-                        attrs[1] = attrs[1].strip()
-                        if attrs[1]:
-                            required_attributes[attrs[0].strip()] = [
-                                value.lower() for value in attrs[1].split(',')
-                                ]
+        required_attributes = self.required_attributes
         return required_attributes
 
     # -------------------------------------------------------------

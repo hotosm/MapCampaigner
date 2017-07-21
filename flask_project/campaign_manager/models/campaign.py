@@ -305,16 +305,16 @@ class Campaign(JsonModel):
         """
         data['version'] = 1
         if 'version' in data:
-            data['version'] += 1
+            data['version'] = data['version'] + 1
         data['edited_by'] = uploader
         data['campaign_creator'] = uploader
 
         uuid = data['uuid']
-        Campaign.validate(data, uuid)
         data['geometry'] = parse_json_string(data['geometry'])
         data['types'] = parse_json_string(data['types'])
         data['selected_functions'] = parse_json_string(
             data['selected_functions'])
+        Campaign.validate(data, uuid)
         return data
 
     @staticmethod
