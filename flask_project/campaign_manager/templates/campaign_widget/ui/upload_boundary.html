@@ -1,4 +1,4 @@
-<form id="boundary-upload" method="post" action='/campaign_manager/campaign/{{ uuid }}/boundary-upload-chunk' enctype="multipart/form-data">
+<form id="boundary-upload" method="post" action='/campaign/{{ uuid }}/boundary-upload-chunk' enctype="multipart/form-data">
     <div class="boundary-uploader">
         <div id='boundary-last-upload' style="color: gray; margin-bottom: 10px;">
         </div>
@@ -96,7 +96,7 @@
         });
 
         {# upload file #}
-        var upload_url = '/campaign_manager/campaign/' + '{{ uuid }}' + '/boundary-upload-chunk';
+        var upload_url = '/campaign/' + '{{ uuid }}' + '/boundary-upload-chunk';
         $('#boundary-upload').fileupload({
             url: upload_url,
             dataType: 'json',
@@ -148,7 +148,7 @@
     }
     function upload_complete() {
         $.ajax({
-            url: '/campaign_manager/campaign/' + uuid + '/boundary-upload-success',
+            url: '/campaign/' + uuid + '/boundary-upload-success',
             dataType: 'json',
             success: function (data) {
                 if (!data['success']) {

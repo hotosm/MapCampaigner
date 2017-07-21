@@ -571,7 +571,7 @@ def create_campaign():
         oauth_secret=OAUTH_SECRET,
         google_api_key=GOOGLE_API_KEY
     )
-    context['url'] = '/campaign_manager/create'
+    context['url'] = '/create'
     context['action'] = 'create'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
@@ -636,7 +636,7 @@ def edit_campaign(uuid):
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['google_api_key'] = GOOGLE_API_KEY
-    context['url'] = '/campaign_manager/edit/%s' % uuid
+    context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
     context['categories'] = AbstractInsightsFunction.CATEGORIES
