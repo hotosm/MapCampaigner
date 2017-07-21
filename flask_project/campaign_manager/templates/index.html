@@ -279,6 +279,7 @@
         function logoutSuccess() {
             clearMap();
             clearTable();
+            Cookies.set('user_location_setting', 'nearest');
             {% if all %}
                 location.href='/campaign_manager'
             {% endif %}
