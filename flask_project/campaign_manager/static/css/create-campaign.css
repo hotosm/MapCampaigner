@@ -544,3 +544,7 @@ input#btn-add {
     margin-bottom: 30px;
 
 }
+
+.fa-times {
+    color: red !important;
+}

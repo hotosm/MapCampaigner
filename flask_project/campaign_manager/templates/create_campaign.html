@@ -585,12 +585,21 @@
         }
 
         function checkSteps(step) {
+            var valid = true;
             if (step === 1) {
-                return checkStep1();
+                valid = checkStep1();
             } else if (step === 2) {
-                return checkStep2();
+                valid = checkStep2();
             }
-            return true;
+            var $currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
+            if (!valid) {
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times');
+            } else {
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-check');
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times');
+            }
+            return valid;
         }
 
         function checkStep1() {
@@ -864,6 +873,21 @@
             });
             return functions;
         }
+        function checkingAllStep() {
+            var valid = true;
+            $("fieldset").each(function (index) {
+                var validStep = checkSteps(index);
+                if (!validStep) {
+                    valid = validStep;
+                }
+
+            });
+            var validHeader = checkFormHeader();
+            if (!validHeader) {
+                valid = validHeader;
+            }
+            return valid;
+        }
         function preprocessSubmitForm() {
             $("#uploader").val($("#profile-name").html());
 
@@ -890,6 +914,10 @@
         }
         $("#campaign-form").submit(function (event) {
             preprocessSubmitForm();
+            var allValid = checkingAllStep();
+            if (!allValid) {
+                return false;
+            }
         });
 
         function getFormElement(event, className) {
