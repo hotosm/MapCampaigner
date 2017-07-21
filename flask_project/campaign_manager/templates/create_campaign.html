@@ -281,6 +281,9 @@
                                 <div class="form-group" data-error="">
                                     <label>Advanced Mode</label>
                                     <textarea id="advanced-mode-textarea" placeholder="Campaign setting" class="form-control"></textarea>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-danger" onclick="preparingStep(4)">Check json</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -290,9 +293,6 @@
                             </div>
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -701,12 +701,20 @@
 
         function preparingStep(current_step) {
             if (current_step == 4) {
-                submitForm();
+                preprocessSubmitForm();
+                clearNotification();
                 $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
-                $.post("/campaign_manager/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(function (data) {
-                    $('#advanced-mode-textarea').LoadingOverlay("hide");
-                    $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
-                });
+                $.post("/campaign_manager/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
+                        function (data) {
+                            $('#advanced-mode-textarea').LoadingOverlay("hide");
+                            $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
+                        }).fail(
+                        function () {
+                            $('#advanced-mode-textarea').LoadingOverlay("hide");
+                            $('#advanced-mode-textarea').val('');
+                            showNotifications('Error on campaign json.', 'danger');
+                        }
+                );
             }
         }
 
@@ -864,9 +872,10 @@
             });
             return functions;
         }
-        function submitForm() {
+        function preprocessSubmitForm() {
             $("#uploader").val($("#profile-name").html());
 
+            $('#campaign_managers').html('');
             $.each(managers_list, function (index, value) {
                 $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
             });
@@ -891,7 +900,7 @@
 
         }
         $("#campaign-form").submit(function (event) {
-            submitForm();
+            preprocessSubmitForm();
         });
 
         function getFormElement(event, className) {
