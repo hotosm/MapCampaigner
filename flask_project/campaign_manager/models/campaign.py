@@ -293,7 +293,7 @@ class Campaign(JsonModel):
         return json_str
 
     @staticmethod
-    def create(data, uploader):
+    def parse_campaign_data(data, uploader):
         """Validate found dict based on campaign class.
         uuid should be same as uuid file.
 
@@ -304,6 +304,8 @@ class Campaign(JsonModel):
         :type uploader: str
         """
         data['version'] = 1
+        if 'version' in data:
+            data['version'] += 1
         data['edited_by'] = uploader
         data['campaign_creator'] = uploader
 
@@ -312,11 +314,26 @@ class Campaign(JsonModel):
         data['geometry'] = parse_json_string(data['geometry'])
         data['types'] = parse_json_string(data['types'])
         data['selected_functions'] = parse_json_string(
-                data['selected_functions'])
+            data['selected_functions'])
+        return data
 
-        json_str = Campaign.serialize(data)
+    @staticmethod
+    def create(data, uploader):
+        """Validate found dict based on campaign class.
+        uuid should be same as uuid file.
+
+        :param data: data that will be inserted
+        :type data: dict
+
+        :param uploader: uploader who created
+        :type uploader: str
+        """
+        campaign_data = Campaign.parse_campaign_data(data, uploader)
+        json_str = Campaign.serialize(
+            Campaign.parse_campaign_data(data, uploader)
+        )
         json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % uuid
+            Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
@@ -357,8 +374,8 @@ class Campaign(JsonModel):
 
                     if campaign.end_date:
                         end_datetime = datetime.strptime(
-                                campaign.end_date,
-                                "%Y-%m-%d")
+                            campaign.end_date,
+                            "%Y-%m-%d")
 
                         if campaign_status:
                             if campaign_status == 'active':
@@ -413,8 +430,8 @@ class Campaign(JsonModel):
 
                         if campaign.end_date:
                             end_datetime = datetime.strptime(
-                                    campaign.end_date,
-                                    "%Y-%m-%d")
+                                campaign.end_date,
+                                "%Y-%m-%d")
 
                             if campaign_status == 'active':
                                 allowed = end_datetime.date() > date.today()

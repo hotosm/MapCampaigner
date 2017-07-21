@@ -9,17 +9,15 @@ from wtforms.fields import (
     SubmitField,
     HiddenField,
     TextAreaField,
-    RadioField,
-    SelectField
+    RadioField
 )
-from wtforms.validators import DataRequired, Optional, ValidationError
+from wtforms.validators import DataRequired, ValidationError
 from urllib.parse import urlparse
-from campaign_manager.utilities import get_osm_user, get_types
+from campaign_manager.utilities import get_types
 from campaign_manager.views import valid_map_list
 
 
 class ManagerSelectMultipleField(SelectMultipleField):
-
     def pre_validate(self, form):
         if self.data:
             return True
@@ -86,11 +84,6 @@ class CampaignForm(FlaskForm):
         description='Campaign manager may change the map view',
         validators=[validate_map],
         render_kw={'placeholder': 'Campaign map'}
-    )
-    dashboard_settings = SelectField(
-        u'Display Mode',
-        choices=[('basic', 'Basic'), ('advanced', 'Advanced')],
-        default='basic'
     )
     selected_functions = HiddenField(
         u'Selected Functions')

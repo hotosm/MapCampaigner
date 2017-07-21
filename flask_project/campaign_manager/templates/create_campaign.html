@@ -35,28 +35,10 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel-header-info panel-section">FUNCTIONS</div>
+                <div class="panel-header-info panel-section">ADVANCED</div>
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
-                    <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
+                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="5">
-                    <div><i class="fa fa-star-half-o"></i><span>&nbsp;&nbsp;Quality Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="6">
-                    <div><i class="fa fa-exclamation-triangle"></i><span>&nbsp;&nbsp;Error Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="7">
-                    <div><i class="fa fa-link"></i><span>&nbsp;&nbsp;Engagement Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-            </div>
-            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
-                <div class="panel-header-info panel-section">DASHBOARD SETTINGS</div>
-                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
-                    {{ form.dashboard_settings(form="campaign-form") }}
                 </div>
             </div>
         </div>
@@ -292,8 +274,31 @@
                         </div>
                     </fieldset>
 
+                    <fieldset id="fieldset-4" data-fieldset-step="4">
+                        <div class="row">
+                            <!-- /.col-lg-6 (nested) -->
+                            <div class="form-body col-lg-8">
+                                <div class="form-group" data-error="">
+                                    <label>Advanced Mode</label>
+                                    <textarea id="advanced-mode-textarea" placeholder="Campaign setting" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cc-buttons">
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                            </div>
+                            <div class="col-lg-4">
+                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
+                            </div>
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </div>
+                    </fieldset>
+
                     {% for category in categories %}
-                        <fieldset id="fieldset-{{ loop.index + 3 }}" data-fieldset-step="{{ loop.index + 3 }}">
+                        <fieldset id="fieldset-{{ loop.index + 4 }}" data-fieldset-step="{{ loop.index + 4 }}">
                             <div class="row insight-functions">
                                 <div class="form-body col-lg-12">
                                     <div class="form-group" style="padding-bottom: 25px;">
@@ -423,25 +428,6 @@
         {% else %}
             addTypes();
         {% endif %}
-
-        //------------------ DASHBOARD SETTINGS -----------------//
-        function changeDashboard() {
-            var setting = $('#dashboard_settings option:selected').text();
-            if (setting.toLowerCase() == 'advanced') {
-                $('.cc-functions').show();
-                $('.remove-tags').show();
-                $('.btn-add-tag').show();
-            }
-            else {
-                $('.cc-functions').hide();
-                $('.remove-tags').hide();
-                $('.btn-add-tag').hide();
-            }
-        }
-
-        $(function () {
-            changeDashboard();
-        });
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -713,6 +699,17 @@
             })
         }
 
+        function preparingStep(current_step) {
+            if (current_step == 4) {
+                submitForm();
+                $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+                $.post("/campaign_manager/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(function (data) {
+                    $('#advanced-mode-textarea').LoadingOverlay("hide");
+                    $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
+                });
+            }
+        }
+
         function showStep(previousStep, nextStep, activatePrevStep) {
             if (previousStep === nextStep) {
                 return false;
@@ -723,6 +720,7 @@
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
+            preparingStep(nextStep);
             $prevFieldset.fadeOut(400, function () {
                 $prevNavStep.removeClass('active');
                 if (activatePrevStep) {
@@ -866,8 +864,7 @@
             });
             return functions;
         }
-
-        $("#campaign-form").submit(function (event) {
+        function submitForm() {
             $("#uploader").val($("#profile-name").html());
 
             $.each(managers_list, function (index, value) {
@@ -891,6 +888,10 @@
             selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
             selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
             $("#selected_functions").val(JSON.stringify(selected_functions));
+
+        }
+        $("#campaign-form").submit(function (event) {
+            submitForm();
         });
 
         function getFormElement(event, className) {

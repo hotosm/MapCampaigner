@@ -537,3 +537,9 @@ input#btn-add {
     box-shadow: none !important;
     -moz-box-shadow: none;
 }
+
+#advanced-mode-textarea {
+    min-height: 500px;
+    margin-top: 30px;
+
+}

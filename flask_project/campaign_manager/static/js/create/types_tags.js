@@ -186,13 +186,6 @@ function onTypesChange() {
 
     var typeIndex = row.index();
     addedTypes[typeIndex] = selected_type;
-
-    // Hide add/remove tags when basic mode.
-    var setting = $('#dashboard_settings option:selected').text();
-    if (setting.toLowerCase() != 'advanced') {
-        $('.remove-tags').hide();
-        $('.btn-add-tag').hide();
-    }
 }
 
 function onAddTags(element) {
