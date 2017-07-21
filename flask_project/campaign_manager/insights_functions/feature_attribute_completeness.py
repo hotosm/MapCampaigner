@@ -7,7 +7,6 @@ from campaign_manager.insights_functions._abstract_overpass_insight_function \
 
 class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
     function_name = "Feature completeness"
-    category = ['quality']
     tags_capitalizaition_checks = ['name']
     icon = 'list'
     _function_good_data = None  # cleaned data

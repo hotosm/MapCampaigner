@@ -1,15 +1,14 @@
-var addedTypes = [];
 var types_value = {};
 var typesOptions = '';
 
 function rerender_quality_function() {
     // Also render insights function
-    var function_form_content = $('#quality-function .function-form').html().trim();
+    var function_form_content = $('#insight-function .function-form').html().trim();
     if (function_form_content.length > 0) {
         return;
     }
     types_value = JSON.parse($("#types").val());
-    $('#quality-function .function-form').html('');
+    $('#insight-function .function-form').html('');
     var index = 0;
     $.each(types_value, function (key, value) {
         var type = value['type'];
@@ -22,8 +21,8 @@ function rerender_quality_function() {
         var attibutes_on_insights = value['tags'].join();
         var default_insights = types[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
-            $('#quality-function-add').click();
-            var row = $('#quality-function .function-form').find('.function-form-row')[index];
+            $('#insight-function-add').click();
+            var row = $('#insight-function .function-form').find('.function-form-row')[index];
             $(row).find('.function-selection').val(insight);
             $(row).find('.function-selection').trigger('change');
             $(row).find('.function-feature').val(feature);
@@ -38,7 +37,7 @@ function rerender_quality_function() {
 function getTypesSelectionValue() {
     // GET SELECTED TYPES
     var types_value = {};
-    $.each(addedTypes, function (index, addedType) {
+    $.each(getSelectedTypes(), function (index, addedType) {
         if (addedType) {
             var $wrapper = $('#typesTagsContainer').children().eq(index);
             var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
@@ -69,6 +68,16 @@ function getTypesSelectionValue() {
     return types_value
 }
 
+function getSelectedTypes() {
+    var uniqueNames = [];
+    $('select[name=types_options]').each(function (index, element) {
+        var selectedType = $(element).val();
+        if ($.inArray(selectedType, uniqueNames) === -1) {
+            uniqueNames.push(selectedType);
+        }
+    });
+    return uniqueNames
+}
 function addMultipleTypes(typeList) {
     $.each(typeList, function (index, type) {
         var selected_type = type['type'];
@@ -107,8 +116,6 @@ function addTypes(value) {
     }
 
     $("#typesTagsContainer").append(row);
-    var addedTypesIndex = addedTypes.length;
-    addedTypes[addedTypesIndex] = value;
 }
 
 function onTypesChange() {
@@ -180,9 +187,7 @@ function onTypesChange() {
                 '<i class="fa fa-minus"></i></button></div>');
         }
     }
-
-    var typeIndex = row.index();
-    addedTypes[typeIndex] = selected_type;
+    $('#insight-function .function-form').html('')
 }
 
 function onAddTags(element) {
@@ -198,6 +203,7 @@ function onAddTagsFInish(element) {
 }
 function addTag(wrapper) {
     $('#warning-tag').html('');
+    $('#insight-function .function-form').html('')
     var $tagWrapper = $(wrapper).closest('.row-tags-wrapper');
     var tag = $(wrapper).text();
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
@@ -210,10 +216,6 @@ function addTag(wrapper) {
 }
 function removeTags(event, type) {
     $(event).parent().parent().remove();
-    addedTypes.splice($.inArray(type, addedTypes), 1);
-    if (addedTypes.length < 1) {
-        addTypes();
-    }
 }
 
 function removeIndividualTag(event, type) {

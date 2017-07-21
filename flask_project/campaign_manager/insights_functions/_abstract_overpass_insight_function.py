@@ -12,7 +12,6 @@ from campaign_manager.data_providers.overpass_provider import OverpassProvider
 
 class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     __metaclass__ = ABCMeta
-    category = ['quality']
     FEATURES_MAPPING = {
         'buildings': 'building',
         'roads': 'road'

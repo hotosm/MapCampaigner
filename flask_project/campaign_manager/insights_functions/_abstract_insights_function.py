@@ -12,8 +12,6 @@ class AbstractInsightsFunction(object):
     """
     __metaclass__ = ABCMeta
 
-    CATEGORIES = ['coverage', 'quality', 'error', 'engagement']
-
     _function_raw_data = None  # data exaclty from osm
     _function_data = None  # data that used by others
 
@@ -23,7 +21,6 @@ class AbstractInsightsFunction(object):
 
     feature = None
     required_attributes = ""
-    category = []
 
     manager_only = False
     type_required = False

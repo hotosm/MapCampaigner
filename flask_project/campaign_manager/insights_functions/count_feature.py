@@ -7,7 +7,6 @@ from campaign_manager.insights_functions._abstract_overpass_insight_function \
 
 class CountFeature(AbstractOverpassInsightFunction):
     function_name = "Number of feature in group"
-    category = ['quality']
 
     # attribute of insight function
     need_feature = True

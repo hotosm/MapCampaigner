@@ -455,8 +455,6 @@ def get_selected_functions():
         function_name = selected_function.name()
         function_dict = {}
         function_dict['name'] = function_name
-        function_dict['category'] = \
-            selected_function.category
         function_dict['need_feature'] = \
             ('%s' % selected_function.need_feature).lower()
         function_dict['need_required_attributes'] = \
@@ -574,7 +572,6 @@ def create_campaign():
     context['url'] = '/campaign_manager/create'
     context['action'] = 'create'
     context['campaigns'] = Campaign.all()
-    context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
@@ -638,7 +635,6 @@ def edit_campaign(uuid):
     context['url'] = '/campaign_manager/edit/%s' % uuid
     context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
-    context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE

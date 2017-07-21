@@ -1,5 +1,13 @@
 function assignCampaignJsonToForm(json) {
-    $('input#name').val(json['name']);
+    var exceptionNames = ['types_options']
+    $("input, textarea, select").each(function (index, element) {
+        var inputName = $(element).attr('name');
+        if ($.inArray(inputName, exceptionNames) >= 0) {
+            if (inputName) {
+                $(element).val(json[inputName]);
+            }
+        }
+    });
 }
 
 function checkCampaignJson() {

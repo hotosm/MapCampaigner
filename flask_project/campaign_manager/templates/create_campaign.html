@@ -37,7 +37,10 @@
                 </div>
                 <div class="panel-header-info panel-section">ADVANCED</div>
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
-                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span>
+                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="5">
+                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Insight Functions</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
                 </div>
             </div>
@@ -305,42 +308,29 @@
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
                         </div>
                     </fieldset>
 
-                    {% for category in categories %}
-                        <fieldset id="fieldset-{{ loop.index + 4 }}" data-fieldset-step="{{ loop.index + 4 }}">
-                            <div class="row insight-functions">
-                                <div class="form-body col-lg-12">
-                                    <div class="form-group" style="padding-bottom: 25px;">
-                                        <div id="{{ category }}-function" class="function-wrapper">
-                                            <label class="category-label">{{ category }} Functions</label>
-                                            <div class="function-form">
-                                            </div>
-                                            <button id="{{ category }}-function-add" class="btn btn-outline btn-add-coverage"
-                                                    type=button onclick="addFunction(this)" style="margin-top: 5px;">
-                                                <i class="fa fa-plus"></i> Add Function
-                                            </button>
+                    <fieldset id="fieldset-5" data-fieldset-step="5">
+                        <div class="row insight-functions">
+                            <div class="form-body col-lg-12">
+                                <div class="form-group" style="padding-bottom: 25px;">
+                                    <div id="insight-function" class="function-wrapper">
+                                        <label class="category-label">Insight Functions</label>
+                                        <div class="function-form">
                                         </div>
+                                        <button id="insight-function-add" class="btn btn-outline btn-add-coverage"
+                                                type=button onclick="addFunction(this)" style="margin-top: 5px;">
+                                            <i class="fa fa-plus"></i> Add Function
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="cc-buttons">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                                    </div>
-                                    <div class="col-lg-4">
-                                        {% if loop.index < categories|length %}
-                                            <button type="button" class="btn btn-next pull-right cc-functions">Next <span class="pull-right"> > </span></button>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                        </fieldset>
-                    {% endfor %}
+                        </div>
+                    </fieldset>
                 </div>
                 <!-- /.row (nested) -->
             </div>
@@ -664,7 +654,6 @@
             }
 
             var types_value = getTypesSelectionValue();
-            console.log(types_value);
             $("#types").val(JSON.stringify(types_value));
             rerender_quality_function();
             if (jQuery.isEmptyObject(types_value)) {
@@ -847,17 +836,11 @@
             $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
 
-            var $categoryLabels = $('.category-label');
-            for (var i = 0; i < $categoryLabels.length; i++) {
-                var $label = $($categoryLabels[i]);
-                $label.html(capitalizeFirstLetter($label.html()));
-            }
-
             {# selected functions#}
             if ($("#selected_functions").val()) {
                 var selected_functions = $.parseJSON($("#selected_functions").val());
                 $.each(selected_functions, function (key, functions) {
-                    addFunction($('#' + functions['category'] + '-add'), functions);
+                    addFunction($('#insight-function-add'), functions);
                 });
             }
 
@@ -865,15 +848,14 @@
 
         });
 
-        function get_selected_functions(category) {
+        function get_selected_functions() {
             {# functions #}
             var functions = {};
-            var rows = $('#' + category).find('.function-form').find('.function-form-row');
+            var rows = $('#insight-function').find('.function-form').find('.function-form-row');
             $.each(rows, function (index, row) {
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'category': category,
                         'feature': $(row).find('.function-feature').val(),
                         'attributes': $(row).find('.function-attributes').val(),
                         'type': $(row).find('.function-type').val()
@@ -902,10 +884,7 @@
 
             // Processing selected function
             var selected_functions = {};
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions());
             $("#selected_functions").val(JSON.stringify(selected_functions));
 
         }
@@ -925,27 +904,13 @@
             getFormElement(event, '.function-form').append(html);
 
             var row = $('#function-' + function_index);
-            var function_selections = getFormElement(row, '.function-selection').find('option');
-            $.each(function_selections, function (index, function_selection) {
-                var wrapper_id = $(row).closest('.function-wrapper').attr('id');
-                wrapper_id = wrapper_id.replace('-function', '');
-                if ($(function_selection).val()) {
-                    var categories = functions[$(function_selection).val()]['category'];
-                    if (jQuery.inArray(wrapper_id, categories) < 0) {
-                        $(function_selection).remove();
-                    }
-                }
-            });
 
             // render types
-            var uniqueNames = [];
             var $function_type = getFormElement(row, '.function-type');
             $function_type.append('<option value="">---------------------------------</option>');
-            $.each(addedTypes, function (index, addedType) {
-                if ($.inArray(addedType, uniqueNames) === -1) {
-                    uniqueNames.push(addedType);
-                    $function_type.append('<option value="' + addedType + '">' + addedType + '</option>')
-                }
+            var selevtedTypes = getSelectedTypes();
+            $.each(selevtedTypes, function (index, addedType) {
+                $function_type.append('<option value="' + addedType + '">' + addedType + '</option>')
             });
             if (data) {
                 getFormElement(row, '.function-selection').val(data['function']);

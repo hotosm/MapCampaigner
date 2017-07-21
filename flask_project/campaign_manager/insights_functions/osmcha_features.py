@@ -13,7 +13,6 @@ from campaign_manager.data_providers.osmcha_features_provider import (
 
 class OsmchaFeatures(AbstractInsightsFunction):
     function_name = "Showing osmcha features"
-    category = ['error']
     icon = 'list'
 
     current_page = 1
