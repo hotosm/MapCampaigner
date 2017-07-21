@@ -19,10 +19,7 @@ function rerender_quality_function() {
         if (tags[feature]) {
             feature += '=' + tags[feature]
         }
-        var attibutes_on_insights = 'all';
-        if (value['tags'].length !== 0) {
-            attibutes_on_insights = value['tags'].join()
-        }
+        var attibutes_on_insights = value['tags'].join();
         var default_insights = types[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
             $('#quality-function-add').click();
@@ -151,7 +148,7 @@ function onTypesChange() {
             var tags = types[selected_type]['tags'];
             var key_tags_default = Object.keys(tags);
 
-            if (typeof selected_tags != 'undefined' && JSON.stringify(selected_tags) != '[]') {
+            if (typeof selected_tags != 'undefined') {
                 key_tags = selected_tags;
             } else {
                 key_tags = Object.keys(tags);

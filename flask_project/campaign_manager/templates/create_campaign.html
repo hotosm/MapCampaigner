@@ -280,9 +280,20 @@
                             <div class="form-body col-lg-8">
                                 <div class="form-group" data-error="">
                                     <label>Advanced Mode</label>
+                                    <br>
+                                    <i style="color: grey">
+                                        Advanced mode is for change json manually.
+                                        Submit button will be enabled if json is pass of <b>check json</b>, so make sure to click check json.
+                                        Insights functions that we have for now are:
+                                        {% for key, value in functions.items() %}
+                                            <br> - <b>{{ key }}</b>
+                                        {% endfor %}
+                                        <br>
+                                        So be sure not put insights function other that those, or json will be failed.
+                                    </i>
                                     <textarea id="advanced-mode-textarea" placeholder="Campaign setting" class="form-control"></textarea>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-danger" onclick="preparingStep(4)">Check json</button>
+                                        <button type="button" class="btn btn-danger" onclick="checkCampaignJson()">Check json</button>
                                     </div>
                                 </div>
                             </div>
@@ -380,6 +391,7 @@
     <script type="text/javascript" src="/campaign_manager/static/js/create/map.js"></script>
     <script type="text/javascript" src="/campaign_manager/static/js/create/remote-mapping.js"></script>
     <script type="text/javascript" src="/campaign_manager/static/js/create/types_tags.js"></script>
+    <script type="text/javascript" src="/campaign_manager/static/js/create/campaign-json-handler.js"></script>
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
@@ -425,8 +437,6 @@
         {% if form.types.data %}
             var selected_types_data = {{ form.types.data | safe }};
             addMultipleTypes(selected_types_data);
-        {% else %}
-            addTypes();
         {% endif %}
 
         var remote_projects_list = [];
@@ -654,6 +664,7 @@
             }
 
             var types_value = getTypesSelectionValue();
+            console.log(types_value);
             $("#types").val(JSON.stringify(types_value));
             rerender_quality_function();
             if (jQuery.isEmptyObject(types_value)) {
@@ -702,7 +713,6 @@
         function preparingStep(current_step) {
             if (current_step == 4) {
                 preprocessSubmitForm();
-                clearNotification();
                 $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
                 $.post("/campaign_manager/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
                         function (data) {
