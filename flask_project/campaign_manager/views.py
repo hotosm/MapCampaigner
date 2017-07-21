@@ -645,6 +645,7 @@ def edit_campaign(uuid):
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
     context['types'] = {}
+    context['campaign_creator'] = campaign.campaign_creator
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
