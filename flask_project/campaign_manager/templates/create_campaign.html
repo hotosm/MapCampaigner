@@ -179,10 +179,36 @@
                                     <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                 </div>
                             </div>
-                            <div class="form-body col-lg-4">
+                            <div class="col-lg-2">
+                                <div style="margin-top: 20px;font-weight: bold; margin-bottom: 20px;">
+                                    The AOI is specified in one of the following ways:
+                                </div>
+                                <ul>
+                                    <li>
+                                        Digitising on the map.
+                                    </li>
+                                    <li>
+                                        Upload a SHP file which either has only one polygon containing the AOI or multiple polygons each indicating a campaign area.
+                                        Teams can be assigned in this file by adding a "team" column and the status is deduced from a "date" column indicating on which date the team will complete their mapping.
+                                        When using multiple polygons these must be union-able into a single polygon.
+                                    </li>
+                                    <li>
+                                        Upload a FieldPapers Atlas.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-body col-lg-6">
                                 <div class="form-group">
-                                    <label>Update boundary by shp</label>
+                                    <label>Upload Shapefiles</label>
                                     {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                </div>
+                            </div>
+                            <div class="form-body col-lg-6">
+                                <div class="form-group">
+                                    <label>Upload FieldPapers atlas</label>
+                                    {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
                                 </div>
                             </div>
                         </div>

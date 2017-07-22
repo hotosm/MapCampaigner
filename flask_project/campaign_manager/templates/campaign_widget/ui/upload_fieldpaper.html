@@ -1,0 +1,95 @@
+<div class="upload-fieldpaper-wrapper">
+    <input id="fieldpaper-id" type="file" name="filename" hidden/>
+    <button type="button" class="btn btn-upload-fieldpaper" id="upload-fieldpaper">
+        Upload FieldPapers File
+    </button>
+
+</div>
+
+<style>
+    #fieldpaper-id {
+        display: none;
+    }
+    .btn-upload-fieldpaper {
+        height: 50px;
+        padding-left: 150px;
+        padding-right: 150px;
+        border-radius: 10px;
+        font-size: 16px;
+        color: white;
+        background-color: #57a1b1;
+    }
+
+    .btn-upload-fieldpaper:hover{
+        color: white;
+        background-color: #4a8493;
+    }
+
+    .btn-upload-fieldpaper:active {
+        color: white;
+    }
+
+    .upload-fieldpaper-wrapper {
+        margin-top: 20px;
+    }
+
+</style>
+
+<script>
+    $('#upload-fieldpaper').click(uploadFieldpaper);
+    $('#fieldpaper-id').change(handleFileSelect);
+
+    function uploadFieldpaper(el) {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Great success! All the File APIs are supported.
+        } else {
+          alert('The File APIs are not fully supported in this browser.');
+          return;
+        }
+
+        $('#fieldpaper-id').click();
+    }
+    
+    function handleFileSelect(evt) {
+        var files = evt.target.files;
+        var output = [];
+        if(files.length <= 0) {
+            return;
+        }
+
+        var uploadedFile = files[0];
+
+        // Check filename
+        if(uploadedFile.name.indexOf('.geojson') === -1) {
+            alert('Wrong format');
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var geojsonFeature = JSON.parse(reader.result);
+            geojsonFeature = geojsonFeature['features'];
+            drawnItems.clearLayers();
+            var geojsonLayer = L.geoJSON(geojsonFeature, {onEachFeature: onEachFeature});
+            campaignMap.fitBounds(drawnItems.getBounds());
+            stringfyGeometry();
+            getAreaSize();
+        };
+
+        reader.readAsText(uploadedFile);
+    }
+
+    function onEachFeature(feature, featureLayer) {
+        if(feature.geometry.type !== 'MultiPolygon') {
+            var $div = $("<div>");
+            for (var key in feature.properties) {
+                $div.append(
+                    '<div style="font-weight:bold">' + key + '</div> <div style="margin-bottom:5px">' + feature.properties[key] + '</div>'
+                )
+            }
+            featureLayer.bindPopup($div.html());
+            drawnItems.addLayer(featureLayer);
+        }
+    }
+
+</script>
