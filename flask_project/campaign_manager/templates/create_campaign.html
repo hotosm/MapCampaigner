@@ -338,6 +338,8 @@
     <script type="text/javascript">
 
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
+        var errors = {{ form['errors'] | safe}};
+        var functions = {{ functions|safe }};
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -415,6 +417,8 @@
 
     <script type="text/javascript">
         typesOptions = '{{ form.types_options }}';
+        var initialLoad = true;
+        var selectedFunctions = [];
         var types = {{ types|safe }};
 
         {% if form.types.data %}
@@ -423,6 +427,8 @@
         {% else %}
             addTypes();
         {% endif %}
+
+        initialLoad = false;
 
         //------------------ DASHBOARD SETTINGS -----------------//
         function changeDashboard() {
@@ -620,9 +626,6 @@
             }
         }
 
-        var errors = {{ form['errors'] | safe}};
-        var functions = {{ functions|safe }};
-
         if (!isEmpty(errors)) {
             showNotifications('Failed to create a campaign!', 'danger');
         }
@@ -697,7 +700,6 @@
 
             var types_value = getTypesSelectionValue();
             $("#types").val(JSON.stringify(types_value));
-            rerender_quality_function();
             if (jQuery.isEmptyObject(types_value)) {
                 valid = false;
                 $('.types-required-message').show();
@@ -867,6 +869,7 @@
             {# selected functions#}
             if ($("#selected_functions").val()) {
                 var selected_functions = $.parseJSON($("#selected_functions").val());
+                selectedFunctions = selected_functions;
                 $.each(selected_functions, function (key, functions) {
                     addFunction($('#' + functions['category'] + '-add'), functions);
                 });
@@ -972,12 +975,15 @@
             getFormElement($event, '.function-attributes').hide();
             getFormElement($event, '.function-type').hide();
 
-            if ($(event).val() !== '') {
+            var insightFunctionName = $(event).val();
+
+            if (insightFunctionName !== '') {
                 var need_feature = 'false';
                 var need_required_attributes = 'false';
-                if (typeof functions[$(event).val()] !== 'undefined') {
-                    need_feature = functions[$(event).val()]['need_feature'];
-                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+
+                if (typeof functions[insightFunctionName] !== 'undefined') {
+                    need_feature = functions[insightFunctionName]['need_feature'];
+                    need_required_attributes = functions[insightFunctionName]['need_required_attributes'];
                 }
 
                 if (need_feature === 'true') {
