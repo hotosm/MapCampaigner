@@ -228,10 +228,22 @@
     margin-top: 4px;
     height: 500px;
     border: 1px solid #cdcdcd;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .map-side-list {
     border-bottom: 1px solid #cdcdcd;
+}
+
+.map-side-panel {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.map-side-panel .row {
+    padding-left: 10px;
+    padding-right: 15px;
 }
 
 .map-side-list-name {
@@ -273,10 +285,6 @@
     color: #565656;
 }
 
-.side-action.active:hover {
-    cursor: pointer;
-}
-
 .map-side-type {
     background-color: white;
 }
@@ -308,4 +316,53 @@
     #campaign-map-detail {
         margin-right: -15px !important;
     }
+}
+
+div.side-action a{
+    color: #828282;
+}
+
+div.side-action a:hover{
+    color: #3a3a3a;
+}
+
+div.side-action .fa-eye:hover {
+    cursor:pointer;
+}
+
+.side-panel-progress {
+    height: 12px !important;
+    margin-top: 8px;
+    margin-bottom: -10px;
+}
+
+.summary {
+    color: #5f5f5f;
+}
+
+.summary-content {
+    margin-top: 25px;
+}
+
+.summary .pull-right {
+    font-size: 12pt;
+    color: #739da6;
+    font-weight: bold;
+}
+
+.multiple-row .col-lg-10{
+    padding-top: 8px;
+}
+
+.single-row .col-lg-10 {
+    padding-top: 8px;
+    height: 40px;
+}
+
+.single-row .map-side-list-action {
+    height: 40px !important;
+}
+
+.insight-summaries {
+    display: none;
 }

@@ -1,3 +1,5 @@
+var activeInsightPanel = '';
+
 function renderInsightFunctions(username) {
 
     $.each(selected_functions, function (key, selected_function) {
@@ -106,10 +108,16 @@ function getInsightFunctions(function_id, type_id) {
                 $('#features-collected').html(total_features_collected);
 
                 if(typeof type_id !== 'undefined') {
-                    var $currentTypeFeatureCollected = $('#features-collected-'+type_id);
+                    var $currentTypeFeatureCollected = $('#type-'+type_id + ' .features-collected');
                     var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
                     var totalValue = currentValue + value;
                     $currentTypeFeatureCollected.html(totalValue);
+                }
+            }
+
+            if($divFunction.find('.insight-summaries').length > 0) {
+                if(typeof type_id !== 'undefined') {
+                    $('#'+type_id+'-summaries').append($divFunction.find('.insight-summaries').html());
                 }
             }
         }
@@ -174,23 +182,27 @@ function renderInsightFunctionsTypes(username) {
         var active = '';
         if (index === 0) {
             active = 'active';
+            activeInsightPanel = tabId;
         }
 
         $('.map-side-panel').append(
-            '<div class="map-side-list map-side-type row">'+
-                '<div class="col-lg-10">'+
-                    '<span class="pull-left map-side-list-name">'+
-                            tabName +
-                    '</span>'+
-                    '<span class="pull-right map-side-list-number">'+
-                            '<span id="features-collected-'+tabId+'">Loading data...</span>'+
-                            '</span>'+
-                '</div>'+
-                '<div class="col-lg-2 map-side-list-action">'+
-                    '<div class="side-action '+ active +'">'+
-                        '<a href="#'+tabId+'" data-toggle="tab"><i class="fa fa-eye" aria-hidden="true" onclick="showInsightFunction(\''+tabId+'\')"></i></a> '+
+            '<div class="map-side-list map-side-type" id="type-'+tabId+'">'+
+                '<div class="row">'+
+                    '<div class="col-lg-10">'+
+                        '<div class="pull-left map-side-list-name">'+
+                                tabName +
+                        '</div>'+
+                        '<span class="pull-right map-side-list-number">'+
+                                '<span class="features-collected">Loading data...</span>'+
+                                '</span>'+
+                    '</div>'+
+                    '<div class="col-lg-2 map-side-list-action">'+
+                        '<div class="side-action '+ active +'">'+
+                            '<i class="fa fa-eye" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
+                        '</div>'+
                     '</div>'+
                 '</div>'+
+                '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
             '</div>'
         );
 
@@ -239,6 +251,20 @@ function renderInsightFunctionsTypes(username) {
     renderInsightFunctions(username);
 }
 
-function showInsightFunction(tabId) {
+function showInsightFunction(element, tabId) {
+    var $divParent = $(element).parent();
+    if($divParent.hasClass('active')) {
 
+    } else {
+        var $divParentActive = $('#type-'+activeInsightPanel + " .side-action");
+        $divParentActive.removeClass('active');
+        $divParent.addClass('active');
+
+        $('#'+activeInsightPanel).slideUp();
+        $('#'+activeInsightPanel+'-summaries').hide();
+        activeInsightPanel = tabId;
+
+        $('#'+tabId).show();
+        $('#'+tabId+'-summaries').slideDown();
+    }
 }
