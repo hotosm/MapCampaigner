@@ -1,7 +1,7 @@
 <div class="insight-title" style="margin-bottom: 20px;">Users Engagement</div>
 <div class="row" style="padding: 20px;">
     {% if data['user_list'] %}
-        {% if additional_data['type'] == "" %}
+        {% if 'type' not in additional_data or additional_data['type'] == "" %}
             <div class="col-lg-4">
                 <canvas class="average-engagement" style="width: 100%; "></canvas>
             </div>
@@ -116,7 +116,7 @@
             $wrapper.find('.chart-legends').html(averageChart.generateLegend());
 
             // User timeline charts
-            {% if additional_data['type'] == "" %}
+            {% if 'type' not in additional_data or additional_data['type'] == "" %}
             {% for entry in data['user_list'] %}
                 var d{{ loop.index }} = {{ entry.timeline|safe }};
                 var chartData{{ loop.index }} = {
