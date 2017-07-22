@@ -219,6 +219,7 @@ function renderInsightFunctionsTypes(username) {
         var $mainRowTypeContents = $('#'+tabId+ ' .insight-type-content');
         $mainRowTypeContents.append('<div class="type-title">'+tabName+'</div>');
 
+        var insightIndex = 1;
         $.each(campaignTypes[campaignType], function (key, selected_function) {
 
             if (selected_function['name']) {
@@ -230,8 +231,14 @@ function renderInsightFunctionsTypes(username) {
                 }
                 if (allow_function) {
                     var insightId = key;
+                    var sizeColumn = 'col-lg-4';
+
+                    if(insightIndex % 3 === 0) {
+                        sizeColumn = 'col-lg-4';
+                    }
+
                     $mainRowTypeContents.append(
-                            '<div class="col-lg-6" id="' + insightId + '">' +
+                            '<div class="'+sizeColumn+'" id="' + insightId + '">' +
                             '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
                                 'Loading data .. </span>' +
                             '</div>'
@@ -241,6 +248,8 @@ function renderInsightFunctionsTypes(username) {
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
                         feature_type_collected.push(selected_function['feature']);
                     }
+
+                    insightIndex++;
                 }
             }
         });
@@ -260,8 +269,8 @@ function showInsightFunction(element, tabId) {
         $divParentActive.removeClass('active');
         $divParent.addClass('active');
 
-        $('#'+activeInsightPanel).slideUp();
-        $('#'+activeInsightPanel+'-summaries').hide();
+        $('#'+activeInsightPanel).hide();
+        $('#'+activeInsightPanel+'-summaries').slideUp();
         activeInsightPanel = tabId;
 
         $('#'+tabId).show();

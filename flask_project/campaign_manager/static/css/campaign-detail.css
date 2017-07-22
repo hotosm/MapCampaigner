@@ -366,3 +366,21 @@ div.side-action .fa-eye:hover {
 .insight-summaries {
     display: none;
 }
+
+.insight-title {
+    text-align: center;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.chart-legends {
+    font-size: 9pt;
+}
+
+.chart-legends li {
+    padding-bottom: 8px;
+}
+
+.chart-legends ul {
+    list-style-type: none;
+}
