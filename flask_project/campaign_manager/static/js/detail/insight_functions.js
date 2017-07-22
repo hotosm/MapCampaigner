@@ -263,18 +263,19 @@ function renderInsightFunctionsTypes(username) {
 
 function showInsightFunction(element, tabId) {
     var $divParent = $(element).parent();
+    map.fitBounds(drawnItems.getBounds());
+
     if($divParent.hasClass('active')) {
 
     } else {
+
         var $divParentActive = $('#type-'+activeInsightPanel + " .side-action");
         $divParentActive.removeClass('active');
         $divParent.addClass('active');
 
         $('#'+activeInsightPanel).hide();
-        $('#'+activeInsightPanel+'-summaries').slideUp();
         activeInsightPanel = tabId;
 
         $('#'+tabId).show();
-        $('#'+tabId+'-summaries').slideDown();
     }
 }
