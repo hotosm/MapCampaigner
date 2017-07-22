@@ -36,7 +36,7 @@ $('#search-projects-button').click(function () {
 });
 
 function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisationTag, campaignTag) {
-    var url = '/campaign_manager/search-remote?';
+    var url = '/search-remote?';
     var urlParams = '';
 
     urlParams += 'page=' + pageNum + '&';
@@ -137,7 +137,7 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
 }
 
 function addProject(el, projectId) {
-    var url = '/campaign_manager/project-detail?projectId=' + projectId;
+    var url = '/project-detail?projectId=' + projectId;
     var $listAddedProjectsDiv = $('#list-added-projects');
 
     $.ajax({

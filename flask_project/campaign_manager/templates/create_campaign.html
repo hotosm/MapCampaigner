@@ -3,7 +3,7 @@
 {% block extra_head %}
 
     <!-- Custom CSS -->
-    <link href="/campaign_manager/static/css/create-campaign.css" rel="stylesheet">
+    <link href="/static/css/create-campaign.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
 
 {% endblock %}
@@ -110,7 +110,7 @@
                                                 {% endif %}
                                             </p>
                                         {% endif %}
-                                        <p class="help-block">Change map display, leave blank to use default</p>
+                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display, leave blank to use default</p>
                                     </div>
                                     <br/>
                                 </div>
@@ -372,9 +372,9 @@
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/map.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/remote-mapping.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/types_tags.js"></script>
+    <script type="text/javascript" src="/static/js/create/map.js"></script>
+    <script type="text/javascript" src="/static/js/create/remote-mapping.js"></script>
+    <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
@@ -514,10 +514,10 @@
 
         function searchOsmUser() {
             var textInput = $('#search-osm-user-text').val();
-            var url = '/campaign_manager/search_osm/' + textInput;
+            var url = '/search_osm/' + textInput;
             var $searchOsmButton = $('#search-osm-user-button');
             $searchOsmButton.attr('disabled', 'disabled');
-            $searchOsmButton.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $searchOsmButton.LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
             $('#users-not-found').hide();
             $('#users-found').hide();
             $.ajax({
@@ -601,11 +601,11 @@
         }
 
         function logoutSuccess() {
-            window.location.replace("/campaign_manager");
+            window.location.replace("/");
         }
 
         if (!window.isAuthenticated) {
-            window.location.replace("/campaign_manager");
+            window.location.replace("/");
         } else {
             $('#campaign-panel').show();
         }
@@ -903,7 +903,7 @@
             });
 
             if (!auth.authenticated() || !$("#uploader").val()) {
-                window.location.replace("/campaign_manager/not-logged-in.html");
+                window.location.replace("/not-logged-in.html");
             }
 
             for (var key in addedLayers) {
