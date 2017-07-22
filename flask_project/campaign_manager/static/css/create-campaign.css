@@ -537,3 +537,25 @@ input#btn-add {
     box-shadow: none !important;
     -moz-box-shadow: none;
 }
+
+.btn-icon-next {
+    float: right;
+    margin: auto 5px;
+}
+
+.btn-icon-prev {
+    float: left;
+    margin: auto 5px;
+}
+
+.btn-step-next {
+    float: left;
+    position: relative;
+    right: -40%;
+}
+
+.btn-step-prev {
+    float: right;
+    position: relative;
+    left: -40%;
+}

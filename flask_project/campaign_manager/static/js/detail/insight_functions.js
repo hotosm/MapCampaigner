@@ -84,7 +84,7 @@ function calculateCampaignProgress() {
 }
 
 function getInsightFunctions(function_id, type_id) {
-    var url = '/campaign_manager/campaign/' + uuid + '/' + function_id;
+    var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
     $.ajax({
         url: url,
