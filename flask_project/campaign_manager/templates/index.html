@@ -165,7 +165,7 @@
         $(function () {
             var user_location_setting = Cookies.get('user_location_setting');
             var tag = "{{ tag }}";
-            if(user_location_setting === 'all') {
+            if(user_location_setting === 'all' && auth.authenticated()) {
                 // check current url
                 var current_href = window.location.href.split('/');
                 if(current_href[current_href.length-1] !== 'all' && !tag) {
@@ -279,7 +279,8 @@
         function logoutSuccess() {
             clearMap();
             clearTable();
-            Cookies.set('user_location_setting', 'nearest');
+            // Clear cookies
+            Cookies.set('user_location_setting', '');
             {% if all %}
                 location.href='/';
             {% endif %}
