@@ -169,7 +169,7 @@
                 // check current url
                 var current_href = window.location.href.split('/');
                 if(current_href[current_href.length-1] !== 'all' && !tag) {
-                   location.href='/campaign_manager/all';
+                   location.href='/all';
                 }
             }
         });
@@ -183,7 +183,7 @@
 
         $('#create-campaign').click(function () {
             if (window.isAuthenticated) {
-                location.href='/campaign_manager/create';
+                location.href='/create';
             } else {
                 showNotifications('You need to login first.', 'danger');
             }
@@ -235,7 +235,7 @@
         });
 
         function participate() {
-            var participateUrl = "/campaign_manager/participate"
+            var participateUrl = "/participate"
             if(userCoordinate) {
                 participateUrl += "?coordinate="+userCoordinate;
             }
@@ -245,11 +245,11 @@
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
-            var url = "/campaign_manager/campaigns";
+            var url = "/campaigns";
             userCoordinate = user['lat'] + ',' + user['lon'];
 
             if(user['lon'] && user['lat']) {
-                url = "/campaign_manager/nearest_campaigns/" + user['lat'] + ',' + user['lon'];
+                url = "/nearest_campaigns/" + user['lat'] + ',' + user['lon'];
             }
             clearMap();
             clearTable();
@@ -263,24 +263,24 @@
         }
 
         $('.remove-tag').click(function () {
-            location.href='/campaign_manager'
-        })
+            location.href='/'
+        });
 
         $('#all-campaigns').click(function () {
             Cookies.set('user_location_setting', 'all');
-            location.href='/campaign_manager/all'
-        })
+            location.href='/all'
+        });
 
         $('#nearest-campaigns').click(function () {
             Cookies.set('user_location_setting', 'nearest');
-            location.href='/campaign_manager'
-        })
+            location.href='/'
+        });
 
         function logoutSuccess() {
             clearMap();
             clearTable();
             {% if all %}
-                location.href='/campaign_manager'
+                location.href='/';
             {% endif %}
             $('#all-campaigns').hide();
             $('#nearest-campaigns').hide();
@@ -288,7 +288,7 @@
 
         if(!auth.authenticated()) {
             {% if all %}
-                location.href='/campaign_manager'
+                location.href='/';
             {% endif %}
             getBrowserLocation();
             getTotalCampaigns();
@@ -318,7 +318,7 @@
             function successGetBrowserLocation(position) {
                 var zoom = 10;
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
-                var url = "/campaign_manager/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
+                var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
                 getCampaigns(url);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
@@ -333,7 +333,7 @@
         }
 
         function getTotalCampaigns() {
-            var url = "/campaign_manager/total_campaigns"
+            var url = "/total_campaigns";
             $.ajax(url, {
                 success: function (response) {
                     $('#active-campaign-number').html(response['campaign_total']);
@@ -344,13 +344,13 @@
 
         function getCampaigns(url, user) {
 
-            $('#panel-campaign').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
             if(!url) {
-                url = "/campaign_manager/campaigns";
+                url = "/campaigns";
             }
             {% if all %}
-                url = "/campaign_manager/campaigns";
+                url = "/campaigns";
             {% endif %}
 
             var campaign_status = '/active';
@@ -383,7 +383,7 @@
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
                             action_button = '<button type="button" href="#" class="campaign-list btn"'+
-                                                'onclick="location.href=\'/campaign_manager/edit/'+campaign['uuid']+'\'">'+
+                                                'onclick="location.href=\'/edit/'+campaign['uuid']+'\'">'+
                                                 '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
                                              '</button>'
                         }
@@ -395,7 +395,7 @@
                         })
 
                         table.row.add([
-                            '<span class="campaign-td"><a href="/campaign_manager/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
+                            '<span class="campaign-td"><a href="/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
                             '<span class="tag">'+types+'</span>',
                             '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
                             action_button
@@ -403,7 +403,7 @@
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+
-                            '<a href="/campaign_manager/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
+                            '<a href="/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
                         '</li>');
 
                         // Add campaign layer
@@ -426,7 +426,7 @@
 
                         var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
                         marker.bindPopup(
-                            '<div class="campaign-marker"><a href="campaign/'+
+                            '<div class="campaign-marker"><a href="/campaign/'+
                                 campaign['uuid'] +'"> ' +
                                 campaign['name'] +
                             '</a></div>'

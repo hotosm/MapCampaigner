@@ -8,7 +8,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Map Campaigner" />
     <meta property="og:description" content="{{ description }}" />
-    <meta property="og:image"  content="/campaign_manager/static/img/kartoza-logo.png" />
+    <meta property="og:image"  content="/static/img/kartoza-logo.png" />
 {% endblock %}
 
 {% block header_content %}
@@ -16,7 +16,7 @@
     <script src="http://connect.facebook.net/en_US/all.js" async=""></script>
 
     <!-- Custom CSS -->
-    <link href="/campaign_manager/static/css/campaign-detail.css" rel="stylesheet">
+    <link href="/static/css/campaign-detail.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -176,14 +176,14 @@
     </div>
 
     <div class="button-manage">
-        <button class="btn btn-info btn-manage" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
+        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
     </div>
 
 {% endblock %}
 
 {% block after_base_js %}
 
-    <script src="/campaign_manager/static/libs/chartjs/Chart.bundle.min.js"></script>
+    <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
 
     <script type="text/javascript">
 
@@ -229,7 +229,7 @@
             );
 
             for (var i = 0; i < remote_projects.length; i++) {
-                var url = '/campaign_manager/project-detail?projectId=' + remote_projects[i];
+                var url = '/project-detail?projectId=' + remote_projects[i];
                 $.ajax({
                     url: url,
                     success: function (data) {
@@ -314,7 +314,7 @@
 
         var total_contributors = 0;
         function calculateContributors(feature) {
-            var url = "/campaign_manager/campaign/total_contributors/" + uuid + "/" + feature;
+            var url = "/campaign/total_contributors/" + uuid + "/" + feature;
             $.ajax({
                 url: url,
                 success: function (response) {
@@ -448,7 +448,7 @@
             var host = window.location.origin;
             var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
             windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
-                    host + '/campaign_manager/campaign/' + uuid;
+                    host + '/campaign/' + uuid;
         }
 
         function shareFacebook() {
@@ -506,6 +506,6 @@
 
     </script>
 
-    <script src="/campaign_manager/static/js/detail/insight_functions.js"></script>
+    <script src="/static/js/detail/insight_functions.js"></script>
 
 {% endblock %}

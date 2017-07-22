@@ -50,14 +50,14 @@
     <ul class="pager">
         {% if data.current_page > 1 %}
             <li>
-                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
+                <a class="pager-button" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
                     ← Previous
                 </a>
             </li>
         {% endif %}
         {% if data.current_page != data.max_page %}
             <li>
-                <a class="pager-button" href="/campaign_manager/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
+                <a class="pager-button" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
                     Next →
                 </a>
             </li>
@@ -92,7 +92,7 @@
         $wrapper.find(".pager-button").click(function (event) {
             var $content = $('#' + function_id);
             event.preventDefault();
-            $content.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $content.LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
             $.ajax({
                 url: $(event.target).attr('href'),
                 success: function (data) {
