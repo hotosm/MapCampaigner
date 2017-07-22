@@ -384,3 +384,7 @@ div.side-action .fa-eye:hover {
 .chart-legends ul {
     list-style-type: none;
 }
+
+#remote-projects-summaries .fa-eye:hover {
+    cursor: pointer;
+}

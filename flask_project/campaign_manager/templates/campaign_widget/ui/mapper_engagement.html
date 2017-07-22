@@ -42,7 +42,7 @@
      <div class="row summary single-row">
         <div class="col-lg-10">
             <div class="pull-left">
-                User engaged
+                Users engaged
             </div>
             <div class="pull-right">
                 {{ data['user_list']|length }}
@@ -116,7 +116,7 @@
             $wrapper.find('.chart-legends').html(averageChart.generateLegend());
 
             // User timeline charts
-            {% if additional_data['type'] != "" %}
+            {% if additional_data['type'] == "" %}
             {% for entry in data['user_list'] %}
                 var d{{ loop.index }} = {{ entry.timeline|safe }};
                 var chartData{{ loop.index }} = {

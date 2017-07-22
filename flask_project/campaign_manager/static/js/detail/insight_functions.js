@@ -2,6 +2,8 @@ var activeInsightPanel = '';
 
 function renderInsightFunctions(username) {
 
+    renderRemoteProjects();
+
     $.each(selected_functions, function (key, selected_function) {
 
         var insightPanel = $('.advance-insights').clone()[0];
@@ -43,7 +45,6 @@ function renderInsightFunctions(username) {
         calculateContributors(feature_type_collected[i]);
     }
 
-    renderRemoteProjects();
 }
 
 function calculateCampaignProgress() {
