@@ -373,7 +373,7 @@
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="/static/js/create/map.js"></script>
-    <script type="text/javascript" src="/static/js/create/remote-mapping.js"></script>
+    <script type="text/javascript" src="/static/js/create/remote_mapping.js"></script>
     <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
 
     <script type='text/template' id='_template-function-form'>
@@ -751,32 +751,31 @@
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
-            $prevFieldset.fadeOut(400, function () {
-                $prevNavStep.removeClass('active');
-                if (activatePrevStep) {
-                    activateStep(previousStep);
+            $prevFieldset.hide();
+            $prevNavStep.removeClass('active');
+            if (activatePrevStep) {
+                activateStep(previousStep);
+            }
+            $nextNavStep.addClass('active');
+
+            $nextFieldset.fadeIn();
+            $nextFieldset.children().find('button').removeAttr('disabled');
+
+            if (nextStep === 2) {
+                var aoiMap = getAOIMap();
+                aoiMap.invalidateSize();
+                if (drawnItems.getLayers().length > 0) {
+                    aoiMap.fitBounds(drawnItems.getBounds());
+                    getAreaSize();
+                } else {
+                    aoiMap.setView([0, 0], 2);
                 }
-                $nextNavStep.addClass('active');
+            } else if (nextStep === 3) {
+                remoteMap.invalidateSize();
+            }
 
-                $nextFieldset.fadeIn();
-                $nextFieldset.children().find('button').removeAttr('disabled');
-
-                if (nextStep === 2) {
-                    var aoiMap = getAOIMap();
-                    aoiMap.invalidateSize();
-                    if (drawnItems.getLayers().length > 0) {
-                        aoiMap.fitBounds(drawnItems.getBounds());
-                        getAreaSize();
-                    } else {
-                        aoiMap.setView([0, 0], 2);
-                    }
-                } else if (nextStep === 3) {
-                    remoteMap.invalidateSize();
-                }
-
-                // scroll window to beginning of the form
-                scrollToClass($('#wrapper'), 20);
-            });
+            // scroll window to beginning of the form
+            scrollToClass($('#wrapper'), 20);
         }
 
         function nextStep(elm) {
