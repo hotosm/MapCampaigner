@@ -580,3 +580,14 @@ input#btn-add {
     padding-top: 10px;
     color: #5e5e5e;
 }
+
+#link-to-omk-form label {
+    margin-top: 10px;
+}
+
+input#link_to_omk {
+    position: absolute;
+    margin-top: -1px;
+    margin-left: 10px;
+    font-size: 20px;
+}

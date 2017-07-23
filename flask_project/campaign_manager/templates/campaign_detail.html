@@ -97,8 +97,10 @@
                         <div class="btn-group btn-share-group" role="group" aria-label="...">
                             <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
                             <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
-                            <button type="button" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-                            <button type="button" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+                            {% if link_to_omk %}
+                                <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+                            {% endif %}
+                            <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
                         </div>
 
                     </div>
@@ -324,6 +326,15 @@
             }
 
             calculateCampaignProgress();
+
+            // Check share button
+            if (isMobile.Android()) {
+            } else if (isMobile.iOS()) {
+                $('#btn-omk-link').addClass('disabled');
+            } else {
+                $('#btn-omk-link').addClass('disabled');
+                $('#btn-mapsme-link').addClass('disabled');
+            }
         });
 
         var total_contributors = 0;

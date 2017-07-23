@@ -10,7 +10,8 @@ from wtforms.fields import (
     SubmitField,
     HiddenField,
     TextAreaField,
-    RadioField
+    RadioField,
+    BooleanField
 )
 from wtforms.validators import DataRequired, ValidationError
 from urllib.parse import urlparse
@@ -57,6 +58,9 @@ class CampaignForm(FlaskForm):
             ('Start', 'Start'),
             ('Finish', 'Finish')
         ]
+    )
+    link_to_omk = BooleanField(
+        u'Add OMK link?'
     )
     start_date = DateField(
         u'Start date of campaign',
