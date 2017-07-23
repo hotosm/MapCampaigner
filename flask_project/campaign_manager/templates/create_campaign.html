@@ -978,6 +978,7 @@
                 window.location.replace("/not-logged-in.html");
             }
 
+            $('#remote_projects').html('');
             for (var key in addedLayers) {
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }

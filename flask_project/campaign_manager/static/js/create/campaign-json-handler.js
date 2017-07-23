@@ -32,7 +32,17 @@ function assignCampaignJsonToForm(json) {
     }
     updateManagerList();
 
-    // check types
+    // check remote projects
+    if (jQuery.type(json['remote_projects']) === "array") {
+        $('#list-added-projects').each(function (index, element) {
+            console.log($(element));
+            console.log($(element).find('.btn-danger'));
+            $(element).find('.btn-danger').click();
+        });
+        $.each(json['remote_projects'], function (index, remote_project_id) {
+            addProject($('#list-added-projects'), remote_project_id);
+        });
+    }
 }
 
 function checkCampaignJsonValue(json) {
@@ -43,6 +53,10 @@ function checkCampaignJsonValue(json) {
         error.push('campaign_manager is not list.');
     }
 
+    // check remote projects
+    if (jQuery.type(json['remote_projects']) !== "array") {
+        error.push('remote_projects is not list.');
+    }
 
     // check types
     $.each(json['types'], function (key, value) {
@@ -76,9 +90,9 @@ function checkCampaignJson() {
         assignCampaignJsonToForm(campaignJson);
         var allValid = checkingAllStep();
         var validWhenAssign = checkCampaignJsonValue(campaignJson);
-        if (allValid && validWhenAssign) {
-            preparingStep(4);
-        }
+        //if (allValid && validWhenAssign) {
+        //    preparingStep(4);
+        //}
     } catch (err) {
         showNotifications('Json format is not correct.', 'danger');
     }
