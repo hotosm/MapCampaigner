@@ -1,4 +1,5 @@
 from abc import ABCMeta
+import re
 import datetime
 import xml
 import calendar
@@ -81,11 +82,16 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                         tag_name = self.feature.split('=')[0]
                     else:
                         tag_name = TAG_MAPPING_REVERSE[self.feature]
-                    sorted_user_list = osm_object_contributions(
-                        overpass_data['file'],
-                        tag_name,
-                        start_date,
-                        end_date)
+
+                    file_data = overpass_data['file'].read().decode('utf-8')
+                    regex = 'runtime error:'
+
+                    if not re.search(regex, file_data):
+                        sorted_user_list = osm_object_contributions(
+                            overpass_data['file'],
+                            tag_name,
+                            start_date,
+                            end_date)
                 except xml.sax.SAXParseException:
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
