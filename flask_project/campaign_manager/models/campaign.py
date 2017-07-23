@@ -12,7 +12,7 @@ import time
 from flask import render_template
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
-# import numpy
+import numpy
 
 from app_config import Config
 import campaign_manager.insights_functions as insights_functions
@@ -229,7 +229,7 @@ class Campaign(JsonModel):
             cascaded_polygons = cascaded_union(polygons)
 
         if cascaded_polygons:
-            coordinates = cascaded_polygons.exterior.coords
+            coordinates = numpy.asarray(cascaded_polygons.exterior.coords)
             return coordinates.tolist()
 
         if coordinate_to_correct:
