@@ -4,9 +4,8 @@ from reporter import reporter
 from campaign_manager import campaign_manager
 from campaign_manager.views import not_found_page
 
-osm_app = Flask(__name__, static_folder='./reporter/static')
-osm_app.register_blueprint(reporter)
-osm_app.register_blueprint(campaign_manager, url_prefix='/campaign_manager')
+osm_app = Flask(__name__, static_folder='./campaign_manager/static')
+osm_app.register_blueprint(campaign_manager)
 
 try:
     osm_app.config.from_object(os.environ['APP_SETTINGS'])

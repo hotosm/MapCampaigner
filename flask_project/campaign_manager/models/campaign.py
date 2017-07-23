@@ -11,6 +11,8 @@ import time
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
+from shapely.ops import cascaded_union
+# import numpy
 
 from app_config import Config
 import campaign_manager.insights_functions as insights_functions
@@ -208,13 +210,34 @@ class Campaign(JsonModel):
         except AttributeError as e:
             return {}
 
-    def corrected_coordinates(self):
+    def corrected_coordinates(self, coordinate_to_correct=None):
         """ Corrected geometry of campaign.
+
+        :param coordinate_to_correct: correct this coordinate instead
+        :type coordinate_to_correct: list
+
         :return: corrected coordinated
         :rtype: [str]
         """
-        coordinates = self.geometry['features'][0]
-        coordinates = coordinates['geometry']['coordinates'][0]
+        cascaded_polygons = None
+        if len(self.geometry['features']) > 1 and not coordinate_to_correct:
+            polygons = []
+            for feature in self.geometry['features']:
+                polygons.append(shapely_geometry.Polygon(
+                        self.corrected_coordinates(
+                                feature['geometry']['coordinates'][0])))
+            cascaded_polygons = cascaded_union(polygons)
+
+        if cascaded_polygons:
+            coordinates = cascaded_polygons.exterior.coords
+            return coordinates.tolist()
+
+        if coordinate_to_correct:
+            coordinates = coordinate_to_correct
+        else:
+            coordinates = self.geometry['features'][0]
+            coordinates = coordinates['geometry']['coordinates'][0]
+
         correct_coordinates = []
         for coordinate in coordinates:
             correct_coordinates.append(

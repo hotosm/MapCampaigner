@@ -1,15 +1,29 @@
+<div class="insight-title" style="margin-bottom: 20px;">Users Engagement</div>
 <div class="row" style="padding: 20px;">
     {% if data['user_list'] %}
-    <div class="col-lg-5">
-        <canvas id="average-engagement" style="width: 100%; "></canvas>
-    </div>
-    <div class="col-lg-7 overview-container">
-        {% for entry in data['user_list'] %}
-            <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
-            Total Ways <span class="label label-primary">{{ entry.ways }}</span>
-            <hr/>
-        {% endfor %}
-    </div>
+        {% if 'type' not in additional_data or additional_data['type'] == "" %}
+            <div class="col-lg-4">
+                <canvas class="average-engagement" style="width: 100%; "></canvas>
+            </div>
+            <div class="col-lg-3">
+                <div class="chart-legends"></div>
+            </div>
+            <div class="col-lg-5 overview-container">
+                {% for entry in data['user_list'] %}
+                    <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
+                    Total Ways <span class="label label-primary">{{ entry.ways }}</span>
+                    <hr/>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="col-lg-1"></div>
+            <div class="col-lg-6">
+                <canvas class="average-engagement" style="width: 100%; "></canvas>
+            </div>
+            <div class="col-lg-5">
+                <div class="chart-legends"></div>
+            </div>
+        {% endif %}
     {% else %}
     <div class="col-lg-12">
         <div class="no-data">No data to be rendered</div>
@@ -23,6 +37,22 @@
         Currently updating.
     {% endif %}
 </div>
+
+<div class="insight-summaries">
+     <div class="row summary single-row">
+        <div class="col-lg-10">
+            <div class="pull-left">
+                Users engaged
+            </div>
+            <div class="pull-right">
+                {{ data['user_list']|length }}
+            </div>
+        </div>
+        <div class="col-lg-2 map-side-list-action">
+        </div>
+    </div>
+</div>
+
 
 <style type="text/css">
     .overview-container {
@@ -38,6 +68,9 @@
 <script type="text/javascript">
     $(function () {
         {% if data['user_list'] %}
+            var tab_id = '{{ function_id }}';
+            var $wrapper = $('#'+tab_id);
+
             $.fn.dataTable.moment( 'DD-MM-YYYY' );
 
             var chartData = {
@@ -55,14 +88,35 @@
                 chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
             {% endfor %}
 
-            var ctx = document.getElementById("average-engagement").getContext('2d');
+
+            var ctx = $wrapper.find(".average-engagement");
             var averageChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: chartData,
-                options: {}
+                options: {
+                    legend: {
+                     display: false
+                    },
+                    legendCallback: function (chart) {
+                        var text = [];
+                        text.push('<ul>');
+                        for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+                            text.push('<li>');
+                            text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
+                            if (chart.data.labels[i]) {
+                                text.push(chart.data.labels[i]);
+                            }
+                            text.push('</li>');
+                        }
+                        text.push('</ul>');
+                        return text.join("");
+                    }
+                }
             });
+            $wrapper.find('.chart-legends').html(averageChart.generateLegend());
 
             // User timeline charts
+            {% if 'type' not in additional_data or additional_data['type'] == "" %}
             {% for entry in data['user_list'] %}
                 var d{{ loop.index }} = {{ entry.timeline|safe }};
                 var chartData{{ loop.index }} = {
@@ -108,6 +162,7 @@
                     options: {}
                 });
             {% endfor %}
+            {% endif %}
         {% endif %}
     });
 </script>

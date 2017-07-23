@@ -3,7 +3,7 @@
 {% block extra_head %}
 
     <!-- Custom CSS -->
-    <link href="/campaign_manager/static/css/create-campaign.css" rel="stylesheet">
+    <link href="/static/css/create-campaign.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
 
 {% endblock %}
@@ -95,7 +95,8 @@
                                                 {% endif %}
                                             </p>
                                         {% endif %}
-                                        <p class="help-block">Change map display, leave blank to use default</p>
+                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display,
+                                            leave blank to use default</p>
                                     </div>
                                     <br/>
                                 </div>
@@ -148,7 +149,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -164,22 +165,49 @@
                                     <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                 </div>
                             </div>
-                            <div class="form-body col-lg-4">
+                            <div class="col-lg-2">
+                                <div style="margin-top: 20px;font-weight: bold; margin-bottom: 20px;">
+                                    The AOI is specified in one of the following ways:
+                                </div>
+                                <ul>
+                                    <li>
+                                        Digitising on the map.
+                                    </li>
+                                    <li>
+                                        Upload a SHP file which either has only one polygon containing the AOI or multiple polygons each indicating a campaign area.
+                                        Teams can be assigned in this file by adding a "team" column and the status is deduced from a "date" column indicating on which date the team will complete
+                                        their mapping.
+                                        When using multiple polygons these must be union-able into a single polygon.
+                                    </li>
+                                    <li>
+                                        Upload a FieldPapers Atlas.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-body col-lg-6">
                                 <div class="form-group">
-                                    <label>Update boundary by shp</label>
+                                    <label>Upload Shapefiles</label>
                                     {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                </div>
+                            </div>
+                            <div class="form-body col-lg-6">
+                                <div class="form-group">
+                                    <label>Upload FieldPapers atlas</label>
+                                    {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
                                 </div>
                             </div>
                         </div>
                         <div class="cc-buttons">
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
                             </div>
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -266,13 +294,13 @@
 
                         <div class="cc-buttons">
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
                             </div>
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -327,9 +355,6 @@
                                             <i class="fa fa-plus"></i> Add Function
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
                     </fieldset>
                 </div>
                 <!-- /.row (nested) -->
@@ -344,6 +369,8 @@
     <script type="text/javascript">
 
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
+        var errors = {{ form['errors'] | safe}};
+        var functions = {{ functions|safe }};
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -378,10 +405,10 @@
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/map.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/remote-mapping.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/types_tags.js"></script>
-    <script type="text/javascript" src="/campaign_manager/static/js/create/campaign-json-handler.js"></script>
+    <script type="text/javascript" src="/static/js/create/map.js"></script>
+    <script type="text/javascript" src="/static/js/create/remote_mapping.js"></script>
+    <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
+    <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
@@ -422,12 +449,15 @@
 
     <script type="text/javascript">
         typesOptions = '{{ form.types_options }}';
+        var initialLoad = true;
+        var selectedFunctions = [];
         var types = {{ types|safe }};
         var selected_types_data = {};
         {% if form.types.data %}
             selected_types_data = {{ form.types.data | safe }};
             addMultipleTypes(selected_types_data);
         {% endif %}
+        initialLoad = false;
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -439,15 +469,24 @@
         {% if form.campaign_managers.data %}
             managers_list = {{ form.campaign_managers.data | safe }};
         {% endif %}
+        {% if campaign_creator %}
+            var campaign_creator = '{{ campaign_creator }}';
+        {% endif %}
 
         function updateManagerList() {
             $('#managers-list').html('');
             if (managers_list.length > 0) {
                 $.each(managers_list, function (index, value) {
-                    $('#managers-list').append(
-                            '<span class="manager">' + value +
-                            '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
-                    )
+                    if (typeof campaign_creator !== 'undefined' && value == campaign_creator) {
+                        $('#managers-list').append(
+                                '<span class="manager">' + value
+                        )
+                    } else {
+                        $('#managers-list').append(
+                                '<span class="manager">' + value +
+                                '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
+                        )
+                    }
                 })
             }
         }
@@ -495,10 +534,10 @@
 
         function searchOsmUser() {
             var textInput = $('#search-osm-user-text').val();
-            var url = '/campaign_manager/search_osm/' + textInput;
+            var url = '/search_osm/' + textInput;
             var $searchOsmButton = $('#search-osm-user-button');
             $searchOsmButton.attr('disabled', 'disabled');
-            $searchOsmButton.LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+            $searchOsmButton.LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
             $('#users-not-found').hide();
             $('#users-found').hide();
             $.ajax({
@@ -546,13 +585,33 @@
 
         //------------------ EVENT ------------------//
 
+        function reloadUser() {
+            var that = this;
+            auth.xhr({
+                method: 'GET',
+                path: '/api/0.6/user/details'
+            }, function (err, res) {
+
+                var u = res.getElementsByTagName('user')[0];
+                var changesets = res.getElementsByTagName('changesets')[0];
+
+                var o = {
+                    display_name: u.getAttribute('display_name'),
+                    id: u.getAttribute('id'),
+                    count: changesets.getAttribute('count')
+                };
+
+                updated(o);
+
+            }, this);
+        }
+
         function updated(response) {
             $('#campaign-panel').show();
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
                 $('#managers-list').append(
-                        '<span class="manager">' + response.display_name +
-                        '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + response.display_name + '\')" aria-hidden="true"></i></span>'
+                        '<span class="manager">' + response.display_name
                 );
             {% endif %}
         }
@@ -562,11 +621,11 @@
         }
 
         function logoutSuccess() {
-            window.location.replace("/campaign_manager");
+            window.location.replace("/");
         }
 
         if (!window.isAuthenticated) {
-            window.location.replace("/campaign_manager");
+            window.location.replace("/");
         } else {
             $('#campaign-panel').show();
         }
@@ -580,9 +639,6 @@
                 activateStep(i);
             }
         }
-
-        var errors = {{ form['errors'] | safe}};
-        var functions = {{ functions|safe }};
 
         if (!isEmpty(errors)) {
             showNotifications('Failed to create a campaign!', 'danger');
@@ -664,8 +720,7 @@
             });
 
             if (managers_list.length === 0) {
-                valid = false;
-                $('.error-managers').show();
+                reloadUser();
             }
 
             var types_value = getTypesSelectionValue();
@@ -736,7 +791,7 @@
             if (current_step == 4) {
                 preprocessSubmitForm();
                 $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
-                $.post("/campaign_manager/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
+                $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
                         function (data) {
                             $('#advanced-mode-textarea').LoadingOverlay("hide");
                             $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
@@ -760,32 +815,31 @@
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
             preparingStep(nextStep);
-            $prevFieldset.fadeOut(400, function () {
-                $prevNavStep.removeClass('active');
-                if (activatePrevStep) {
-                    activateStep(previousStep);
+            $prevFieldset.hide();
+            $prevNavStep.removeClass('active');
+            if (activatePrevStep) {
+                activateStep(previousStep);
+            }
+            $nextNavStep.addClass('active');
+
+            $nextFieldset.fadeIn();
+            $nextFieldset.children().find('button').removeAttr('disabled');
+
+            if (nextStep === 2) {
+                var aoiMap = getAOIMap();
+                aoiMap.invalidateSize();
+                if (drawnItems.getLayers().length > 0) {
+                    aoiMap.fitBounds(drawnItems.getBounds());
+                    getAreaSize();
+                } else {
+                    aoiMap.setView([0, 0], 2);
                 }
-                $nextNavStep.addClass('active');
+            } else if (nextStep === 3) {
+                remoteMap.invalidateSize();
+            }
 
-                $nextFieldset.fadeIn();
-                $nextFieldset.children().find('button').removeAttr('disabled');
-
-                if (nextStep === 2) {
-                    var aoiMap = getAOIMap();
-                    aoiMap.invalidateSize();
-                    if (drawnItems.getLayers().length > 0) {
-                        aoiMap.fitBounds(drawnItems.getBounds());
-                        getAreaSize();
-                    } else {
-                        aoiMap.setView([0, 0], 2);
-                    }
-                } else if (nextStep === 3) {
-                    remoteMap.invalidateSize();
-                }
-
-                // scroll window to beginning of the form
-                scrollToClass($('#wrapper'), 20);
-            });
+            // scroll window to beginning of the form
+            scrollToClass($('#wrapper'), 20);
         }
 
         function nextStep(elm) {
@@ -871,6 +925,7 @@
             {# selected functions#}
             if ($("#selected_functions").val()) {
                 var selected_functions = $.parseJSON($("#selected_functions").val());
+                selectedFunctions = selected_functions;
                 $.each(selected_functions, function (key, functions) {
                     addFunction($('#insight-function-add'), functions);
                 });
@@ -920,7 +975,7 @@
             });
 
             if (!auth.authenticated() || !$("#uploader").val()) {
-                window.location.replace("/campaign_manager/not-logged-in.html");
+                window.location.replace("/not-logged-in.html");
             }
 
             for (var key in addedLayers) {
@@ -974,12 +1029,15 @@
             getFormElement($event, '.function-attributes').hide();
             getFormElement($event, '.function-type').hide();
 
-            if ($(event).val() !== '') {
+            var insightFunctionName = $(event).val();
+
+            if (insightFunctionName !== '') {
                 var need_feature = 'false';
                 var need_required_attributes = 'false';
-                if (typeof functions[$(event).val()] !== 'undefined') {
-                    need_feature = functions[$(event).val()]['need_feature'];
-                    need_required_attributes = functions[$(event).val()]['need_required_attributes'];
+
+                if (typeof functions[insightFunctionName] !== 'undefined') {
+                    need_feature = functions[insightFunctionName]['need_feature'];
+                    need_required_attributes = functions[insightFunctionName]['need_required_attributes'];
                 }
 
                 if (need_feature === 'true') {

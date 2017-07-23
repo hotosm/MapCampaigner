@@ -8,7 +8,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Map Campaigner" />
     <meta property="og:description" content="{{ description }}" />
-    <meta property="og:image"  content="/campaign_manager/static/img/kartoza-logo.png" />
+    <meta property="og:image"  content="/static/img/kartoza-logo.png" />
 {% endblock %}
 
 {% block header_content %}
@@ -16,7 +16,7 @@
     <script src="http://connect.facebook.net/en_US/all.js" async=""></script>
 
     <!-- Custom CSS -->
-    <link href="/campaign_manager/static/css/campaign-detail.css" rel="stylesheet">
+    <link href="/static/css/campaign-detail.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -113,33 +113,38 @@
                 <div class="panel-body">
                     <div class="row side-panel-wrapper">
                         <div class="col-lg-3 map-side-panel">
-                            <div class="map-side-list row">
+                            <div class="map-side-list ">
+                                <div class="row">
+
                                 <div class="col-lg-10">
-                                    <span class="pull-left map-side-list-name">
-                                        Users engaged
-                                    </span>
+                                    <div class="pull-left map-side-list-name">
+                                        Total users engaged
+                                    </div>
                                     <span class="pull-right map-side-list-number">
                                         <span id="contributors"><span class="grey-italic">Loading data...</span></span>
                                     </span>
                                 </div>
                                 <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action">
+                                    <div class="side-action inactive-panel">
                                         <i class="fa fa-eye-slash" aria-hidden="true"></i>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="map-side-list row">
-                                <div class="col-lg-10">
-                                    <span class="pull-left map-side-list-name">
-                                        Features collected
-                                    </span>
-                                    <span class="pull-right map-side-list-number">
-                                        <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
-                                    </span>
                                 </div>
-                                <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action">
-                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                            </div>
+                            <div class="map-side-list">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="pull-left map-side-list-name">
+                                            Total features collected
+                                        </div>
+                                        <div class="pull-right map-side-list-number">
+                                            <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 map-side-list-action">
+                                        <div class="side-action inactive-panel">
+                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -150,8 +155,6 @@
                     </div>
 
                     <div class="insight-function-panel">
-                        <ul class="nav nav-tabs insight-tabs" style="display: none;">
-                        </ul>
                         <div class="tab-content insight-content">
                         </div>
                     </div>
@@ -176,14 +179,14 @@
     </div>
 
     <div class="button-manage">
-        <button class="btn btn-info btn-manage" onclick="location.href='/campaign_manager/edit/{{ uuid }}'">Manage</button>
+        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
     </div>
 
 {% endblock %}
 
 {% block after_base_js %}
 
-    <script src="/campaign_manager/static/libs/chartjs/Chart.bundle.min.js"></script>
+    <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
 
     <script type="text/javascript">
 
@@ -195,7 +198,10 @@
         var feature_type_collected = [];
         var feature_type_collected_count = 0;
 
-        var campaign_types = {{ types | safe}};
+        var campaign_types = null;
+        {% if types %}
+            campaign_types = {{ types | safe }};
+        {% endif %}
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
         var remote_projects = {{ remote_projects|safe }};
@@ -214,22 +220,28 @@
                 return;
             }
 
+           $('.map-side-panel').append(
+                '<div class="map-side-list map-side-type" id="type-remote-projects">'+
+                    '<div class="row">'+
+                        '<div class="col-lg-10">'+
+                            '<div class="pull-left map-side-list-name">'+
+                                    'Remote Projects'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="col-lg-2 map-side-list-action">'+
+                            '<div class="side-action ">'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div id="remote-projects-summaries" class="side-panel-summaries"></div>'+
+                '</div>'
+            );
+
             var active = '';
 
-            $('.insight-tabs').append(
-                    '<li class="' + active + '">' +
-                    '<a href="#remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
-                    'Remote Mapper' +
-                    '</li>'
-            );
-
-            $('.insight-content').append(
-                    '<div class="tab-pane fade in" id="remote-mapper-content">' +
-                    '</div>'
-            );
-
             for (var i = 0; i < remote_projects.length; i++) {
-                var url = '/campaign_manager/project-detail?projectId=' + remote_projects[i];
+
+                var url = '/project-detail?projectId=' + remote_projects[i];
                 $.ajax({
                     url: url,
                     success: function (data) {
@@ -260,16 +272,18 @@
 
                         addedLayers[data['projectId']] = layerGroup;
 
-                        $('#remote-mapper-content').append(
-                                '<div class="added-project well well-sm" onclick="showProjectMap(this, ' + data['projectId'] + ')">' +
-                                '<div class="project-detail-name">' +
+                        $('#remote-projects-summaries').append(
+                            '<div class="row summary single-row" style="font-size:9pt;">'+
+                               '<div class="col-lg-10" style="padding-top: 0 !important;">'+
+                            '<div class="pull-left">'+
                                 '#' + data['projectId'] + ' ' + data['projectInfo']['name'] + '' +
-                                '</div>' +
-                                '<div class="project-detail-desc">' +
-                                data['projectInfo']['shortDescription'] +
-                                '</div>' +
-                                '</div>'
-                        )
+                            '</div>'+
+                            '</div>'+
+                                '<div class="col-lg-2 map-side-list-action">'+
+                                    '<i class="fa fa-eye" aria-hidden="true" onclick="showProjectMap(this, ' + data['projectId'] + ')"></i>'+
+                                '</div>'+
+                            '</div>'
+                        );
                     }
                 });
             }
@@ -314,7 +328,7 @@
 
         var total_contributors = 0;
         function calculateContributors(feature) {
-            var url = "/campaign_manager/campaign/total_contributors/" + uuid + "/" + feature;
+            var url = "/campaign/total_contributors/" + uuid + "/" + feature;
             $.ajax({
                 url: url,
                 success: function (response) {
@@ -448,7 +462,7 @@
             var host = window.location.origin;
             var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
             windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
-                    host + '/campaign_manager/campaign/' + uuid;
+                    host + '/campaign/' + uuid;
         }
 
         function shareFacebook() {
@@ -506,6 +520,6 @@
 
     </script>
 
-    <script src="/campaign_manager/static/js/detail/insight_functions.js"></script>
+    <script src="/static/js/detail/insight_functions.js"></script>
 
 {% endblock %}
