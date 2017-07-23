@@ -194,7 +194,7 @@ function renderInsightFunctionsTypes(username) {
                                 tabName +
                         '</div>'+
                         '<span class="pull-right map-side-list-number">'+
-                                '<span class="features-collected">Loading data...</span>'+
+                                '<span class="features-collected">...</span>'+
                                 '</span>'+
                     '</div>'+
                     '<div class="col-lg-2 map-side-list-action">'+
@@ -241,7 +241,7 @@ function renderInsightFunctionsTypes(username) {
                     $mainRowTypeContents.append(
                             '<div class="'+sizeColumn+'" id="' + insightId + '">' +
                             '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
-                                'Loading data .. </span>' +
+                                'Loading data... </span>' +
                             '</div>'
                     );
 

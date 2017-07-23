@@ -1,6 +1,6 @@
+<div class="insight-title" style="margin-bottom: 40px;">Count Feature</div>
 <div class="row piechart-wrapper">
 
-    <div class="insight-title" style="margin-bottom: 20px;">Count Feature</div>
     <div class="col-lg-1"></div>
     <div class="col-lg-6">
         <canvas class="pieChart"></canvas>
@@ -71,7 +71,7 @@
     } else {
         $wrapper.find('.piechart-wrapper').addClass('error');
         $wrapper.find('.piechart-wrapper').html(
-                '<div id="notification" class="alert alert-danger alert-dismissable">No chart can be rendered.</div>'
+                '<div id="notification" style="margin-bottom: 10px;" class="no-data">No chart can be rendered.</div>'
         )
     }
 </script>

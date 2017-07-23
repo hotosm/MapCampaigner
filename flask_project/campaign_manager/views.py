@@ -138,13 +138,13 @@ def campaign_boundary_upload_chunk_success(uuid):
             folder, uuid
         )
         geojson = ShapefileProvider().get_data(shapefile_file)
+
         if len(geojson['features']) > 1:
+            # TODO : Check if polygons unionable
+            pass
+
+        if geojson['features'][0]['geometry']['type'] != 'Polygon':
             raise ShapefileProvider.MultiPolygonFound
-        elif len(geojson['features']) == 0:
-            raise ShapefileProvider.MultiPolygonFound
-        else:
-            if geojson['features'][0]['geometry']['type'] != 'Polygon':
-                raise ShapefileProvider.MultiPolygonFound
 
         if not geojson:
             if os.path.exists(folder):

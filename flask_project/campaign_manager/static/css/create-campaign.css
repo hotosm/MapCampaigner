@@ -570,3 +570,13 @@ input#btn-add {
     position: relative;
     left: -40%;
 }
+
+.area-table-title {
+    font-weight: bold;
+    color: #5b5b5b;
+}
+
+.area-table-list .row {
+    padding-top: 10px;
+    color: #5e5e5e;
+}

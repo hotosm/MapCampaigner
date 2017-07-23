@@ -388,3 +388,7 @@ div.side-action .fa-eye:hover {
 #remote-projects-summaries .fa-eye:hover {
     cursor: pointer;
 }
+
+.no-data {
+    color: #a60300;
+}

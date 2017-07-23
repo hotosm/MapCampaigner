@@ -199,6 +199,26 @@
                                 </div>
                             </div>
                         </div>
+                        <hr/>
+                        <div class="row form-body">
+                            <div class="col-lg-8 area-table">
+                                <div class="area-table-title row">
+                                    <div class="col-lg-4">
+                                        AREA
+                                    </div>
+                                    <div class="col-lg-4">
+                                        TEAM
+                                    </div>
+                                    <div class="col-lg-4">
+                                        STATUS
+                                    </div>
+                                </div>
+
+                                <div class="area-table-list">
+                                </div>
+
+                            </div>
+                        </div>
                         <div class="cc-buttons">
                             <div class="col-lg-4">
                                 <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
@@ -836,6 +856,7 @@
                 if (drawnItems.getLayers().length > 0) {
                     aoiMap.fitBounds(drawnItems.getBounds());
                     getAreaSize();
+                    stringfyGeometry();
                 } else {
                     aoiMap.setView([0, 0], 2);
                 }

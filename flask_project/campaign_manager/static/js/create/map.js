@@ -101,9 +101,87 @@ function stopDraw(e) {
 }
 
 function stringfyGeometry() {
-    var json = drawnItems.toGeoJSON();
-    $("#geometry").val(JSON.stringify(json));
+    createCoverageTable();
+    var geojson = drawnItems.toGeoJSON();
+    $("#geometry").val(JSON.stringify(geojson));
     error_format_before = false
+}
+
+function clearCoverageTable() {
+    $('.area-table-list').html('');
+}
+
+function createCoverageTable() {
+    clearCoverageTable();
+    $.each(drawnItems.getLayers(), function(index, layer) {
+        var areaName = '';
+        var teamName = '';
+        var feature = '';
+        var properties = '';
+        var layerId = layer._leaflet_id;
+        var status = '';
+
+        feature = layer.feature = layer.feature || {};
+        feature.type = feature.type || "Feature";
+        properties = feature.properties = feature.properties || {};
+
+        if(properties && 'team' in properties) {
+            teamName = properties['team'];
+        }
+
+        if(properties && 'area' in properties) {
+            if(properties['area']) {
+                areaName = properties['area'];
+            }
+        }
+
+        if(properties && 'status' in properties) {
+            status = properties['status'];
+        } else if(properties && 'date' in properties) {
+            var propertyDate = properties['date'];
+            if(propertyDate) {
+                propertyDate = moment(propertyDate, 'YYYY-MM-DD', true);
+                var remainingDays = propertyDate.diff(moment(), 'days') + 1;
+
+                if (remainingDays <= 0) {
+                    status='complete';
+                } else {
+                    status='incomplete';
+                }
+            }
+        }
+
+        $('.area-table-list').append(
+            '<div class="row">'+
+                '<input type="hidden" name="layer-index" value="'+layerId+'">'+
+                '<div class="col-lg-4">'+
+                    '<input onblur="updateGeometryString(this, \'area\', '+layerId+')" id="area_name-'+layerId+'" name="area_name" placeholder="Team Name" type="text" value="'+areaName+'" class="form-control area_name">'+
+                '</div>'+
+                '<div class="col-lg-4">'+
+                    '<input onblur="updateGeometryString(this, \'team\', '+layerId+')" name="team_name" placeholder="Team Name" type="text" value="'+teamName+'" class="form-control">'+
+                '</div>'+
+                '<div class="col-lg-4">'+
+                    '<select id="status-'+layerId+'" onchange="updateGeometryString(this, \'status\', '+layerId+')" class="form-control">'+
+                          '<option value="unassigned" selected="selected">Unassigned</option>'+
+                          '<option value="incomplete">Incomplete</option>'+
+                          '<option value="complete">Complete</option>'+
+                    '</select>'+
+                '</div>'+
+            '</div>'
+        );
+
+        if(status) {
+            $("#status-"+layerId).val(status);
+        }
+    });
+}
+
+function updateGeometryString(el, property,  layerId) {
+    var val = $(el).val();
+    var layer = drawnItems.getLayer(layerId);
+    layer.feature['properties'][property] = val;
+    var geojson = drawnItems.toGeoJSON();
+    $("#geometry").val(JSON.stringify(geojson));
 }
 
 function getAreaSize() {
