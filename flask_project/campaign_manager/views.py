@@ -667,7 +667,9 @@ def submit_campaign_data_to_json():
             data.pop('types_options')
 
             data['uuid'] = uuid.uuid4().hex
-            campaign_data = Campaign.parse_campaign_data(data, form.uploader.data)
+            campaign_data = Campaign.parse_campaign_data(
+                    data,
+                    form.uploader.data)
             return Response(Campaign.serialize(campaign_data))
         except Exception as e:
             print(e)
