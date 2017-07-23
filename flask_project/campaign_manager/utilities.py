@@ -208,8 +208,12 @@ def parse_json_string(json_string):
     :rtype: dict/None
     """
     json_object = None
+
+    if not isinstance(json_string, str):
+        return json_string
+
     try:
         json_object = json.loads(json_string)
-    except ValueError:
+    except (ValueError, TypeError):
         pass
     return json_object
