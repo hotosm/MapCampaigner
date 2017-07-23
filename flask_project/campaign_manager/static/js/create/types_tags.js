@@ -141,7 +141,11 @@ function onTypesChange() {
     if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {
             if (type['type'] == selected_type) {
-                selected_tags = type['tags'];
+                if (jQuery.type(type['tags']) === "array") {
+                    selected_tags = type['tags'];
+                } else {
+                    selected_tags = [];
+                }
             }
         });
     }

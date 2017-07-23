@@ -440,7 +440,8 @@
             managers_list = {{ form.campaign_managers.data | safe }};
         {% endif %}
 
-        $(function () {
+        function updateManagerList() {
+            $('#managers-list').html('');
             if (managers_list.length > 0) {
                 $.each(managers_list, function (index, value) {
                     $('#managers-list').append(
@@ -449,6 +450,9 @@
                     )
                 })
             }
+        }
+        $(function () {
+            updateManagerList();
         });
 
         function removeManager(e, manager) {
@@ -724,9 +728,7 @@
                 var currentStep = $('.cc-nav-steps').find('.active').data('step');
                 var isNextStep = checkSteps(currentStep);
                 var nameDateValid = checkFormHeader();
-                if (isNextStep && nameDateValid) {
-                    showStep(currentStep, nextStep, false);
-                }
+                showStep(currentStep, nextStep, false);
             })
         }
 
@@ -741,8 +743,7 @@
                         }).fail(
                         function () {
                             $('#advanced-mode-textarea').LoadingOverlay("hide");
-                            $('#advanced-mode-textarea').val('');
-                            showNotifications('Error on campaign json.', 'danger');
+                            showNotifications('Some of form is not filled.', 'danger');
                         }
                 );
             }

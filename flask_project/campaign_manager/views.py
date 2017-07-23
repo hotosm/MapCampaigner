@@ -659,14 +659,19 @@ def submit_campaign_data_to_json():
 
     form = CampaignForm(request.form)
     if form.validate_on_submit():
-        data = form.data
-        data.pop('csrf_token')
-        data.pop('submit')
-        data.pop('types_options')
+        try:
+            data = form.data
+            data.pop('csrf_token')
+            data.pop('submit')
+            data.pop('types_options')
 
-        data['uuid'] = uuid.uuid4().hex
-        campaign_data = Campaign.parse_campaign_data(data, form.uploader.data)
-        return Response(Campaign.serialize(campaign_data))
+            data['uuid'] = uuid.uuid4().hex
+            campaign_data = Campaign.parse_campaign_data(data, form.uploader.data)
+            return Response(Campaign.serialize(campaign_data))
+        except Exception as e:
+            print(e)
+    else:
+        return abort(500)
 
 
 @campaign_manager.route('/search_osm/<query_name>', methods=['GET'])
