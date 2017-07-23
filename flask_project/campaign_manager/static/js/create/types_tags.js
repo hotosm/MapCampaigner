@@ -2,16 +2,20 @@ var addedTypes = [];
 var types_value = {};
 var typesOptions = '';
 
-function rerender_quality_function() {
-    // Also render insights function
-    var function_form_content = $('#quality-function .function-form').html().trim();
-    if (function_form_content.length > 0) {
+function rerenderQualityFunction() {
+
+    if(initialLoad) {
         return;
     }
-    types_value = JSON.parse($("#types").val());
+
+    var _types_value = getTypesSelectionValue();
     $('#quality-function .function-form').html('');
-    var index = 0;
-    $.each(types_value, function (key, value) {
+    $('#engagement-function .function-form').html('');
+
+    var quality_index = 0;
+    var engagement_index = 0;
+
+    $.each(_types_value, function (key, value) {
         var type = value['type'];
         var survey = types[type];
         var feature = survey['feature'];
@@ -25,8 +29,19 @@ function rerender_quality_function() {
         }
         var default_insights = types[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
-            $('#quality-function-add').click();
-            var row = $('#quality-function .function-form').find('.function-form-row')[index];
+
+            var row = null;
+
+            if(insight === 'MapperEngagement') {
+                $('#engagement-function-add').click();
+                row = $('#engagement-function .function-form').find('.function-form-row')[quality_index];
+                quality_index += 1;
+            } else {
+                $('#quality-function-add').click();
+                row = $('#quality-function .function-form').find('.function-form-row')[engagement_index];
+                engagement_index += 1;
+            }
+
             $(row).find('.function-selection').val(insight);
             $(row).find('.function-selection').trigger('change');
             $(row).find('.function-feature').val(feature);
@@ -34,10 +49,10 @@ function rerender_quality_function() {
 
             // select type
             $(row).find('.function-type').val(type);
-            index += 1;
         });
     });
 }
+
 function getTypesSelectionValue() {
     // GET SELECTED TYPES
     var types_value = {};
@@ -91,7 +106,6 @@ function addTypes(value) {
 
     var select = $("<select />");
     select.addClass('select-types');
-    select.attr('id', 'types_options');
     select.attr('name', 'types_options');
     select.html(typesOptions);
 
@@ -139,7 +153,7 @@ function onTypesChange() {
     var selected_tags;
     if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {
-            if (type['type'] == selected_type) {
+            if (type['type'] === selected_type) {
                 selected_tags = type['tags'];
             }
         });
@@ -151,21 +165,23 @@ function onTypesChange() {
             var tags = types[selected_type]['tags'];
             var key_tags_default = Object.keys(tags);
 
-            if (typeof selected_tags != 'undefined' && JSON.stringify(selected_tags) != '[]') {
+            if (typeof selected_tags !== 'undefined' && JSON.stringify(selected_tags) !== '[]') {
                 key_tags = selected_tags;
             } else {
                 key_tags = Object.keys(tags);
             }
 
             for (var j = 0; j < key_tags.length; j++) {
-                div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + key_tags[j] + '\')" aria-hidden="true"></i>' + ' </span>');
+                div.append('<span class="key-tags" style="display: inline-block">' +
+                               key_tags[j] +
+                           '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + key_tags[j] + '\')" aria-hidden="true"></i>' + ' </span>');
             }
 
             var select_tag = $("<span />");
             select_tag.addClass('select-tag');
             var span_select = $("<ul />");
             span_select.addClass('additional-key-tags');
-            for (var j = 0; j < key_tags_default.length; j++) {
+            for (j = 0; j < key_tags_default.length; j++) {
                 span_select.append('<li onclick="addTag(this)">' + key_tags_default[j] + '</li>')
             }
             select_tag.html(span_select);
@@ -181,7 +197,9 @@ function onTypesChange() {
                 '<button class="btn btn-danger btn-sm btn-block"' +
                 'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                 '<i class="fa fa-minus"></i></button></div>');
+
         }
+
     }
 
     var typeIndex = row.index();
@@ -189,10 +207,12 @@ function onTypesChange() {
 
     // Hide add/remove tags when basic mode.
     var setting = $('#dashboard_settings option:selected').text();
-    if (setting.toLowerCase() != 'advanced') {
+    if (setting.toLowerCase() !== 'advanced') {
         $('.remove-tags').hide();
         $('.btn-add-tag').hide();
     }
+
+    rerenderQualityFunction();
 }
 
 function onAddTags(element) {
@@ -224,6 +244,7 @@ function removeTags(event, type) {
     if (addedTypes.length < 1) {
         addTypes();
     }
+    rerenderQualityFunction();
 }
 
 function removeIndividualTag(event, type) {

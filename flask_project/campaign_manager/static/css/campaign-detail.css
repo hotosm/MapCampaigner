@@ -121,6 +121,9 @@
     margin-top:10px;
 }
 
+.btn-share-group .btn{
+    border-radius: 0 !important;
+}
 
 @media (max-width: 450px) {
     .btn-share-group .btn {
@@ -224,10 +227,23 @@
     background-color: #eae8e8;
     margin-top: 4px;
     height: 500px;
+    border: 1px solid #cdcdcd;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .map-side-list {
     border-bottom: 1px solid #cdcdcd;
+}
+
+.map-side-panel {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.map-side-panel .row {
+    padding-left: 10px;
+    padding-right: 15px;
 }
 
 .map-side-list-name {
@@ -261,6 +277,28 @@
     padding-left: 20px;
 }
 
+.side-action {
+    color: #949494;
+}
+
+.side-action.active {
+    color: #565656;
+}
+
+.map-side-type {
+    background-color: white;
+}
+
+.type-title {
+    height: 50px;
+    font-size: 20pt;
+    margin-top: -10px;
+    color: #565656;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #949494;
+}
+
 @media (max-width: 1215px) {
 
     .side-panel-wrapper {
@@ -278,4 +316,75 @@
     #campaign-map-detail {
         margin-right: -15px !important;
     }
+}
+
+div.side-action a{
+    color: #828282;
+}
+
+div.side-action a:hover{
+    color: #3a3a3a;
+}
+
+div.side-action .fa-eye:hover {
+    cursor:pointer;
+}
+
+.side-panel-progress {
+    height: 12px !important;
+    margin-top: 8px;
+    margin-bottom: -10px;
+}
+
+.summary {
+    color: #5f5f5f;
+}
+
+.summary-content {
+    margin-top: 25px;
+}
+
+.summary .pull-right {
+    font-size: 12pt;
+    color: #739da6;
+    font-weight: bold;
+}
+
+.multiple-row .col-lg-10{
+    padding-top: 8px;
+}
+
+.single-row .col-lg-10 {
+    padding-top: 8px;
+    height: 40px;
+}
+
+.single-row .map-side-list-action {
+    height: 40px !important;
+}
+
+.insight-summaries {
+    display: none;
+}
+
+.insight-title {
+    text-align: center;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.chart-legends {
+    font-size: 9pt;
+}
+
+.chart-legends li {
+    padding-bottom: 8px;
+}
+
+.chart-legends ul {
+    list-style-type: none;
+}
+
+#remote-projects-summaries .fa-eye:hover {
+    cursor: pointer;
 }

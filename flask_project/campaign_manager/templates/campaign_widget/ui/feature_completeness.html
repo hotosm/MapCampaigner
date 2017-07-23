@@ -1,4 +1,5 @@
 <div class="completness">
+    <div class="insight-title">Feature Completeness</div>
     <div class="total-features">{{ data.total }}</div>
     <h3 class="progress-bar-indicator">{{ data.complete }}/{{ data.total }} ({{ data.percentage }} %)</h3>
     <div class="progress-bar-wrapper">
@@ -88,6 +89,28 @@
         {% endif %}
     </div>
 </div>
+
+<div class="insight-summaries">
+     <div class="row summary multiple-row">
+        <div class="col-lg-10">
+            <div class="pull-left">
+                Feature completeness
+            </div>
+            <div class="pull-right">
+                {{ data.percentage }} %
+            </div>
+            <div class="summary-content">
+                <div class="progress side-panel-progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ data.percentage }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ data.percentage }}%;">
+                        <span class="sr-only">{{ data.percentage }}% Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 map-side-list-action"></div>
+    </div>
+</div>
+
 <style type="text/css">
 
     .total-features {
