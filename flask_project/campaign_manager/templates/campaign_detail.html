@@ -198,7 +198,10 @@
         var feature_type_collected = [];
         var feature_type_collected_count = 0;
 
-        var campaign_types = {{ types | safe}};
+        var campaign_types = null;
+        {% if types %}
+            campaign_types = {{ types | safe }};
+        {% endif %}
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
         var remote_projects = {{ remote_projects|safe }};
