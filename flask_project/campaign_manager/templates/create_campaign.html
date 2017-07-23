@@ -754,6 +754,7 @@
 
             return valid;
         }
+
         function checkStep5() {
             var valid = true;
             var mapErrorNotification = $('.map-wrapper').data('error');
@@ -761,15 +762,19 @@
             clearNotification();
 
             var campaignJson = $('#advanced-mode-textarea').val();
-            campaignJson = JSON.parse(campaignJson);
-            var rows = $('#insight-function').find('.function-form').find('.function-form-row');
-            $.each(rows, function (index, row) {
-                if (!$(row).find('.function-selection').val()) {
-                    var function_name = campaignJson['selected_functions']['function-' + (index + 1)]['function'];
-                    showNotifications(function_name + ' is not an insight function.', 'danger');
-                    valid = false;
-                }
-            });
+
+            if(campaignJson) {
+                campaignJson = JSON.parse(campaignJson);
+                var rows = $('#insight-function').find('.function-form').find('.function-form-row');
+                $.each(rows, function (index, row) {
+                    if (!$(row).find('.function-selection').val()) {
+                        var function_name = campaignJson['selected_functions']['function-' + (index + 1)]['function'];
+                        showNotifications(function_name + ' is not an insight function.', 'danger');
+                        valid = false;
+                    }
+                });
+            }
+
             return valid;
         }
 
@@ -788,7 +793,7 @@
         }
 
         function preparingStep(current_step) {
-            if (current_step == 4) {
+            if (current_step === 4) {
                 preprocessSubmitForm();
                 $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
                 $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
