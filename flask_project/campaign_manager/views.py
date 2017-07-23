@@ -386,7 +386,7 @@ def participate():
 
     if user_coordinate:
         # Get nearest campaign
-        campaigns = CampaignNearestList().\
+        campaigns = CampaignNearestList(). \
             get_nearest_campaigns(user_coordinate, campaign_status)
     else:
         campaigns = CampaignList().get_all_campaign(campaign_status)
@@ -427,11 +427,11 @@ def participate():
         # Map attribution
         if campaign_to_participate.map_type != '':
             context['attribution'] = find_attribution(
-                    campaign_to_participate.map_type
+                campaign_to_participate.map_type
             )
 
         return render_template(
-                'campaign_detail.html', **context)
+            'campaign_detail.html', **context)
     else:
         abort(404)
 
@@ -455,8 +455,6 @@ def get_selected_functions():
         function_name = selected_function.name()
         function_dict = {}
         function_dict['name'] = function_name
-        function_dict['category'] = \
-            selected_function.category
         function_dict['need_feature'] = \
             ('%s' % selected_function.need_feature).lower()
         function_dict['need_required_attributes'] = \
@@ -574,7 +572,6 @@ def create_campaign():
     context['url'] = '/create'
     context['action'] = 'create'
     context['campaigns'] = Campaign.all()
-    context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
@@ -617,7 +614,6 @@ def edit_campaign(uuid):
             if campaign.end_date:
                 form.end_date.data = datetime.datetime.strptime(
                     campaign.end_date, '%Y-%m-%d')
-            form.dashboard_settings.data = campaign.dashboard_settings
         else:
             form = CampaignForm(request.form)
             if form.validate_on_submit():
@@ -639,7 +635,6 @@ def edit_campaign(uuid):
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['campaigns'] = Campaign.all()
-    context['categories'] = AbstractInsightsFunction.CATEGORIES
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
@@ -653,6 +648,33 @@ def edit_campaign(uuid):
         pass
     return render_template(
         'create_campaign.html', form=form, **context)
+
+
+@campaign_manager.route('/submit_campaign_data_to_json', methods=['POST'])
+def submit_campaign_data_to_json():
+    import uuid
+    from campaign_manager.forms.campaign import CampaignForm
+    from campaign_manager.models.campaign import Campaign
+    """Get campaign details.
+    """
+
+    form = CampaignForm(request.form)
+    if form.validate_on_submit():
+        try:
+            data = form.data
+            data.pop('csrf_token')
+            data.pop('submit')
+            data.pop('types_options')
+
+            data['uuid'] = uuid.uuid4().hex
+            campaign_data = Campaign.parse_campaign_data(
+                    data,
+                    form.uploader.data)
+            return Response(Campaign.serialize(campaign_data))
+        except Exception as e:
+            print(e)
+    else:
+        return abort(500)
 
 
 @campaign_manager.route('/search_osm/<query_name>', methods=['GET'])

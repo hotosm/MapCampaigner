@@ -35,28 +35,13 @@
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel-header-info panel-section">FUNCTIONS</div>
+                <div class="panel-header-info panel-section">ADVANCED</div>
                 <div class="panel panel-default panel-header cc-nav" data-step="4">
-                    <div><p><i class="fa fa-paint-brush"></i><span>&nbsp;&nbsp;Coverage Function</span>
+                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span></div>
+                </div>
+                <div class="panel panel-default panel-header cc-nav" data-step="5" hidden>
+                    <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Insight Functions</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="5">
-                    <div><i class="fa fa-star-half-o"></i><span>&nbsp;&nbsp;Quality Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="6">
-                    <div><i class="fa fa-exclamation-triangle"></i><span>&nbsp;&nbsp;Error Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-                <div class="panel panel-default panel-header cc-functions cc-nav" data-step="7">
-                    <div><i class="fa fa-link"></i><span>&nbsp;&nbsp;Engagement Function</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
-            </div>
-            <div class="cc-nav-steps" style="border-top: 1px solid #ddd !important; background-color: white;">
-                <div class="panel-header-info panel-section">DASHBOARD SETTINGS</div>
-                <div style="border: none!important;" class="panel panel-default panel-header dashboard-settings" id="dashboard_settings" name="dashboard_settings" onchange="changeDashboard()">
-                    {{ form.dashboard_settings(form="campaign-form") }}
                 </div>
             </div>
         </div>
@@ -110,7 +95,8 @@
                                                 {% endif %}
                                             </p>
                                         {% endif %}
-                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display, leave blank to use default</p>
+                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display,
+                                            leave blank to use default</p>
                                     </div>
                                     <br/>
                                 </div>
@@ -189,7 +175,8 @@
                                     </li>
                                     <li>
                                         Upload a SHP file which either has only one polygon containing the AOI or multiple polygons each indicating a campaign area.
-                                        Teams can be assigned in this file by adding a "team" column and the status is deduced from a "date" column indicating on which date the team will complete their mapping.
+                                        Teams can be assigned in this file by adding a "team" column and the status is deduced from a "date" column indicating on which date the team will complete
+                                        their mapping.
                                         When using multiple polygons these must be union-able into a single polygon.
                                     </li>
                                     <li>
@@ -318,39 +305,57 @@
                         </div>
                     </fieldset>
 
-                    {% for category in categories %}
-                        <fieldset id="fieldset-{{ loop.index + 3 }}" data-fieldset-step="{{ loop.index + 3 }}">
-                            <div class="row insight-functions">
-                                <div class="form-body col-lg-12">
-                                    <div class="form-group" style="padding-bottom: 25px;">
-                                        <div id="{{ category }}-function" class="function-wrapper">
-                                            <label class="category-label">{{ category }} Functions</label>
-                                            <div class="function-form">
-                                            </div>
-                                            <button id="{{ category }}-function-add" class="btn btn-outline btn-add-coverage"
-                                                    type=button onclick="addFunction(this)" style="margin-top: 5px;">
-                                                <i class="fa fa-plus"></i> Add Function
-                                            </button>
-                                        </div>
+                    <fieldset id="fieldset-4" data-fieldset-step="4">
+                        <div class="row">
+                            <!-- /.col-lg-6 (nested) -->
+                            <div class="form-body col-lg-8">
+                                <div class="form-group" data-error="">
+                                    <label>Advanced Mode</label>
+                                    <br>
+                                    <i style="color: grey">
+                                        Advanced mode is for change json manually.
+                                        Submit button will be enabled if json is pass of <b>check json</b>, so make sure to click check json.
+                                        Insights functions that we have for now are:
+                                        {% for key, value in functions.items() %}
+                                            <br> - <b>{{ key }}</b>
+                                        {% endfor %}
+                                        <br>
+                                        So be sure not put insights function other that those, or json will be failed.
+                                    </i>
+                                    <textarea id="advanced-mode-textarea" placeholder="Campaign setting" class="form-control"></textarea>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-danger" onclick="checkCampaignJson()">Check json</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="cc-buttons">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
+                        </div>
+                        <div class="cc-buttons">
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
+                            </div>
+                            <div class="col-lg-4">
+                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
+                            </div>
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="fieldset-5" data-fieldset-step="5">
+                        <div class="row insight-functions">
+                            <div class="form-body col-lg-12">
+                                <div class="form-group" style="padding-bottom: 25px;">
+                                    <div id="insight-function" class="function-wrapper">
+                                        <label class="category-label">Insight Functions</label>
+                                        <div class="function-form">
+                                        </div>
+                                        <button id="insight-function-add" class="btn btn-outline btn-add-coverage"
+                                                type=button onclick="addFunction(this)" style="margin-top: 5px;">
+                                            <i class="fa fa-plus"></i> Add Function
+                                        </button>
                                     </div>
-                                    <div class="col-lg-4">
-                                        <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                                    </div>
-                                    <div class="col-lg-4">
-                                        {% if loop.index < categories|length %}
-                                            <button type="button" class="btn btn-next pull-right cc-functions"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                        </fieldset>
-                    {% endfor %}
+                    </fieldset>
                 </div>
                 <!-- /.row (nested) -->
             </div>
@@ -403,6 +408,7 @@
     <script type="text/javascript" src="/static/js/create/map.js"></script>
     <script type="text/javascript" src="/static/js/create/remote_mapping.js"></script>
     <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
+    <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
     <script type='text/template' id='_template-function-form'>
         <div class="well well-sm" style="margin-bottom: 5px;">
@@ -423,9 +429,9 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <select class="form-control function-type" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Select type for this insight function" style="display: none">
-                    </select>
+                    <input class="form-control function-type" data-toggle="tooltip" data-placement="top"
+                           data-original-title="Put feature to extract"
+                           style="display: none">
                 </div>
                 <div class="col-lg-2">
                     <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
@@ -446,34 +452,12 @@
         var initialLoad = true;
         var selectedFunctions = [];
         var types = {{ types|safe }};
-
+        var selected_types_data = {};
         {% if form.types.data %}
-            var selected_types_data = {{ form.types.data | safe }};
+            selected_types_data = {{ form.types.data | safe }};
             addMultipleTypes(selected_types_data);
-        {% else %}
-            addTypes();
         {% endif %}
-
         initialLoad = false;
-
-        //------------------ DASHBOARD SETTINGS -----------------//
-        function changeDashboard() {
-            var setting = $('#dashboard_settings option:selected').text();
-            if (setting.toLowerCase() == 'advanced') {
-                $('.cc-functions').show();
-                $('.remove-tags').show();
-                $('.btn-add-tag').show();
-            }
-            else {
-                $('.cc-functions').hide();
-                $('.remove-tags').hide();
-                $('.btn-add-tag').hide();
-            }
-        }
-
-        $(function () {
-            changeDashboard();
-        });
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -489,21 +473,25 @@
             var campaign_creator = '{{ campaign_creator }}';
         {% endif %}
 
-        $(function () {
+        function updateManagerList() {
+            $('#managers-list').html('');
             if (managers_list.length > 0) {
                 $.each(managers_list, function (index, value) {
-                    if(typeof campaign_creator !== 'undefined' && value==campaign_creator){
+                    if (typeof campaign_creator !== 'undefined' && value == campaign_creator) {
                         $('#managers-list').append(
-                            '<span class="manager">' + value
+                                '<span class="manager">' + value
                         )
-                    }else {
+                    } else {
                         $('#managers-list').append(
-                            '<span class="manager">' + value +
-                            '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
+                                '<span class="manager">' + value +
+                                '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
                         )
                     }
                 })
             }
+        }
+        $(function () {
+            updateManagerList();
         });
 
         function removeManager(e, manager) {
@@ -657,12 +645,23 @@
         }
 
         function checkSteps(step) {
+            var valid = true;
             if (step === 1) {
-                return checkStep1();
+                valid = checkStep1();
             } else if (step === 2) {
-                return checkStep2();
+                valid = checkStep2();
+            } else if (step === 5) {
+                valid = checkStep5();
             }
-            return true;
+            var $currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
+            if (!valid) {
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times');
+            } else {
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-check');
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times');
+            }
+            return valid;
         }
 
         function checkStep1() {
@@ -726,6 +725,7 @@
 
             var types_value = getTypesSelectionValue();
             $("#types").val(JSON.stringify(types_value));
+            rerender_quality_function();
             if (jQuery.isEmptyObject(types_value)) {
                 valid = false;
                 $('.types-required-message').show();
@@ -749,6 +749,31 @@
                 showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
                 valid = false;
             }
+            if (error_format_before) {
+            }
+
+            return valid;
+        }
+
+        function checkStep5() {
+            var valid = true;
+            var mapErrorNotification = $('.map-wrapper').data('error');
+
+            clearNotification();
+
+            var campaignJson = $('#advanced-mode-textarea').val();
+
+            if(campaignJson) {
+                campaignJson = JSON.parse(campaignJson);
+                var rows = $('#insight-function').find('.function-form').find('.function-form-row');
+                $.each(rows, function (index, row) {
+                    if (!$(row).find('.function-selection').val()) {
+                        var function_name = campaignJson['selected_functions']['function-' + (index + 1)]['function'];
+                        showNotifications(function_name + ' is not an insight function.', 'danger');
+                        valid = false;
+                    }
+                });
+            }
 
             return valid;
         }
@@ -763,10 +788,25 @@
                 var currentStep = $('.cc-nav-steps').find('.active').data('step');
                 var isNextStep = checkSteps(currentStep);
                 var nameDateValid = checkFormHeader();
-                if (isNextStep && nameDateValid) {
-                    showStep(currentStep, nextStep, false);
-                }
+                showStep(currentStep, nextStep, false);
             })
+        }
+
+        function preparingStep(current_step) {
+            if (current_step === 4) {
+                preprocessSubmitForm();
+                $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
+                $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
+                        function (data) {
+                            $('#advanced-mode-textarea').LoadingOverlay("hide");
+                            $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
+                        }).fail(
+                        function () {
+                            $('#advanced-mode-textarea').LoadingOverlay("hide");
+                            showNotifications('Some of form is not filled.', 'danger');
+                        }
+                );
+            }
         }
 
         function showStep(previousStep, nextStep, activatePrevStep) {
@@ -779,6 +819,7 @@
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
 
+            preparingStep(nextStep);
             $prevFieldset.hide();
             $prevNavStep.removeClass('active');
             if (activatePrevStep) {
@@ -886,18 +927,12 @@
             $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
 
-            var $categoryLabels = $('.category-label');
-            for (var i = 0; i < $categoryLabels.length; i++) {
-                var $label = $($categoryLabels[i]);
-                $label.html(capitalizeFirstLetter($label.html()));
-            }
-
             {# selected functions#}
             if ($("#selected_functions").val()) {
                 var selected_functions = $.parseJSON($("#selected_functions").val());
                 selectedFunctions = selected_functions;
                 $.each(selected_functions, function (key, functions) {
-                    addFunction($('#' + functions['category'] + '-add'), functions);
+                    addFunction($('#insight-function-add'), functions);
                 });
             }
 
@@ -905,27 +940,41 @@
 
         });
 
-        function get_selected_functions(category) {
+        function get_selected_functions() {
             {# functions #}
             var functions = {};
-            var rows = $('#' + category).find('.function-form').find('.function-form-row');
+            var rows = $('#insight-function').find('.function-form').find('.function-form-row');
             $.each(rows, function (index, row) {
                 if ($(row).find('.function-selection').val()) {
                     functions[$(row).attr('id')] = {
                         'function': $(row).find('.function-selection').val(),
-                        'category': category,
                         'feature': $(row).find('.function-feature').val(),
-                        'attributes': $(row).find('.function-attributes').val(),
+                        'attributes': JSON.parse($(row).find('.function-attributes').val()),
                         'type': $(row).find('.function-type').val()
                     }
                 }
             });
             return functions;
         }
+        function checkingAllStep() {
+            var valid = true;
+            $("fieldset").each(function (index) {
+                var validStep = checkSteps(index + 1);
+                if (!validStep) {
+                    valid = validStep;
+                }
 
-        $("#campaign-form").submit(function (event) {
+            });
+            var validHeader = checkFormHeader();
+            if (!validHeader) {
+                valid = validHeader;
+            }
+            return valid;
+        }
+        function preprocessSubmitForm() {
             $("#uploader").val($("#profile-name").html());
 
+            $('#campaign_managers').html('');
             $.each(managers_list, function (index, value) {
                 $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
             });
@@ -934,6 +983,7 @@
                 window.location.replace("/not-logged-in.html");
             }
 
+            $('#remote_projects').html('');
             for (var key in addedLayers) {
                 $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
@@ -942,11 +992,16 @@
 
             // Processing selected function
             var selected_functions = {};
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('quality-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('coverage-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('error-function'));
-            selected_functions = $.extend({}, selected_functions, get_selected_functions('engagement-function'));
+            selected_functions = $.extend({}, selected_functions, get_selected_functions());
             $("#selected_functions").val(JSON.stringify(selected_functions));
+
+        }
+        $("#campaign-form").submit(function (event) {
+            preprocessSubmitForm();
+            var allValid = checkingAllStep();
+            if (!allValid) {
+                return false;
+            }
         });
 
         function getFormElement(event, className) {
@@ -961,34 +1016,13 @@
             getFormElement(event, '.function-form').append(html);
 
             var row = $('#function-' + function_index);
-            var function_selections = getFormElement(row, '.function-selection').find('option');
-            $.each(function_selections, function (index, function_selection) {
-                var wrapper_id = $(row).closest('.function-wrapper').attr('id');
-                wrapper_id = wrapper_id.replace('-function', '');
-                if ($(function_selection).val()) {
-                    var categories = functions[$(function_selection).val()]['category'];
-                    if (jQuery.inArray(wrapper_id, categories) < 0) {
-                        $(function_selection).remove();
-                    }
-                }
-            });
 
-            // render types
-            var uniqueNames = [];
-            var $function_type = getFormElement(row, '.function-type');
-            $function_type.append('<option value="">---------------------------------</option>');
-            $.each(addedTypes, function (index, addedType) {
-                if ($.inArray(addedType, uniqueNames) === -1) {
-                    uniqueNames.push(addedType);
-                    $function_type.append('<option value="' + addedType + '">' + addedType + '</option>')
-                }
-            });
             if (data) {
                 getFormElement(row, '.function-selection').val(data['function']);
                 functionOnSelected(getFormElement(row, '.function-selection'));
                 getFormElement(row, '.function-type').val(data['type']);
                 getFormElement(row, '.function-feature').val(data['feature']);
-                getFormElement(row, '.function-attributes').val(data['attributes']);
+                getFormElement(row, '.function-attributes').val(JSON.stringify(data['attributes']));
             }
             function_index += 1;
         }

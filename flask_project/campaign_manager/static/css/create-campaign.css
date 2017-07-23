@@ -538,6 +538,17 @@ input#btn-add {
     -moz-box-shadow: none;
 }
 
+#advanced-mode-textarea {
+    min-height: 500px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+
+}
+
+.fa-times {
+    color: red !important;
+}
+
 .btn-icon-next {
     float: right;
     margin: auto 5px;

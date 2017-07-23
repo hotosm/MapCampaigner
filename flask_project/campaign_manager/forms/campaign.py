@@ -4,22 +4,21 @@ __date__ = '10/05/17'
 from flask_wtf import FlaskForm
 from wtforms.fields import (
     DateField,
+    SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
     HiddenField,
     TextAreaField,
-    RadioField,
-    SelectField
+    RadioField
 )
-from wtforms.validators import DataRequired, Optional, ValidationError
+from wtforms.validators import DataRequired, ValidationError
 from urllib.parse import urlparse
-from campaign_manager.utilities import get_osm_user, get_types
+from campaign_manager.utilities import get_types
 from campaign_manager.views import valid_map_list
 
 
 class ManagerSelectMultipleField(SelectMultipleField):
-
     def pre_validate(self, form):
         if self.data:
             return True
@@ -73,7 +72,7 @@ class CampaignForm(FlaskForm):
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
-    types_options = SelectMultipleField(
+    types_options = SelectField(
         u'Types of campaign',
         choices=[(key, key) for key, value in sorted(get_types().items())])
     types = HiddenField(u'Types that selected for this campaign')
@@ -86,11 +85,6 @@ class CampaignForm(FlaskForm):
         description='Campaign manager may change the map view',
         validators=[validate_map],
         render_kw={'placeholder': 'Campaign map'}
-    )
-    dashboard_settings = SelectField(
-        u'Display Mode',
-        choices=[('basic', 'Basic'), ('advanced', 'Advanced')],
-        default='basic'
     )
     selected_functions = HiddenField(
         u'Selected Functions')

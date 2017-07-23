@@ -12,8 +12,6 @@ class AbstractInsightsFunction(object):
     """
     __metaclass__ = ABCMeta
 
-    CATEGORIES = ['coverage', 'quality', 'error', 'engagement']
-
     _function_raw_data = None  # data exaclty from osm
     _function_data = None  # data that used by others
 
@@ -23,7 +21,6 @@ class AbstractInsightsFunction(object):
 
     feature = None
     required_attributes = ""
-    category = []
 
     manager_only = False
     type_required = False
@@ -114,19 +111,7 @@ class AbstractInsightsFunction(object):
     def get_required_attributes(self):
         """Parsing required attributes
         """
-        required_attributes = {}
-        # parsing attributes
-        if self.required_attributes:
-            for required_attribute in self.required_attributes.split(';'):
-                attrs = required_attribute.split('=')
-                if attrs[0]:
-                    required_attributes[attrs[0].strip()] = None
-                    if len(attrs) > 1:
-                        attrs[1] = attrs[1].strip()
-                        if attrs[1]:
-                            required_attributes[attrs[0].strip()] = [
-                                value.lower() for value in attrs[1].split(',')
-                                ]
+        required_attributes = self.required_attributes
         return required_attributes
 
     # -------------------------------------------------------------

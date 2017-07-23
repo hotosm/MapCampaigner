@@ -12,7 +12,6 @@ from campaign_manager.data_providers.overpass_provider import OverpassProvider
 
 class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     __metaclass__ = ABCMeta
-    category = ['quality']
     FEATURES_MAPPING = {
         'buildings': 'building',
         'roads': 'road'
@@ -35,20 +34,6 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
             self.feature = self.FEATURES_MAPPING[self.feature]
         if 'type' in additional_data:
             self.feature_type = additional_data['type']
-
-    def get_required_attributes(self):
-        """Parsing required attributes
-        """
-        try:
-            required_attributes = self.required_attributes.split(',')
-            survey_attributes = self.campaign.get_json_type(self.feature_type)
-            if not required_attributes or required_attributes[0] == 'all':
-                required_attributes = [
-                    tag for tag in survey_attributes['tags']
-                    ]
-        except ValueError:
-            required_attributes = []
-        return required_attributes
 
     def name(self):
         """Name of insight functions

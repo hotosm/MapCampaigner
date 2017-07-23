@@ -20,7 +20,6 @@ from reporter.queries import TAG_MAPPING_REVERSE
 
 class AbstractOverpassUserFunction(AbstractInsightsFunction):
     __metaclass__ = ABCMeta
-    category = ['engagement']
     icon = 'list'
     _function_good_data = None  # cleaned data
 
