@@ -577,6 +577,7 @@ def create_campaign():
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
     context['types'] = {}
+    context['link_to_omk'] = False
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
@@ -634,13 +635,13 @@ def edit_campaign(uuid):
     context['google_api_key'] = GOOGLE_API_KEY
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
-    context['campaigns'] = Campaign.all()
     context['functions'] = get_selected_functions()
     context['title'] = 'Edit Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
     context['uuid'] = uuid
     context['types'] = {}
     context['campaign_creator'] = campaign.campaign_creator
+    context['link_to_omk'] = campaign.link_to_omk
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')

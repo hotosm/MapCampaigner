@@ -98,6 +98,10 @@
                                         <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display,
                                             leave blank to use default</p>
                                     </div>
+                                    <div class="form-group" id="link-to-omk-form">
+                                        {{form.link_to_omk.label}}
+                                        {{form.link_to_omk(checked=link_to_omk)}}
+                                    </div>
                                     <br/>
                                 </div>
                             </div>
@@ -947,6 +951,7 @@
             $('#campaign-form input').addClass('form-control');
             $('#campaign-form textarea').addClass('form-control');
             $('#campaign-form select').addClass('form-control');
+            $('#link_to_omk').removeClass('form-control');
 
             {# selected functions#}
             if ($("#selected_functions").val()) {

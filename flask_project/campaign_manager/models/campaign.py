@@ -44,6 +44,7 @@ class Campaign(JsonModel):
     _content_json = None
     map_type = ''
     dashboard_settings = ''
+    link_to_omk = False
 
     def __init__(self, uuid=None):
         if uuid:
@@ -229,8 +230,16 @@ class Campaign(JsonModel):
             cascaded_polygons = cascaded_union(polygons)
 
         if cascaded_polygons:
-            coordinates = numpy.asarray(cascaded_polygons.exterior.coords)
-            return coordinates.tolist()
+            coordinates = []
+            if cascaded_polygons.type == 'Polygon':
+                coordinates = numpy.asarray(cascaded_polygons.exterior.coords)
+                coordinates = coordinates.tolist()
+            elif cascaded_polygons.type == 'MultiPolygon':
+                coordinates = numpy.asarray(
+                        cascaded_polygons.envelope.exterior.coords)
+                coordinates = coordinates.tolist()
+
+            return coordinates
 
         if coordinate_to_correct:
             coordinates = coordinate_to_correct
