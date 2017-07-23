@@ -113,33 +113,38 @@
                 <div class="panel-body">
                     <div class="row side-panel-wrapper">
                         <div class="col-lg-3 map-side-panel">
-                            <div class="map-side-list row">
+                            <div class="map-side-list ">
+                                <div class="row">
+
                                 <div class="col-lg-10">
-                                    <span class="pull-left map-side-list-name">
-                                        Users engaged
-                                    </span>
+                                    <div class="pull-left map-side-list-name">
+                                        Total users engaged
+                                    </div>
                                     <span class="pull-right map-side-list-number">
                                         <span id="contributors"><span class="grey-italic">Loading data...</span></span>
                                     </span>
                                 </div>
                                 <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action">
+                                    <div class="side-action inactive-panel">
                                         <i class="fa fa-eye-slash" aria-hidden="true"></i>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="map-side-list row">
-                                <div class="col-lg-10">
-                                    <span class="pull-left map-side-list-name">
-                                        Features collected
-                                    </span>
-                                    <span class="pull-right map-side-list-number">
-                                        <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
-                                    </span>
                                 </div>
-                                <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action">
-                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                            </div>
+                            <div class="map-side-list">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="pull-left map-side-list-name">
+                                            Total features collected
+                                        </div>
+                                        <div class="pull-right map-side-list-number">
+                                            <span id="features-collected"><span class="grey-italic">Loading data...</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 map-side-list-action">
+                                        <div class="side-action inactive-panel">
+                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -150,8 +155,6 @@
                     </div>
 
                     <div class="insight-function-panel">
-                        <ul class="nav nav-tabs insight-tabs" style="display: none;">
-                        </ul>
                         <div class="tab-content insight-content">
                         </div>
                     </div>
@@ -214,21 +217,27 @@
                 return;
             }
 
+           $('.map-side-panel').append(
+                '<div class="map-side-list map-side-type" id="type-remote-projects">'+
+                    '<div class="row">'+
+                        '<div class="col-lg-10">'+
+                            '<div class="pull-left map-side-list-name">'+
+                                    'Remote Projects'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="col-lg-2 map-side-list-action">'+
+                            '<div class="side-action ">'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div id="remote-projects-summaries" class="side-panel-summaries"></div>'+
+                '</div>'
+            );
+
             var active = '';
 
-            $('.insight-tabs').append(
-                    '<li class="' + active + '">' +
-                    '<a href="#remote-mapper-content" data-toggle="tab" aria-expanded="true">' +
-                    'Remote Mapper' +
-                    '</li>'
-            );
-
-            $('.insight-content').append(
-                    '<div class="tab-pane fade in" id="remote-mapper-content">' +
-                    '</div>'
-            );
-
             for (var i = 0; i < remote_projects.length; i++) {
+
                 var url = '/project-detail?projectId=' + remote_projects[i];
                 $.ajax({
                     url: url,
@@ -260,16 +269,18 @@
 
                         addedLayers[data['projectId']] = layerGroup;
 
-                        $('#remote-mapper-content').append(
-                                '<div class="added-project well well-sm" onclick="showProjectMap(this, ' + data['projectId'] + ')">' +
-                                '<div class="project-detail-name">' +
+                        $('#remote-projects-summaries').append(
+                            '<div class="row summary single-row" style="font-size:9pt;">'+
+                               '<div class="col-lg-10" style="padding-top: 0 !important;">'+
+                            '<div class="pull-left">'+
                                 '#' + data['projectId'] + ' ' + data['projectInfo']['name'] + '' +
-                                '</div>' +
-                                '<div class="project-detail-desc">' +
-                                data['projectInfo']['shortDescription'] +
-                                '</div>' +
-                                '</div>'
-                        )
+                            '</div>'+
+                            '</div>'+
+                                '<div class="col-lg-2 map-side-list-action">'+
+                                    '<i class="fa fa-eye" aria-hidden="true" onclick="showProjectMap(this, ' + data['projectId'] + ')"></i>'+
+                                '</div>'+
+                            '</div>'
+                        );
                     }
                 });
             }

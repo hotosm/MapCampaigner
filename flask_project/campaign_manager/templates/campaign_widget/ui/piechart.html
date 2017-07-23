@@ -1,34 +1,24 @@
 <div class="row piechart-wrapper">
-    <div class="col-lg-2"></div>
-    <div class="col-lg-5">
+
+    <div class="insight-title" style="margin-bottom: 20px;">Count Feature</div>
+    <div class="col-lg-1"></div>
+    <div class="col-lg-6">
         <canvas class="pieChart"></canvas>
-        <div class="footer">
-            Data updated at {{ data['last_update'] }}.
-            {% if data['updating'] %}
-                <br>
-                Currently updating.
-            {% endif %}
-        </div>
     </div>
     <div class="col-lg-5">
         <div class="chart-legends"></div>
     </div>
+
 </div>
-
-<style>
-    .chart-legends {
-        font-size: 9pt;
-    }
-
-    .chart-legends li {
-        padding-bottom: 8px;
-    }
-
-    .chart-legends ul {
-        list-style-type: none;
-    }
-
-</style>
+<div class="row">
+    <div class="footer">
+        Data updated at {{ data['last_update'] }}.
+        {% if data['updating'] %}
+            <br>
+            Currently updating.
+        {% endif %}
+    </div>
+</div>
 
 <script type="text/javascript">
     var tab_id = '{{ function_id }}';
