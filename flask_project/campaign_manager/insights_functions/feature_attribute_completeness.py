@@ -82,7 +82,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         for index, name in enumerate(value.split()):
             if name[0].islower() and not self.is_string_int(name[0]):
                 # e.g : name of Feature
-                return '%s value is mixed case'
+                return '%s value is mixed case' % key
 
         return None
 

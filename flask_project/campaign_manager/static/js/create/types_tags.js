@@ -1,7 +1,7 @@
 var types_value = {};
 var typesOptions = '';
 
-function rerender_quality_function() {
+function rerenderFunction() {
     // Also render insights function
     var function_form_content = $('#insight-function .function-form').html().trim();
     if (function_form_content.length > 0) {
@@ -11,6 +11,7 @@ function rerender_quality_function() {
     function_index = 1;
     $('#insight-function .function-form').html('');
     var index = 0;
+    var insightsRendered = [];
     $.each(types_value, function (key, value) {
         var type = value['type'];
         var survey = types[type];
@@ -28,18 +29,22 @@ function rerender_quality_function() {
                 attributes[tag] = [];
             }
         });
+
         var default_insights = types[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
-            $('#insight-function-add').click();
-            var row = $('#insight-function .function-form').find('.function-form-row')[index];
-            $(row).find('.function-selection').val(insight);
-            $(row).find('.function-selection').trigger('change');
-            $(row).find('.function-feature').val(feature);
-            $(row).find('.function-attributes').val(JSON.stringify(attributes));
+            if ($.inArray(oneTimeFunctions, insightsRendered) === -1) {
+                insightsRendered.push(insight);
+                $('#insight-function-add').click();
+                var row = $('#insight-function .function-form').find('.function-form-row')[index];
+                $(row).find('.function-selection').val(insight);
+                $(row).find('.function-selection').trigger('change');
+                $(row).find('.function-feature').val(feature);
+                $(row).find('.function-attributes').val(JSON.stringify(attributes));
 
-            // select type
-            $(row).find('.function-type').val(type);
-            index += 1;
+                // select type
+                $(row).find('.function-type').val(type);
+                index += 1;
+            }
         });
     });
 }

@@ -27,21 +27,21 @@
                     <div><i class="fa fa-info-circle"></i><span>&nbsp;&nbsp;General Information</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-nav" data-step="2">
+                <div class="panel panel-default panel-header cc-nav disabled" data-step="2">
                     <div><i class="fa fa-globe"></i><span>&nbsp;&nbsp;Campaign AOI</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-nav" data-step="3">
+                <div class="panel panel-default panel-header cc-nav disabled" data-step="3">
                     <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
                 <div class="panel-header-info panel-section">ADVANCED</div>
-                <div class="panel panel-default panel-header cc-nav" data-step="4">
+                <div class="panel panel-default panel-header cc-nav disabled" data-step="4">
                     <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span></div>
                 </div>
                 <div class="panel panel-default panel-header cc-nav" data-step="5" hidden>
                     <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Insight Functions</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></p></div>
+                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-times"></i></span></p></div>
                 </div>
             </div>
         </div>
@@ -99,8 +99,8 @@
                                             leave blank to use default</p>
                                     </div>
                                     <div class="form-group" id="link-to-omk-form">
-                                        {{form.link_to_omk.label}}
-                                        {{form.link_to_omk(checked=link_to_omk)}}
+                                        {{ form.link_to_omk.label }}
+                                        {{ form.link_to_omk(checked=link_to_omk) }}
                                     </div>
                                     <br/>
                                 </div>
@@ -323,9 +323,6 @@
                             <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
                             </div>
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
-                            </div>
                         </div>
                     </fieldset>
 
@@ -355,13 +352,7 @@
                         </div>
                         <div class="cc-buttons">
                             <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left">Prev <span class="pull-left"> < </span></button>
-                            </div>
-                            <div class="col-lg-4">
                                 <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right">Next <span class="pull-right"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -395,6 +386,13 @@
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
         var errors = {{ form['errors'] | safe}};
         var functions = {{ functions|safe }};
+        var oneTimeFunctions = [];
+        $.each(functions, function (key, value) {
+            if (!value['need_feature']) {
+                oneTimeFunctions.push(key)
+            }
+        });
+
 
         var remote_projects_list = [];
         {% if form.remote_projects.data %}
@@ -669,6 +667,7 @@
         }
 
         function checkSteps(step) {
+            activateStep(step);
             var valid = true;
             if (step === 1) {
                 valid = checkStep1();
@@ -677,7 +676,10 @@
             } else if (step === 5) {
                 valid = checkStep5();
             }
+
             var $currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
+            $currentActiveStep.addClass('clickable-menu');
+            $currentActiveStep.find('.cc-nav-icon').show();
             if (!valid) {
                 $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
                 $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times');
@@ -749,7 +751,7 @@
 
             var types_value = getTypesSelectionValue();
             $("#types").val(JSON.stringify(types_value));
-            rerender_quality_function();
+            rerenderFunction();
             if (jQuery.isEmptyObject(types_value)) {
                 valid = false;
                 $('.types-required-message').show();
@@ -787,7 +789,7 @@
 
             var campaignJson = $('#advanced-mode-textarea').val();
 
-            if(campaignJson) {
+            if (campaignJson) {
                 campaignJson = JSON.parse(campaignJson);
                 var rows = $('#insight-function').find('.function-form').find('.function-form-row');
                 $.each(rows, function (index, row) {
@@ -806,6 +808,7 @@
             var currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
             // change icons
             currentActiveStep.find('.cc-nav-icon').addClass('activated');
+            currentActiveStep.removeClass('disabled');
             currentActiveStep.addClass('clickable-menu');
             currentActiveStep.click(function () {
                 var nextStep = $(this).data('step');
@@ -817,7 +820,10 @@
         }
 
         function preparingStep(current_step) {
-            if (current_step === 4) {
+            if (current_step === 3) {
+                activateStep(4);
+            }
+            else if (current_step === 4) {
                 preprocessSubmitForm();
                 $('#advanced-mode-textarea').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
                 $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
@@ -842,6 +848,8 @@
 
             var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
             var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
+
+            $nextNavStep.removeClass('disabled');
 
             preparingStep(nextStep);
             $prevFieldset.hide();

@@ -90,9 +90,9 @@ function checkCampaignJson() {
         assignCampaignJsonToForm(campaignJson);
         var allValid = checkingAllStep();
         var validWhenAssign = checkCampaignJsonValue(campaignJson);
-        //if (allValid && validWhenAssign) {
-        //    preparingStep(4);
-        //}
+        if (allValid && validWhenAssign) {
+            preparingStep(4);
+        }
     } catch (err) {
         showNotifications('Json format is not correct.', 'danger');
     }
