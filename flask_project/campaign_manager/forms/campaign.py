@@ -64,11 +64,11 @@ class CampaignForm(FlaskForm):
     )
     start_date = DateField(
         u'Start date of campaign',
-        render_kw={'placeholder': '---'}
+        render_kw={'placeholder': '---', 'readonly': 'true'}
     )
     end_date = DateField(
         u'End date of campaign',
-        render_kw={'placeholder': '---'}
+        render_kw={'placeholder': '---', 'readonly': 'true'}
     )
     campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',
