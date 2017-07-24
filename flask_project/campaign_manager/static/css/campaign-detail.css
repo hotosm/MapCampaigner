@@ -215,6 +215,7 @@
 
 .insight-type-sub-content {
     padding: 20px;
+    margin-bottom: 20px;
 }
 
 #campaign-map-detail {
@@ -393,6 +394,7 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 .no-data {
     color: #a60300;
+    padding-left: 20px;
 }
 
 #remote-projects-summaries .fa-eye {
