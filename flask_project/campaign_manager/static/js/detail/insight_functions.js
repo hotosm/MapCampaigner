@@ -180,9 +180,8 @@ function renderInsightFunctionsTypes(username) {
         var tabName = campaignType;
         var tabId = tabName.replace(/\s+/g, '_');
 
-        var active = '';
+        var active = 'active';
         if (index === 0) {
-            active = 'active';
             activeInsightPanel = tabId;
         }
 
@@ -266,16 +265,10 @@ function showInsightFunction(element, tabId) {
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
-
+        $divParent.removeClass('active');
+        $('#'+tabId).hide();
     } else {
-
-        var $divParentActive = $('#type-'+activeInsightPanel + " .side-action");
-        $divParentActive.removeClass('active');
         $divParent.addClass('active');
-
-        $('#'+activeInsightPanel).hide();
-        activeInsightPanel = tabId;
-
         $('#'+tabId).show();
     }
 }

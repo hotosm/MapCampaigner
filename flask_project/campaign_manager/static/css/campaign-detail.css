@@ -290,13 +290,15 @@
 }
 
 .type-title {
-    height: 50px;
+    height: 60px;
     font-size: 20pt;
     margin-top: -10px;
     color: #565656;
     text-align: center;
     font-weight: bold;
-    border-bottom: 1px solid #949494;
+    background-color: #f4f4f4;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 10px;
 }
 
 @media (max-width: 1215px) {
