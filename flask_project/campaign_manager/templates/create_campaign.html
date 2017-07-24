@@ -1120,6 +1120,14 @@
             }
         });
 
+        $(function () {
+            var end = Date.parse($("#end_date").val());
+            var start = Date.parse($("#start_date").val());
+            if(start > end){
+                $("#end_date").val($("#start_date").val());
+            }
+        })
+
     </script>
 
 {% endblock %}
