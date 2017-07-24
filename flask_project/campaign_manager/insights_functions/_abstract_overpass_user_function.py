@@ -1,5 +1,6 @@
 from abc import ABCMeta
 import re
+import time
 import datetime
 import xml
 import calendar
@@ -65,8 +66,6 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                         date_to=str(end_date),
                         returns_json=False
                     )
-                last_update = overpass_data['last_update']
-                is_updating = overpass_data['updating_status']
             except OverpassTimeoutException:
                 error = 'Timeout, try a smaller area.'
             except OverpassBadRequestException:
@@ -77,6 +76,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                 error = 'Bad request.'
             else:
                 try:
+                    last_update = overpass_data['last_update']
+                    is_updating = overpass_data['updating_status']
                     tag_name = ''
                     if '=' in self.feature:
                         tag_name = self.feature.split('=')[0]
@@ -96,6 +97,9 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
                         'later.')
+            if not last_update:
+                last_update = datetime.datetime.now().strftime(
+                    '%Y-%m-%d %H:%M:%S')
             return {
                 'user_list': sorted_user_list,
                 'last_update': last_update,
