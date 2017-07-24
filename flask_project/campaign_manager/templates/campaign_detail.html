@@ -278,11 +278,14 @@
                             '<div class="row summary single-row" style="font-size:9pt;">'+
                                '<div class="col-lg-10" style="padding-top: 0 !important;">'+
                             '<div class="pull-left">'+
-                                '#' + data['projectId'] + ' ' + data['projectInfo']['name'] + '' +
+                                '<a target="_blank" href="http://tasks.hotosm.org/project/'+data['projectId']+'">'+
+                                '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
+                                '</a>'+
                             '</div>'+
                             '</div>'+
                                 '<div class="col-lg-2 map-side-list-action">'+
-                                    '<i class="fa fa-eye" aria-hidden="true" onclick="showProjectMap(this, ' + data['projectId'] + ')"></i>'+
+                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Locate project" class="fa fa-map-pin" onclick="pointProjectMap(this, ' + data['projectId'] + ')" style="margin-right: 10px" aria-hidden="true"></i>'+
+                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide project in map" class="fa fa-eye active" aria-hidden="true" onclick="toggleProjectMap(this, ' + data['projectId'] + ')"></i>'+
                                 '</div>'+
                             '</div>'
                         );
@@ -291,9 +294,20 @@
             }
         }
 
-        function showProjectMap(el, projectId) {
+        function pointProjectMap(el, projectId) {
             var layer = addedLayers[projectId];
             map.fitBounds(layer.getBounds());
+        }
+
+        function toggleProjectMap(el, projectId) {
+            var layer = addedLayers[projectId];
+            if($(el).hasClass('active')) {
+                map.removeLayer(layer);
+                $(el).removeClass('active');
+            } else {
+                map.addLayer(layer);
+                $(el).addClass('active');
+            }
         }
 
         //------------------ EVENT ------------------//

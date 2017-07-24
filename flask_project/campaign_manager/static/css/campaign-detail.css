@@ -290,13 +290,15 @@
 }
 
 .type-title {
-    height: 50px;
+    height: 60px;
     font-size: 20pt;
     margin-top: -10px;
     color: #565656;
     text-align: center;
     font-weight: bold;
-    border-bottom: 1px solid #949494;
+    background-color: #f4f4f4;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 10px;
 }
 
 @media (max-width: 1215px) {
@@ -326,7 +328,7 @@ div.side-action a:hover{
     color: #3a3a3a;
 }
 
-div.side-action .fa-eye:hover {
+div.side-action .fa-eye:hover, .fa-map-pin:hover {
     cursor:pointer;
 }
 
@@ -391,4 +393,12 @@ div.side-action .fa-eye:hover {
 
 .no-data {
     color: #a60300;
+}
+
+#remote-projects-summaries .fa-eye {
+    color: #949494;
+}
+
+#remote-projects-summaries .active {
+    color: #565656;
 }

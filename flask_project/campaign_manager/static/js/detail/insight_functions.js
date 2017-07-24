@@ -180,9 +180,8 @@ function renderInsightFunctionsTypes(username) {
         var tabName = campaignType;
         var tabId = tabName.replace(/\s+/g, '_');
 
-        var active = '';
+        var active = 'active';
         if (index === 0) {
-            active = 'active';
             activeInsightPanel = tabId;
         }
 
@@ -199,7 +198,7 @@ function renderInsightFunctionsTypes(username) {
                     '</div>'+
                     '<div class="col-lg-2 map-side-list-action">'+
                         '<div class="side-action '+ active +'">'+
-                            '<i class="fa fa-eye" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
+                            '<i class="fa fa-eye" data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide insight summary" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
@@ -266,16 +265,10 @@ function showInsightFunction(element, tabId) {
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
-
+        $divParent.removeClass('active');
+        $('#'+tabId).hide();
     } else {
-
-        var $divParentActive = $('#type-'+activeInsightPanel + " .side-action");
-        $divParentActive.removeClass('active');
         $divParent.addClass('active');
-
-        $('#'+activeInsightPanel).hide();
-        activeInsightPanel = tabId;
-
         $('#'+tabId).show();
     }
 }
