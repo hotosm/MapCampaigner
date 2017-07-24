@@ -587,8 +587,9 @@ input#btn-add {
 
 input#link_to_omk {
     position: absolute;
-    margin-top: -1px;
+    margin-top: 12px;
     margin-left: 10px;
+    height: 18px !important;
     font-size: 20px;
 }
 
