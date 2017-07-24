@@ -28,7 +28,7 @@ function renderInsightFunctions(username) {
                     tab_name += ' for ' + selected_function['feature'];
                 }
                 $insightTitle.html(tab_name);
-                $insightContent.append(
+                $insightContent.html(
                     '<div id="' + tab_id + '">' +
                         '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> Loading data .. </span>' +
                     '</div>'

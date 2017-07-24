@@ -12,7 +12,7 @@ from campaign_manager.data_providers.osmcha_changesets_provider import (
 
 
 class OsmchaChangesets(AbstractInsightsFunction):
-    function_name = "Showing osmcha changesets"
+    function_name = "Osmcha changesets"
     icon = 'list'
 
     current_page = 1

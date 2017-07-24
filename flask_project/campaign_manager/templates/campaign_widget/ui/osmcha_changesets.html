@@ -1,4 +1,5 @@
 <div class="osmch-error">
+    {% if data.data|length > 0 %}
     <table class="feature-list-table">
         <thead>
         <tr>
@@ -50,19 +51,24 @@
     <ul class="pager">
         {% if data.current_page > 1 %}
             <li>
-                <a class="pager-button" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
+                <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
                     ← Previous
                 </a>
             </li>
         {% endif %}
-        {% if data.current_page != data.max_page %}
+        {% if data.current_page|int < data.max_page|int %}
             <li>
-                <a class="pager-button" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
+                <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
                     Next →
                 </a>
             </li>
         {% endif %}
     </ul>
+    {% else %}
+     <div class="no-data">
+        No data
+    </div>
+    {% endif %}
 </div>
 <style type="text/css">
     .text-pagination {
@@ -90,7 +96,8 @@
         });
         $wrapper.find('.dataTables_wrapper').show();
         $wrapper.find(".pager-button").click(function (event) {
-            var $content = $('#' + function_id);
+            var _function_id = $(this).data('function-id');
+            var $content = $('#' + _function_id);
             event.preventDefault();
             $content.LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
             $.ajax({
