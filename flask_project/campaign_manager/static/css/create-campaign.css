@@ -318,6 +318,10 @@
     height: auto !important;
 }
 
+input#start_date, input#end_date {
+    background-color: inherit;
+}
+
 #campaign-form input {
     height: 45px !important;
 }
