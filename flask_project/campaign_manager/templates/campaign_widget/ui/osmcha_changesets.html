@@ -46,7 +46,7 @@
         </tbody>
     </table>
     <p class="text-muted text-pagination">
-        Page {{ data.current_page }} of {{ data.max_page }}
+        Page {{ data.current_page }} of {{ data.max_page|int + 1 }}
     </p>
     <ul class="pager">
         {% if data.current_page > 1 %}
@@ -56,7 +56,7 @@
                 </a>
             </li>
         {% endif %}
-        {% if data.current_page|int < data.max_page|int %}
+        {% if data.current_page|int < data.max_page|int + 1 %}
             <li>
                 <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
                     Next →

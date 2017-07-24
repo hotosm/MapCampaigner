@@ -6,14 +6,6 @@ function renderInsightFunctions(username) {
 
     $.each(selected_functions, function (key, selected_function) {
 
-        var insightPanel = $('.advance-insights').clone()[0];
-        var $insightPanel = $(insightPanel);
-        $('.advance-insights-wrapper').append($insightPanel);
-        $insightPanel.show();
-
-        var $insightTitle = $insightPanel.find('.panel-heading');
-        var $insightContent = $insightPanel.find('.panel-body');
-
         if (selected_function['name']) {
             var allow_function = true;
             if (selected_function['manager_only']) {
@@ -22,8 +14,15 @@ function renderInsightFunctions(username) {
                 }
             }
             if (allow_function) {
+                var insightPanel = $('.advance-insights').clone()[0];
+                var $insightPanel = $(insightPanel);
+                $('.advance-insights-wrapper').append($insightPanel);
+                $insightPanel.show();
+
+                var $insightTitle = $insightPanel.find('.panel-heading');
+                var $insightContent = $insightPanel.find('.panel-body');
                 var tab_id = key;
-                var tab_name = selected_function['name']
+                var tab_name = selected_function['name'];
                 if(selected_function['feature']) {
                     tab_name += ' for ' + selected_function['feature'];
                 }
