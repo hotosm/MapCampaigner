@@ -328,7 +328,7 @@ div.side-action a:hover{
     color: #3a3a3a;
 }
 
-div.side-action .fa-eye:hover {
+div.side-action .fa-eye:hover, .fa-map-pin:hover {
     cursor:pointer;
 }
 
@@ -393,4 +393,12 @@ div.side-action .fa-eye:hover {
 
 .no-data {
     color: #a60300;
+}
+
+#remote-projects-summaries .fa-eye {
+    color: #949494;
+}
+
+#remote-projects-summaries .active {
+    color: #565656;
 }
