@@ -101,7 +101,11 @@
                 Feature completeness
             </div>
             <div class="pull-right">
-                {{ data.percentage }} %
+                {% if data.total == 0 %}
+                    n/a
+                {% else %}
+                    {{ data.percentage }} %
+                {% endif %}
             </div>
             <div class="summary-content">
                 <div class="progress side-panel-progress">
