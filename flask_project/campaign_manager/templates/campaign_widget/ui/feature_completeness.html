@@ -1,7 +1,11 @@
 <div class="completness">
     <div class="insight-title">Feature Completeness</div>
     <div class="total-features">{{ data.total }}</div>
+    {% if data.total == 0 %}
+    <h3 class="progress-bar-indicator">n/a</h3>
+    {% else %}
     <h3 class="progress-bar-indicator">{{ data.complete }}/{{ data.total }} ({{ data.percentage }} %)</h3>
+    {% endif %}
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
@@ -97,7 +101,11 @@
                 Feature completeness
             </div>
             <div class="pull-right">
-                {{ data.percentage }} %
+                {% if data.total == 0 %}
+                    n/a
+                {% else %}
+                    {{ data.percentage }} %
+                {% endif %}
             </div>
             <div class="summary-content">
                 <div class="progress side-panel-progress">
