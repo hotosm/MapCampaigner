@@ -1,6 +1,5 @@
 import os
 from flask import Flask
-from reporter import reporter
 from campaign_manager import campaign_manager
 from campaign_manager.views import not_found_page
 
