@@ -134,7 +134,7 @@ def load_osm_document_cached(file_path, url_path, returns_json=True):
 
     if returns_json:
         try:
-            osm_data = json.loads(file_handle.read())
+            osm_data = json.loads(file_handle.read().decode('utf-8'))
         except ValueError:
             pass
     else:
