@@ -93,4 +93,3 @@ reporter = Blueprint(
         template_folder='templates',
         static_url_path='/reporter/static',
         static_folder='static')
-
