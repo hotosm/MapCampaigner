@@ -113,9 +113,6 @@ function getInsightFunctions(function_id, type_id) {
                     var totalValue = currentValue + value;
                     $currentTypeFeatureCollected.html(totalValue);
                 }
-                if(value==0){
-                    $divFunction.find('.progress-bar-indicator').html('<span>n/a</span>')
-                }
             }
 
             if($divFunction.find('.insight-summaries').length > 0) {
