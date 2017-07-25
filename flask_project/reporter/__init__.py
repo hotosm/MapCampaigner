@@ -93,10 +93,3 @@ reporter = Blueprint(
         template_folder='templates',
         static_url_path='/reporter/static',
         static_folder='static')
-
-# app = Flask(__name__)
-# Don't import actual view methods themselves - see:
-# http://flask.pocoo.org/docs/patterns/packages/#larger-applications
-# Also views must be imported AFTER app is created above.
-# noinspection PyUnresolvedReferences
-from reporter import views
