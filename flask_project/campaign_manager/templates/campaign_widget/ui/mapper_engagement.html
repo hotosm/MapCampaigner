@@ -168,6 +168,23 @@
                         mapperEngagementTotal.datasets[0]['data'][i] += userInfo.ways;
                     }
                 }
+
+                for(i=0; i<mapperEngagementFrequency.length;i++) {
+                    if(mapperEngagementFrequency[i].datasets[0].label === userInfo.name) {
+                        var timeline = JSON.parse(userInfo.timeline);
+                        for(var j=0; j<timeline.length; j++) {
+                            var pair = timeline[j];
+                            var dateString = pair[0];
+                            var date = moment.utc(dateString, "YYYY-MM-DD");
+                            pair[0] = date.valueOf();
+                            timeline[j] = pair;
+
+                            mapperEngagementFrequency[i].labels.push(date.format('DD/MM/YY'));
+                            mapperEngagementFrequency[i].datasets[0].data.push(pair[1]);
+                        }
+                    }
+                }
+
                 if(i === mapperEngagementTotal.labels.length-1) {
                     mapperEngagementTotal['labels'].push(userInfo.name);
                     mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
@@ -182,36 +199,37 @@
                     'backgroundColor': []
                 }]
             };
+
             $.each(user_lists, function (index, userInfo) {
                 mapperEngagementTotal['labels'].push(userInfo.name);
                 mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
                 mapperEngagementTotal['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode(userInfo.name)));
+
+                // User frequencies
+                var chartData = {
+                    labels: [],
+                    datasets: [{
+                        label: userInfo.name,
+                        backgroundColor: '#' + intToRGB(hashCode(userInfo.name)),
+                        data: []
+                    }]
+                };
+
+                var timeline = JSON.parse(userInfo.timeline);
+                for(var i=0; i<timeline.length; i++) {
+                    var pair = timeline[i];
+                    var dateString = pair[0];
+                    var date = moment.utc(dateString, "YYYY-MM-DD");
+                    pair[0] = date.valueOf();
+                    timeline[i] = pair;
+
+                    chartData.labels.push(date.format('DD/MM/YY'));
+                    chartData.datasets[0].data.push(pair[1]);
+                }
+
+                mapperEngagementFrequency.push(chartData);
             });
         }
-
-        {% for entry in data['user_list'] %}
-            var d{{ loop.index }} = {{ entry.timeline|safe }};
-            var chartData{{ loop.index }} = {
-                labels: [],
-                datasets: [{
-                    label: "{{ entry.name }}",
-                    backgroundColor: '#' + intToRGB(hashCode("{{ entry.name }}")),
-                    data: []
-                }]
-            };
-            for (i=0; i < d{{ loop.index }}.length; i++)
-            {
-                var pair = d{{ loop.index }}[i];
-                var dateString = pair[0];
-                var date = moment.utc(dateString, "YYYY-MM-DD");
-                pair[0] = date.valueOf();
-                d{{ loop.index }}[i] = pair;
-
-                chartData{{ loop.index }}.labels.push(date.format('DD/MM/YY'));
-                chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
-            }
-            mapperEngagementFrequency.push(chartData{{ loop.index }});
-        {% endfor %}
 
     {% endif %}
     {% endif %}

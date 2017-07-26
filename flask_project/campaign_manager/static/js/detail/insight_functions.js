@@ -169,6 +169,7 @@ function calculateCampaignProgress() {
     })
 }
 
+var insightTypeIndex = 0;
 function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
@@ -223,7 +224,10 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 } else if (function_name === 'MapperEngagement') {
-                    updateMapperEngagementTotal();
+                    if(insightTypeIndex === Object.keys(campaign_types).length - 1) {
+                        updateMapperEngagementTotal();
+                    }
+                    insightTypeIndex++;
                 }
             }
         }
