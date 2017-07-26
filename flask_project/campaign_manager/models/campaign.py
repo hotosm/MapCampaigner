@@ -161,22 +161,22 @@ class Campaign(JsonModel):
         :return: rendered UI from insight function
         :rtype: str
         """
-        campaing_ui = ''
+        campaign_ui = ''
         try:
-            function = self.selected_functions[insight_function_id]
+            insight_function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                insights_functions, function['function'])
+                insights_functions, insight_function['function'])
             additional_data['function_id'] = insight_function_id
-            if 'type' in function:
-                additional_data['type'] = function['type']
+            if 'type' in insight_function:
+                additional_data['type'] = insight_function['type']
             selected_function = SelectedFunction(
                 self,
-                feature=function['feature'],
-                required_attributes=function['attributes'],
+                feature=insight_function['feature'],
+                required_attributes=insight_function['attributes'],
                 additional_data=additional_data
             )
         except (AttributeError, KeyError) as e:
-            return campaing_ui
+            return campaign_ui
 
         # render UI
         context = {
@@ -184,11 +184,11 @@ class Campaign(JsonModel):
             'icon': selected_function.icon,
             'widget': selected_function.get_ui_html()
         }
-        campaing_ui += render_template(
+        campaign_ui += render_template(
             'campaign_widget/insight_template.html',
             **context
         )
-        return campaing_ui
+        return campaign_ui
 
     def insights_function_data_metadata(self, insight_function_id):
         """Get rendered UI from insight_function

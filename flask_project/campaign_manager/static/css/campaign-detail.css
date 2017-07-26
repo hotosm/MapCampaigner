@@ -213,11 +213,6 @@
     cursor: pointer;
 }
 
-.insight-type-sub-content {
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
 #campaign-map-detail {
     height: 500px;
     margin-top: 4px;
@@ -403,4 +398,15 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 #remote-projects-summaries .active {
     color: #565656;
+}
+
+#feature-completeness-error-table {
+    font-size: 10pt;
+}
+
+#total-feature-completeness-errors {
+    font-size: 40pt;
+    font-weight: bold;
+    color: #a5352e;
+    padding-bottom: 20px;
 }

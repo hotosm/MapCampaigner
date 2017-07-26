@@ -165,7 +165,34 @@
         </div>
     </div>
 
-    <div class="advance-insights-wrapper"></div>
+    <div class="advance-insights-wrapper">
+        <div class="advance-insights" style="display: block;">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default detail-panel-insights">
+                        <div class="panel-heading">Errors</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    OSMCHA
+                                </div>
+                                <div class="col-lg-6">
+                                    <div style="font-size: 15pt; font-weight: bold; margin-bottom: 20px;">Feature Completeness Errors</div>
+                                    <div id="total-feature-completeness-errors">
+                                        0
+                                    </div>
+                                    <table id="feature-completeness-error-table" class="display" width="100%">
+
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="advance-insights">
         <div class="row">
@@ -215,6 +242,8 @@
             'VALIDATED': '#B0DE5C',
             'BADIMAGERY': '#d2a29e'
         };
+
+        var featureCompleteness = [];
 
         function renderRemoteProjects() {
 

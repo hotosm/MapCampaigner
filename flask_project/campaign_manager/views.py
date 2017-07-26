@@ -100,7 +100,6 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
     try:
-
         campaign = Campaign.get(uuid)
         rendered_html = campaign.render_insights_function(
             insight_function_id,

@@ -1,4 +1,24 @@
 var activeInsightPanel = '';
+var errorPanel = null;
+
+function createErrorPanel() {
+     errorPanel = $('#feature-completeness-error-table').DataTable( {
+         data: [],
+         bFilter: false,
+         bLengthChange: false,
+         columns: [
+            { title: "Name", "width": "20%"  },
+            { title: "Type", "width": "10%" },
+            { title: "Status", "width": "50%" }
+         ]
+    } );
+}
+
+function addRowToErrorPanel(row) {
+    if(errorPanel) {
+        errorPanel.row.add(row).draw(false);
+    }
+}
 
 function renderInsightFunctions(username) {
 
@@ -83,7 +103,7 @@ function calculateCampaignProgress() {
     })
 }
 
-function getInsightFunctions(function_id, type_id) {
+function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
     $.ajax({
@@ -98,9 +118,6 @@ function getInsightFunctions(function_id, type_id) {
             var $divFunction = $('#' + function_id);
             $divFunction.html(data);
             var $subContent = $divFunction.parent().next();
-            if($divFunction.find('.table-insight-view').length > 0) {
-                $subContent.html($divFunction.find('.table-insight-view'));
-            }
 
             if($divFunction.find('.total-features').length > 0) {
                 var value = parseInt($divFunction.find('.total-features').html());
@@ -120,6 +137,17 @@ function getInsightFunctions(function_id, type_id) {
                     $('#'+type_id+'-summaries').append($divFunction.find('.insight-summaries').html());
                 }
             }
+
+            if(typeof type_id !== 'undefined') {
+                if(function_name === 'FeatureAttributeCompleteness') {
+                    for(var i=0; i<featureCompleteness.length;i++){
+                        addRowToErrorPanel(featureCompleteness[i]);
+                    }
+                    var totalError = parseInt($('#total-feature-completeness-errors').html());
+                    $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                }
+            }
+
         }
     });
 }
@@ -131,6 +159,9 @@ function renderInsightFunctionsTypes(username) {
     var $insightContent = $('.insight-content');
     var $insightFunctionPanel = $('.insight-function-panel');
     var index = 0;
+
+    createErrorPanel();
+
 
     if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
         $insightFunctionPanel.html(
@@ -243,7 +274,7 @@ function renderInsightFunctionsTypes(username) {
                             '</div>'
                     );
 
-                    getInsightFunctions(insightId, tabId);
+                    getInsightFunctions(insightId, selected_function['function'], tabId);
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
                         feature_type_collected.push(selected_function['feature']);
                     }
