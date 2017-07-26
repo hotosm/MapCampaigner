@@ -67,4 +67,5 @@ class AbstractOsmchaProvider(AbstractDataProvider):
             'current_page': page,
             'next_page': int(page) + 1,
             'data': data,
+            'total': data['count']
         }

@@ -147,7 +147,16 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 }
             }
+        }
+    });
+}
 
+function getOSMCHAErrors() {
+    var url = '/campaign/osmcha_errors/'+ uuid;
+    $.ajax({
+        url: url,
+        success: function (data) {
+            $('#total-osmcha-errors').html(data);
         }
     });
 }
@@ -288,6 +297,7 @@ function renderInsightFunctionsTypes(username) {
     }
 
     renderInsightFunctions(username);
+    getOSMCHAErrors();
 }
 
 function showInsightFunction(element, tabId) {

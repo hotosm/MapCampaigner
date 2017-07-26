@@ -22,6 +22,7 @@ from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
+from campaign_manager.models.campaign import Campaign
 
 from reporter import LOGGER
 from reporter.static_files import static_file
@@ -96,13 +97,26 @@ def clean_argument(args):
 
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
 def get_campaign_insight_function_data(uuid, insight_function_id):
-    from campaign_manager.models.campaign import Campaign
     """Get campaign insight function data.
     """
     try:
         campaign = Campaign.get(uuid)
         rendered_html = campaign.render_insights_function(
             insight_function_id,
+            additional_data=clean_argument(request.args)
+        )
+        return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        abort(404)
+
+
+@campaign_manager.route('/campaign/osmcha_errors/<uuid>')
+def get_osmcha_errors_function(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        rendered_html = campaign.render_insights_function(
+            insight_function_id='total-osmcha-errors',
+            insight_function_name='OsmchaChangesets',
             additional_data=clean_argument(request.args)
         )
         return Response(rendered_html)

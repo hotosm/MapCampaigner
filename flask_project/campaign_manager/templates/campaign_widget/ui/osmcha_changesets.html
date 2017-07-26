@@ -1,46 +1,26 @@
 <div class="osmch-error">
+    <div class="total-osmcha-errors">{{ data.total }}</div>
     {% if data.data|length > 0 %}
     <table class="feature-list-table">
         <thead>
         <tr>
-            {% for key in data.data[0] %}
-                <th>{{ key }}</th>
-            {% endfor %}
+            <th>ID</th>
+            <th>Comment</th>
+            <th>Reasons</th>
         </tr>
         </thead>
         <tbody>
         {% for row in data.data %}
             <tr>
-                {% for key, value in row.items() %}
-                    <td>
-                        {% if key == 'ID' %}
-                            <a href='{{ data.osmcha_url }}changesets/{{ value }}'>{{ value }}</a>
-                        {% elif key == 'User' %}
-                            <a href='https://www.openstreetmap.org/user/{{ value }}'>{{ value }}</a>
-                        {% elif key == 'Count' %}
-                            <span class='label label-success'>{{ value.create }}</span>
-                            <span class='label label-warning'>{{ value.modify }}</span>
-                            <span class='label label-danger'>{{ value.delete }}</span>
-                        {% elif key == 'Verified' %}
-                            {% if value.status %}
-                                <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                {% if value.thumbs_up %}
-                                    <span class="glyphicon glyphicon-thumbs-up"></span>
-                                {% else %}
-                                    <span class="glyphicon glyphicon-thumbs-down"></span>
-                                {% endif %}
-                                {% if value.verifier %}
-                                    <a href='https://osmcha.mapbox.com/?checked_by={{ value.verifier }}'>{{ value.verifier }}</a>
-                                {% endif %}
-
-                            {% else %}
-                                <span aria-hidden='true' class='glyphicon glyphicon-remove text-danger'></span>
-                            {% endif %}
-                        {% else %}
-                            {{ value }}
-                        {% endif %}
-                    </td>
-                {% endfor %}
+                <td>
+                    <a href="{{ data.osmcha_url }}changesets/{{ row['ID'] }}" target="_blank">{{ row['ID'] }}</a>
+                </td>
+                <td>
+                    {{ row['Comment'] }}
+                </td>
+                <td>
+                    {{ row['Reasons'] }}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -51,14 +31,22 @@
     <ul class="pager">
         {% if data.current_page > 1 %}
             <li>
-                <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
+                {% if function_id == 'total-osmcha-errors' %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/osmcha_errors/{{ data.uuid }}?page={{ data.previous_page }}">
+                {% else %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
+                {% endif %}
                     ← Previous
                 </a>
             </li>
         {% endif %}
         {% if data.current_page|int < data.max_page|int + 1 %}
             <li>
-                <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
+                {% if function_id == 'total-osmcha-errors' %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/osmcha_errors/{{ data.uuid }}?page={{ data.next_page }}">
+                {% else %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
+                {% endif %}
                     Next →
                 </a>
             </li>
@@ -76,23 +64,24 @@
         margin-top: 10px;
     }
 
-    .feature-list-table a {
-        cursor: pointer;
-    }
 </style>
 <script>
     var function_id = "{{ function_id }}";
     var $wrapper = $('#{{ function_id }}');
     $(document).ready(function () {
         $wrapper.find('.feature-list-table').DataTable({
+            columns: [
+                { "width": "10%"  },
+                { "width": "50%" },
+                { "width": "20%" }
+            ],
             "filter": false,
             "pageLength": 15,
             "paging": false,
             "info": false,
             "rowReorder": {
                 selector: 'td:nth-child(2)'
-            },
-            "responsive": true
+            }
         });
         $wrapper.find('.dataTables_wrapper').show();
         $wrapper.find(".pager-button").click(function (event) {
@@ -103,6 +92,7 @@
             $.ajax({
                 url: $(event.target).attr('href'),
                 success: function (data) {
+                    console.log(data);
                     $content.LoadingOverlay('hide');
                     $content.html(data);
                 }

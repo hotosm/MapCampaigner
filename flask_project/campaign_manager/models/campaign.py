@@ -149,7 +149,8 @@ class Campaign(JsonModel):
     def render_insights_function(
             self,
             insight_function_id,
-            additional_data={}):
+            additional_data={},
+            insight_function_name=None):
         """Get rendered UI from insight_function
 
         :param insight_function_id: name of insight function
@@ -158,23 +159,38 @@ class Campaign(JsonModel):
         :param additional_data: additional data that needed
         :type additional_data:dict
 
+        :param insight_function_name: If there's only insight function name
+        :type insight_function_name: str
+
         :return: rendered UI from insight function
         :rtype: str
         """
         campaign_ui = ''
         try:
-            insight_function = self.selected_functions[insight_function_id]
-            SelectedFunction = getattr(
-                insights_functions, insight_function['function'])
-            additional_data['function_id'] = insight_function_id
-            if 'type' in insight_function:
-                additional_data['type'] = insight_function['type']
-            selected_function = SelectedFunction(
-                self,
-                feature=insight_function['feature'],
-                required_attributes=insight_function['attributes'],
-                additional_data=additional_data
-            )
+            if insight_function_name:
+                SelectedFunction = getattr(
+                    insights_functions, insight_function_name)
+                additional_data['function_name'] = insight_function_name
+                additional_data['function_id'] = insight_function_id
+                selected_function = SelectedFunction(
+                        self,
+                        feature=None,
+                        required_attributes=None,
+                        additional_data=additional_data
+                )
+            else:
+                insight_function = self.selected_functions[insight_function_id]
+                SelectedFunction = getattr(
+                    insights_functions, insight_function['function'])
+                additional_data['function_id'] = insight_function_id
+                if 'type' in insight_function:
+                    additional_data['type'] = insight_function['type']
+                selected_function = SelectedFunction(
+                    self,
+                    feature=insight_function['feature'],
+                    required_attributes=insight_function['attributes'],
+                    additional_data=additional_data
+                )
         except (AttributeError, KeyError) as e:
             return campaign_ui
 

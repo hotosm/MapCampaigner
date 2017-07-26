@@ -404,7 +404,7 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     font-size: 10pt;
 }
 
-#total-feature-completeness-errors {
+#total-feature-completeness-errors, .total-osmcha-errors {
     font-size: 40pt;
     font-weight: bold;
     color: #a5352e;
