@@ -195,6 +195,17 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
                     var totalValue = currentValue + value;
                     $currentTypeFeatureCollected.html(totalValue);
+
+                    $('#total-features-'+type_id).html(
+                        '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
+                            'Features Checked ' +
+                            '<div class="completeness"> ' +
+                                '<div class="progress-bar-indicator" style="font-size:60pt; padding-top: 30px;">' +
+                                    totalValue +
+                                '</div>'+
+                            '</div>'+
+                        '</div>'
+                    );
                 }
             }
 
@@ -213,7 +224,6 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 } else if (function_name === 'MapperEngagement') {
                     updateMapperEngagementTotal();
-                    $divFunction.html(' ');
                 }
             }
         }
@@ -288,9 +298,10 @@ function renderInsightFunctionsTypes(username) {
         var tabName = campaignType;
         var tabId = tabName.replace(/\s+/g, '_');
 
-        var active = 'active';
+        var active = '';
         if (index === 0) {
             activeInsightPanel = tabId;
+            active = 'active';
         }
 
         $('.map-side-panel').append(
@@ -345,12 +356,25 @@ function renderInsightFunctionsTypes(username) {
                         sizeColumn = 'col-lg-4';
                     }
 
-                    $mainRowTypeContents.append(
-                            '<div class="'+sizeColumn+'" id="' + insightId + '">' +
-                            '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
-                                'Loading data... </span>' +
-                            '</div>'
-                    );
+                    if(selected_function['function'] === 'MapperEngagement') {
+                        $mainRowTypeContents.append('<div id="'+insightId+'" style="display: none;"></div>')
+                    } else {
+                        $mainRowTypeContents.append(
+                                '<div class="'+sizeColumn+'" id="' + insightId + '">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
+                                    'Loading data... </span>' +
+                                '</div>'
+                        );
+                    }
+
+                    if(insightIndex === Object.keys(campaignTypes[campaignType]).length) {
+                        $mainRowTypeContents.append(
+                                '<div class="'+sizeColumn+'" id="total-features-'+campaignType.replace(' ', '_')+'">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
+                                    'Loading data... </span>' +
+                                '</div>'
+                        );
+                    }
 
                     getInsightFunctions(insightId, selected_function['function'], tabId);
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
@@ -374,10 +398,11 @@ function showInsightFunction(element, tabId) {
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
-        $divParent.removeClass('active');
-        $('#'+tabId).hide();
     } else {
+        $('#'+activeInsightPanel).hide();
+        $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
+        activeInsightPanel = tabId;
     }
 }

@@ -74,6 +74,7 @@
             </table>
         </div>
     {% endif %}
+    {% if not feature_type %}
     <div class="footer">
         Data updated at {{ data['last_update'] }}.
         {% if data['updating'] %}
@@ -81,6 +82,7 @@
             Currently updating.
         {% endif %}
     </div>
+    {% endif %}
 </div>
 
 <div class="insight-summaries">
