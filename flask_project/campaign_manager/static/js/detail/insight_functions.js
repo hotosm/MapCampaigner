@@ -39,6 +39,15 @@ function createMapperEngagementPanel() {
 var lastFrequencyIndex = 0;
 function updateMapperEngagementTotal() {
 
+    console.log(mapperEngagementFrequency.length)
+
+    if(mapperEngagementFrequency.length === 0) {
+        $('#user-engagement-panel').find('.grey-italic').html(' ');
+        $('#user-engagement-panel').find('.grey-italic').next().html('<div class="no-data">No data</div>');
+        return;
+    }
+
+
     $('#user-engagement-panel').find('.grey-italic').html(' ');
     mapperEngagementChart.data.labels = mapperEngagementTotal.labels;
     mapperEngagementChart.data.datasets[0].backgroundColor = mapperEngagementTotal.datasets[0].backgroundColor;
@@ -190,14 +199,16 @@ function getInsightFunctions(function_id, function_name, type_id) {
                 var value = parseInt($divFunction.find('.total-features').html());
                 total_features_collected += value;
                 $('#features-collected').html(total_features_collected);
+                console.log(value);
+                console.log(type_id);
 
                 if(typeof type_id !== 'undefined') {
-                    var $currentTypeFeatureCollected = $('#type-'+type_id + ' .features-collected');
+                    var $currentTypeFeatureCollected = $('#type-'+type_id.replace(/\s+/g, '_') + ' .features-collected');
                     var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
                     var totalValue = currentValue + value;
                     $currentTypeFeatureCollected.html(totalValue);
 
-                    $('#total-features-'+type_id).html(
+                    $('#total-features-'+type_id.replace(/\s+/g, '_')).html(
                         '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
                             'Features Checked ' +
                             '<div class="completeness"> ' +
@@ -373,7 +384,7 @@ function renderInsightFunctionsTypes(username) {
 
                     if(insightIndex === Object.keys(campaignTypes[campaignType]).length) {
                         $mainRowTypeContents.append(
-                                '<div class="'+sizeColumn+'" id="total-features-'+campaignType.replace(' ', '_')+'">' +
+                                '<div class="'+sizeColumn+'" id="total-features-'+campaignType.replace(/\s+/g, '_')+'">' +
                                 '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
                                     'Loading data... </span>' +
                                 '</div>'

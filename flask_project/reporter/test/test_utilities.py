@@ -74,14 +74,6 @@ class UtilitiesTestCase(LoggedTestCase):
             u'2012-12-10': 1}
         expected_result = (
             '[["2012-12-01",10],'
-            '["2012-12-02",0],'
-            '["2012-12-03",0],'
-            '["2012-12-04",0],'
-            '["2012-12-05",0],'
-            '["2012-12-06",0],'
-            '["2012-12-07",0],'
-            '["2012-12-08",0],'
-            '["2012-12-09",0],'
             '["2012-12-10",1]]')
         result = interpolated_timeline(time_line)
         # noinspection PyPep8Naming
