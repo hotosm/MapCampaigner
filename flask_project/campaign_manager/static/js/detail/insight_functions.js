@@ -1,5 +1,71 @@
 var activeInsightPanel = '';
 var errorPanel = null;
+var mapperEngagementChart = null;
+
+function createMapperEngagementPanel() {
+    var ctx = $('#user-engagement-charts');
+    mapperEngagementChart = new Chart(ctx, {
+        type: 'doughnut',
+        data:  {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            legendCallback: function (chart) {
+                var text = [];
+                text.push('<ul>');
+                for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+                    text.push('<li>');
+                    text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
+                    if (chart.data.labels[i]) {
+                        text.push(chart.data.labels[i]);
+                    }
+                    text.push('</li>');
+                }
+                text.push('</ul>');
+                return text.join("");
+            }
+        }
+    });
+}
+
+var lastFrequencyIndex = 0;
+function updateMapperEngagementTotal() {
+
+    $('#user-engagement-panel').find('.grey-italic').html(' ');
+    mapperEngagementChart.data.labels = mapperEngagementTotal.labels;
+    mapperEngagementChart.data.datasets[0].backgroundColor = mapperEngagementTotal.datasets[0].backgroundColor;
+    mapperEngagementChart.data.datasets[0].data = mapperEngagementTotal.datasets[0].data;
+    mapperEngagementChart.update();
+
+    $('#user-engagement-panel').find('.chart-legends').html(mapperEngagementChart.generateLegend());
+
+    for(var i=lastFrequencyIndex; i<mapperEngagementFrequency.length; i++) {
+        $('<canvas>').attr({
+            id: 'mapper-engagement-frequency-'+i
+        }).appendTo(
+            '#mapper-engagement-frequency-wrapper'
+        );
+        var ctx = $("#mapper-engagement-frequency-"+i);
+
+        new Chart(ctx, {
+                type: 'line',
+                data: mapperEngagementFrequency[i],
+                options: {}
+        });
+    }
+
+    lastFrequencyIndex = mapperEngagementFrequency.length-1;
+
+    mapperEngagementFrequency = [];
+}
 
 function createErrorPanel() {
      errorPanel = $('#feature-completeness-error-table').DataTable( {
@@ -145,6 +211,9 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     }
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                } else if (function_name === 'MapperEngagement') {
+                    updateMapperEngagementTotal();
+                    $divFunction.html(' ');
                 }
             }
         }
@@ -170,7 +239,7 @@ function renderInsightFunctionsTypes(username) {
     var index = 0;
 
     createErrorPanel();
-
+    createMapperEngagementPanel();
 
     if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
         $insightFunctionPanel.html(

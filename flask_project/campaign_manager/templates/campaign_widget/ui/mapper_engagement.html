@@ -1,33 +1,35 @@
 <div class="insight-title" style="margin-bottom: 20px;">Users Engagement</div>
 <div class="row" style="padding: 20px;">
-    {% if data['user_list'] %}
-        {% if 'type' not in additional_data or additional_data['type'] == "" %}
-            <div class="col-lg-4">
-                <canvas class="average-engagement" style="width: 100%; "></canvas>
-            </div>
-            <div class="col-lg-3">
-                <div class="chart-legends"></div>
-            </div>
-            <div class="col-lg-5 overview-container">
-                {% for entry in data['user_list'] %}
-                    <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
-                    Total Ways <span class="label label-primary">{{ entry.ways }}</span>
-                    <hr/>
-                {% endfor %}
-            </div>
+    {% if not feature_type %}
+        {% if data['user_list'] %}
+            {% if 'type' not in additional_data or additional_data['type'] == "" %}
+                <div class="col-lg-4">
+                    <canvas class="average-engagement" style="width: 100%; "></canvas>
+                </div>
+                <div class="col-lg-3">
+                    <div class="chart-legends"></div>
+                </div>
+                <div class="col-lg-5 overview-container">
+                    {% for entry in data['user_list'] %}
+                        <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
+                        Total Ways <span class="label label-primary">{{ entry.ways }}</span>
+                        <hr/>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="col-lg-1"></div>
+                <div class="col-lg-6">
+                    <canvas class="average-engagement" style="width: 100%; "></canvas>
+                </div>
+                <div class="col-lg-5">
+                    <div class="chart-legends"></div>
+                </div>
+            {% endif %}
         {% else %}
-            <div class="col-lg-1"></div>
-            <div class="col-lg-6">
-                <canvas class="average-engagement" style="width: 100%; "></canvas>
-            </div>
-            <div class="col-lg-5">
-                <div class="chart-legends"></div>
-            </div>
+        <div class="col-lg-12">
+            <div class="no-data">No data to be rendered</div>
+        </div>
         {% endif %}
-    {% else %}
-    <div class="col-lg-12">
-        <div class="no-data">No data to be rendered</div>
-    </div>
     {% endif %}
 </div>
 <div class="footer">
@@ -53,113 +55,164 @@
     </div>
 </div>
 
-
-<style type="text/css">
-    .overview-container {
-        height: 620px;
-        overflow:auto;
-        border:1px solid #ddd;
-    }
-</style>
-
 <script type="text/javascript">
-    $(function () {
-        {% if data['user_list'] %}
-            var tab_id = '{{ function_id }}';
-            var $wrapper = $('#'+tab_id);
+    {% if data['user_list'] %}
 
-            $.fn.dataTable.moment( 'DD-MM-YYYY' );
+    {% if not feature_type  %}
+        var chartData = {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 0
+            }]
+        };
 
-            var chartData = {
+        {% for entry in data['user_list'] %}
+            chartData['labels'].push("{{ entry.name }}");
+            chartData['datasets'][0]['data'].push({{ entry.ways }});
+            chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
+        {% endfor %}
+
+        var tab_id = '{{ function_id }}';
+        var $wrapper = $('#'+tab_id);
+
+        $.fn.dataTable.moment( 'DD-MM-YYYY' );
+
+        var ctx = $wrapper.find(".average-engagement");
+        var averageChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                legend: {
+                 display: false
+                },
+                legendCallback: function (chart) {
+                    var text = [];
+                    text.push('<ul>');
+                    for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+                        text.push('<li>');
+                        text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
+                        if (chart.data.labels[i]) {
+                            text.push(chart.data.labels[i]);
+                        }
+                        text.push('</li>');
+                    }
+                    text.push('</ul>');
+                    return text.join("");
+                }
+            }
+        });
+        $wrapper.find('.chart-legends').html(averageChart.generateLegend());
+
+        // User timeline charts
+        {% if 'type' not in additional_data or additional_data['type'] == "" %}
+        {% for entry in data['user_list'] %}
+
+            var d{{ loop.index }} = {{ entry.timeline|safe }};
+            var chartData{{ loop.index }} = {
                 labels: [],
                 datasets: [{
-                    data: [],
-                    backgroundColor: [],
-                    borderWidth: 0
+                    label: "{{ entry.name }}",
+                    backgroundColor: '#' + intToRGB(hashCode("{{ entry.name }}")),
+                    data: []
                 }]
             };
+            for (i=0; i < d{{ loop.index }}.length; i++)
+            {
+                var pair = d{{ loop.index }}[i];
+                var dateString = pair[0];
+                var date = moment.utc(dateString, "YYYY-MM-DD");
+                pair[0] = date.valueOf();
+                d{{ loop.index }}[i] = pair;
 
-            {% for entry in data['user_list'] %}
-                chartData['labels'].push("{{ entry.name }}");
-                chartData['datasets'][0]['data'].push({{ entry.ways }});
-                chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
-            {% endfor %}
+                chartData{{ loop.index }}.labels.push(date.format('DD/MM'));
+                chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
 
-
-            var ctx = $wrapper.find(".average-engagement");
-            var averageChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: chartData,
-                options: {
-                    legend: {
-                     display: false
-                    },
-                    legendCallback: function (chart) {
-                        var text = [];
-                        text.push('<ul>');
-                        for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
-                            text.push('<li>');
-                            text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
-                            if (chart.data.labels[i]) {
-                                text.push(chart.data.labels[i]);
-                            }
-                            text.push('</li>');
-                        }
-                        text.push('</ul>');
-                        return text.join("");
-                    }
-                }
-            });
-            $wrapper.find('.chart-legends').html(averageChart.generateLegend());
-
-            // User timeline charts
-            {% if 'type' not in additional_data or additional_data['type'] == "" %}
-            {% for entry in data['user_list'] %}
-                var d{{ loop.index }} = {{ entry.timeline|safe }};
-                var chartData{{ loop.index }} = {
-                    labels: [],
-                    datasets: [{
-                        label: "{{ entry.name }}",
-                        backgroundColor: '#' + intToRGB(hashCode("{{ entry.name }}")),
-                        data: []
-                    }]
-                };
-                for (i=0; i < d{{ loop.index }}.length; i++)
-                {
-                    var pair = d{{ loop.index }}[i];
-                    var dateString = pair[0];
-                    var date = moment.utc(dateString, "YYYY-MM-DD");
-                    pair[0] = date.valueOf();
-                    d{{ loop.index }}[i] = pair;
+                if(d{{ loop.index }}.length === 1) {
 
                     chartData{{ loop.index }}.labels.push(date.format('DD/MM'));
                     chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
 
-                    if(d{{ loop.index }}.length === 1) {
+                    var previousDate = date.subtract(1, "days");
+                    chartData{{ loop.index }}.labels[0] = previousDate.format('DD/MM');
+                    chartData{{ loop.index }}.datasets[0].data[0] = 0;
 
-                        chartData{{ loop.index }}.labels.push(date.format('DD/MM'));
-                        chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
+                    var nextDate = date.add(2, "days");
+                    chartData{{ loop.index }}.labels.push(nextDate.format('DD/MM'));
+                    chartData{{ loop.index }}.datasets[0].data.push(0);
 
-                        var previousDate = date.subtract(1, "days");
-                        chartData{{ loop.index }}.labels[0] = previousDate.format('DD/MM');
-                        chartData{{ loop.index }}.datasets[0].data[0] = 0;
+                    break;
+                }
+            }
 
-                        var nextDate = date.add(2, "days");
-                        chartData{{ loop.index }}.labels.push(nextDate.format('DD/MM'));
-                        chartData{{ loop.index }}.datasets[0].data.push(0);
+            var ctx{{ loop.index }} = document.getElementById("overview{{ loop.index }}").getContext('2d');
+            var overview{{ loop.index }} = new Chart(ctx{{ loop.index }}, {
+                type: 'line',
+                data: chartData{{ loop.index }},
+                options: {}
+            });
+        {% endfor %}
+        {% endif %}
 
-                        break;
+    {% else %}
+
+        // IF TYPE
+        var user_lists = {{ data['user_list']|safe }};
+
+        if(Object.keys(mapperEngagementTotal).length > 0) {
+            var i = 0;
+            $.each(user_lists, function (index, userInfo) {
+                for(i=0; i < mapperEngagementTotal.labels.length; i++) {
+                    if(mapperEngagementTotal.labels[i] === userInfo.name) {
+                        mapperEngagementTotal.datasets[0]['data'][i] += userInfo.ways;
                     }
                 }
+                if(i === mapperEngagementTotal.labels.length-1) {
+                    mapperEngagementTotal['labels'].push(userInfo.name);
+                    mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
+                    mapperEngagementTotal['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode(userInfo.name)));
+                }
+            });
+        } else {
+            mapperEngagementTotal = {
+                'labels': [],
+                'datasets':[{
+                    'data':[],
+                    'backgroundColor': []
+                }]
+            };
+            $.each(user_lists, function (index, userInfo) {
+                mapperEngagementTotal['labels'].push(userInfo.name);
+                mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
+                mapperEngagementTotal['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode(userInfo.name)));
+            });
+        }
 
-                var ctx{{ loop.index }} = document.getElementById("overview{{ loop.index }}").getContext('2d');
-                var overview{{ loop.index }} = new Chart(ctx{{ loop.index }}, {
-                    type: 'line',
-                    data: chartData{{ loop.index }},
-                    options: {}
-                });
-            {% endfor %}
-            {% endif %}
-        {% endif %}
-    });
+        {% for entry in data['user_list'] %}
+            var d{{ loop.index }} = {{ entry.timeline|safe }};
+            var chartData{{ loop.index }} = {
+                labels: [],
+                datasets: [{
+                    label: "{{ entry.name }}",
+                    backgroundColor: '#' + intToRGB(hashCode("{{ entry.name }}")),
+                    data: []
+                }]
+            };
+            for (i=0; i < d{{ loop.index }}.length; i++)
+            {
+                var pair = d{{ loop.index }}[i];
+                var dateString = pair[0];
+                var date = moment.utc(dateString, "YYYY-MM-DD");
+                pair[0] = date.valueOf();
+                d{{ loop.index }}[i] = pair;
+
+                chartData{{ loop.index }}.labels.push(date.format('DD/MM/YY'));
+                chartData{{ loop.index }}.datasets[0].data.push(pair[1]);
+            }
+            mapperEngagementFrequency.push(chartData{{ loop.index }});
+        {% endfor %}
+
+    {% endif %}
+    {% endif %}
 </script>

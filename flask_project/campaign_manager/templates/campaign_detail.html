@@ -166,6 +166,28 @@
     </div>
 
     <div class="advance-insights-wrapper">
+    <div class="advance-insights" style="display: block;">
+            <div class="row" id="user-engagement-panel">
+                <div class="col-lg-12">
+                    <div class="panel panel-default detail-panel-insights">
+                        <div class="panel-heading">User Engagement</div>
+                        <span class="grey-italic" style="margin-top:15px !important; margin-left: 20px;position: absolute;"> Loading data .. </span>
+                        <div class="panel-body">
+                            <div class="row" style="padding: 25px;">
+                                <div class="col-lg-4">
+                                    <canvas id="user-engagement-charts" style="width: 100%; "></canvas>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="chart-legends"></div>
+                                </div>
+                                <div class="col-lg-5 overview-container" id="mapper-engagement-frequency-wrapper">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="advance-insights" style="display: block;">
             <div class="row">
                 <div class="col-lg-12">
@@ -174,11 +196,11 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <div style="font-size: 15pt; font-weight: bold; margin-bottom: 20px;">OSMCHA Changesets Errors</div>
+                                    <div class="advance-insight-title">OSMCHA Changesets Errors</div>
                                     <div id="total-osmcha-errors"></div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <div style="font-size: 15pt; font-weight: bold; margin-bottom: 20px;">Feature Completeness Errors</div>
+                                    <div class="advance-insight-title">Feature Completeness Errors</div>
                                     <div id="total-feature-completeness-errors">
                                         0
                                     </div>
@@ -244,6 +266,8 @@
         };
 
         var featureCompleteness = [];
+        var mapperEngagementTotal = {};
+        var mapperEngagementFrequency = [];
 
         function renderRemoteProjects() {
 
