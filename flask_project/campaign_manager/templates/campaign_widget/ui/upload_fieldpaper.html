@@ -70,7 +70,18 @@
             var geojsonFeature = JSON.parse(reader.result);
             geojsonFeature = geojsonFeature['features'];
             drawnItems.clearLayers();
-            var geojsonLayer = L.geoJSON(geojsonFeature, {onEachFeature: onEachFeature});
+            var geojsonLayer = L.geoJSON(geojsonFeature, {
+                style: function (feature) {
+                    return {
+                        weight: 2,
+                        color: "#999",
+                        opacity: 1,
+                        fillColor: '#D3D3D3',
+                        fillOpacity: 0.8
+                    }
+                },
+                onEachFeature: onEachFeature
+            });
             campaignMap.fitBounds(drawnItems.getBounds());
             stringfyGeometry();
             getAreaSize();
@@ -80,16 +91,20 @@
     }
 
     function onEachFeature(feature, featureLayer) {
-        if(feature.geometry.type !== 'MultiPolygon') {
-            var $div = $("<div>");
-            for (var key in feature.properties) {
-                $div.append(
-                    '<div style="font-weight:bold">' + key + '</div> <div style="margin-bottom:5px">' + feature.properties[key] + '</div>'
-                )
-            }
-            featureLayer.bindPopup($div.html());
-            drawnItems.addLayer(featureLayer);
-        }
+        featureLayer.bindPopup(
+            '<div class="layer-popup">' +
+                '<div class="layer-popup-area">' +
+                    'Area &nbsp;&nbsp;: -'+
+                '</div>'+
+                '<div class="layer-popup-team">' +
+                    'Team &nbsp;: -'+
+                '</div>'+
+                '<div class="layer-popup-team">' +
+                    'Status : Unassigned'+
+                '</div>'+
+            '</div>'
+        );
+        drawnItems.addLayer(featureLayer);
     }
 
 </script>

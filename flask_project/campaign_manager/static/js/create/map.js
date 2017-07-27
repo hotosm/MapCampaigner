@@ -34,7 +34,52 @@ if (google_api_key) {
 }
 
 if ($("#geometry").val()) {
-    drawnItems = L.geoJSON($.parseJSON($("#geometry").val()));
+    drawnItems = L.geoJSON(
+        $.parseJSON($("#geometry").val()), {
+            style: function (feature) {
+                var status = 'unassigned';
+
+                if ('status' in feature.properties) {
+                    status = feature.properties['status'];
+                } else if ('date' in feature.properties) {
+                    var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
+                    var remainingDays = layerDate.diff(moment(), 'days') + 1;
+                    if (remainingDays <= 0) {
+                        status='complete';
+                    } else {
+                        status='incomplete';
+                    }
+                    feature.properties['status'] = status;
+                }
+
+                if (typeof taskStatusFillColor[status] !== 'undefined') {
+                    return {
+                        weight: 2,
+                        color: "#999",
+                        opacity: 1,
+                        fillColor: taskStatusFillColor[status],
+                        fillOpacity: 0.8
+                    }
+                }
+                return feature.properties && feature.properties.style;
+            },
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(
+                    '<div class="layer-popup">' +
+                        '<div class="layer-popup-area">' +
+                            'Area &nbsp;&nbsp;: ' + feature.properties.area +
+                        '</div>'+
+                        '<div class="layer-popup-team">' +
+                            'Team &nbsp;: ' + feature.properties.team +
+                        '</div>'+
+                        '<div class="layer-popup-team">' +
+                            'Status : ' + capitalizeFirstLetter(feature.properties.status) +
+                        '</div>'+
+                    '</div>'
+                )
+            }
+        }
+    );
     campaignMap.fitBounds(drawnItems.getBounds());
 }
 campaignMap.addLayer(drawnItems);
@@ -66,6 +111,28 @@ function saveLayer(e) {
     temporaryDrawnLayers = null;
     var layer = e.layer;
     drawnItems.addLayer(layer);
+    layer.setStyle({
+        weight: 2,
+        color: "#999",
+        opacity: 1,
+        fillColor: '#D3D3D3',
+        fillOpacity: 0.8
+    });
+    layer.bindPopup(
+        '<div class="layer-popup">' +
+            '<div class="layer-popup-area">' +
+                'Area &nbsp;&nbsp;: -'+
+            '</div>'+
+            '<div class="layer-popup-team">' +
+                'Team &nbsp;: -'+
+            '</div>'+
+            '<div class="layer-popup-team">' +
+                'Status : Unassigned'+
+            '</div>'+
+        '</div>'
+    );
+    layer.closePopup();
+    layer.openPopup();
     getAreaSize();
     stringfyGeometry();
 }
@@ -182,6 +249,33 @@ function updateGeometryString(el, property,  layerId) {
     layer.feature['properties'][property] = val;
     var geojson = drawnItems.toGeoJSON();
     $("#geometry").val(JSON.stringify(geojson));
+    if(property === 'status') {
+        layer.setStyle({
+            opacity: 1,
+            fillColor:taskStatusFillColor[val],
+            fillOpacity: 0.8
+        });
+    }
+
+    var area = layer.feature['properties']['area'] || '-';
+    var team = layer.feature['properties']['team'] || '-';
+    var status = layer.feature['properties']['status'] || 'unassigned';
+
+    layer.bindPopup(
+        '<div class="layer-popup">' +
+            '<div class="layer-popup-area">' +
+                'Area &nbsp;&nbsp;: ' + area +
+            '</div>'+
+            '<div class="layer-popup-team">' +
+                'Team &nbsp;: ' + team +
+            '</div>'+
+            '<div class="layer-popup-team">' +
+                'Status : ' + capitalizeFirstLetter(status) +
+            '</div>'+
+        '</div>'
+    );
+    layer.closePopup();
+    layer.openPopup();
 }
 
 function getAreaSize() {

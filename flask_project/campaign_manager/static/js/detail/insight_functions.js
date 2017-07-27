@@ -83,7 +83,8 @@ function createErrorPanel() {
             { title: "Name", "width": "20%"  },
             { title: "Type", "width": "10%" },
             { title: "Status", "width": "50%" }
-         ]
+         ],
+         responsive: true
     } );
 }
 

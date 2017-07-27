@@ -72,7 +72,7 @@
         $wrapper.find('.feature-list-table').DataTable({
             columns: [
                 { "width": "10%"  },
-                { "width": "50%" },
+                { "width": "70%" },
                 { "width": "20%" }
             ],
             "filter": false,
@@ -81,7 +81,8 @@
             "info": false,
             "rowReorder": {
                 selector: 'td:nth-child(2)'
-            }
+            },
+            responsive: true
         });
         $wrapper.find('.dataTables_wrapper').show();
         $wrapper.find(".pager-button").click(function (event) {

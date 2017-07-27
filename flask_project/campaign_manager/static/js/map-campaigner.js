@@ -98,7 +98,9 @@ function containsObject(obj, list) {
 }
 
 function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    if(typeof string !== 'undefined') {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 }
 
 function getRandomColor() {

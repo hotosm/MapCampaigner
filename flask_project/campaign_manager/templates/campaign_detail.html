@@ -537,16 +537,19 @@
                         return feature.properties && feature.properties.style;
                     },
                     onEachFeature: function (feature, layer) {
+                        var area = feature.properties.area || '-';
+                        var team = feature.properties.team || '-';
+                        var status = capitalizeFirstLetter(feature.properties.status) || 'Unassigned';
                         layer.bindPopup(
                             '<div class="layer-popup">' +
                                 '<div class="layer-popup-area">' +
-                                    'Area &nbsp;&nbsp;: ' + feature.properties.area +
+                                    'Area &nbsp;&nbsp;: ' + area +
                                 '</div>'+
                                 '<div class="layer-popup-team">' +
-                                    'Team &nbsp;: ' + feature.properties.team +
+                                    'Team &nbsp;: ' + team +
                                 '</div>'+
                                 '<div class="layer-popup-team">' +
-                                    'Status : ' + capitalizeFirstLetter(feature.properties.status) +
+                                    'Status : ' + status +
                                 '</div>'+
                             '</div>'
                         )
