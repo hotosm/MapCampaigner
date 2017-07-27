@@ -1,12 +1,5 @@
 var remoteMap = null;
 var addedLayers = {};
-var taskStatusFillColor = {
-    'READY': '#FFFFFF',
-    'MAPPED': '#FFE4B5',
-    'INVALIDATED': '#D3D3D3',
-    'VALIDATED': '#B0DE5C',
-    'BADIMAGERY': '#d2a29e'
-};
 
 $.each(remote_projects_list, function (index, value) {
     addProject(' ', value)

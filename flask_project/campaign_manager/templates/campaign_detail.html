@@ -171,8 +171,8 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default detail-panel-insights">
                         <div class="panel-heading">User Engagement</div>
-                        <span class="grey-italic" style="margin-top:15px !important; margin-left: 20px;position: absolute;"> Loading data .. </span>
                         <div class="panel-body">
+                            <span class="grey-italic" style="margin-top:15px !important; margin-left: 20px;position: absolute;"> Loading data .. </span>
                             <div class="row" style="padding: 25px;">
                                 <div class="col-lg-4">
                                     <canvas id="user-engagement-charts" style="width: 100%; "></canvas>
@@ -259,9 +259,12 @@
         var addedLayers = {};
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
+            'unassigned': '#D3D3D3',
             'MAPPED': '#FFE4B5',
             'INVALIDATED': '#D3D3D3',
             'VALIDATED': '#B0DE5C',
+            'complete': '#B0DE5C',
+            'incomplete': '#FFE4B5',
             'BADIMAGERY': '#d2a29e'
         };
 
@@ -505,11 +508,53 @@
 
         {% if geometry %}
             drawnItems = L.geoJSON(
-                    $.parseJSON('{{ geometry|safe }}'), {
-                        style: {
-                            weight: 1,
+                $.parseJSON('{{ geometry|safe }}'), {
+                    style: function (feature) {
+                        var status = 'unassigned';
+
+                        if ('status' in feature.properties) {
+                            status = feature.properties['status'];
+                        } else if ('date' in feature.properties) {
+                            var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
+                            var remainingDays = layerDate.diff(moment(), 'days') + 1;
+                            if (remainingDays <= 0) {
+                                status='complete';
+                            } else {
+                                status='incomplete';
+                            }
+                            feature.properties['status'] = status;
                         }
-                    });
+
+                        if (typeof taskStatusFillColor[status] !== 'undefined') {
+                            return {
+                                weight: 2,
+                                color: "#999",
+                                opacity: 1,
+                                fillColor: taskStatusFillColor[status],
+                                fillOpacity: 0.8
+                            }
+                        }
+                        return feature.properties && feature.properties.style;
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var area = feature.properties.area || '-';
+                        var team = feature.properties.team || '-';
+                        var status = capitalizeFirstLetter(feature.properties.status) || 'Unassigned';
+                        layer.bindPopup(
+                            '<div class="layer-popup">' +
+                                '<div class="layer-popup-area">' +
+                                    'Area &nbsp;&nbsp;: ' + area +
+                                '</div>'+
+                                '<div class="layer-popup-team">' +
+                                    'Team &nbsp;: ' + team +
+                                '</div>'+
+                                '<div class="layer-popup-team">' +
+                                    'Status : ' + status +
+                                '</div>'+
+                            '</div>'
+                        )
+                    }
+                });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
         {% endif %}

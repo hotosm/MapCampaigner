@@ -383,6 +383,17 @@
 {% block after_base_js %}
     <script type="text/javascript">
 
+        var taskStatusFillColor = {
+            'READY': '#FFFFFF',
+            'unassigned': '#D3D3D3',
+            'MAPPED': '#FFE4B5',
+            'INVALIDATED': '#D3D3D3',
+            'VALIDATED': '#B0DE5C',
+            'complete': '#B0DE5C',
+            'incomplete': '#FFE4B5',
+            'BADIMAGERY': '#d2a29e'
+        };
+
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
         var errors = {{ form['errors'] | safe}};
         var functions = {{ functions|safe }};
