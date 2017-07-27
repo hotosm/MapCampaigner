@@ -198,17 +198,36 @@ def osm_object_contributions(
     user_list = []
 
     for key, value in way_count_dict.items():
-        crew_flag = False
-        if key in crew_list:
-            crew_flag = True
+        start_date, end_date = date_range(timelines[key])
+        start_date = time.strftime('%d-%m-%Y', start_date.timetuple())
+        end_date = time.strftime('%d-%m-%Y', end_date.timetuple())
+        user_timeline = timelines[key]
+        node_count = 0
+        if key in node_count_dict:
+            node_count = node_count_dict[key]
+        record = {
+            'name': key,
+            'ways': value,
+            'nodes': node_count,
+            'timeline': interpolated_timeline(user_timeline),
+            'start': start_date,
+            'end': end_date,
+            'activeDays': len(user_timeline),
+            'best': best_active_day(user_timeline),
+            'worst': worst_active_day(user_timeline),
+            'average': average_for_active_days(user_timeline)
+        }
+        user_list.append(record)
+
+    for key, value in node_count_dict.items():
         start_date, end_date = date_range(timelines[key])
         start_date = time.strftime('%d-%m-%Y', start_date.timetuple())
         end_date = time.strftime('%d-%m-%Y', end_date.timetuple())
         user_timeline = timelines[key]
         record = {
             'name': key,
-            'ways': value,
-            'nodes': node_count_dict[key],
+            'ways': 0,
+            'nodes': value,
             'timeline': interpolated_timeline(user_timeline),
             'start': start_date,
             'end': end_date,

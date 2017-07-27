@@ -13,6 +13,7 @@
                     {% for entry in data['user_list'] %}
                         <canvas id="overview{{ loop.index }}" style="max-width: 100%; height: 200px; max-height: 300px;"></canvas>
                         Total Ways <span class="label label-primary">{{ entry.ways }}</span>
+                        Total Nodes <span class="label label-primary">{{ entry.nodes }}</span>
                         <hr/>
                     {% endfor %}
                 </div>
@@ -70,7 +71,7 @@
 
         {% for entry in data['user_list'] %}
             chartData['labels'].push("{{ entry.name }}");
-            chartData['datasets'][0]['data'].push({{ entry.ways }});
+            chartData['datasets'][0]['data'].push({{ entry.ways + entry.nodes }});
             chartData['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode("{{ entry.name }}")));
         {% endfor %}
 
@@ -166,6 +167,7 @@
                 for(i=0; i < mapperEngagementTotal.labels.length; i++) {
                     if(mapperEngagementTotal.labels[i] === userInfo.name) {
                         mapperEngagementTotal.datasets[0]['data'][i] += userInfo.ways;
+                        mapperEngagementTotal.datasets[0]['data'][i] += userInfo.nodes;
                     }
                 }
 
@@ -194,7 +196,8 @@
 
                 if(i === mapperEngagementTotal.labels.length-1) {
                     mapperEngagementTotal['labels'].push(userInfo.name);
-                    mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
+                    var userNum = userInfo.ways + userInfo.nodes;
+                    mapperEngagementTotal['datasets'][0]['data'].push(userNum);
                     mapperEngagementTotal['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode(userInfo.name)));
                 }
             });
@@ -209,7 +212,8 @@
 
             $.each(user_lists, function (index, userInfo) {
                 mapperEngagementTotal['labels'].push(userInfo.name);
-                mapperEngagementTotal['datasets'][0]['data'].push(userInfo.ways);
+                var userNum = userInfo.ways + userInfo.nodes;
+                mapperEngagementTotal['datasets'][0]['data'].push(userNum);
                 mapperEngagementTotal['datasets'][0]['backgroundColor'].push('#' + intToRGB(hashCode(userInfo.name)));
 
                 // User frequencies

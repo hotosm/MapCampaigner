@@ -47,9 +47,6 @@ class CountFeature(AbstractOverpassInsightFunction):
         req_attr = required_attributes
 
         for raw_data in raw_data:
-            if raw_data['type'] == 'node':
-                continue
-
             if 'tags' not in raw_data:
                 continue
             processed_data.append(raw_data['tags'])

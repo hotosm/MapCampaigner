@@ -24,6 +24,8 @@ class OverpassProvider(AbstractDataProvider):
         '('
         'way["%(KEY)s"]'
         '(poly:"{polygon}");'
+        'node["%(KEY)s"]'
+        '(poly:"{polygon}");'
         'relation["%(KEY)s"]'
         '(poly:"{polygon}");'
         ');'
@@ -33,6 +35,8 @@ class OverpassProvider(AbstractDataProvider):
     query_with_value = (
         '('
         'way["%(KEY)s"~"%(VALUE)s"]'
+        '(poly:"{polygon}");'
+        'node["%(KEY)s"~"%(VALUE)s"]'
         '(poly:"{polygon}");'
         'relation["%(KEY)s"~"%(VALUE)s"]'
         '(poly:"{polygon}");'
