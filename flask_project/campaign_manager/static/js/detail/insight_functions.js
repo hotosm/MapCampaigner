@@ -39,11 +39,9 @@ function createMapperEngagementPanel() {
 var lastFrequencyIndex = 0;
 function updateMapperEngagementTotal() {
 
-    console.log(mapperEngagementFrequency.length)
-
     if(mapperEngagementFrequency.length === 0) {
         $('#user-engagement-panel').find('.grey-italic').html(' ');
-        $('#user-engagement-panel').find('.grey-italic').next().html('<div class="no-data">No data</div>');
+        $('#user-engagement-panel').find('.grey-italic').parent().html('<div class="no-data">No data</div>');
         return;
     }
 
@@ -199,8 +197,6 @@ function getInsightFunctions(function_id, function_name, type_id) {
                 var value = parseInt($divFunction.find('.total-features').html());
                 total_features_collected += value;
                 $('#features-collected').html(total_features_collected);
-                console.log(value);
-                console.log(type_id);
 
                 if(typeof type_id !== 'undefined') {
                     var $currentTypeFeatureCollected = $('#type-'+type_id.replace(/\s+/g, '_') + ' .features-collected');
