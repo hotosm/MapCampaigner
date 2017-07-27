@@ -1,5 +1,6 @@
+
+<div class="insight-title">Feature Completeness</div>
 <div class="completness">
-    <div class="insight-title">Feature Completeness</div>
     <div class="total-features">{{ data.total }}</div>
     {% if data.total == 0 %}
     <h3 class="progress-bar-indicator">n/a</h3>
@@ -9,82 +10,71 @@
     <div class="progress-bar-wrapper">
         <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
     </div>
-    <div class="table-insight-view">
-        <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide incomplete features list</div>
-        <table class="feature-list-table" style="width: 100%">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Status</th>
-                {% for key in data.attributes %}
-                    <th>{{ key }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for row in data.data %}
-                {% if row['error'] %}
-                    <tr>
-                        <td>
-                            <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
-                                {{ row['type'] }} :
-                                {% if 'tags' in row %}
-                                    {% if row['tags']['name'] %}
-                                        {{ row['tags']['name'] }} ({{ row['id'] }})
+    {% if not feature_type %}
+        <div class="table-insight-view">
+            <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide incomplete features list</div>
+            <table class="feature-list-table" style="width: 100%">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in data.data %}
+                    {% if row['error'] %}
+                        <tr>
+                            <td>
+                                <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
+                                    {{ row['type'] }} :
+                                    {% if 'tags' in row %}
+                                        {% if row['tags']['name'] %}
+                                            {{ row['tags']['name'] }} ({{ row['id'] }})
+                                        {% else %}
+                                            {{ row['id'] }}
+                                        {% endif %}
                                     {% else %}
                                         {{ row['id'] }}
                                     {% endif %}
-                                {% else %}
-                                    {{ row['id'] }}
+                                </a>
+                                {% if row['type'] == 'relation' %}
+                                    <span class="show-members">
+                                        <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
+                                    </span>
+                                    <div class="relation-member">
+                                        Members :
+                                        <ul>
+                                            {% for member in row['members'] %}
+                                                <li>
+                                                    <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
+                                                        {{ member['type'] }} : {{ member['ref'] }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
                                 {% endif %}
-                            </a>
-                            {% if row['type'] == 'relation' %}
-                                <span class="show-members">
-                                    <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
-                                </span>
-                                <div class="relation-member">
-                                    Members :
-                                    <ul>
-                                        {% for member in row['members'] %}
-                                            <li>
-                                                <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
-                                                    {{ member['type'] }} : {{ member['ref'] }}
-                                                </a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ row['type'] }}
-                        </td>
-                        <td>
-                            {% if row['warning_message'] %}
-                                <div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>
-                            {% endif %}
-                            {% if row['error_message'] %}
-                                <div class="error-completeness">Error: {{ row['error_message'] }}</div>
-                            {% endif %}
-                        </td>
-                        {% for key in data.attributes %}
-                            {% if not row['tags'] %}
-                                <td>-</td>
-                            {% elif row['tags'][key] %}
-                                <td>{{ row['tags'][key] }}</td>
-                            {% elif row[key] %}
-                                <td>{{ row[key] }}</td>
-                            {% else %}
-                                <td>-</td>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                            </td>
+                            <td>
+                                {{ row['type'] }}
+                            </td>
+                            <td>
+                                {% if row['warning_message'] %}
+                                    <div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>
+                                {% endif %}
+                                {% if row['error_message'] %}
+                                    <div class="error-completeness">Error: {{ row['error_message'] }}</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if not feature_type %}
     <div class="footer">
         Data updated at {{ data['last_update'] }}.
         {% if data['updating'] %}
@@ -92,6 +82,7 @@
             Currently updating.
         {% endif %}
     </div>
+    {% endif %}
 </div>
 
 <div class="insight-summaries">
@@ -158,6 +149,10 @@
         font-size: 10pt;
     }
 
+    .completness {
+        padding-top: 40px;
+    }
+
     .completness .feature-list-table {
         display: none;
     }
@@ -212,7 +207,8 @@
     });
     var tab_id = '{{ function_id }}';
     var $wrapper = $('#' + tab_id);
-    $wrapper.find('.feature-list-table').DataTable({
+    {% if not feature_type %}
+    var dataTable = $wrapper.find('.feature-list-table').DataTable({
         "bSortClasses": false,
         "aLengthMenu": [5, 10, 25, 50, "All"],
         "iDisplayLength": 5,
@@ -221,6 +217,7 @@
         },
         "responsive": true
     });
+    {% endif %}
     $wrapper.find('.feature-list-table').show();
     function see_completeness_details(event) {
         var $featureListTable = $(event).next().find('.feature-list-table');
@@ -247,4 +244,65 @@
 
         }
     });
+
+    function showMembers(element) {
+        if ($(element).hasClass('fa-arrow-circle-down')) {
+            $(element).parent().siblings('.relation-member').show();
+            $(element).removeClass('fa-arrow-circle-down');
+            $(element).addClass('fa-arrow-circle-up');
+            $(element).attr('data-original-title', 'Hide members');
+        } else {
+            $(element).parent().siblings('.relation-member').hide();
+            $(element).removeClass('fa-arrow-circle-up');
+            $(element).addClass('fa-arrow-circle-down');
+            $(element).attr('data-original-title', 'Show members');
+
+        }
+    }
+
+    featureCompletenessData = [];
+
+    {% for row in data.data %}
+        var _featureCompleteness = [];
+        {% if row['error'] %}
+
+            _featureCompleteness.push(
+                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">'+
+                    '{{ row['type'] }} :'+
+                    '{{ row['id'] }}'+
+                '</a>'
+                {% if row['type'] == 'relation' %}
+                    +'<span class="show-members">'+
+                        ' <i class="fa fa-arrow-circle-down" onclick="showMembers(this)" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>'+
+                    '</span>'+
+                    '<div class="relation-member">'+
+                        'Members :'+
+                        '<ul>'+
+                        {% for member in row['members'] %}
+                            '<li>'+
+                                '<a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">'+
+                                        '{{ member['type'] }} : {{ member['ref'] }}'+
+                                '</a>'+
+                            '</li>'+
+                        {% endfor %}
+                        '</ul>'+
+                    '</div>'
+                {% endif %}
+            );
+
+            _featureCompleteness.push('{{ row['type'] }}');
+            _featureCompleteness.push(
+                {% if row['warning_message'] %}
+                        '<div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>'+
+                {% endif %}
+                {% if row['error_message'] %}
+                        '<div class="error-completeness">Error: {{ row['error_message'] }}</div>'
+                {% endif %}
+            );
+            featureCompletenessData.push(_featureCompleteness);
+        {% endif %}
+    {% endfor %}
+
+    featureCompleteness = featureCompletenessData;
+
 </script>

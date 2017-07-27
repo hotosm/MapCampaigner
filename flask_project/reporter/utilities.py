@@ -215,8 +215,7 @@ def osm_object_contributions(
             'activeDays': len(user_timeline),
             'best': best_active_day(user_timeline),
             'worst': worst_active_day(user_timeline),
-            'average': average_for_active_days(user_timeline),
-            'crew': crew_flag
+            'average': average_for_active_days(user_timeline)
         }
         user_list.append(record)
 
@@ -232,8 +231,7 @@ def osm_object_contributions(
             d['activeDays'],
             d['best'],
             d['worst'],
-            d['average'],
-            d['crew']))
+            d['average']))
     return sorted_user_list
 
 
@@ -378,6 +376,8 @@ def interpolated_timeline(timeline):
             value = timeline[date_string]
         else:
             value = 0
+        if value == 0:
+            continue
         if time_line != '[':
             time_line += ','
         time_line += '["%s",%i]' % (date_string, value)

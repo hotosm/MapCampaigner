@@ -1,4 +1,99 @@
 var activeInsightPanel = '';
+var errorPanel = null;
+var mapperEngagementChart = null;
+
+function createMapperEngagementPanel() {
+    var ctx = $('#user-engagement-charts');
+    mapperEngagementChart = new Chart(ctx, {
+        type: 'doughnut',
+        data:  {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            legendCallback: function (chart) {
+                var text = [];
+                text.push('<ul>');
+                for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+                    text.push('<li>');
+                    text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
+                    if (chart.data.labels[i]) {
+                        text.push(chart.data.labels[i]);
+                    }
+                    text.push('</li>');
+                }
+                text.push('</ul>');
+                return text.join("");
+            }
+        }
+    });
+}
+
+var lastFrequencyIndex = 0;
+function updateMapperEngagementTotal() {
+
+    console.log(mapperEngagementFrequency.length)
+
+    if(mapperEngagementFrequency.length === 0) {
+        $('#user-engagement-panel').find('.grey-italic').html(' ');
+        $('#user-engagement-panel').find('.grey-italic').next().html('<div class="no-data">No data</div>');
+        return;
+    }
+
+
+    $('#user-engagement-panel').find('.grey-italic').html(' ');
+    mapperEngagementChart.data.labels = mapperEngagementTotal.labels;
+    mapperEngagementChart.data.datasets[0].backgroundColor = mapperEngagementTotal.datasets[0].backgroundColor;
+    mapperEngagementChart.data.datasets[0].data = mapperEngagementTotal.datasets[0].data;
+    mapperEngagementChart.update();
+
+    $('#user-engagement-panel').find('.chart-legends').html(mapperEngagementChart.generateLegend());
+
+    for(var i=lastFrequencyIndex; i<mapperEngagementFrequency.length; i++) {
+        $('<canvas>').attr({
+            id: 'mapper-engagement-frequency-'+i
+        }).appendTo(
+            '#mapper-engagement-frequency-wrapper'
+        );
+        var ctx = $("#mapper-engagement-frequency-"+i);
+
+        new Chart(ctx, {
+                type: 'line',
+                data: mapperEngagementFrequency[i],
+                options: {}
+        });
+    }
+
+    lastFrequencyIndex = mapperEngagementFrequency.length-1;
+
+    mapperEngagementFrequency = [];
+}
+
+function createErrorPanel() {
+     errorPanel = $('#feature-completeness-error-table').DataTable( {
+         data: [],
+         bFilter: false,
+         bLengthChange: false,
+         columns: [
+            { title: "Name", "width": "20%"  },
+            { title: "Type", "width": "10%" },
+            { title: "Status", "width": "50%" }
+         ]
+    } );
+}
+
+function addRowToErrorPanel(row) {
+    if(errorPanel) {
+        errorPanel.row.add(row).draw(false);
+    }
+}
 
 function renderInsightFunctions(username) {
 
@@ -83,7 +178,8 @@ function calculateCampaignProgress() {
     })
 }
 
-function getInsightFunctions(function_id, type_id) {
+var insightTypeIndex = 0;
+function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
     $.ajax({
@@ -98,20 +194,30 @@ function getInsightFunctions(function_id, type_id) {
             var $divFunction = $('#' + function_id);
             $divFunction.html(data);
             var $subContent = $divFunction.parent().next();
-            if($divFunction.find('.table-insight-view').length > 0) {
-                $subContent.html($divFunction.find('.table-insight-view'));
-            }
 
             if($divFunction.find('.total-features').length > 0) {
                 var value = parseInt($divFunction.find('.total-features').html());
                 total_features_collected += value;
                 $('#features-collected').html(total_features_collected);
+                console.log(value);
+                console.log(type_id);
 
                 if(typeof type_id !== 'undefined') {
-                    var $currentTypeFeatureCollected = $('#type-'+type_id + ' .features-collected');
+                    var $currentTypeFeatureCollected = $('#type-'+type_id.replace(/\s+/g, '_') + ' .features-collected');
                     var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
                     var totalValue = currentValue + value;
                     $currentTypeFeatureCollected.html(totalValue);
+
+                    $('#total-features-'+type_id.replace(/\s+/g, '_')).html(
+                        '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
+                            'Features Checked ' +
+                            '<div class="completeness"> ' +
+                                '<div class="progress-bar-indicator" style="font-size:60pt; padding-top: 30px;">' +
+                                    totalValue +
+                                '</div>'+
+                            '</div>'+
+                        '</div>'
+                    );
                 }
             }
 
@@ -120,6 +226,31 @@ function getInsightFunctions(function_id, type_id) {
                     $('#'+type_id+'-summaries').append($divFunction.find('.insight-summaries').html());
                 }
             }
+
+            if(typeof type_id !== 'undefined') {
+                if(function_name === 'FeatureAttributeCompleteness') {
+                    for(var i=0; i<featureCompleteness.length;i++){
+                        addRowToErrorPanel(featureCompleteness[i]);
+                    }
+                    var totalError = parseInt($('#total-feature-completeness-errors').html());
+                    $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                } else if (function_name === 'MapperEngagement') {
+                    if(insightTypeIndex === Object.keys(campaign_types).length - 1) {
+                        updateMapperEngagementTotal();
+                    }
+                    insightTypeIndex++;
+                }
+            }
+        }
+    });
+}
+
+function getOSMCHAErrors() {
+    var url = '/campaign/osmcha_errors/'+ uuid;
+    $.ajax({
+        url: url,
+        success: function (data) {
+            $('#total-osmcha-errors').html(data);
         }
     });
 }
@@ -131,6 +262,9 @@ function renderInsightFunctionsTypes(username) {
     var $insightContent = $('.insight-content');
     var $insightFunctionPanel = $('.insight-function-panel');
     var index = 0;
+
+    createErrorPanel();
+    createMapperEngagementPanel();
 
     if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
         $insightFunctionPanel.html(
@@ -179,9 +313,10 @@ function renderInsightFunctionsTypes(username) {
         var tabName = campaignType;
         var tabId = tabName.replace(/\s+/g, '_');
 
-        var active = 'active';
+        var active = '';
         if (index === 0) {
             activeInsightPanel = tabId;
+            active = 'active';
         }
 
         $('.map-side-panel').append(
@@ -236,14 +371,27 @@ function renderInsightFunctionsTypes(username) {
                         sizeColumn = 'col-lg-4';
                     }
 
-                    $mainRowTypeContents.append(
-                            '<div class="'+sizeColumn+'" id="' + insightId + '">' +
-                            '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
-                                'Loading data... </span>' +
-                            '</div>'
-                    );
+                    if(selected_function['function'] === 'MapperEngagement') {
+                        $mainRowTypeContents.append('<div id="'+insightId+'" style="display: none;"></div>')
+                    } else {
+                        $mainRowTypeContents.append(
+                                '<div class="'+sizeColumn+'" id="' + insightId + '">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
+                                    'Loading data... </span>' +
+                                '</div>'
+                        );
+                    }
 
-                    getInsightFunctions(insightId, tabId);
+                    if(insightIndex === Object.keys(campaignTypes[campaignType]).length) {
+                        $mainRowTypeContents.append(
+                                '<div class="'+sizeColumn+'" id="total-features-'+campaignType.replace(/\s+/g, '_')+'">' +
+                                '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
+                                    'Loading data... </span>' +
+                                '</div>'
+                        );
+                    }
+
+                    getInsightFunctions(insightId, selected_function['function'], tabId);
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
                         feature_type_collected.push(selected_function['feature']);
                     }
@@ -257,6 +405,7 @@ function renderInsightFunctionsTypes(username) {
     }
 
     renderInsightFunctions(username);
+    getOSMCHAErrors();
 }
 
 function showInsightFunction(element, tabId) {
@@ -264,10 +413,11 @@ function showInsightFunction(element, tabId) {
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
-        $divParent.removeClass('active');
-        $('#'+tabId).hide();
     } else {
+        $('#'+activeInsightPanel).hide();
+        $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
+        activeInsightPanel = tabId;
     }
 }

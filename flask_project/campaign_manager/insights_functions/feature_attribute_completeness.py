@@ -103,6 +103,10 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         error_message = []
 
         tags = feature_data['tags']
+
+        if isinstance(required_attributes, str):
+            return
+
         for required_attribute, survey_values in required_attributes.items():
             if required_attribute not in tags:
                 error_message.append(

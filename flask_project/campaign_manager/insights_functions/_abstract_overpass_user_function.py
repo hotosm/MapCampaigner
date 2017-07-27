@@ -25,6 +25,15 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
     icon = 'list'
     _function_good_data = None  # cleaned data
 
+    def initiate(self, additional_data):
+        """ Initiate function
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
+        """
+        if 'type' in additional_data:
+            self.feature_type = additional_data['type']
+
     def get_data_from_provider(self):
         """ Get required attrbiutes for function provider.
         :return: dict of user list and update status
@@ -84,15 +93,11 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     else:
                         tag_name = TAG_MAPPING_REVERSE[self.feature]
 
-                    file_data = overpass_data['file'].read().decode('utf-8')
-                    regex = 'runtime error:'
-
-                    if not re.search(regex, file_data):
-                        sorted_user_list = osm_object_contributions(
-                            overpass_data['file'],
-                            tag_name,
-                            start_date,
-                            end_date)
+                    sorted_user_list = osm_object_contributions(
+                        overpass_data['file'],
+                        tag_name,
+                        start_date,
+                        end_date)
                 except xml.sax.SAXParseException:
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '

@@ -42,23 +42,6 @@ class UtilitiesTestCase(LoggedTestCase):
         with self.assertRaises(ValueError):
             split_bbox('invalid bbox string')
 
-    def test_osm_building_contributions(self):
-        """Test that we can obtain correct contribution counts for a file."""
-        file_handle = open(FIXTURE_PATH)
-        contributor_list = osm_object_contributions(
-            file_handle,
-            tag_name="building")
-        expected_list = ast.literal_eval(open(os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            'test_data',
-            'expected_osm_building_contributions.txt'
-        ), 'rb').read().decode('utf-8'))
-
-        # noinspection PyPep8Naming
-        self.maxDiff = None
-        print(contributor_list)
-        self.assertListEqual(contributor_list, expected_list)
-
     def test_get_totals(self):
         """Test we get the proper totals from a sorted user list."""
         sorted_user_list = osm_object_contributions(
@@ -74,14 +57,6 @@ class UtilitiesTestCase(LoggedTestCase):
             u'2012-12-10': 1}
         expected_result = (
             '[["2012-12-01",10],'
-            '["2012-12-02",0],'
-            '["2012-12-03",0],'
-            '["2012-12-04",0],'
-            '["2012-12-05",0],'
-            '["2012-12-06",0],'
-            '["2012-12-07",0],'
-            '["2012-12-08",0],'
-            '["2012-12-09",0],'
             '["2012-12-10",1]]')
         result = interpolated_timeline(time_line)
         # noinspection PyPep8Naming

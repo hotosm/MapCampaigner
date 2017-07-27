@@ -213,11 +213,6 @@
     cursor: pointer;
 }
 
-.insight-type-sub-content {
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
 #campaign-map-detail {
     height: 500px;
     margin-top: 4px;
@@ -395,6 +390,7 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 .no-data {
     color: #a60300;
     padding-left: 20px;
+    height: 200px;
 }
 
 #remote-projects-summaries .fa-eye {
@@ -403,4 +399,35 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 #remote-projects-summaries .active {
     color: #565656;
+}
+
+#feature-completeness-error-table {
+    font-size: 10pt;
+}
+
+#total-feature-completeness-errors, .total-osmcha-errors {
+    font-size: 40pt;
+    font-weight: bold;
+    color: #a5352e;
+    padding-bottom: 20px;
+}
+
+.insight-type-content .col-lg-4 {
+    min-height: 40px;
+}
+
+.advance-insight-title {
+    font-size: 15pt;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.overview-container {
+    height: 500px;
+    overflow:auto;
+    border:1px solid #ddd;
+}
+
+#mapper-engagement-frequency-wrapper {
+    padding: 20px;
 }

@@ -18,7 +18,6 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
     }
     icon = 'list'
     tag = {}
-    feature_type = None
 
     last_update = ''
     is_updating = False

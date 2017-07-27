@@ -28,6 +28,7 @@ class AbstractInsightsFunction(object):
     # attribute of insight function
     need_feature = False
     need_required_attributes = False
+    feature_type = None
 
     def __init__(
             self,
@@ -160,7 +161,9 @@ class AbstractInsightsFunction(object):
                 **{
                     'data': self._function_data,
                     'function_id': self.function_id,
-                    'additional_data': self.additional_data
+                    'additional_data': self.additional_data,
+                    'feature_type': self.feature_type,
+                    'function_name': self.function_name
                 }
             )
         except TemplateNotFound:
