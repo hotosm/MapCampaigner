@@ -179,8 +179,15 @@
                             pair[0] = date.valueOf();
                             timeline[j] = pair;
 
-                            mapperEngagementFrequency[i].labels.push(date.format('DD/MM/YY'));
-                            mapperEngagementFrequency[i].datasets[0].data.push(pair[1]);
+                            date = date.form('DD/MM/YY');
+                            var inTimeline = $.inArray(date, mapperEngagementFrequency[i].labels);
+
+                            if(inTimeline > -1) {
+                                mapperEngagementFrequency[i].datasets[0].data += pair[1];
+                            } else {
+                                mapperEngagementFrequency[i].labels.push(date.format('DD/MM/YY'));
+                                mapperEngagementFrequency[i].datasets[0].data.push(pair[1]);
+                            }
                         }
                     }
                 }
