@@ -34,6 +34,7 @@ class OsmParser(xml.sax.ContentHandler):
         self.wayCount = 0
         self.nodeCount = 0
         self.inWay = False
+        self.inNode = False
         self.user = None
         self.found = False  # mark when object found
         self.tagName = tag_name
@@ -91,6 +92,32 @@ class OsmParser(xml.sax.ContentHandler):
         elif name == 'tag' and self.inWay:
             if attributes.get('k') == self.tagName:
                 self.found = True
+        elif name == 'node':
+            self.inNode = True
+            timestamp = attributes.get('timestamp')
+            # 2012-12-10T12:26:21Z
+            date_part = timestamp.split('T')[0]
+
+            if self.dateStart and self.dateEnd:
+                date_timestamp = calendar.timegm(datetime.datetime.strptime(
+                        date_part, '%Y-%m-%d').timetuple()) * 1000
+                if not self.dateStart <= date_timestamp <= self.dateEnd:
+                    self.inWay = False
+                    return
+
+            self.user = attributes.get('user')
+            if self.user not in self.userDayCountDict:
+                self.userDayCountDict[self.user] = dict()
+
+            if date_part not in self.userDayCountDict[self.user]:
+                self.userDayCountDict[self.user][date_part] = 0
+
+            value = self.userDayCountDict[self.user][date_part]
+            value += 1
+            self.userDayCountDict[self.user][date_part] = value
+        elif name == 'tag' and self.inNode:
+            if attributes.get('k') == self.tagName:
+                self.found = True
 
         else:
             pass
@@ -111,17 +138,26 @@ class OsmParser(xml.sax.ContentHandler):
                 if self.user in self.wayCountDict:
                     value = self.wayCountDict[self.user]
                     self.wayCountDict[self.user] = value + 1
-                    value = self.nodeCountDict[self.user]
-                    self.nodeCountDict[self.user] = value + self.nodeCount
                 else:
                     self.wayCountDict[self.user] = 1
-                    self.nodeCountDict[self.user] = self.nodeCount
 
             self.inWay = False
             self.user = None
             self.found = False
-            self.nodeCount = 0
             self.wayCount = 0
+
+        if name == 'node':
+            if self.found:
+                if self.user in self.nodeCountDict:
+                    value = self.nodeCountDict[self.user]
+                    self.nodeCountDict[self.user] = value + 1
+                else:
+                    self.nodeCountDict[self.user] = self.nodeCount
+
+            self.inNode = False
+            self.user = None
+            self.found = False
+            self.nodeCount = 0
 
     def characters(self, content):
         """Return chars from content - unimplmented.
