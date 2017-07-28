@@ -77,6 +77,7 @@ class OsmchaFeatures(AbstractInsightsFunction):
             for row in data:
                 properties = row['properties']
                 clean_data.append({
+                    'ChangeSetId': row['id'],
                     'ID': {
                         'osm_id': properties['osm_id'],
                         'osm_link': properties['osm_link'],

@@ -2,76 +2,147 @@ var activeInsightPanel = '';
 var errorPanel = null;
 var mapperEngagementChart = null;
 
-function createMapperEngagementPanel() {
-    var ctx = $('#user-engagement-charts');
-    mapperEngagementChart = new Chart(ctx, {
-        type: 'doughnut',
-        data:  {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            legend: {
-                display: false
-            },
-            legendCallback: function (chart) {
-                var text = [];
-                text.push('<ul>');
-                for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
-                    text.push('<li>');
-                    text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
-                    if (chart.data.labels[i]) {
-                        text.push(chart.data.labels[i]);
-                    }
-                    text.push('</li>');
-                }
-                text.push('</ul>');
-                return text.join("");
-            }
-        }
-    });
-}
-
-var lastFrequencyIndex = 0;
 function updateMapperEngagementTotal() {
 
-    if(mapperEngagementFrequency.length === 0) {
-        $('#user-engagement-panel').find('.grey-italic').html(' ');
-        $('#user-engagement-panel').find('.grey-italic').parent().html('<div class="no-data">No data</div>');
-        return;
-    }
+    if (typeof(Worker) !== "undefined") {
+        if(contributors.length > 0) {
+            $('#total-users-engaged').html(contributors.length);
+        }
 
+        var chartDateOption = {
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            time: {
+                                displayFormats: {
+                                    'day': 'DD/MM/YY',
+                                    'week': 'DD/MM/YY',
+                                    'month': 'MM/YY',
+                                    'quarter': 'MM/YY',
+                                    'year': 'DD/MM/YY'
+                                }
+                            }
+                        }]
+                    }
+                };
 
-    $('#user-engagement-panel').find('.grey-italic').html(' ');
-    mapperEngagementChart.data.labels = mapperEngagementTotal.labels;
-    mapperEngagementChart.data.datasets[0].backgroundColor = mapperEngagementTotal.datasets[0].backgroundColor;
-    mapperEngagementChart.data.datasets[0].data = mapperEngagementTotal.datasets[0].data;
-    mapperEngagementChart.update();
+        // Clean up data
+        var cleanedContributor = {};
+        var contributionsAmount = {};
 
-    $('#user-engagement-panel').find('.chart-legends').html(mapperEngagementChart.generateLegend());
-
-    for(var i=lastFrequencyIndex; i<mapperEngagementFrequency.length; i++) {
-        $('<canvas>').attr({
-            id: 'mapper-engagement-frequency-'+i
-        }).appendTo(
-            '#mapper-engagement-frequency-wrapper'
-        );
-        var ctx = $("#mapper-engagement-frequency-"+i);
-
-        new Chart(ctx, {
-                type: 'line',
-                data: mapperEngagementFrequency[i],
-                options: {}
+        $.each(contributors, function (index, contributor) {
+            var contributorId = contributor.name.replace(/\s+/g, '_');
+            if(contributorId in cleanedContributor) {
+                cleanedContributor[contributorId]['ways'] += contributor['ways'];
+                cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
+                var timeline = JSON.parse(contributor.timeline);
+                cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
+            } else {
+                cleanedContributor[contributorId] = contributor;
+                cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline)
+            }
         });
+
+        $.each(cleanedContributor, function (key, contributor) {
+            // Contribution frequency
+            $('<canvas>').attr({
+                id: 'contribution-frequency-'+key
+            }).appendTo(
+                '#contribution-frequency-wrapper'
+            );
+
+            var ctx = $("#contribution-frequency-"+key);
+
+            var frequencyDatasets = {
+                labels: [],
+                datasets: [{
+                    label: contributor.name,
+                    backgroundColor: '#' + intToRGB(hashCode(contributor.name)),
+                    data: []
+                }]
+            };
+
+            for(var i=0; i<contributor.timeline.length; i++) {
+                var pair = contributor.timeline[i];
+                var dateString = pair[0];
+                var date = moment.utc(dateString, "YYYY-MM-DD");
+                pair[0] = date.valueOf();
+                contributor.timeline[i] = pair;
+
+                if($.inArray(date,frequencyDatasets.labels) === -1){
+                    if(i>0) {
+                        if(frequencyDatasets.labels[i-1] < date) {
+                            frequencyDatasets.labels.push(date);
+                            frequencyDatasets.datasets[0].data.push(pair[1]);
+                        } else {
+                            frequencyDatasets.labels.unshift(date);
+                            frequencyDatasets.datasets[0].data.unshift(pair[1]);
+                        }
+                    } else {
+                        frequencyDatasets.labels.push(date);
+                        frequencyDatasets.datasets[0].data.push(pair[1]);
+                    }
+                } else {
+                    frequencyDatasets.datasets[0].data += pair[1];
+                }
+
+                var timeStamp = (date.unix()).toString();
+                var isContributionDateExist = contributionsAmount[timeStamp]  !== undefined;
+                if(isContributionDateExist) {
+                    contributionsAmount[timeStamp] += pair[1];
+                } else {
+                    contributionsAmount[timeStamp] = pair[1];
+                }
+            }
+
+            if($.inArray(start_date,frequencyDatasets.labels) === -1){
+                frequencyDatasets.labels.unshift(start_date);
+                frequencyDatasets.datasets[0].data.unshift(0);
+            }
+
+            if($.inArray(end_date,frequencyDatasets.labels) === -1){
+                frequencyDatasets.labels.push(end_date);
+                frequencyDatasets.datasets[0].data.push(0);
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: frequencyDatasets,
+                options: chartDateOption
+            });
+
+        });
+
+        contributionsAmount = sortObject(contributionsAmount);
+        var contributionCtx = $('#contribution-amount');
+        var contributionDatasets = {
+                labels: [],
+                datasets: [{
+                    label: 'Contributors',
+                    backgroundColor: '#82afb8',
+                    data: []
+                }]
+            };
+
+        $.each(contributionsAmount, function (key, value) {
+            var date = moment.unix(key);
+            contributionDatasets.labels.push(date);
+            contributionDatasets.datasets[0].data.push(value);
+        });
+
+        new Chart(contributionCtx, {
+            type: 'line',
+            data: contributionDatasets,
+            options: chartDateOption
+        });
+
+    } else {
+        // Sorry! No Web Worker support..
     }
+}
 
-    lastFrequencyIndex = mapperEngagementFrequency.length-1;
-
-    mapperEngagementFrequency = [];
+function sortObject(o) {
+    return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
 }
 
 function createErrorPanel() {
@@ -261,7 +332,6 @@ function renderInsightFunctionsTypes(username) {
     var index = 0;
 
     createErrorPanel();
-    createMapperEngagementPanel();
 
     if (Object.keys(selected_functions).length === 0 && remote_projects.length === 0) {
         $insightFunctionPanel.html(

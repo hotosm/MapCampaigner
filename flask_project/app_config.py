@@ -23,7 +23,7 @@ class Config(object):
     # OSMCHA ATTRIBUTES
     _OSMCHA_DOMAIN = 'http://osmcha-django-staging.tilestream.net/'
     OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
-    OSMCHA_FRONTEND_URL = 'https://mapbox.github.io/osmcha-frontend/'
+    OSMCHA_FRONTEND_URL = 'https://osmcha.mapbox.com/'
 
     # CAMPAIGN DATA
     campaigner_data_folder = DATA_FOLDER

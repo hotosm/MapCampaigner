@@ -13,7 +13,7 @@
         {% for row in data.data %}
             <tr>
                 <td>
-                    <a href="{{ data.osmcha_url }}changesets/{{ row['ID'] }}" target="_blank">{{ row['ID'] }}</a>
+                    <a href="{{ data.osmcha_url }}changesets/{{ row['ChangeSetId'] }}" target="_blank">{{ row['ChangeSetId'] }}</a>
                 </td>
                 <td>
                     {{ row['Comment'] }}
