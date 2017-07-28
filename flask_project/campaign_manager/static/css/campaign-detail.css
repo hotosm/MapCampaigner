@@ -445,7 +445,7 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     display: none;
 }
 
-#user-engagement-loading {
+.user-engagement-loading {
     text-align: center;
     padding-top: 20px;
 }

@@ -5,9 +5,10 @@ var mapperEngagementChart = null;
 function updateMapperEngagementTotal() {
 
     if(contributors.length > 0) {
-        $('#user-engagement-loading').hide();
+        $('.user-engagement-loading').hide();
         $('#user-engagement-wrapper').show();
         $('#total-users-engaged').html(contributors.length);
+        $('#contributors').html(contributors.length);
     }
 
     var chartDateOption = {
@@ -202,10 +203,6 @@ function renderInsightFunctions(username) {
             }
         }
     });
-
-    for (var i = 0; i < feature_type_collected.length; i++) {
-        calculateContributors(feature_type_collected[i]);
-    }
 
 }
 
