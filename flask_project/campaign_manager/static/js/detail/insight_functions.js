@@ -4,141 +4,139 @@ var mapperEngagementChart = null;
 
 function updateMapperEngagementTotal() {
 
-    if (typeof(Worker) !== "undefined") {
-        if(contributors.length > 0) {
-            $('#total-users-engaged').html(contributors.length);
-        }
+    if(contributors.length > 0) {
+        $('#user-engagement-loading').hide();
+        $('#user-engagement-wrapper').show();
+        $('#total-users-engaged').html(contributors.length);
+    }
 
-        var chartDateOption = {
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            time: {
-                                displayFormats: {
-                                    'day': 'DD/MM/YY',
-                                    'week': 'DD/MM/YY',
-                                    'month': 'MM/YY',
-                                    'quarter': 'MM/YY',
-                                    'year': 'DD/MM/YY'
-                                }
+    var chartDateOption = {
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                'day': 'DD/MM/YY',
+                                'week': 'DD/MM/YY',
+                                'month': 'MM/YY',
+                                'quarter': 'MM/YY',
+                                'year': 'DD/MM/YY'
                             }
-                        }]
-                    }
-                };
-
-        // Clean up data
-        var cleanedContributor = {};
-        var contributionsAmount = {};
-
-        $.each(contributors, function (index, contributor) {
-            var contributorId = contributor.name.replace(/\s+/g, '_');
-            if(contributorId in cleanedContributor) {
-                cleanedContributor[contributorId]['ways'] += contributor['ways'];
-                cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
-                var timeline = JSON.parse(contributor.timeline);
-                cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
-            } else {
-                cleanedContributor[contributorId] = contributor;
-                cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline)
-            }
-        });
-
-        $.each(cleanedContributor, function (key, contributor) {
-            // Contribution frequency
-            $('<canvas>').attr({
-                id: 'contribution-frequency-'+key
-            }).appendTo(
-                '#contribution-frequency-wrapper'
-            );
-
-            var ctx = $("#contribution-frequency-"+key);
-
-            var frequencyDatasets = {
-                labels: [],
-                datasets: [{
-                    label: contributor.name,
-                    backgroundColor: '#' + intToRGB(hashCode(contributor.name)),
-                    data: []
-                }]
+                        }
+                    }]
+                }
             };
 
-            for(var i=0; i<contributor.timeline.length; i++) {
-                var pair = contributor.timeline[i];
-                var dateString = pair[0];
-                var date = moment.utc(dateString, "YYYY-MM-DD");
-                pair[0] = date.valueOf();
-                contributor.timeline[i] = pair;
+    // Clean up data
+    var cleanedContributor = {};
+    var contributionsAmount = {};
 
-                if($.inArray(date,frequencyDatasets.labels) === -1){
-                    if(i>0) {
-                        if(frequencyDatasets.labels[i-1] < date) {
-                            frequencyDatasets.labels.push(date);
-                            frequencyDatasets.datasets[0].data.push(pair[1]);
-                        } else {
-                            frequencyDatasets.labels.unshift(date);
-                            frequencyDatasets.datasets[0].data.unshift(pair[1]);
-                        }
-                    } else {
+    $.each(contributors, function (index, contributor) {
+        var contributorId = contributor.name.replace(/\s+/g, '_');
+        if(contributorId in cleanedContributor) {
+            cleanedContributor[contributorId]['ways'] += contributor['ways'];
+            cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
+            var timeline = JSON.parse(contributor.timeline);
+            cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
+        } else {
+            cleanedContributor[contributorId] = contributor;
+            cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline)
+        }
+    });
+
+    $.each(cleanedContributor, function (key, contributor) {
+        // Contribution frequency
+        $('<canvas>').attr({
+            id: 'contribution-frequency-'+key
+        }).appendTo(
+            '#contribution-frequency-wrapper'
+        );
+
+        var ctx = $("#contribution-frequency-"+key);
+
+        var frequencyDatasets = {
+            labels: [],
+            datasets: [{
+                label: contributor.name,
+                backgroundColor: '#' + intToRGB(hashCode(contributor.name)),
+                data: []
+            }]
+        };
+
+        for(var i=0; i<contributor.timeline.length; i++) {
+            var pair = contributor.timeline[i];
+            var dateString = pair[0];
+            var date = moment.utc(dateString, "YYYY-MM-DD");
+            pair[0] = date.valueOf();
+            contributor.timeline[i] = pair;
+
+            if($.inArray(date,frequencyDatasets.labels) === -1){
+                if(i>0) {
+                    if(frequencyDatasets.labels[i-1] < date) {
                         frequencyDatasets.labels.push(date);
                         frequencyDatasets.datasets[0].data.push(pair[1]);
+                    } else {
+                        frequencyDatasets.labels.unshift(date);
+                        frequencyDatasets.datasets[0].data.unshift(pair[1]);
                     }
                 } else {
-                    frequencyDatasets.datasets[0].data += pair[1];
+                    frequencyDatasets.labels.push(date);
+                    frequencyDatasets.datasets[0].data.push(pair[1]);
                 }
-
-                var timeStamp = (date.unix()).toString();
-                var isContributionDateExist = contributionsAmount[timeStamp]  !== undefined;
-                if(isContributionDateExist) {
-                    contributionsAmount[timeStamp] += pair[1];
-                } else {
-                    contributionsAmount[timeStamp] = pair[1];
-                }
+            } else {
+                frequencyDatasets.datasets[0].data += pair[1];
             }
 
-            if($.inArray(start_date,frequencyDatasets.labels) === -1){
-                frequencyDatasets.labels.unshift(start_date);
-                frequencyDatasets.datasets[0].data.unshift(0);
+            var timeStamp = (date.unix()).toString();
+            var isContributionDateExist = contributionsAmount[timeStamp]  !== undefined;
+            if(isContributionDateExist) {
+                contributionsAmount[timeStamp] += pair[1];
+            } else {
+                contributionsAmount[timeStamp] = pair[1];
             }
+        }
 
-            if($.inArray(end_date,frequencyDatasets.labels) === -1){
-                frequencyDatasets.labels.push(end_date);
-                frequencyDatasets.datasets[0].data.push(0);
-            }
+        if($.inArray(start_date,frequencyDatasets.labels) === -1){
+            frequencyDatasets.labels.unshift(start_date);
+            frequencyDatasets.datasets[0].data.unshift(0);
+        }
 
-            new Chart(ctx, {
-                type: 'line',
-                data: frequencyDatasets,
-                options: chartDateOption
-            });
+        if($.inArray(end_date,frequencyDatasets.labels) === -1){
+            frequencyDatasets.labels.push(end_date);
+            frequencyDatasets.datasets[0].data.push(0);
+        }
 
-        });
-
-        contributionsAmount = sortObject(contributionsAmount);
-        var contributionCtx = $('#contribution-amount');
-        var contributionDatasets = {
-                labels: [],
-                datasets: [{
-                    label: 'Contributors',
-                    backgroundColor: '#82afb8',
-                    data: []
-                }]
-            };
-
-        $.each(contributionsAmount, function (key, value) {
-            var date = moment.unix(key);
-            contributionDatasets.labels.push(date);
-            contributionDatasets.datasets[0].data.push(value);
-        });
-
-        new Chart(contributionCtx, {
+        new Chart(ctx, {
             type: 'line',
-            data: contributionDatasets,
+            data: frequencyDatasets,
             options: chartDateOption
         });
 
-    } else {
-        // Sorry! No Web Worker support..
-    }
+    });
+
+    contributionsAmount = sortObject(contributionsAmount);
+    var contributionCtx = $('#contribution-amount');
+    var contributionDatasets = {
+            labels: [],
+            datasets: [{
+                label: 'Contributors',
+                backgroundColor: '#82afb8',
+                data: []
+            }]
+        };
+
+    $.each(contributionsAmount, function (key, value) {
+        var date = moment.unix(key);
+        contributionDatasets.labels.push(date);
+        contributionDatasets.datasets[0].data.push(value);
+    });
+
+    new Chart(contributionCtx, {
+        type: 'line',
+        data: contributionDatasets,
+        options: chartDateOption
+    });
+
 }
 
 function sortObject(o) {

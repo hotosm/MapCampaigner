@@ -440,3 +440,12 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 #contribution-amount {
     padding: 8px;
 }
+
+#user-engagement-wrapper {
+    display: none;
+}
+
+#user-engagement-loading {
+    text-align: center;
+    padding-top: 20px;
+}
