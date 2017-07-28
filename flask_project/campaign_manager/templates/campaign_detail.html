@@ -150,6 +150,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="map-side-list">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="pull-left map-side-list-name">
+                                            Areas Covered
+                                        </div>
+                                        <div class="pull-right map-side-list-number">
+                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 map-side-list-action">
+                                        <div class="side-action inactive-panel">
+                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-9">
                             <div id="campaign-map-detail"></div>
@@ -172,15 +189,30 @@
                     <div class="panel panel-default detail-panel-insights">
                         <div class="panel-heading">User Engagement</div>
                         <div class="panel-body">
-                            <span class="grey-italic" style="margin-top:15px !important; margin-left: 20px;position: absolute;"> Loading data .. </span>
-                            <div class="row" style="padding: 25px;">
+                            <div class="row">
+                                <div class="col-lg-4" style="min-height: 250px;">
+                                    <div class="insight-title" style="margin-bottom: 20px;">
+                                        Users Engaged
+                                    </div>
+                                    <div class="completeness">
+                                        <div class="progress-bar-indicator" id="total-users-engaged" style="font-size:60pt; padding-top: 20px;">
+                                            0
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4" style="padding: 0 !important;">
+                                    <div class="insight-title" style="margin-bottom: 20px;">
+                                        Contributions Frequency
+                                    </div>
+                                    <div class="overview-container" id="contribution-frequency-wrapper">
+                                    </div>
+                                </div>
                                 <div class="col-lg-4">
-                                    <canvas id="user-engagement-charts" style="width: 100%; "></canvas>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="chart-legends"></div>
-                                </div>
-                                <div class="col-lg-5 overview-container" id="mapper-engagement-frequency-wrapper">
+                                    <div class="insight-title" style="margin-bottom: 20px;">
+                                        Contributions Amount
+                                    </div>
+                                    <canvas id="contribution-amount">
+                                    </canvas>
                                 </div>
                             </div>
                         </div>
@@ -200,7 +232,7 @@
                                     <div id="total-osmcha-errors"></div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <div class="advance-insight-title">Feature Completeness Errors</div>
+                                    <div class="advance-insight-title">Attribute Completeness Errors</div>
                                     <div id="total-feature-completeness-errors">
                                         0
                                     </div>
@@ -271,6 +303,7 @@
         var featureCompleteness = [];
         var mapperEngagementTotal = {};
         var mapperEngagementFrequency = [];
+        var contributors = [];
 
         function renderRemoteProjects() {
 
@@ -507,6 +540,8 @@
         }
 
         {% if geometry %}
+            var totalArea = 0;
+            var totalAreaCovered = 0;
             drawnItems = L.geoJSON(
                 $.parseJSON('{{ geometry|safe }}'), {
                     style: function (feature) {
@@ -540,6 +575,10 @@
                         var area = feature.properties.area || '-';
                         var team = feature.properties.team || '-';
                         var status = capitalizeFirstLetter(feature.properties.status) || 'Unassigned';
+                        if(feature.properties.status === 'complete') {
+                            totalAreaCovered++;
+                        }
+                        totalArea++;
                         layer.bindPopup(
                             '<div class="layer-popup">' +
                                 '<div class="layer-popup-area">' +
@@ -557,6 +596,7 @@
                 });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
+            $('#areas-covered').html((totalAreaCovered/totalArea * 100) + ' %');
         {% endif %}
 
         function highlightFeature(e) {

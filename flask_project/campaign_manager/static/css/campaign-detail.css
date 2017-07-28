@@ -129,6 +129,9 @@
     .btn-share-group .btn {
         font-size: 11px !important;
     }
+    .tab-content>.tab-pane {
+        display: block !important;
+    }
 }
 
 .button-manage {
@@ -423,11 +426,17 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 }
 
 .overview-container {
-    height: 500px;
+    height: 300px;
     overflow:auto;
+    padding-left: 10px;
+    padding-right: 10px;
     border:1px solid #ddd;
 }
 
 #mapper-engagement-frequency-wrapper {
     padding: 20px;
+}
+
+#contribution-amount {
+    padding: 8px;
 }

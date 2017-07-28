@@ -87,6 +87,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
                         '%Y-%m-%dT%H:%M:%SZ').strftime(
                         "%Y-%m-%d %H:%M"),
                 clean_data.append({
+                    'ChangeSetId': row['id'],
                     'ID': properties['uid'],
                     'Date': datetime.strptime(
                         properties['date'],
