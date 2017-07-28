@@ -150,6 +150,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="map-side-list">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="pull-left map-side-list-name">
+                                            Areas Covered
+                                        </div>
+                                        <div class="pull-right map-side-list-number">
+                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 map-side-list-action">
+                                        <div class="side-action inactive-panel">
+                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-9">
                             <div id="campaign-map-detail"></div>
@@ -523,6 +540,8 @@
         }
 
         {% if geometry %}
+            var totalArea = 0;
+            var totalAreaCovered = 0;
             drawnItems = L.geoJSON(
                 $.parseJSON('{{ geometry|safe }}'), {
                     style: function (feature) {
@@ -556,6 +575,10 @@
                         var area = feature.properties.area || '-';
                         var team = feature.properties.team || '-';
                         var status = capitalizeFirstLetter(feature.properties.status) || 'Unassigned';
+                        if(feature.properties.status === 'complete') {
+                            totalAreaCovered++;
+                        }
+                        totalArea++;
                         layer.bindPopup(
                             '<div class="layer-popup">' +
                                 '<div class="layer-popup-area">' +
@@ -573,6 +596,7 @@
                 });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
+            $('#areas-covered').html((totalAreaCovered/totalArea * 100) + ' %');
         {% endif %}
 
         function highlightFeature(e) {
