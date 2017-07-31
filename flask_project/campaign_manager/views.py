@@ -33,11 +33,6 @@ except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
 
-try:
-    from secret import GOOGLE_API_KEY
-except ImportError:
-    GOOGLE_API_KEY = ''
-
 MAX_AREA_SIZE = 320000000
 
 
@@ -50,8 +45,7 @@ def home():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET,
-        google_api_key=GOOGLE_API_KEY
+        oauth_secret=OAUTH_SECRET
     )
 
     # noinspection PyUnresolvedReferences
@@ -68,8 +62,7 @@ def home_all():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        all=True,
-        google_api_key=GOOGLE_API_KEY
+        all=True
     )
 
     # noinspection PyUnresolvedReferences
@@ -353,7 +346,6 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign.geometry)
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
@@ -427,7 +419,6 @@ def participate():
         context = campaign_to_participate.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['google_api_key'] = GOOGLE_API_KEY
         context['geometry'] = json.dumps(campaign_to_participate.geometry)
         context['selected_functions'] = \
             campaign_to_participate.get_selected_functions_in_string()
@@ -579,8 +570,7 @@ def create_campaign():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET,
-        google_api_key=GOOGLE_API_KEY
+        oauth_secret=OAUTH_SECRET
     )
     context['url'] = '/create'
     context['action'] = 'create'
@@ -645,7 +635,6 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['google_api_key'] = GOOGLE_API_KEY
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['functions'] = get_selected_functions()

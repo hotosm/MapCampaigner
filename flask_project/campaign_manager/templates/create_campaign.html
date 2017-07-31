@@ -410,12 +410,7 @@
             remote_projects_list = {{ form.remote_projects.data | safe }};
         {% endif %}
 
-        var google_api_key = null;
         var maxAreaSize = {{ maximum_area_size }};
-
-        {% if google_api_key %}
-            google_api_key = "{{ google_api_key }}";
-        {% endif %}
 
         var start_date = '{{ form.start_date.data }}';
         var end_date = '{{ form.end_date.data }}';

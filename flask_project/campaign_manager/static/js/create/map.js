@@ -2,10 +2,18 @@ var campaignMap = L.map('campaign-map');
 var drawnItems = new L.geoJSON();
 var error_format_before = false;
 
-var bounds = [
-    [-34.053726, 20.411482],
-    [-34.009483, 20.467358]
-];
+
+// Add search control
+var controlSearch = campaignMap.addControl( new L.Control.Search({
+    url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+    jsonpParam: 'json_callback',
+    propertyName: 'display_name',
+    propertyLoc: ['lat','lon'],
+    marker: L.circleMarker([0,0],{radius:10}),
+    autoCollapse: true,
+    autoType: false,
+    minLength: 2
+}) );
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
@@ -13,24 +21,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18
 }).addTo(campaignMap);
 
-campaignMap.fitBounds(bounds);
-
-if (google_api_key) {
-    new L.Control.GPlaceAutocomplete({
-        position: "topright",
-        callback: function (location) {
-            campaignMap.fitBounds([
-                [
-                    location.geometry.viewport.getSouthWest().lat(),
-                    location.geometry.viewport.getSouthWest().lng()
-                ],
-                [
-                    location.geometry.viewport.getNorthEast().lat(),
-                    location.geometry.viewport.getNorthEast().lng()
-                ]
-            ]);
-        }
-    }).addTo(campaignMap);
+function mapFitBound() {
+    var bounds = [
+        [-34.053726, 20.411482],
+        [-34.009483, 20.467358]
+    ];
+    campaignMap.fitBounds(bounds);
 }
 
 if ($("#geometry").val()) {

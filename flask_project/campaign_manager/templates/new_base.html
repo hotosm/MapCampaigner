@@ -34,8 +34,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css"/>
 
-    <!-- Leaflet Google Places CSS -->
-    <link href="/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.css" rel="stylesheet">
+    <!-- Leaflet Search CSS -->
+    <link href="/static/css/leaflet-search/leaflet-search.css" rel="stylesheet">
+    <link href="/static/css/leaflet-search/leaflet-search.mobile.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -106,13 +107,9 @@
     <!-- Moment Javascript -->
     <script type="text/javascript" src="/static/libs/moment.js"></script>
 
-    {% if google_api_key %}
-        <!-- Google Api Key -->
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places"></script>
 
-        <!-- Leaflet Google Places JavaScript -->
-        <script type="text/javascript" src="/static/libs/leaflet-google-places-autocomplete/leaflet-gplaces-autocomplete.js"></script>
-    {% endif %}
+    <!-- Leaflet Search -->
+    <script type="text/javascript" src="/static/libs/leaflet-search.js"></script>
 
     <!-- Javascript Cookie -->
     <script type="text/javascript" src="/static/libs/js.cookie-2.1.4.min.js"></script>
