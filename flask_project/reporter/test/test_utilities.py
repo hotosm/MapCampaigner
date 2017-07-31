@@ -46,9 +46,9 @@ class UtilitiesTestCase(LoggedTestCase):
         """Test we get the proper totals from a sorted user list."""
         sorted_user_list = osm_object_contributions(
             open(FIXTURE_PATH),
-            tag_name="building")
+            tag_name="amenity")
         ways, nodes = get_totals(sorted_user_list)
-        self.assertEquals((ways, nodes), (427, 52))
+        self.assertEquals((ways, nodes), (0, 10))
 
     def test_interpolated_time_line(self):
         """Check that we can get an interpolated time_line,"""
