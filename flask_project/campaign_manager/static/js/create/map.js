@@ -12,8 +12,10 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
     marker: L.circleMarker([0,0],{radius:10}),
     autoCollapse: true,
     autoType: false,
-    minLength: 2
-}) );
+    minLength: 2,
+    zoom: 15
+}));
+
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
