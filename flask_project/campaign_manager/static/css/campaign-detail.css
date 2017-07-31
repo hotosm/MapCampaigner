@@ -417,8 +417,16 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     padding-bottom: 20px;
 }
 
+.row.insight-type-content, .row.insight-type-sub-content {
+    margin-bottom: -15px !important;
+}
+
 .insight-type-content .col-lg-4 {
-    min-height: 40px;
+    height: 380px;
+}
+
+.type-1, .type-2 {
+    border-right: 1px solid #e5e5e5;
 }
 
 .advance-insight-title {
@@ -445,6 +453,16 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 #user-engagement-wrapper {
     display: none;
+}
+
+#user-engagement-wrapper {
+    height: 350px;
+}
+
+#user-engagement-wrapper .col-lg-4 {
+    height: 385px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .user-engagement-loading {

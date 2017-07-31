@@ -281,7 +281,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
                         '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
                             'Features Checked ' +
                             '<div class="completeness"> ' +
-                                '<div class="progress-bar-indicator" style="font-size:60pt; padding-top: 30px;">' +
+                                '<div class="progress-bar-indicator" style="font-size:60pt; padding-top: 80px;">' +
                                     totalValue +
                                 '</div>'+
                             '</div>'+
@@ -435,15 +435,11 @@ function renderInsightFunctionsTypes(username) {
                     var insightId = key;
                     var sizeColumn = 'col-lg-4';
 
-                    if(insightIndex % 3 === 0) {
-                        sizeColumn = 'col-lg-4';
-                    }
-
                     if(selected_function['function'] === 'MapperEngagement') {
                         $mainRowTypeContents.append('<div id="'+insightId+'" style="display: none;"></div>')
                     } else {
                         $mainRowTypeContents.append(
-                                '<div class="'+sizeColumn+'" id="' + insightId + '">' +
+                                '<div class="'+sizeColumn+' type-'+insightIndex+'" id="' + insightId + '">' +
                                 '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
                                     'Loading data... </span>' +
                                 '</div>'
@@ -452,7 +448,7 @@ function renderInsightFunctionsTypes(username) {
 
                     if(insightIndex === Object.keys(campaignTypes[campaignType]).length) {
                         $mainRowTypeContents.append(
-                                '<div class="'+sizeColumn+'" id="total-features-'+campaignType.replace(/\s+/g, '_')+'">' +
+                                '<div class="'+sizeColumn+' type-'+insightIndex+'"" id="total-features-'+campaignType.replace(/\s+/g, '_')+'">' +
                                 '<span class="grey-italic" style="margin-top:15px !important; position: absolute;"> ' +
                                     'Loading data... </span>' +
                                 '</div>'
