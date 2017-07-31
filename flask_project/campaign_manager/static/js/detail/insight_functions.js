@@ -419,7 +419,7 @@ function renderInsightFunctionsTypes(username) {
         $typeContents.append('<div class="row insight-type-sub-content"></div>');
 
         var $mainRowTypeContents = $('#'+tabId+ ' .insight-type-content');
-        $mainRowTypeContents.append('<div class="type-title">'+tabName+'</div>');
+        $mainRowTypeContents.append('<div class="type-title"><i class="fa fa-building" aria-hidden="true"></i> '+tabName+'</div>');
 
         var insightIndex = 1;
         $.each(campaignTypes[campaignType], function (key, selected_function) {

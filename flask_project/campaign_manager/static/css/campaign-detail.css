@@ -34,8 +34,11 @@
 
 .detail-panel-insights>.panel-heading {
     background: none;
-    text-align: center;
-    font-size: 13pt;
+    text-align: left;
+    font-size: 14pt;
+    color: #565656;
+    padding: 20px;
+    font-weight: bold;
 }
 
 .advance-insights {
@@ -293,10 +296,9 @@
     font-size: 20pt;
     margin-top: -10px;
     color: #565656;
-    text-align: center;
     font-weight: bold;
-    background-color: #f4f4f4;
-    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+    padding-left: 20px;
     padding-top: 10px;
 }
 
