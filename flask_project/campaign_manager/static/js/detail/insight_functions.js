@@ -18,21 +18,54 @@ function updateMapperEngagementTotal() {
     $('#user-engagement-wrapper').show();
 
     var chartDateOption = {
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            displayFormats: {
-                                'day': 'DD/MM/YY',
-                                'week': 'DD/MM/YY',
-                                'month': 'MM/YY',
-                                'quarter': 'MM/YY',
-                                'year': 'DD/MM/YY'
-                            }
-                        }
-                    }]
+        elements: {
+            line: {
+                tension: 0.000001
+            }
+        },
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        'day': 'DD/MM',
+                        'week': 'DD/MM',
+                        'month': 'MM/YY',
+                        'quarter': 'MM/YY',
+                        'year': 'YY'
+                    }
                 }
-            };
+            }]
+        }
+    };
+
+    var frequencyOption = {
+        maintainAspectRatio: true,
+        elements: {
+            line: {
+                tension: 0.000001
+            }
+        },
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        'day': 'DD/MM',
+                        'week': 'DD/MM',
+                        'month': 'MM/YY',
+                        'quarter': 'MM/YY',
+                        'year': 'YY'
+                    }
+                }
+            }]
+        },
+        plugins: {
+            filler: {
+                propagate: false
+            }
+        }
+    };
 
     // Clean up data
     var cleanedContributor = {};
@@ -51,24 +84,18 @@ function updateMapperEngagementTotal() {
         }
     });
 
-    $.each(cleanedContributor, function (key, contributor) {
-        // Contribution frequency
-        $('<canvas>').attr({
-            id: 'contribution-frequency-'+key
-        }).appendTo(
-            '#contribution-frequency-wrapper'
-        );
+    var allFrequencyDatasets = [];
+    var allLabels = [];
+    var color = Chart.helpers.color;
 
-        var ctx = $("#contribution-frequency-"+key);
+    $.each(cleanedContributor, function (key, contributor) {
 
         var frequencyDatasets = {
-            labels: [],
-            datasets: [{
                 label: contributor.name,
-                backgroundColor: '#' + intToRGB(hashCode(contributor.name)),
+                borderColor : '#' + intToRGB(hashCode(contributor.name)),
+                backgroundColor : color('#' + intToRGB(hashCode(contributor.name))).alpha(0.1).rgbString(),
                 data: []
-            }]
-        };
+            };
 
         for(var i=0; i<contributor.timeline.length; i++) {
             var pair = contributor.timeline[i];
@@ -77,21 +104,12 @@ function updateMapperEngagementTotal() {
             pair[0] = date.valueOf();
             contributor.timeline[i] = pair;
 
-            if($.inArray(date,frequencyDatasets.labels) === -1){
-                if(i>0) {
-                    if(frequencyDatasets.labels[i-1] < date) {
-                        frequencyDatasets.labels.push(date);
-                        frequencyDatasets.datasets[0].data.push(pair[1]);
-                    } else {
-                        frequencyDatasets.labels.unshift(date);
-                        frequencyDatasets.datasets[0].data.unshift(pair[1]);
-                    }
-                } else {
-                    frequencyDatasets.labels.push(date);
-                    frequencyDatasets.datasets[0].data.push(pair[1]);
-                }
-            } else {
-                frequencyDatasets.datasets[0].data += pair[1];
+            if($.inArray(date, allLabels) === -1) {
+                allLabels.push(date);
+                frequencyDatasets.data.push({
+                    x:date,
+                    y:pair[1]
+                })
             }
 
             var timeStamp = (date.unix()).toString();
@@ -103,39 +121,48 @@ function updateMapperEngagementTotal() {
             }
         }
 
-        if($.inArray(start_date,frequencyDatasets.labels) === -1){
-            frequencyDatasets.labels.unshift(start_date);
-            frequencyDatasets.datasets[0].data.unshift(0);
+        if($.inArray(start_date,allLabels) === -1){
+            allLabels.push(start_date);
         }
 
-        if($.inArray(end_date,frequencyDatasets.labels) === -1){
-            frequencyDatasets.labels.push(end_date);
-            frequencyDatasets.datasets[0].data.push(0);
+        if($.inArray(end_date,allLabels) === -1){
+            allLabels.push(end_date);
         }
 
-        new Chart(ctx, {
-            type: 'line',
-            data: frequencyDatasets,
-            options: chartDateOption
-        });
-
+        allFrequencyDatasets.push(frequencyDatasets);
     });
+
+    allLabels = sortDate(allLabels);
+
+    var frequencyDatasets = new Chart($('#user-frequency'), {
+        type: 'line',
+        options: frequencyOption,
+        data: {
+            labels: allLabels,
+            datasets: allFrequencyDatasets
+        }
+    });
+
+    console.log(allFrequencyDatasets);
 
     contributionsAmount = sortObject(contributionsAmount);
     var contributionCtx = $('#contribution-amount');
     var contributionDatasets = {
-            labels: [],
+            labels: allLabels,
             datasets: [{
                 label: 'Contributors',
-                backgroundColor: '#82afb8',
+                borderColor : '#82afb8',
+                backgroundColor : color('#82afb8').alpha(0.1).rgbString(),
                 data: []
             }]
         };
 
     $.each(contributionsAmount, function (key, value) {
         var date = moment.unix(key);
-        contributionDatasets.labels.push(date);
-        contributionDatasets.datasets[0].data.push(value);
+        contributionDatasets.datasets[0].data.push({
+                    x:date,
+                    y:value
+                });
     });
 
     new Chart(contributionCtx, {
@@ -144,6 +171,23 @@ function updateMapperEngagementTotal() {
         options: chartDateOption
     });
 
+}
+
+function sortDate(dateArray) {
+    if(dateArray.length <= 1) {
+        return dateArray;
+    }
+
+    var pivot = dateArray[0];
+
+    var left = [];
+    var right = [];
+
+    for (var i=1; i < dateArray.length; i++) {
+        dateArray[i] < pivot ? left.push(dateArray[i]) : right.push(dateArray[i]);
+    }
+
+    return sortDate(left).concat(pivot, sortDate(right))
 }
 
 function sortObject(o) {
