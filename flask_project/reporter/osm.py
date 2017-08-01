@@ -30,7 +30,8 @@ from reporter.utilities import (
 from reporter.exceptions import (
     OverpassTimeoutException,
     OverpassBadRequestException,
-    OverpassConcurrentRequestException)
+    OverpassConcurrentRequestException,
+    OverpassDoesNotReturnData)
 from reporter.metadata import metadata_files
 from urllib.request import urlopen
 # noinspection PyPep8Naming
@@ -209,6 +210,10 @@ def fetch_osm(file_path, url_path):
         regex = '<remark> runtime error:'
         if re.search(regex, data):
             raise OverpassTimeoutException
+
+        regex = '"elements"'
+        if not re.search(regex, data):
+            raise OverpassDoesNotReturnData
 
         if os.path.exists(file_path):
             os.remove(file_path)
