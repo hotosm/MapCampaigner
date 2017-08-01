@@ -11,7 +11,10 @@ import yaml
 
 from reporter.osm import fetch_osm
 from app_config import Config
-from reporter.exceptions import OverpassBadRequestException
+from reporter.exceptions import (
+    OverpassBadRequestException,
+    OverpassDoesNotReturnData
+)
 
 
 def module_path(*args):
@@ -125,14 +128,18 @@ def load_osm_document_cached(file_path, url_path, returns_json=True):
         if not os.path.exists(file_path):
             try:
                 fetch_osm(file_path, url_path)
-            except OverpassBadRequestException:
+            except (OverpassBadRequestException, OverpassDoesNotReturnData):
                 return osm_data, file_time, updating_status
+
         else:
             FetchOsmThread(file_path, url_path).start()
             updating_status = True
-    file_handle = open(file_path, 'rb')
 
-    if returns_json:
+    file_handle = None
+    if os.path.exists(file_path):
+        file_handle = open(file_path, 'rb')
+
+    if returns_json and file_handle:
         try:
             osm_data = json.loads(file_handle.read().decode('utf-8'))
         except ValueError:

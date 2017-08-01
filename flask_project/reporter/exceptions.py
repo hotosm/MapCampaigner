@@ -15,3 +15,7 @@ class OverpassBadRequestException(Exception):
 
 class OverpassConcurrentRequestException(Exception):
     pass
+
+
+class OverpassDoesNotReturnData(Exception):
+    pass
