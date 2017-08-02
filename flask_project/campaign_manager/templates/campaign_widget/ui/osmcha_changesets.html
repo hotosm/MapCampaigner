@@ -68,11 +68,14 @@
 <script>
     var function_id = "{{ function_id }}";
     var $wrapper = $('#{{ function_id }}');
+    console.log('{{ function_id }}');
     $(document).ready(function () {
         $wrapper.find('.feature-list-table').DataTable({
             "filter": false,
             "pageLength": 15,
             "paging": false,
+            "searching": false,
+            "destroy": true,
             "info": false,
             "rowReorder": {
                 selector: 'td:nth-child(2)'

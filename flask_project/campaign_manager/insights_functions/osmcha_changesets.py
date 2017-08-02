@@ -26,6 +26,8 @@ class OsmchaChangesets(AbstractInsightsFunction):
         """
         if 'page' in additional_data:
             self.current_page = int(additional_data['page'])
+        if 'type' in additional_data:
+            self.feature_type = additional_data['type']
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -68,6 +70,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
         :return: processed data
         :rtype: dict
         """
+
         raw_data['osmcha_url'] = Config().OSMCHA_FRONTEND_URL
         raw_data['uuid'] = self.campaign.uuid
         raw_data['headers'] = [

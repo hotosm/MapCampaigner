@@ -5,17 +5,20 @@ var mapperEngagementChart = null;
 function updateMapperEngagementTotal() {
 
     $('.user-engagement-loading').hide();
+    $('#user-engagement-wrapper').show();
 
     if(contributors.length > 0) {
         $('#total-users-engaged').html(contributors.length);
         $('#contributors').html(contributors.length);
     } else {
-        $('#user-engagement-wrapper').html('<div class="no-data" style="height: 0;"> No users contribution </div>')
+        $('#user-engagement-wrapper').html('<div class="no-data" style="padding-top: 20px;"> No users contribution </div>');
+        $('#user-engagement-wrapper').css({
+            height: '80px'
+        });
         $('#total-users-engaged').html(0);
         $('#contributors').html(0);
+        return;
     }
-
-    $('#user-engagement-wrapper').show();
 
     var chartDateOption = {
         elements: {
