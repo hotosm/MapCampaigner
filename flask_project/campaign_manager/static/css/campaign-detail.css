@@ -319,6 +319,25 @@
     #campaign-map-detail {
         margin-right: -15px !important;
     }
+
+
+    .insight-type-content .col-lg-4 {
+        height: 100% !important;
+    }
+
+    .type-title {
+        padding-top: 15px;
+        border-top: 1px solid #e5e5e5;
+        font-size: 15pt;
+        margin-bottom: 10px;
+    }
+
+    .type-insight-text {
+        font-size: 30pt !important;
+        padding-bottom: 40px !important;
+        padding-top: 20px !important;
+    }
+
 }
 
 div.side-action a{
@@ -468,4 +487,13 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 .user-engagement-loading {
     text-align: center;
     padding-top: 20px;
+}
+
+.type-insight-text {
+    color: #77a1aa;
+    font-size: 60pt;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-top: 80px;
 }
