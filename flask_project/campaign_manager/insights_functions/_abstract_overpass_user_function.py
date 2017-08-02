@@ -1,5 +1,6 @@
 from abc import ABCMeta
 import re
+import io
 import time
 import datetime
 import xml
@@ -11,7 +12,8 @@ from campaign_manager.insights_functions._abstract_insights_function import (
 from reporter.exceptions import (
     OverpassTimeoutException,
     OverpassBadRequestException,
-    OverpassConcurrentRequestException)
+    OverpassConcurrentRequestException,
+    OverpassDoesNotReturnData)
 from reporter.utilities import (
     osm_object_contributions,
     split_polygon
@@ -83,6 +85,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                 error = 'Please try again later, another query is running.'
             except URLError:
                 error = 'Bad request.'
+            except OverpassDoesNotReturnData:
+                error = 'No data from overpass.'
             else:
                 try:
                     last_update = overpass_data['last_update']
@@ -92,12 +96,12 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                         tag_name = self.feature.split('=')[0]
                     else:
                         tag_name = TAG_MAPPING_REVERSE[self.feature]
-
-                    sorted_user_list = osm_object_contributions(
-                        overpass_data['file'],
-                        tag_name,
-                        start_date,
-                        end_date)
+                    if isinstance(overpass_data['file'], io.IOBase):
+                        sorted_user_list = osm_object_contributions(
+                            overpass_data['file'],
+                            tag_name,
+                            start_date,
+                            end_date)
                 except xml.sax.SAXParseException:
                     error = (
                         'Invalid OSM xml file retrieved. Please try again '
