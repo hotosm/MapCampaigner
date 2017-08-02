@@ -1,4 +1,8 @@
-<div class="insight-title" style="margin-bottom: 40px;">Count Feature</div>
+{% if feature_type %}
+    <div class="insight-title" style="margin-bottom: 40px;">{{ feature_type }} By Type</div>
+{% else %}
+    <div class="insight-title" style="margin-bottom: 40px;">Count Feature</div>
+{% endif %}
 <div class="row piechart-wrapper">
 
     <div class="col-lg-1"></div>

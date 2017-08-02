@@ -325,7 +325,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
                         '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
                             'Features Checked ' +
                             '<div class="completeness"> ' +
-                                '<div class="progress-bar-indicator" style="font-size:60pt; padding-top: 80px;">' +
+                                '<div class="type-insight-text">' +
                                     totalValue +
                                 '</div>'+
                             '</div>'+
