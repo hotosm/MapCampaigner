@@ -40,6 +40,8 @@ class TaskingManagerProvider(object):
 
         if campaign_tag:
             url_request += 'campaignTag=' + campaign_tag + '&'
+
+        url_request = url_request.replace(' ', '%20')
         return self.request_data(url_request)
 
     def project_detail(self, project_id):
