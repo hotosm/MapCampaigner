@@ -187,7 +187,11 @@ function addProject(el, projectId) {
                         '<button type="button" class="btn btn-danger btn-sm" onclick="removeProject(this, '+data['projectId']+')" style="margin-top: 5px;">Remove</button>'+
                     '</div>'+
                 '</div>'
-            )
+            );
+
+            if($listAddedProjectsDiv.find('#empty-list-remote-project').is(':visible')) {
+                $('#empty-list-remote-project').hide();
+            }
         }
     })
 }
@@ -202,7 +206,7 @@ function removeProject(el, projectId) {
     delete addedLayers[projectId];
     $(el).parent().parent().remove();
     if(Object.keys(addedLayers).length === 0) {
-        $listAddedProjectsDiv.html('-');
+        $('#empty-list-remote-project').show();
     }
 }
 

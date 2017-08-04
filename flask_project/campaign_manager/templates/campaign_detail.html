@@ -358,6 +358,10 @@
                                 return feature.properties && feature.properties.style;
                             },
                             onEachFeature: function (feature, layer) {
+                                totalArea++;
+                                if(feature.properties.taskStatus == 'VALIDATED') {
+                                    totalAreaCovered++;
+                                }
                                 var popupContent = feature.properties.taskStatus;
                                 layer.bindPopup(popupContent);
                             }
@@ -367,10 +371,10 @@
                         addedLayers[data['projectId']] = layerGroup;
 
                         $('#remote-projects-summaries').append(
-                            '<div class="row summary single-row" style="font-size:9pt;">'+
+                            '<div class="row summary single-row remote-project-list" style="font-size:9pt;">'+
                                '<div class="col-lg-10" style="padding-top: 0 !important;">'+
                             '<div class="pull-left">'+
-                                '<a target="_blank" href="http://tasks.hotosm.org/project/'+data['projectId']+'">'+
+                                '<a target="_blank" href="http://tasks.hotosm.org/project/'+data['projectId']+'" style="word-wrap:break-word;">'+
                                 '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
                                 '</a>'+
                             '</div>'+
@@ -381,6 +385,9 @@
                                 '</div>'+
                             '</div>'
                         );
+                        console.log(totalAreaCovered);
+                        console.log(totalArea);
+                        $('#areas-covered').html(Math.round(totalAreaCovered/totalArea * 100) + ' %');
                     }
                 });
             }
@@ -585,7 +592,7 @@
                 });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
-            $('#areas-covered').html((totalAreaCovered/totalArea * 100) + ' %');
+            $('#areas-covered').html(Math.round(totalAreaCovered/totalArea * 100) + ' %');
         {% endif %}
 
         function highlightFeature(e) {
