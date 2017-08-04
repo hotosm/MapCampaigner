@@ -95,12 +95,12 @@
                     </div>
                     <div class="detail-button-wrapper">
                         <div class="btn-group btn-share-group" role="group" aria-label="...">
-                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
-                            <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
                             {% if link_to_omk %}
                                 <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                             {% endif %}
                             <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
+                            <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
                         </div>
 
                     </div>
@@ -120,7 +120,7 @@
 
                                 <div class="col-lg-10">
                                     <div class="pull-left map-side-list-name">
-                                        Total users engaged
+                                        Users engaged
                                     </div>
                                     <span class="pull-right map-side-list-number">
                                         <span id="contributors"><span class="grey-italic">...</span></span>
@@ -137,7 +137,7 @@
                                 <div class="row">
                                     <div class="col-lg-10">
                                         <div class="pull-left map-side-list-name">
-                                            Total features collected
+                                            Features collected
                                         </div>
                                         <div class="pull-right map-side-list-number">
                                             <span id="features-collected"><span class="grey-italic">...</span></span>
