@@ -383,6 +383,7 @@ def get_campaign(uuid):
 
 @campaign_manager.route('/participate')
 def participate():
+    from flask import url_for, redirect
     """Action from participate button, return nearest/recent/active campaign.
     """
     campaign_to_participate = None
@@ -416,26 +417,10 @@ def participate():
             campaign_to_participate = campaign
 
     if campaign_to_participate:
-        context = campaign_to_participate.to_dict()
-        context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
-        context['oauth_secret'] = OAUTH_SECRET
-        context['geometry'] = json.dumps(campaign_to_participate.geometry)
-        context['selected_functions'] = \
-            campaign_to_participate.get_selected_functions_in_string()
-
-        # Participant
-        context['participants'] = len(
-            campaign_to_participate.campaign_managers
+        return redirect(
+                url_for('campaign_manager.get_campaign',
+                        uuid=campaign_to_participate.uuid)
         )
-
-        # Map attribution
-        if campaign_to_participate.map_type != '':
-            context['attribution'] = find_attribution(
-                campaign_to_participate.map_type
-            )
-
-        return render_template(
-            'campaign_detail.html', **context)
     else:
         abort(404)
 
