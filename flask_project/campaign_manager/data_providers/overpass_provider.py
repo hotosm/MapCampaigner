@@ -86,7 +86,9 @@ class OverpassProvider(AbstractDataProvider):
         :returns: A dict from retrieved OSM dataset.
         :rtype: dict
         """
-        server_url = 'http://overpass-api.de/api/interpreter?data='
+        server_url = 'http://exports-prod.hotosm.org:6080/api/' \
+                     'interpreter?data='
+        # server_url = 'http://overpass-api.de/api/interpreter?data='
         # server_url = 'http://overpass.osm.rambler.ru/cgi/interpreter?data='
         # server_url = 'http://overpass.osm.ch/api/?data='
 
