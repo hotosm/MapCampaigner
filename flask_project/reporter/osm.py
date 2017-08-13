@@ -211,7 +211,7 @@ def fetch_osm(file_path, url_path):
         if re.search(regex, data):
             raise OverpassTimeoutException
 
-        regex = '"elements"'
+        regex = '(elements|meta)'
         if not re.search(regex, data):
             raise OverpassDoesNotReturnData
 
