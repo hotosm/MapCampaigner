@@ -65,7 +65,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                         feature_values=feature_values,
                         date_from=str(start_date),
                         date_to=str(end_date),
-                        returns_json=False
+                        returns_json=False,
+                        need_attic_data=True
                     )
                 else:
                     feature_key = features[0]
@@ -75,7 +76,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                         feature_key=feature_key,
                         date_from=str(start_date),
                         date_to=str(end_date),
-                        returns_json=False
+                        returns_json=False,
+                        need_attic_data=True
                     )
             except OverpassTimeoutException:
                 error = 'Timeout, try a smaller area.'

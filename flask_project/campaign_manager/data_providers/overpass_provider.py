@@ -53,7 +53,8 @@ class OverpassProvider(AbstractDataProvider):
             feature_values=None,
             date_from=None,
             date_to=None,
-            returns_json=True):
+            returns_json=True,
+            need_attic_data=False):
         """Get osm data.
 
         :param polygon: list of array describing polygon area e.g.
@@ -81,16 +82,22 @@ class OverpassProvider(AbstractDataProvider):
         :param date_to: Second date for date range.
         :type date_to: str
 
+        :param need_attic_data: Request need attic data
+        :type need_attic_data: bool
+
         :raises: OverpassTimeoutException
 
         :returns: A dict from retrieved OSM dataset.
         :rtype: dict
         """
-        server_url = 'http://exports-prod.hotosm.org:6080/api/' \
-                     'interpreter?data='
-        # server_url = 'http://overpass-api.de/api/interpreter?data='
-        # server_url = 'http://overpass.osm.rambler.ru/cgi/interpreter?data='
-        # server_url = 'http://overpass.osm.ch/api/?data='
+        default_server_url = 'http://exports-prod.hotosm.org:6080/api/' \
+                             'interpreter?data='
+        attic_data_server_url = 'http://overpass-api.de/api/interpreter?data='
+
+        if need_attic_data:
+            server_url = attic_data_server_url
+        else:
+            server_url = default_server_url
 
         try:
             polygon_string = split_polygon(polygon)
