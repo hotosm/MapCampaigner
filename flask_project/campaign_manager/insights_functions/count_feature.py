@@ -79,7 +79,7 @@ class CountFeature(AbstractOverpassInsightFunction):
             except KeyError:
                 pass
 
-            building_group = u'{group_key} : {group_type}'.format(
+            building_group = u'{group_type}'.format(
                 group_key=group_key,
                 group_type=group_type.capitalize()
             )

@@ -8,6 +8,10 @@ from utilities import absolute_path
 import tempfile
 import time
 import yaml
+from shapely import geometry as shapely_geometry
+from shapely.ops import cascaded_union
+from shapely.geometry.geo import mapping
+import numpy
 
 from reporter.osm import fetch_osm
 from app_config import Config
@@ -160,22 +164,18 @@ def multi_feature_to_polygon(geojson):
     :return: Nice geojson with multipolygon
     :rtype:dict
     """
-    single_feature = {
-        'type': 'MultiPolygon',
-        'coordinates': []
-    }
-    for feature in geojson['features']:
-        if feature['geometry']['type'] == "MultiPolygon":
-            for coordinate in feature['geometry']['coordinates']:
-                single_feature['coordinates'].append(coordinate)
-        else:
-            single_feature['coordinates'].append(
-                feature['geometry']['coordinates']
-            )
+    cascaded_polygons = None
+    if len(geojson['features']) > 0:
+        polygons = []
+        for feature in geojson['features']:
+            polygons.append(shapely_geometry.Polygon(
+                feature['geometry']['coordinates'][0]
+            ))
+        cascaded_polygons = mapping(cascaded_union(polygons))
 
     geojson['features'] = [{
         "type": "Feature", "properties": {},
-        "geometry": single_feature
+        "geometry": cascaded_polygons
     }]
     return geojson
 
