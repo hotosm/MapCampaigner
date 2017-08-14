@@ -87,7 +87,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
                 if properties['check_date']:
                     check_date = datetime.strptime(
                         properties['check_date'],
-                        '%Y-%m-%dT%H:%M:%SZ').strftime(
+                        '%Y-%m-%dT%H:%M:%S.%fZ').strftime(
                         "%Y-%m-%d %H:%M"),
                 clean_data.append({
                     'ChangeSetId': row['id'],

@@ -42,12 +42,12 @@ class AbstractOsmchaProvider(AbstractDataProvider):
         """
         try:
             single_geometry = multi_feature_to_polygon(geometry)
+            payload_geometry = json.dumps(
+                    single_geometry['features'][0]['geometry'])
             payload = {
                 'page': page,
                 'page_size': self.limit_per_page,
-                'geometry': json.dumps(
-                    single_geometry['features'][0]['geometry']
-                ),
+                'geometry': payload_geometry,
                 'date__gte': start_date,
                 'date__lte': end_date
             }
