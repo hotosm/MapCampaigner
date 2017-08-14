@@ -146,8 +146,6 @@ function updateMapperEngagementTotal() {
         }
     });
 
-    console.log(allFrequencyDatasets);
-
     contributionsAmount = sortObject(contributionsAmount);
     var contributionCtx = $('#contribution-amount');
     var contributionDatasets = {
@@ -356,6 +354,11 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     }
                     insightTypeIndex++;
                 }
+            }
+
+            if($divFunction.find('.update-status-information').length > 0)
+            {
+                $('#'+type_id+ ' .type-title').append('<div class="pull-right update-status">'+$divFunction.find('.update-status-information').html()+'</div>');
             }
         }
     });
