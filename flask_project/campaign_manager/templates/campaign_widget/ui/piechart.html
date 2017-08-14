@@ -15,13 +15,23 @@
 
 </div>
 <div class="row">
-    <div class="footer">
-        Data updated at {{ data['last_update'] }}.
-        {% if data['updating'] %}
-            <br>
-            Currently updating.
-        {% endif %}
-    </div>
+    {% if feature_type %}
+        <div class="update-status-information">
+            {% if data['updating'] %}
+                Currently updating in background...
+            {% else %}
+                Data updated at {{ data['last_update'] }}
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="footer">
+            Data updated at {{ data['last_update'] }}
+            {% if data['updating'] %}
+                <br>
+                Currently updating.
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 
 <script type="text/javascript">

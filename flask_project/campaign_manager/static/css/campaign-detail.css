@@ -497,3 +497,15 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     margin-bottom: 20px;
     padding-top: 80px;
 }
+
+.update-status {
+    margin-top: 10px;
+    margin-right: 20px;
+    font-size:10pt;
+    font-style: italic;
+    font-weight: lighter;
+}
+
+.update-status-information {
+    display: none;
+}
