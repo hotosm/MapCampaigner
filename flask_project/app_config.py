@@ -21,7 +21,7 @@ class Config(object):
     SECRET_KEY = THE_SECRET_KEY
 
     # OSMCHA ATTRIBUTES
-    _OSMCHA_DOMAIN = 'http://osmcha-django-staging.tilestream.net/'
+    _OSMCHA_DOMAIN = 'https://osmcha.mapbox.com/'
     OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
     OSMCHA_FRONTEND_URL = 'https://osmcha.mapbox.com/'
 
