@@ -509,3 +509,91 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 .update-status-information {
     display: none;
 }
+
+.total-features {
+    display: none;
+}
+
+.see-detail {
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px;
+    padding-top: 20px;
+}
+
+.progress-bar-indicator {
+    color: #77a1aa;
+    font-size: 30pt;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+.progress-bar-wrapper {
+    background-color: #EBEBEB;
+    border-radius: 50px;
+    height: 10px;
+}
+
+.progress-bar-wrapper .progress-bar {
+    height: 10px;
+    background-color: #77a1aa;
+    border-radius: 50px;
+}
+
+.feature-list-table {
+    font-size: 10pt;
+}
+
+.completness {
+    padding-top: 40px;
+}
+
+.completness .feature-list-table {
+    display: none;
+}
+
+.feature-list-table .error-indicator {
+    background-color: #77a1aa;
+    color: white;
+}
+
+.feature-list-table .clean-indicator {
+    background-color: green;
+    color: white;
+}
+
+td {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+tr {
+    vertical-align: top;
+}
+
+tr.odd:hover, tr.even:hover {
+    background-color: rgba(59, 132, 172, 0.13) !important;
+}
+
+tr.odd {
+    background-color: rgba(223, 234, 242, 0.20) !important;
+}
+
+.show-members:hover {
+    cursor: pointer;
+}
+
+.relation-member {
+    display: none;
+}
+
+.error-completeness {
+    color: #c90623;
+}
+
+.warning-completeness {
+    color: #c99015;
+}
