@@ -180,7 +180,6 @@ def osm_object_contributions(
     :rtype: list
     """
     parser = OsmParser(
-            tag_name=tag_name,
             start_date=date_start,
             end_date=date_end)
     try:
