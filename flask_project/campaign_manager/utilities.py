@@ -154,6 +154,22 @@ def load_osm_document_cached(file_path, url_path, returns_json=True):
     return osm_data, file_time, updating_status
 
 
+def simplify_polygon(polygon, tolerance):
+    """Simplify polygon geometry.
+
+    :param polygon: polygon object to simplified
+    :type polygon: Shapely polygon
+
+    :param tolerance: tolerance of simplification
+    :type tolerance: float
+    """
+    simplified_polygons = polygon.simplify(
+        tolerance,
+        preserve_topology=True
+    )
+    return simplified_polygons
+
+
 def multi_feature_to_polygon(geojson):
     """ Convert multi features to be multipolygon
     as single geometry.
@@ -164,18 +180,26 @@ def multi_feature_to_polygon(geojson):
     :return: Nice geojson with multipolygon
     :rtype:dict
     """
-    cascaded_polygons = None
+    cascaded_geojson = None
     if len(geojson['features']) > 0:
         polygons = []
         for feature in geojson['features']:
             polygons.append(shapely_geometry.Polygon(
                 feature['geometry']['coordinates'][0]
             ))
-        cascaded_polygons = mapping(cascaded_union(polygons))
+        cascaded_polygons = cascaded_union(polygons)
+        cascaded_geojson = mapping(cascaded_polygons)
+
+        coords_length = len(json.dumps(cascaded_geojson['coordinates']))
+
+        if coords_length > 1000:
+            # Simplify the polygons
+            simplified_polygons = simplify_polygon(cascaded_polygons, 0.001)
+            cascaded_geojson = mapping(simplified_polygons)
 
     geojson['features'] = [{
         "type": "Feature", "properties": {},
-        "geometry": cascaded_polygons
+        "geometry": cascaded_geojson
     }]
     return geojson
 
