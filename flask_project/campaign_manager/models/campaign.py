@@ -11,6 +11,7 @@ import time
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
+from shapely.geometry import mapping
 from shapely.ops import cascaded_union
 import numpy
 
@@ -20,7 +21,8 @@ from campaign_manager.models.json_model import JsonModel
 from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
     get_survey_json,
-    parse_json_string
+    parse_json_string,
+    simplify_polygon
 )
 
 
@@ -227,6 +229,20 @@ class Campaign(JsonModel):
         except AttributeError as e:
             return {}
 
+    def get_union_polygons(self):
+        """Return union polygons"""
+        if len(self.geometry['features']) > 1:
+            polygons = []
+            for feature in self.geometry['features']:
+                polygons.append(shapely_geometry.Polygon(
+                        feature['geometry']['coordinates'][0]))
+            cascaded_polygons = cascaded_union(polygons)
+        else:
+            cascaded_polygons = shapely_geometry.Polygon(
+                        self.geometry['features'][0]
+                        ['geometry']['coordinates'][0])
+        return cascaded_polygons
+
     def corrected_coordinates(self, coordinate_to_correct=None):
         """ Corrected geometry of campaign.
 
@@ -236,38 +252,30 @@ class Campaign(JsonModel):
         :return: corrected coordinated
         :rtype: [str]
         """
-        cascaded_polygons = None
-        if len(self.geometry['features']) > 1 and not coordinate_to_correct:
-            polygons = []
-            for feature in self.geometry['features']:
-                polygons.append(shapely_geometry.Polygon(
-                        self.corrected_coordinates(
-                                feature['geometry']['coordinates'][0])))
-            cascaded_polygons = cascaded_union(polygons)
+        cascaded_polygons = self.get_union_polygons()
 
+        coordinates = []
         if cascaded_polygons:
-            coordinates = []
             if cascaded_polygons.type == 'Polygon':
-                coordinates = numpy.asarray(cascaded_polygons.exterior.coords)
-                coordinates = coordinates.tolist()
+                cascaded_geojson = mapping(cascaded_polygons)
+                coordinates_str = json.dumps(cascaded_geojson['coordinates'])
+                if len(coordinates_str) > 1000:
+                    simplified = simplify_polygon(cascaded_polygons, 0.001)
+                    cascaded_geojson = mapping(simplified)
+                    coordinates_str = json.dumps(
+                            cascaded_geojson['coordinates'])
+                coordinates = json.loads(coordinates_str)
             elif cascaded_polygons.type == 'MultiPolygon':
                 coordinates = numpy.asarray(
                         cascaded_polygons.envelope.exterior.coords)
                 coordinates = coordinates.tolist()
 
-            return coordinates
-
-        if coordinate_to_correct:
-            coordinates = coordinate_to_correct
-        else:
-            coordinates = self.geometry['features'][0]
-            coordinates = coordinates['geometry']['coordinates'][0]
-
         correct_coordinates = []
-        for coordinate in coordinates:
-            correct_coordinates.append(
-                [coordinate[1], coordinate[0]]
-            )
+        for feature in coordinates:
+            for coordinate in feature:
+                correct_coordinates.append(
+                    [coordinate[1], coordinate[0]]
+                )
         return correct_coordinates
 
     def get_bbox(self):
@@ -452,8 +460,9 @@ class Campaign(JsonModel):
         :type coordinate: str
         """
         campaigns = []
+        coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
-            [float(x) for x in coordinate.split(',')])
+            [float(coordinates[1]), float(coordinates[0])])
         distance = 3
         circle_buffer = point.buffer(distance)
 
@@ -462,8 +471,7 @@ class Campaign(JsonModel):
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
                     #
-                    polygon = shapely_geometry.Polygon(
-                        campaign.corrected_coordinates())
+                    polygon = campaign.get_union_polygons()
                     if circle_buffer.contains(polygon):
                         campaign_dict = campaign.to_dict()
 

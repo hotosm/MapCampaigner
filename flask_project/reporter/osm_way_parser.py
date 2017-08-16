@@ -14,7 +14,7 @@ class OsmParser(xml.sax.ContentHandler):
     Sax is used so that large documents can be parsed efficiently.
     """
 
-    def __init__(self, tag_name, start_date=None, end_date=None):
+    def __init__(self, tag_name=None, start_date=None, end_date=None):
         """Constructor for parser.
 
         :param tag_name: Name of the osm tag to use for parsing e.g.
@@ -85,13 +85,17 @@ class OsmParser(xml.sax.ContentHandler):
             value = self.userDayCountDict[self.user][date_part]
             value += 1
             self.userDayCountDict[self.user][date_part] = value
+            if not self.tagName:
+                self.found = True
 
         elif name == 'nd' and self.inWay:
             self.nodeCount += 1
 
-        elif name == 'tag' and self.inWay:
-            if attributes.get('k') == self.tagName:
-                self.found = True
+        elif self.inWay and self.tagName:
+            if name == 'tag':
+                if attributes.get('k') == self.tagName:
+                    self.found = True
+
         elif name == 'node':
             self.inNode = True
             timestamp = attributes.get('timestamp')
@@ -115,7 +119,10 @@ class OsmParser(xml.sax.ContentHandler):
             value = self.userDayCountDict[self.user][date_part]
             value += 1
             self.userDayCountDict[self.user][date_part] = value
-        elif name == 'tag' and self.inNode:
+            if not self.tagName:
+                self.found = True
+
+        elif name == 'tag' and self.inNode and self.tagName:
             if attributes.get('k') == self.tagName:
                 self.found = True
 
