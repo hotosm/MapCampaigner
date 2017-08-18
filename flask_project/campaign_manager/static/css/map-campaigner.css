@@ -963,7 +963,7 @@ body {
 	width: 100%;
 	text-align: center;
 	font-size: 10pt;
-	padding-top: 20px;
+	padding-top: 15px;
     padding-bottom: 15px;
 	margin-top: 80px;
 }
@@ -985,7 +985,7 @@ body {
 	font-weight: bold;
 	color:  #46828f;
     font-size: 14pt;
-	padding: 8px 0 8px;
+	padding: 0 0 8px;
 	margin: 0;
 }
 
