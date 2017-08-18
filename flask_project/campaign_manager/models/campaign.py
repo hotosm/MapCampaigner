@@ -259,24 +259,31 @@ class Campaign(JsonModel):
             if cascaded_polygons.type == 'Polygon':
                 cascaded_geojson = mapping(cascaded_polygons)
                 coordinates_str = json.dumps(cascaded_geojson['coordinates'])
-                if len(coordinates_str) > 1000:
-                    simplified = simplify_polygon(cascaded_polygons, 0.001)
-                    cascaded_geojson = mapping(simplified)
-                    coordinates_str = json.dumps(
-                            cascaded_geojson['coordinates'])
                 coordinates = json.loads(coordinates_str)
             elif cascaded_polygons.type == 'MultiPolygon':
                 coordinates = numpy.asarray(
                         cascaded_polygons.envelope.exterior.coords)
                 coordinates = coordinates.tolist()
 
-        correct_coordinates = []
-        for feature in coordinates:
-            for coordinate in feature:
-                correct_coordinates.append(
+        correct_coordinates = self.swap_coordinates(coordinates)
+        return correct_coordinates
+
+    def swap_coordinates(self, coordinates):
+        """ Swap coordinate lat and lon for overpass
+
+        :param coordinates: this could be list of coordinates or
+            single coordinate
+        :type coordinates: list
+        """
+        correct_coordinate = []
+        for coordinate in coordinates:
+            if isinstance(coordinate[0], float):
+                correct_coordinate.append(
                     [coordinate[1], coordinate[0]]
                 )
-        return correct_coordinates
+            else:
+                correct_coordinate.extend(self.swap_coordinates(coordinate))
+        return correct_coordinate
 
     def get_bbox(self):
         """ Corrected geometry of campaign.
