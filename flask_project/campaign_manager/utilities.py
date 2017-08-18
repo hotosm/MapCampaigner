@@ -13,7 +13,7 @@ from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
 import numpy
 
-from reporter.osm import fetch_osm
+from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
 from reporter.exceptions import (
     OverpassBadRequestException,
@@ -87,10 +87,11 @@ running_thread = []
 class FetchOsmThread(threading.Thread):
     threadID = 0
 
-    def __init__(self, file_path, url_path):
+    def __init__(self, file_path, url_path, post_data=None):
         self.threadID = file_path
         self.file_path = file_path
         self.url_path = url_path
+        self.post_data = post_data
         threading.Thread.__init__(self)
 
     # third step, implement the run(), which will be invoked
@@ -98,11 +99,21 @@ class FetchOsmThread(threading.Thread):
     def run(self):
         if self.threadID not in running_thread:
             running_thread.append(self.threadID)
-            fetch_osm(self.file_path, self.url_path)
+            if self.post_data:
+                fetch_osm_with_post(
+                        self.file_path,
+                        self.url_path,
+                        self.post_data)
+            else:
+                fetch_osm(self.file_path, self.url_path)
             running_thread.remove(self.threadID)
 
 
-def load_osm_document_cached(file_path, url_path, returns_json=True):
+def load_osm_document_cached(
+        file_path,
+        url_path,
+        post_data=None,
+        returns_json=True):
     """Load an cached osm document, update the results if 15 minutes old.
 
     :type file_path: basestring
@@ -110,6 +121,9 @@ def load_osm_document_cached(file_path, url_path, returns_json=True):
 
     :param url_path: Path of the file
     :type url_path: str
+
+    :param post_data: Data for post request
+    :type post_data: str
 
     :param returns_json: Returns as a dictionary from json file
     :type returns_json: bool
@@ -131,12 +145,15 @@ def load_osm_document_cached(file_path, url_path, returns_json=True):
     if elapsed_seconds > limit_seconds or not os.path.exists(file_path):
         if not os.path.exists(file_path):
             try:
-                fetch_osm(file_path, url_path)
+                if post_data:
+                    fetch_osm_with_post(file_path, url_path, post_data)
+                else:
+                    fetch_osm(file_path, url_path)
             except (OverpassBadRequestException, OverpassDoesNotReturnData):
                 return osm_data, file_time, updating_status
 
         else:
-            FetchOsmThread(file_path, url_path).start()
+            FetchOsmThread(file_path, url_path, post_data).start()
             updating_status = True
 
     file_handle = None

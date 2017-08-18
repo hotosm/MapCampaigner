@@ -36,7 +36,8 @@ from reporter.metadata import metadata_files
 from urllib.request import urlopen
 # noinspection PyPep8Naming
 from urllib.request import Request
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
+import requests
 # noinspection PyPep8Naming
 from urllib.error import HTTPError
 
@@ -184,6 +185,54 @@ def load_osm_document(file_path, url_path):
         LOGGER.info(message)
     file_handle = open(file_path, 'rb')
     return file_handle
+
+
+def fetch_osm_with_post(file_path, url_path, post_data):
+    """Fetch an osm map and store locally.
+
+    :param url_path: The path (relative to the ftp root) from which the
+        file should be retrieved.
+    :type url_path: str
+
+    :param file_path: The path on the filesystem to which the file should
+        be saved.
+    :type file_path: str
+
+    :param post_data: Overpass data
+    :type post_data: str
+
+    :returns: The path to the downloaded file.
+
+    """
+    headers = {'User-Agent': 'HotOSM'}
+    try:
+        data = requests.post(
+                url=url_path,
+                data={'data': post_data},
+                headers=headers)
+        regex = '<remark> runtime error:'
+        if re.search(regex, data.text):
+            raise OverpassTimeoutException
+
+        regex = '(elements|meta)'
+        if not re.search(regex, data.text):
+            raise OverpassDoesNotReturnData
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        file_handle = open(file_path, 'wb')
+        file_handle.write(data.text.encode('utf-8'))
+        file_handle.close()
+    except HTTPError as e:
+        if e.code == 400:
+            LOGGER.exception('Bad request to Overpass')
+            raise OverpassBadRequestException
+        elif e.code == 419:
+            raise OverpassConcurrentRequestException
+
+        LOGGER.exception('Error with Overpass')
+        raise e
 
 
 def fetch_osm(file_path, url_path):
