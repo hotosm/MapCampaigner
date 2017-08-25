@@ -387,6 +387,7 @@ def participate():
     """Action from participate button, return nearest/recent/active campaign.
     """
     campaign_to_participate = None
+    campaigns = []
     user_coordinate = request.args.get('coordinate', None)
     campaign_status = 'active'
 
@@ -394,7 +395,7 @@ def participate():
         # Get nearest campaign
         campaigns = CampaignNearestList(). \
             get_nearest_campaigns(user_coordinate, campaign_status)
-    else:
+    if not user_coordinate or len(campaigns) < 1:
         campaigns = CampaignList().get_all_campaign(campaign_status)
 
     # Get most recent
