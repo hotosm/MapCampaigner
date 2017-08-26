@@ -11,7 +11,7 @@ import time
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
-from shapely.geometry import mapping
+from shapely.geometry import mapping, shape, JOIN_STYLE
 from shapely.ops import cascaded_union
 import numpy
 
@@ -241,7 +241,14 @@ class Campaign(JsonModel):
             cascaded_polygons = shapely_geometry.Polygon(
                         self.geometry['features'][0]
                         ['geometry']['coordinates'][0])
-        return cascaded_polygons
+
+        joined_polygons = cascaded_polygons.buffer(
+                0.001, 1, join_style=JOIN_STYLE.mitre
+        ).buffer(
+                -0.001, 1, join_style=JOIN_STYLE.mitre
+        )
+
+        return joined_polygons
 
     def corrected_coordinates(self, coordinate_to_correct=None):
         """ Corrected geometry of campaign.
