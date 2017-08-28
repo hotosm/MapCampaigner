@@ -346,6 +346,13 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     for(var i=0; i<featureCompleteness.length;i++){
                         addRowToErrorPanel(featureCompleteness[i]);
                     }
+
+                    for (var key in featureData) {
+                        if(featureData.hasOwnProperty(key)) {
+                            renderFeatures(key, featureData[key], insightTypeIndex === 0);
+                        }
+                    }
+
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 } else if (function_name === 'MapperEngagement') {
@@ -353,12 +360,6 @@ function getInsightFunctions(function_id, function_name, type_id) {
                         updateMapperEngagementTotal();
                     }
                     insightTypeIndex++;
-                } else if (function_name === 'CountFeature') {
-                    for (var key in featureData) {
-                        if(featureData.hasOwnProperty(key)) {
-                            renderFeatures(key, featureData[key], insightTypeIndex === 0);
-                        }
-                    }
                 }
             }
 
@@ -433,10 +434,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     fillOpacity: 0.7,
                     zIndexOffset: 999
                 }).bindPopup(
-                    '<h4>Feature - '+featureTag+'</h4>'+
+                    '<div class="feature-detail"><h4>Feature - '+featureTag+'</h4>'+
                     '<div><a href="http://www.openstreetmap.org/node/' + feature['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + feature['id'] + '</b></a></div>'+
+                        ((feature['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ feature['error_message'] + '</div>') : '') +
+                        ((feature['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ feature['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: node</div>'+
-                    dictToTable(feature['tags'])
+                    dictToTable(feature['tags']) + '</div>'
                 ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
@@ -469,10 +472,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                 fillColor: '#' +  intToRGB(hashCode(wayTag)),
                 fillOpacity: 0.5
             }).bindPopup(
-                '<h4> Feature </h4>'+
+                '<div class="feature-detail"><h4>Feature - '+wayTag+'</h4>'+
                 '<div><a href="http://www.openstreetmap.org/way/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/way/' + way['id'] + '</b></a></div>'+
+                    ((way['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ way['error_message'] + '</div>') : '') +
+                    ((way['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ way['warning_message'] + '</div>') : '') +
                 '<div><b>type </b>: way</div>'+
-                dictToTable(way['tags'])
+                dictToTable(way['tags']) + '</div>'
             ).addTo(waysGroup);
         } else {
             unusedWays[way['id']] = way;
@@ -516,10 +521,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     fillColor: '#' +  intToRGB(hashCode(relationTag)),
                     fillOpacity: fillOpacity
                 }).bindPopup(
-                    '<h4> Feature </h4>'+
+                    '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
                     '<div><a href="http://www.openstreetmap.org/relation/' + relation['id'] + '" target="_blank"><b>http://www.openstreetmap.org/relation/' + relation['id'] + '</b></a></div>'+
+                        ((relation['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ relation['error_message'] + '</div>') : '') +
+                        ((relation['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ relation['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: relation</div>'+
-                    dictToTable(relation['tags'])
+                    dictToTable(relation['tags']) + '</div>'
                 ).addTo(relationsGroup);
             }
         });

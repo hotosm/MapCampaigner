@@ -62,7 +62,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                 self.check_feature_completeness(
                     value, required_attributes, survey_attributes)
 
-                if not value['error']:
+                if value['error'] == 'False':
                     list_good_data.append(value)
         except KeyError:
             pass
@@ -122,9 +122,9 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                     if warning:
                         warning_message.append(warning)
 
-        feature_data['error'] = False
+        feature_data['error'] = 'False'
         if warning_message or error_message:
-            feature_data['error'] = True
+            feature_data['error'] = 'True'
 
         feature_data['error_message'] = ', '.join(error_message)
         feature_data['warning_message'] = ', '.join(warning_message)
@@ -162,5 +162,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             'total': len(self._function_good_data),
             'last_update': self.last_update,
             'updating': self.is_updating,
+            'raw_data': self.get_function_raw_data()
         }
         return output

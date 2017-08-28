@@ -597,3 +597,8 @@ tr.odd {
 .warning-completeness {
     color: #c99015;
 }
+
+.feature-detail {
+    max-height: 300px;
+    overflow: auto;
+}

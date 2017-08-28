@@ -89,11 +89,4 @@
         )
     }
 
-    {% if feature_type %}
-        featureData['{{ feature_type }}'] = [];
-        {% for data in data['features_data'] %}
-            featureData['{{ feature_type }}'].push({{ data | safe}});
-        {% endfor %}
-    {% endif %}
-
 </script>
