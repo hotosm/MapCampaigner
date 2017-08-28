@@ -353,6 +353,12 @@ function getInsightFunctions(function_id, function_name, type_id) {
                         updateMapperEngagementTotal();
                     }
                     insightTypeIndex++;
+                } else if (function_name === 'CountFeature') {
+                    for (var key in featureData) {
+                        if(featureData.hasOwnProperty(key)) {
+                            renderFeatures(key, featureData[key]);
+                        }
+                    }
                 }
             }
 
@@ -372,6 +378,109 @@ function getOSMCHAErrors() {
             $('#total-osmcha-errors').html(data);
         }
     });
+}
+
+var featureGroups = {};
+
+function dictToTable(dictObject) {
+    var result = '';
+    for (var key in dictObject) {
+        if(dictObject.hasOwnProperty(key)) {
+            result += '<div>' +
+                '<b>'+key+'</b> : '+ dictObject[key]+'</div>';
+        }
+    }
+    return result;
+}
+
+function renderFeatures(feature_type, feature_data) {
+    var unusedNodes = {};
+    var ways = [];
+
+    if(featureGroups.hasOwnProperty(feature_type)) {
+        return;
+    }
+
+    featureGroups[feature_type] = L.featureGroup().addTo(map);
+    var nodesGroup = [];
+    var waysGroup = [];
+
+    for(var i=0; i<feature_data.length; i++) {
+        var feature = feature_data[i];
+        var featureTag = '';
+
+        if(feature.hasOwnProperty('tags')) {
+            featureTag = 'Unknown';
+            var featureTags = feature['tags'];
+            if(featureTags.hasOwnProperty('amenity')) {
+                featureTag = capitalizeFirstLetter(featureTags['amenity']);
+            }
+        } else {
+            unusedNodes[feature['id']] = feature;
+        }
+
+        if(featureTag) {
+            if(feature['type'] === 'node') {
+                var _nodeFeature = L.circle([feature['lat'],feature['lon']], 5, {
+                    color: '#' + intToRGB(hashCode(featureTag)),
+                    fillColor: '#' +  intToRGB(hashCode(featureTag)),
+                    fillOpacity: 0.7,
+                    zIndexOffset: 999
+                }).bindPopup(
+                    '<h4> Feature </h4>'+
+                    '<div><a href="http://www.openstreetmap.org/node/' + feature['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + feature['id'] + '</b></a></div>'+
+                    '<div><b>type </b>: node</div>'+
+                    dictToTable(feature['tags'])
+                );
+                nodesGroup.push(_nodeFeature);
+            } else if(feature['type'] === 'way') {
+                ways.push(feature);
+            }
+        }
+    }
+
+    for(i=0; i<ways.length; i++) {
+        var way = ways[i];
+        var latlngs = [];
+
+        for(var n=0; n < way['nodes'].length; n++) {
+            var node = way['nodes'][n];
+            if(unusedNodes.hasOwnProperty(node)) {
+                latlngs.push([
+                    unusedNodes[node]['lat'],
+                    unusedNodes[node]['lon']
+                ])
+            }
+        }
+
+        var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
+
+        var _wayFeature = L.polygon(latlngs, {
+            color: '#' + intToRGB(hashCode(wayTag)),
+            fillColor: '#' +  intToRGB(hashCode(wayTag)),
+            fillOpacity: 0.5
+        }).bindPopup(
+            '<h4> Feature </h4>'+
+            '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
+            '<div><b>type </b>: way</div>'+
+            dictToTable(way['tags'])
+        );
+
+        waysGroup.push(_wayFeature)
+    }
+
+    // Draw way polygon first
+    for(var w=0; w<waysGroup.length; w++) {
+        var wayFeature = waysGroup[w];
+        featureGroups[feature_type].addLayer(wayFeature);
+    }
+
+    for(var j=0; j<nodesGroup.length; j++) {
+        var nodeFeature = nodesGroup[j];
+        featureGroups[feature_type].addLayer(nodeFeature);
+    }
+
+
 }
 
 function renderInsightFunctionsTypes(username) {

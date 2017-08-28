@@ -303,6 +303,7 @@
         };
 
         var featureCompleteness = [];
+        var featureData = {};
         var mapperEngagementTotal = {};
         var mapperEngagementFrequency = [];
         var contributors = [];
@@ -573,15 +574,16 @@
                         }
                         totalArea++;
                         layer.bindPopup(
+                            '<h4>Area</h4>'+
                             '<div class="layer-popup">' +
                                 '<div class="layer-popup-area">' +
-                                    'Area &nbsp;&nbsp;: ' + area +
+                                    '<b>Area</b> &nbsp;&nbsp;: ' + area +
                                 '</div>'+
                                 '<div class="layer-popup-team">' +
-                                    'Team &nbsp;: ' + team +
+                                    '<b>Team</b> &nbsp;: ' + team +
                                 '</div>'+
                                 '<div class="layer-popup-team">' +
-                                    'Status : ' + status +
+                                    '<b>Status</b> : ' + status +
                                 '</div>'+
                             '</div>'
                         )
