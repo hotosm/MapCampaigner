@@ -283,6 +283,9 @@
         var feature_type_collected = [];
         var feature_type_collected_count = 0;
 
+        // Feature layer group
+        var featureGroups = {};
+
         var campaign_types = null;
         {% if types %}
             campaign_types = {{ types | safe }};

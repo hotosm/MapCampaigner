@@ -356,7 +356,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
                 } else if (function_name === 'CountFeature') {
                     for (var key in featureData) {
                         if(featureData.hasOwnProperty(key)) {
-                            renderFeatures(key, featureData[key]);
+                            renderFeatures(key, featureData[key], insightTypeIndex === 0);
                         }
                     }
                 }
@@ -380,7 +380,6 @@ function getOSMCHAErrors() {
     });
 }
 
-var featureGroups = {};
 
 function dictToTable(dictObject) {
     var result = '';
@@ -393,7 +392,7 @@ function dictToTable(dictObject) {
     return result;
 }
 
-function renderFeatures(feature_type, feature_data) {
+function renderFeatures(feature_type, feature_data, show_feature) {
     var unusedNodes = {};
     var ways = [];
 
@@ -401,7 +400,11 @@ function renderFeatures(feature_type, feature_data) {
         return;
     }
 
-    featureGroups[feature_type] = L.featureGroup().addTo(map);
+    if(show_feature) {
+        featureGroups[feature_type] = L.featureGroup().addTo(map);
+    } else {
+        featureGroups[feature_type] = L.featureGroup();
+    }
     var nodesGroup = L.featureGroup().addTo(featureGroups[feature_type]);
     var waysGroup = L.featureGroup().addTo(featureGroups[feature_type]);
 
@@ -627,9 +630,11 @@ function showInsightFunction(element, tabId) {
     if($divParent.hasClass('active')) {
     } else {
         $('#'+activeInsightPanel).hide();
+        map.removeLayer(featureGroups[activeInsightPanel]);
         $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
         activeInsightPanel = tabId;
+        map.addLayer(featureGroups[activeInsightPanel]);
     }
 }
