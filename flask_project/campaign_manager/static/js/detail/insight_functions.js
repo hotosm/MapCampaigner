@@ -394,7 +394,9 @@ function dictToTable(dictObject) {
 
 function renderFeatures(feature_type, feature_data, show_feature) {
     var unusedNodes = {};
+    var unusedWays = {};
     var ways = [];
+    var relations = [];
 
     if(featureGroups.hasOwnProperty(feature_type)) {
         return;
@@ -407,6 +409,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
     }
     var nodesGroup = L.featureGroup().addTo(featureGroups[feature_type]);
     var waysGroup = L.featureGroup().addTo(featureGroups[feature_type]);
+    var relationsGroup = L.featureGroup().addTo(featureGroups[feature_type]);
 
     for(var i=0; i<feature_data.length; i++) {
         var feature = feature_data[i];
@@ -424,7 +427,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
 
         if(featureTag) {
             if(feature['type'] === 'node') {
-                var _nodeFeature = L.circle([feature['lat'],feature['lon']], 5, {
+                L.circle([feature['lat'],feature['lon']], 5, {
                     color: '#' + intToRGB(hashCode(featureTag)),
                     fillColor: '#' +  intToRGB(hashCode(featureTag)),
                     fillOpacity: 0.7,
@@ -437,6 +440,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                 ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
+            } else if(feature['type'] === 'relation') {
+                relations.push(feature);
             }
         }
     }
@@ -458,18 +463,69 @@ function renderFeatures(feature_type, feature_data, show_feature) {
 
         var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
 
-        var _wayFeature = L.polygon(latlngs, {
-            color: '#' + intToRGB(hashCode(wayTag)),
-            fillColor: '#' +  intToRGB(hashCode(wayTag)),
-            fillOpacity: 0.5
-        }).bindPopup(
-            '<h4> Feature </h4>'+
-            '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
-            '<div><b>type </b>: way</div>'+
-            dictToTable(way['tags'])
-        ).addTo(waysGroup);
+        if(typeof wayTag !== 'undefined') {
+            L.polygon(latlngs, {
+                color: '#' + intToRGB(hashCode(wayTag)),
+                fillColor: '#' +  intToRGB(hashCode(wayTag)),
+                fillOpacity: 0.5
+            }).bindPopup(
+                '<h4> Feature </h4>'+
+                '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
+                '<div><b>type </b>: way</div>'+
+                dictToTable(way['tags'])
+            ).addTo(waysGroup);
+        } else {
+            unusedWays[way['id']] = way;
+        }
     }
 
+    // Process relation
+    for (var r = 0; r < relations.length; r++) {
+        var relation = relations[r];
+
+        $.each(relation['members'], function (index, member) {
+            if (!unusedWays.hasOwnProperty(member['ref'])) {
+                return true;
+            }
+
+            var way = unusedWays[member['ref']];
+            var latlngs = [];
+
+            $.each(way['nodes'], function (index, node) {
+                if (!unusedNodes.hasOwnProperty(node)) {
+                    return true;
+                }
+
+                latlngs.push([
+                    unusedNodes[node]['lat'],
+                    unusedNodes[node]['lon']
+                ]);
+            });
+
+            var fillOpacity = 0.0;
+
+            if(member['role'] === 'inner') {
+                fillOpacity = 0.5;
+            }
+
+            var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
+
+            if(typeof relationTag !== 'undefined') {
+                L.polygon(latlngs, {
+                    color: '#' + intToRGB(hashCode(relationTag)),
+                    fillColor: '#' +  intToRGB(hashCode(relationTag)),
+                    fillOpacity: fillOpacity
+                }).bindPopup(
+                    '<h4> Feature </h4>'+
+                    '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
+                    '<div><b>type </b>: relation</div>'+
+                    dictToTable(relation['tags'])
+                ).addTo(relationsGroup);
+            }
+        });
+    }
+
+    featureGroups[feature_type].addLayer(relationsGroup);
     featureGroups[feature_type].addLayer(waysGroup);
     featureGroups[feature_type].addLayer(nodesGroup);
 
@@ -619,8 +675,8 @@ function renderInsightFunctionsTypes(username) {
         index++;
     }
 
-    renderInsightFunctions(username);
     getOSMCHAErrors();
+    renderInsightFunctions(username);
 }
 
 function showInsightFunction(element, tabId) {
