@@ -402,8 +402,8 @@ function renderFeatures(feature_type, feature_data) {
     }
 
     featureGroups[feature_type] = L.featureGroup().addTo(map);
-    var nodesGroup = [];
-    var waysGroup = [];
+    var nodesGroup = L.featureGroup().addTo(featureGroups[feature_type]);
+    var waysGroup = L.featureGroup().addTo(featureGroups[feature_type]);
 
     for(var i=0; i<feature_data.length; i++) {
         var feature = feature_data[i];
@@ -427,18 +427,18 @@ function renderFeatures(feature_type, feature_data) {
                     fillOpacity: 0.7,
                     zIndexOffset: 999
                 }).bindPopup(
-                    '<h4> Feature </h4>'+
+                    '<h4>Feature - '+featureTag+'</h4>'+
                     '<div><a href="http://www.openstreetmap.org/node/' + feature['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + feature['id'] + '</b></a></div>'+
                     '<div><b>type </b>: node</div>'+
                     dictToTable(feature['tags'])
-                );
-                nodesGroup.push(_nodeFeature);
+                ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
             }
         }
     }
 
+    // Process ways
     for(i=0; i<ways.length; i++) {
         var way = ways[i];
         var latlngs = [];
@@ -464,22 +464,11 @@ function renderFeatures(feature_type, feature_data) {
             '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
             '<div><b>type </b>: way</div>'+
             dictToTable(way['tags'])
-        );
-
-        waysGroup.push(_wayFeature)
+        ).addTo(waysGroup);
     }
 
-    // Draw way polygon first
-    for(var w=0; w<waysGroup.length; w++) {
-        var wayFeature = waysGroup[w];
-        featureGroups[feature_type].addLayer(wayFeature);
-    }
-
-    for(var j=0; j<nodesGroup.length; j++) {
-        var nodeFeature = nodesGroup[j];
-        featureGroups[feature_type].addLayer(nodeFeature);
-    }
-
+    featureGroups[feature_type].addLayer(waysGroup);
+    featureGroups[feature_type].addLayer(nodesGroup);
 
 }
 
