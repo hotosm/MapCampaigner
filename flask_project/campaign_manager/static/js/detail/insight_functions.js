@@ -470,7 +470,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                 fillOpacity: 0.5
             }).bindPopup(
                 '<h4> Feature </h4>'+
-                '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
+                '<div><a href="http://www.openstreetmap.org/way/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/way/' + way['id'] + '</b></a></div>'+
                 '<div><b>type </b>: way</div>'+
                 dictToTable(way['tags'])
             ).addTo(waysGroup);
@@ -517,7 +517,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     fillOpacity: fillOpacity
                 }).bindPopup(
                     '<h4> Feature </h4>'+
-                    '<div><a href="http://www.openstreetmap.org/node/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + way['id'] + '</b></a></div>'+
+                    '<div><a href="http://www.openstreetmap.org/relation/' + relation['id'] + '" target="_blank"><b>http://www.openstreetmap.org/relation/' + relation['id'] + '</b></a></div>'+
                     '<div><b>type </b>: relation</div>'+
                     dictToTable(relation['tags'])
                 ).addTo(relationsGroup);
