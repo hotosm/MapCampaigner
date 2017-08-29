@@ -202,10 +202,18 @@ function createErrorPanel() {
          bLengthChange: false,
          columns: [
             { title: "Name", "width": "20%"  },
-            { title: "Type", "width": "10%" },
+            { title: "Date", "width": "20%" },
             { title: "Status", "width": "50%" }
          ],
-         responsive: true
+         columnDefs: [{
+             targets: 1,
+             render: function (data) {
+                 var momentObj = moment(data, 'YYYY-MM-DDTHH:mm:ssZ');
+                 return momentObj.format('YYYY-MM-DD');
+             }
+         }],
+         responsive: true,
+         order: [[ 1, "desc" ]]
     } );
 }
 

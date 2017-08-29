@@ -200,7 +200,7 @@
                 {% endif %}
             );
 
-            _featureCompleteness.push('{{ row['type'] }}');
+            _featureCompleteness.push('{{ row['timestamp'] }}');
             _featureCompleteness.push(
                 {% if row['warning_message'] %}
                         '<div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>'+
