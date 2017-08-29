@@ -97,7 +97,10 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     if '=' in self.feature:
                         tag_name = self.feature.split('=')[0]
                     else:
-                        tag_name = TAG_MAPPING_REVERSE[self.feature]
+                        try:
+                            tag_name = TAG_MAPPING_REVERSE[self.feature]
+                        except KeyError:
+                            error = 'No key found'
                     if isinstance(overpass_data['file'], io.IOBase):
                         sorted_user_list = osm_object_contributions(
                             overpass_data['file'],

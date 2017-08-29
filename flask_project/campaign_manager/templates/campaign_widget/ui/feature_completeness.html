@@ -23,7 +23,7 @@
                 </thead>
                 <tbody>
                 {% for row in data.data %}
-                    {% if row['error'] %}
+                    {% if row['error'] == 'True' %}
                         <tr>
                             <td>
                                 <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
@@ -174,7 +174,7 @@
 
     {% for row in data.data %}
         var _featureCompleteness = [];
-        {% if row['error'] %}
+        {% if row['error'] == 'True' %}
 
             _featureCompleteness.push(
                 '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">'+
@@ -213,6 +213,14 @@
             featureCompletenessData.push(_featureCompleteness);
         {% endif %}
     {% endfor %}
+
+    {% if feature_type %}
+        featureData['{{ feature_type }}'] = [];
+        {% for data in data['raw_data'] %}
+            featureData['{{ feature_type }}'].push({{ data | safe}});
+        {% endfor %}
+    {% endif %}
+
 
     featureCompleteness = featureCompletenessData;
 

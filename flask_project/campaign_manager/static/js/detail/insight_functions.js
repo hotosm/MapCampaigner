@@ -346,6 +346,13 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     for(var i=0; i<featureCompleteness.length;i++){
                         addRowToErrorPanel(featureCompleteness[i]);
                     }
+
+                    for (var key in featureData) {
+                        if(featureData.hasOwnProperty(key)) {
+                            renderFeatures(key, featureData[key], insightTypeIndex === 0);
+                        }
+                    }
+
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 } else if (function_name === 'MapperEngagement') {
@@ -372,6 +379,163 @@ function getOSMCHAErrors() {
             $('#total-osmcha-errors').html(data);
         }
     });
+}
+
+
+function dictToTable(dictObject) {
+    var result = '';
+    for (var key in dictObject) {
+        if(dictObject.hasOwnProperty(key)) {
+            result += '<div>' +
+                '<b>'+key+'</b> : '+ dictObject[key]+'</div>';
+        }
+    }
+    return result;
+}
+
+function renderFeatures(feature_type, feature_data, show_feature) {
+    var unusedNodes = {};
+    var unusedWays = {};
+    var ways = [];
+    var relations = [];
+
+    if(featureGroups.hasOwnProperty(feature_type)) {
+        return;
+    }
+
+    if(show_feature) {
+        featureGroups[feature_type] = L.featureGroup().addTo(map);
+    } else {
+        featureGroups[feature_type] = L.featureGroup();
+    }
+    var nodesGroup = L.featureGroup().addTo(featureGroups[feature_type]);
+    var waysGroup = L.featureGroup().addTo(featureGroups[feature_type]);
+    var relationsGroup = L.featureGroup().addTo(featureGroups[feature_type]);
+
+    for(var i=0; i<feature_data.length; i++) {
+        var feature = feature_data[i];
+        var featureTag = '';
+
+        if(feature.hasOwnProperty('tags')) {
+            featureTag = 'Unknown';
+            var featureTags = feature['tags'];
+            if(featureTags.hasOwnProperty('amenity')) {
+                featureTag = capitalizeFirstLetter(featureTags['amenity']);
+            }
+        } else {
+            unusedNodes[feature['id']] = feature;
+        }
+
+        if(featureTag) {
+            if(feature['type'] === 'node') {
+                L.circle([feature['lat'],feature['lon']], 5, {
+                    color: '#' + intToRGB(hashCode(featureTag)),
+                    fillColor: '#' +  intToRGB(hashCode(featureTag)),
+                    fillOpacity: 0.7,
+                    zIndexOffset: 999
+                }).bindPopup(
+                    '<div class="feature-detail"><h4>Feature - '+featureTag+'</h4>'+
+                    '<div><a href="http://www.openstreetmap.org/node/' + feature['id'] + '" target="_blank"><b>http://www.openstreetmap.org/node/' + feature['id'] + '</b></a></div>'+
+                        ((feature['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ feature['error_message'] + '</div>') : '') +
+                        ((feature['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ feature['warning_message'] + '</div>') : '') +
+                    '<div><b>type </b>: node</div>'+
+                    dictToTable(feature['tags']) + '</div>'
+                ).addTo(nodesGroup);
+            } else if(feature['type'] === 'way') {
+                ways.push(feature);
+            } else if(feature['type'] === 'relation') {
+                relations.push(feature);
+            }
+        }
+    }
+
+    // Process ways
+    for(i=0; i<ways.length; i++) {
+        var way = ways[i];
+        var latlngs = [];
+
+        for(var n=0; n < way['nodes'].length; n++) {
+            var node = way['nodes'][n];
+            if(unusedNodes.hasOwnProperty(node)) {
+                latlngs.push([
+                    unusedNodes[node]['lat'],
+                    unusedNodes[node]['lon']
+                ])
+            }
+        }
+
+        var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
+
+        if(typeof wayTag !== 'undefined') {
+            L.polygon(latlngs, {
+                color: '#' + intToRGB(hashCode(wayTag)),
+                fillColor: '#' +  intToRGB(hashCode(wayTag)),
+                fillOpacity: 0.5
+            }).bindPopup(
+                '<div class="feature-detail"><h4>Feature - '+wayTag+'</h4>'+
+                '<div><a href="http://www.openstreetmap.org/way/' + way['id'] + '" target="_blank"><b>http://www.openstreetmap.org/way/' + way['id'] + '</b></a></div>'+
+                    ((way['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ way['error_message'] + '</div>') : '') +
+                    ((way['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ way['warning_message'] + '</div>') : '') +
+                '<div><b>type </b>: way</div>'+
+                dictToTable(way['tags']) + '</div>'
+            ).addTo(waysGroup);
+        } else {
+            unusedWays[way['id']] = way;
+        }
+    }
+
+    // Process relation
+    for (var r = 0; r < relations.length; r++) {
+        var relation = relations[r];
+
+        $.each(relation['members'], function (index, member) {
+            if (!unusedWays.hasOwnProperty(member['ref'])) {
+                return true;
+            }
+
+            var way = unusedWays[member['ref']];
+            var latlngs = [];
+
+            $.each(way['nodes'], function (index, node) {
+                if (!unusedNodes.hasOwnProperty(node)) {
+                    return true;
+                }
+
+                latlngs.push([
+                    unusedNodes[node]['lat'],
+                    unusedNodes[node]['lon']
+                ]);
+            });
+
+            var fillOpacity = 0.0;
+
+            if(member['role'] === 'inner') {
+                fillOpacity = 0.5;
+            }
+
+            var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
+
+            if(typeof relationTag !== 'undefined') {
+                L.polygon(latlngs, {
+                    color: '#' + intToRGB(hashCode(relationTag)),
+                    fillColor: '#' +  intToRGB(hashCode(relationTag)),
+                    fillOpacity: fillOpacity
+                }).bindPopup(
+                    '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
+                    '<div><a href="http://www.openstreetmap.org/relation/' + relation['id'] + '" target="_blank"><b>http://www.openstreetmap.org/relation/' + relation['id'] + '</b></a></div>'+
+                        ((relation['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ relation['error_message'] + '</div>') : '') +
+                        ((relation['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ relation['warning_message'] + '</div>') : '') +
+                    '<div><b>type </b>: relation</div>'+
+                    dictToTable(relation['tags']) + '</div>'
+                ).addTo(relationsGroup);
+            }
+        });
+    }
+
+    featureGroups[feature_type].addLayer(relationsGroup);
+    featureGroups[feature_type].addLayer(waysGroup);
+    featureGroups[feature_type].addLayer(nodesGroup);
+
 }
 
 function renderInsightFunctionsTypes(username) {
@@ -518,8 +682,8 @@ function renderInsightFunctionsTypes(username) {
         index++;
     }
 
-    renderInsightFunctions(username);
     getOSMCHAErrors();
+    renderInsightFunctions(username);
 }
 
 function showInsightFunction(element, tabId) {
@@ -529,9 +693,11 @@ function showInsightFunction(element, tabId) {
     if($divParent.hasClass('active')) {
     } else {
         $('#'+activeInsightPanel).hide();
+        map.removeLayer(featureGroups[activeInsightPanel]);
         $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
         activeInsightPanel = tabId;
+        map.addLayer(featureGroups[activeInsightPanel]);
     }
 }

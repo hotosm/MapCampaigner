@@ -65,7 +65,8 @@ class CountFeature(AbstractOverpassInsightFunction):
         output = {
             'last_update': self.last_update,
             'updating': self.is_updating,
-            'data': {}
+            'data': {},
+            'features_data': self.get_function_raw_data()
         }
         data = data
         for current_data in data:
