@@ -114,6 +114,12 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
             if not last_update:
                 last_update = datetime.datetime.now().strftime(
                     '%Y-%m-%d %H:%M:%S')
+
+            # Save to participant counts in file
+            if self.feature_type:
+                self.campaign.update_participants_count(
+                        len(sorted_user_list), self.feature_type)
+
             return {
                 'user_list': sorted_user_list,
                 'last_update': last_update,
