@@ -49,7 +49,7 @@ class OverpassProvider(AbstractDataProvider):
             self,
             polygon,
             feature_key,
-            overpass_verbosity='body',
+            overpass_verbosity='meta',
             feature_values=None,
             date_from=None,
             date_to=None,
