@@ -12,6 +12,7 @@ def mock_get_campaign():
     campaign = Campaign()
     campaign.uuid = '111'
     campaign.name = 'test'
+    campaign.total_participants_count = 3
     campaign.campaign_creator = 'test_creator'
     campaign.campaign_managers = [
         'test_manager1',
