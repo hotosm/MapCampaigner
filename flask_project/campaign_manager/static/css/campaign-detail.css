@@ -308,6 +308,14 @@
         padding-right: 20px;
     }
 
+    .side-panel-progress {
+        margin-bottom: 10px !important;
+    }
+
+    .update-status {
+        display: none;
+    }
+
     .map-side-list-action {
         display: none;
     }
