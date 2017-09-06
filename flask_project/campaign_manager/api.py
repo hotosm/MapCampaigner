@@ -121,17 +121,14 @@ class CampaignTotal(Resource):
     def get(self):
         """Get total of campaign and participants."""
         campaigns = self.get_campaigns()
-        participants = []
+        participants_total = 0
         for campaign in campaigns:
-            if campaign.campaign_creator not in participants:
-                participants.append(campaign.campaign_creator)
-            for manager in campaign.campaign_managers:
-                if manager not in participants:
-                    participants.append(manager)
+            if campaign.total_participants_count:
+                participants_total += campaign.total_participants_count
 
         return {
             'campaign_total': len(campaigns),
-            'participant_total': len(participants)
+            'participant_total': participants_total
         }
 
 

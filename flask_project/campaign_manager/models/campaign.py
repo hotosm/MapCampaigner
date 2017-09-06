@@ -34,6 +34,8 @@ class Campaign(JsonModel):
     name = ''
     campaign_creator = ''
     campaign_status = ''
+    participants_count_per_type = {}
+    total_participants_count = 0
     coverage = {}
     geometry = None
     start_date = None
@@ -55,20 +57,21 @@ class Campaign(JsonModel):
             self.edited_at = time.ctime(os.path.getmtime(self.json_path))
             self.parse_json_file()
 
-    def save(self, uploader):
+    def save(self, uploader=None):
         """Save current campaign
 
         :param uploader: uploader who created
         :type uploader: str
         """
         self.version += 1
-        self.edited_by = uploader
+        if uploader:
+            self.edited_by = uploader
         # save updated campaign to json
         data = self.to_dict()
         Campaign.validate(data, self.uuid)
         json_str = Campaign.serialize(data)
         json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % self.uuid
+                Campaign.get_json_folder(), '%s.json' % self.uuid
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
@@ -77,10 +80,27 @@ class Campaign(JsonModel):
         # create commit as git
         try:
             save_with_git(
-                'Update campaign - %s' % self.uuid
+                    'Update campaign - %s' % self.uuid
             )
         except Exception as e:
             print(e)
+
+    def update_participants_count(self, participants_count, campaign_type):
+        """ Update paricipants count.
+
+        :param participants_count: Participant count number
+        :type participants_count: int
+
+        :param campaign_type: Campaign type
+        :type campaign_type: str
+        """
+        if campaign_type in self.participants_count_per_type:
+            self.total_participants_count -= self.participants_count_per_type[
+                                                campaign_type
+                                            ]
+        self.participants_count_per_type[campaign_type] = participants_count
+        self.total_participants_count += participants_count
+        self.save()
 
     def update_data(self, data, uploader):
         """ Update data with new dict.
@@ -106,15 +126,15 @@ class Campaign(JsonModel):
         for key, value in self.selected_functions.items():
             try:
                 SelectedFunction = getattr(
-                    insights_functions, value['function'])
+                        insights_functions, value['function'])
                 additional_data = {}
                 if 'type' in value:
                     additional_data['type'] = value['type']
                 selected_function = SelectedFunction(
-                    self,
-                    feature=value['feature'],
-                    required_attributes=value['attributes'],
-                    additional_data=additional_data)
+                        self,
+                        feature=value['feature'],
+                        required_attributes=value['attributes'],
+                        additional_data=additional_data)
 
                 value['type_required'] = \
                     ('%s' % selected_function.type_required).lower()
@@ -171,7 +191,7 @@ class Campaign(JsonModel):
         try:
             if insight_function_name:
                 SelectedFunction = getattr(
-                    insights_functions, insight_function_name)
+                        insights_functions, insight_function_name)
                 additional_data['function_name'] = insight_function_name
                 additional_data['function_id'] = insight_function_id
                 selected_function = SelectedFunction(
@@ -183,15 +203,15 @@ class Campaign(JsonModel):
             else:
                 insight_function = self.selected_functions[insight_function_id]
                 SelectedFunction = getattr(
-                    insights_functions, insight_function['function'])
+                        insights_functions, insight_function['function'])
                 additional_data['function_id'] = insight_function_id
                 if 'type' in insight_function:
                     additional_data['type'] = insight_function['type']
                 selected_function = SelectedFunction(
-                    self,
-                    feature=insight_function['feature'],
-                    required_attributes=insight_function['attributes'],
-                    additional_data=additional_data
+                        self,
+                        feature=insight_function['feature'],
+                        required_attributes=insight_function['attributes'],
+                        additional_data=additional_data
                 )
         except (AttributeError, KeyError) as e:
             return campaign_ui
@@ -203,8 +223,8 @@ class Campaign(JsonModel):
             'widget': selected_function.get_ui_html()
         }
         campaign_ui += render_template(
-            'campaign_widget/insight_template.html',
-            **context
+                'campaign_widget/insight_template.html',
+                **context
         )
         return campaign_ui
 
@@ -220,11 +240,11 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                insights_functions, function['function'])
+                    insights_functions, function['function'])
             selected_function = SelectedFunction(
-                self,
-                feature=function['feature'],
-                required_attributes=function['attributes'])
+                    self,
+                    feature=function['feature'],
+                    required_attributes=function['attributes'])
             return selected_function.metadata()
         except AttributeError as e:
             return {}
@@ -239,8 +259,8 @@ class Campaign(JsonModel):
             cascaded_polygons = cascaded_union(polygons)
         else:
             cascaded_polygons = shapely_geometry.Polygon(
-                        self.geometry['features'][0]
-                        ['geometry']['coordinates'][0])
+                    self.geometry['features'][0]
+                    ['geometry']['coordinates'][0])
 
         joined_polygons = cascaded_polygons.buffer(
                 0.001, 1, join_style=JOIN_STYLE.mitre
@@ -286,7 +306,7 @@ class Campaign(JsonModel):
         for coordinate in coordinates:
             if isinstance(coordinate[0], float):
                 correct_coordinate.append(
-                    [coordinate[1], coordinate[0]]
+                        [coordinate[1], coordinate[0]]
                 )
             else:
                 correct_coordinate.extend(self.swap_coordinates(coordinate))
@@ -315,12 +335,12 @@ class Campaign(JsonModel):
             return {}
         # getting features and required attributes from types
         survey_folder = os.path.join(
-            Config.campaigner_data_folder,
-            'surveys'
+                Config.campaigner_data_folder,
+                'surveys'
         )
         survey_file = os.path.join(
-            survey_folder,
-            type
+                survey_folder,
+                type
         )
         return get_survey_json(survey_file)
 
@@ -333,15 +353,15 @@ class Campaign(JsonModel):
         :rtype: str
         """
         return os.path.join(
-            Config.campaigner_data_folder,
-            'coverage',
-            self.uuid
+                Config.campaigner_data_folder,
+                'coverage',
+                self.uuid
         )
 
     @staticmethod
     def get_json_folder():
         return os.path.join(
-            Config.campaigner_data_folder, 'campaign')
+                Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
     def serialize(data):
@@ -383,7 +403,7 @@ class Campaign(JsonModel):
         data['geometry'] = parse_json_string(data['geometry'])
         data['types'] = parse_json_string(data['types'])
         data['selected_functions'] = parse_json_string(
-            data['selected_functions'])
+                data['selected_functions'])
         Campaign.validate(data, uuid)
         return data
 
@@ -400,10 +420,10 @@ class Campaign(JsonModel):
         """
         campaign_data = Campaign.parse_campaign_data(data, uploader)
         json_str = Campaign.serialize(
-            Campaign.parse_campaign_data(data, uploader)
+                Campaign.parse_campaign_data(data, uploader)
         )
         json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
+                Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
@@ -412,7 +432,7 @@ class Campaign(JsonModel):
         # create commit as git
         try:
             save_with_git(
-                'Create campaign - %s' % data['uuid']
+                    'Create campaign - %s' % data['uuid']
             )
         except Exception as e:
             print(e)
@@ -444,8 +464,8 @@ class Campaign(JsonModel):
 
                     if campaign.end_date:
                         end_datetime = datetime.strptime(
-                            campaign.end_date,
-                            "%Y-%m-%d")
+                                campaign.end_date,
+                                "%Y-%m-%d")
 
                         if campaign_status:
                             if campaign_status == 'active':
@@ -476,7 +496,7 @@ class Campaign(JsonModel):
         campaigns = []
         coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
-            [float(coordinates[1]), float(coordinates[0])])
+                [float(coordinates[1]), float(coordinates[0])])
         distance = 3
         circle_buffer = point.buffer(distance)
 
@@ -500,8 +520,8 @@ class Campaign(JsonModel):
 
                         if campaign.end_date:
                             end_datetime = datetime.strptime(
-                                campaign.end_date,
-                                "%Y-%m-%d")
+                                    campaign.end_date,
+                                    "%Y-%m-%d")
 
                             if campaign_status == 'active':
                                 allowed = end_datetime.date() > date.today()
@@ -539,7 +559,7 @@ class Campaign(JsonModel):
         :rtype: str
         """
         json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % uuid
+                Campaign.get_json_folder(), '%s.json' % uuid
         )
         if os.path.isfile(json_path):
             return json_path
@@ -579,5 +599,5 @@ class Campaign(JsonModel):
                            "This insights function not " \
                            "assigned to this campaign"
             super(
-                Campaign.InsightsFunctionNotAssignedToCampaign, self).__init__(
-                self.message)
+                    Campaign.InsightsFunctionNotAssignedToCampaign, self).\
+                __init__(self.message)
