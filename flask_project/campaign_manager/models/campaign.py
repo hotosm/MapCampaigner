@@ -599,5 +599,5 @@ class Campaign(JsonModel):
                            "This insights function not " \
                            "assigned to this campaign"
             super(
-                    Campaign.InsightsFunctionNotAssignedToCampaign, self).__init__(
-                    self.message)
+                    Campaign.InsightsFunctionNotAssignedToCampaign, self).\
+                __init__(self.message)
