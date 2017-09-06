@@ -660,7 +660,10 @@
                 Windows: '',
                 Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
                 BlackBerry: '',
-                iOS: 'https://itunes.apple.com/app/id510623322'
+                iOS: {
+                    'app': 'mapsme://',
+                    'store': 'https://itunes.apple.com/app/id510623322'
+                }
             }
         };
 
@@ -668,13 +671,22 @@
             var appUrl = '';
             if (isMobile.Android()) {
                 appUrl = formLink[app]['Android'];
+                if(appUrl) {
+                    location.replace(appUrl, '_blank');
+                }
             } else if (isMobile.iOS()) {
                 appUrl = formLink[app]['iOS'];
+                if(appUrl) {
+                    location.replace(formLink[app]['iOS']['app']);
+                    setTimeout(function() {
+                        if (!document.webkitHidden) {
+                            location.replace(formLink[app]['iOS']['store']);
+                        }
+                    }, 25);
+                }
             }
 
-            if(appUrl) {
-                window.open(appUrl, '_blank');
-            } else {
+            if(!appUrl) {
                 showNotifications(app + ' is not available in your current device', 'danger');
             }
         }
