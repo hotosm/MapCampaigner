@@ -514,6 +514,7 @@
         }
 
         var drawnItems = new L.FeatureGroup();
+        var campaignGeometry = null;
         var map = L.map('campaign-map-detail').setView([0, 0], 1);
         var map_type = '{{ map_type }}';
         var attribution = '{{ attribution|safe }}';
@@ -538,6 +539,7 @@
         {% if geometry %}
             var totalArea = 0;
             var totalAreaCovered = 0;
+            campaignGeometry = $.parseJSON('{{ geometry|safe }}');
             drawnItems = L.geoJSON(
                 $.parseJSON('{{ geometry|safe }}'), {
                     style: function (feature) {
@@ -666,22 +668,42 @@
             }
         };
 
+        function callMapsMe(){
+            var kml = tokml(campaignGeometry);
+            // Check share button
+            var uriContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(kml);
+            var downloadLink = document.createElement("a");
+            downloadLink.href = uriContent;
+            downloadLink.download = uuid+".map.kml";
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
         function openOtherDataCollectonForm(element, app) {
             var appUrl = '';
             if (isMobile.Android()) {
                 appUrl = formLink[app]['Android'];
-                if(appUrl) {
-                    location.replace(appUrl, '_blank');
+                if(app == "Maps.me"){
+                    callMapsMe();
+                }else {
+                    if (appUrl) {
+                        location.replace(appUrl, '_blank');
+                    }
                 }
             } else if (isMobile.iOS()) {
                 appUrl = formLink[app]['iOS'];
-                if(appUrl) {
-                    location.replace(formLink[app]['iOS']['app']);
-                    setTimeout(function() {
-                        if (!document.webkitHidden) {
-                            location.replace(formLink[app]['iOS']['store']);
-                        }
-                    }, 25);
+                if(app == "Maps.me"){
+                    callMapsMe();
+                }else {
+                    if (appUrl) {
+                        location.replace(formLink[app]['iOS']['app']);
+                        setTimeout(function () {
+                            if (!document.webkitHidden) {
+                                location.replace(formLink[app]['iOS']['store']);
+                            }
+                        }, 25);
+                    }
                 }
             }
 
@@ -693,5 +715,6 @@
     </script>
 
     <script src="/static/js/detail/insight_functions.js"></script>
+    <script src="/static/libs/tokml.js"></script>
 
 {% endblock %}
