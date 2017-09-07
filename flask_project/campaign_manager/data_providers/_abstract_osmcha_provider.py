@@ -49,7 +49,8 @@ class AbstractOsmchaProvider(AbstractDataProvider):
                 'page_size': self.limit_per_page,
                 'geometry': payload_geometry,
                 'date__gte': start_date,
-                'date__lte': end_date
+                'date__lte': end_date,
+                'area_lt': 2
             }
             request = requests.get(
                 self.get_api_url(),
