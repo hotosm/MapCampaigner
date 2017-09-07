@@ -1,7 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import bisect
 import copy
 import json
@@ -469,7 +469,9 @@ class Campaign(JsonModel):
 
                         if campaign_status:
                             if campaign_status == 'active':
-                                allowed = end_datetime.date() > date.today()
+                                allowed = end_datetime.date() > (
+                                    date.today() - timedelta(days=1)
+                                )
                             elif campaign_status == 'inactive':
                                 allowed = end_datetime.date() <= date.today()
                     else:
