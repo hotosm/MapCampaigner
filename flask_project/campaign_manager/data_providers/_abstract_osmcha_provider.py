@@ -50,7 +50,8 @@ class AbstractOsmchaProvider(AbstractDataProvider):
                 'geometry': payload_geometry,
                 'date__gte': start_date,
                 'date__lte': end_date,
-                'area_lt': 2
+                'area_lt': 2,
+                'is_suspect': True
             }
             request = requests.get(
                 self.get_api_url(),
