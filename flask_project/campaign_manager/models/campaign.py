@@ -3,6 +3,7 @@ __date__ = '10/05/17'
 
 from datetime import datetime, date, timedelta
 import bisect
+import math
 import copy
 import json
 import os
@@ -483,6 +484,18 @@ class Campaign(JsonModel):
                         campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
+
+        if 'per_page' in kwargs:
+            per_page = int(kwargs['per_page'][0])
+
+            page = 1
+            if 'page' in kwargs:
+                page = int(kwargs['page'][0])
+
+            start_index = (page-1) * per_page
+
+            campaigns = campaigns[start_index:start_index+per_page]
+
         return campaigns
 
     @staticmethod
@@ -536,6 +549,17 @@ class Campaign(JsonModel):
                             campaigns.append(campaign)
                 except Campaign.DoesNotExist:
                     pass
+
+        if 'per_page' in kwargs:
+            per_page = int(kwargs['per_page'][0])
+
+            page = 1
+            if 'page' in kwargs:
+                page = int(kwargs['page'][0])
+
+            start_index = (page-1) * per_page
+
+            campaigns = campaigns[start_index:start_index+per_page]
 
         return campaigns
 
