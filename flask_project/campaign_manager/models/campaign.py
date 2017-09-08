@@ -448,7 +448,7 @@ class Campaign(JsonModel):
         :return: Campaigns that found or none
         :rtype: [Campaign]
         """
-        name_list = []
+        sort_list = []
         campaigns = []
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
@@ -479,8 +479,21 @@ class Campaign(JsonModel):
                         allowed = False
 
                     if allowed:
-                        position = bisect.bisect(name_list, campaign.name)
-                        bisect.insort(name_list, campaign.name)
+                        sort_object = campaign.name
+
+                        if 'sort_by' in kwargs:
+                            if kwargs['sort_by'][0] == 'recent':
+
+                                sort_object = int(
+                                        datetime.today().strftime('%s')
+                                            ) - int(
+                                        datetime.strptime(
+                                                campaign.edited_at,
+                                                "%a %b %d %H:%M:%S %Y"
+                                        ).strftime('%s'))
+
+                        position = bisect.bisect(sort_list, sort_object)
+                        bisect.insort(sort_list, sort_object)
                         campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
@@ -512,7 +525,7 @@ class Campaign(JsonModel):
         coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
                 [float(coordinates[1]), float(coordinates[0])])
-        distance = 3
+        distance = 4
         circle_buffer = point.buffer(distance)
 
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
