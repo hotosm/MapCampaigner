@@ -48,7 +48,7 @@ body {
     #page-wrapper {
         position: inherit;
         margin: 20px 0 0 0;
-        padding: 0 80px;
+        padding: 0 50px;
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -800,8 +800,9 @@ body {
 }
 
 .v2-home-header {
-    padding-left: 80px;
-    padding-right: 80px;
+    padding: 20px;
+    background-color: white;
+    border-bottom: 2px solid #E7E7E7;
 }
 
 .home-header {
@@ -1042,7 +1043,7 @@ body {
 }
 
 .nav.navbar-nav {
-    margin-left: 50px;
+    margin-left: 30px;
 }
 
 .grey-italic {
@@ -1053,4 +1054,68 @@ body {
 #campaign-list ul {
     padding: 0;
     list-style-type: none;
+}
+
+.active-campaign-text, .active-campaign-text-bold {
+    font-size: 25pt;
+    color: inherit;
+    font-weight: lighter;
+}
+
+.active-campaign-text-bold, .nearest-campaign-text-bold {
+     font-weight: bold;
+}
+
+.nearest-campaign-text-bold, .nearest-campaign-text {
+    font-size: 16pt;
+    color: inherit;
+}
+
+.underline-text {
+    color: inherit;
+    font-size: 14pt;
+    font-weight: 600;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.underline-text:hover {
+    color: #AC3232;
+}
+
+.home-option {
+    border: 1px solid #E7E7E7;
+    padding: 15px;
+    margin-left: -4pt;
+    font-weight: normal !important;
+}
+
+span.home-option, label.home-option, select.home-option {
+    display: inline-block;
+    height: 52px;
+}
+
+input.search {
+    width: 95%;
+    border-radius: 5px;
+    border-top: 1px solid #E7E7E7;
+    border-left: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    display: inline-block;
+    height: 32px;
+}
+
+.search-icon {
+    background-color: white;
+    border-top: 1px solid #E7E7E7;
+    border-right: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    width:7%;
+    margin-left: -13px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: inline-block;
+    height: 32px;
 }

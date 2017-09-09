@@ -8,9 +8,25 @@
     <div class="v2-home-header">
         <div class="row">
             <div class="col-lg-6">
-                <h3>Active campaigns 36 / Show expired</h3>
-                <h4>Nearest 5 / Show all</h4>
-                <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                <div style="text-align: center; margin-top: 30px">
+                    <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
+                    <p><a class="underline-text" href="#">Display inactive campaigns</a></p>
+                </div>
+                <div  style="text-align: center; margin-top: 40px">
+                    <span class="home-option">Showing</span>
+                    <select class="home-option">
+                        <option>nearest</option>
+                        <option>my</option>
+                        <option>all</option>
+                    </select>
+                    <span class="home-option">5</span>
+                    <select class="home-option">
+                        <option>campaigns</option>
+                        <option>km radius</option>
+                    </select>
+                    <span class="home-option"><input type="checkbox" id="check-show-map" style="vertical-align: bottom" checked> show map</span>
+                </div>
             </div>
             <div class="col-lg-6">
                 <div id="campaign-map"></div>
@@ -60,20 +76,29 @@
 
     <div class="row" id="campaign-list">
 
-        <!-- class="search" automagically makes an input a search field. -->
-        <input class="search" placeholder="Search"/>
-        <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
+        <div class="row" style="margin-bottom: 20px">
 
-        <button class="sort" data-sort="campaign-name">
-            Sort By Name
-        </button>
-        <button class="sort" data-sort="campaign-start-date">
-            Sort By Date
-        </button>
+            <div class="col-lg-6">
+                <!-- class="search" automagically makes an input a search field. -->
+                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
+                <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
+            </div>
 
+            <div class="col-lg-6" style="text-align: right">
+                <button class="sort" data-sort="campaign-name">
+                    Sort By Name
+                </button>
+                <button class="sort" data-sort="campaign-start-date">
+                    Sort By Date
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
         <ul class="list card-wrapper">
 
         </ul>
+        </div>
 
     </div>
 
@@ -205,6 +230,14 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+        $('#check-show-map').click(function () {
+           if( $(this).is(':checked') ){
+               $('#campaign-map').show();
+           } else{
+               $('#campaign-map').hide();
+           }
+        });
+
         function participate() {
             var participateUrl = "/participate"
             if(userCoordinate) {
