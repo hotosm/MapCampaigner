@@ -7,10 +7,34 @@
 
     <div class="v2-home-header">
         <div class="row">
-            <div class="col-lg-6">
-                <h3>Active campaigns 36 / Show expired</h3>
-                <h4>Nearest 5 / Show all</h4>
-                <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
+            <div class="col-lg-6" style="height: 300px">
+                <div style="text-align: center; margin-top: 30px">
+                    <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
+                    <p><a class="underline-text" href="#">Display inactive campaigns</a></p>
+                </div>
+                <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
+                    <table class="home-option">
+                        <tr class="home-option">
+                            <td class="home-option">Showing:</td>
+                            <td class="home-option">
+                                <select>
+                                    <option>nearest</option>
+                                    <option>my</option>
+                                    <option>all</option>
+                                </select>
+                            </td>
+                            <td class="home-option">5</td>
+                            <td class="home-option">
+                                <select>
+                                    <option>campaigns</option>
+                                    <option>km radius</option>
+                                </select>
+                            </td>
+                            <td class="home-option"><input type="checkbox" id="check-show-map" style="vertical-align: bottom" checked> show map</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <div class="col-lg-6">
                 <div id="campaign-map"></div>
@@ -60,20 +84,29 @@
 
     <div class="row" id="campaign-list">
 
-        <!-- class="search" automagically makes an input a search field. -->
-        <input class="search" placeholder="Search"/>
-        <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
+        <div class="row" style="margin-bottom: 20px">
 
-        <button class="sort" data-sort="campaign-name">
-            Sort By Name
-        </button>
-        <button class="sort" data-sort="campaign-start-date">
-            Sort By Date
-        </button>
+            <div class="col-lg-6">
+                <!-- class="search" automagically makes an input a search field. -->
+                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
+                <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
+            </div>
 
+            <div class="col-lg-6" style="text-align: right">
+                <button class="sort" data-sort="campaign-name">
+                    Sort By Name
+                </button>
+                <button class="sort" data-sort="campaign-start-date">
+                    Sort By Date
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
         <ul class="list card-wrapper">
 
         </ul>
+        </div>
 
     </div>
 
@@ -205,6 +238,14 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+        $('#check-show-map').click(function () {
+           if( $(this).is(':checked') ){
+               $('#campaign-map').show();
+           } else{
+               $('#campaign-map').hide();
+           }
+        });
+
         function participate() {
             var participateUrl = "/participate"
             if(userCoordinate) {
@@ -369,32 +410,34 @@
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
-                                '<div class="campaign-card panel panel-custom">'+
+                                '<div class="campaign-card panel">'+
                                     '<div class="panel-heading">'+
-                                        '<div class="campaign-name">'+
+                                        '<div class="campaign-name"><a href=/campaign/'+ campaign['uuid'] +'>'+
                                             campaign['name'] +
-                                        '</div>'+
-                                    '</div>'+
-                                    '<div class="panel-body">'+
+                                        '</a></div>'+
                                         '<div class="row">'+
                                             '<div class="col-lg-7">'+
                                                 '<div class="campaign-start-date">'+
                                                     'started '+ campaign['start_date'] +
                                                 '</div>'+
-                                                '<div class="campaign-tags">'+
-                                                    'tag tag'+
+                                                '<div>'+
+                                                    '<span class="campaign-tags">tag</span>'+
                                                 '</div>'+
                                                 '<div class="campaign-description">'+
                                                     campaign['description']+
                                                 '</div>'+
-                                                '<div class="campaign-creator">'+
-                                                    'Campaign creator : '+ campaign['campaign_creator'] +
-                                                '</div>'+
                                             '</div>'+
                                             '<div class="col-lg-5">'+
-                                                'Map'+
+                                                '<img src="/static/img/map-dummy.png" height="100px" align=right>'+
                                             '</div>'+
                                         '</div>'+
+                                        '<div class="row">'+
+                                            '<div class="col-lg-12">'+
+                                                '<div class="campaign-creator">'+
+                                                        'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>' +
                                     '</div>'+
                                 '</div>'+
                             '</li>')
