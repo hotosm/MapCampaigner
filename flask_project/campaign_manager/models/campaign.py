@@ -399,6 +399,11 @@ class Campaign(JsonModel):
                 Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
+    def get_thumbnail_folder():
+        return os.path.join(
+                Campaign.get_json_folder(), 'thumbnail')
+
+    @staticmethod
     def serialize(data):
         """Serialize campaign dictionary
 
