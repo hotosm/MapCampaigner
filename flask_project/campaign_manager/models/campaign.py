@@ -5,6 +5,9 @@ from datetime import datetime, date, timedelta
 import bisect
 import math
 import copy
+import hashlib
+import requests
+import shutil
 import json
 import os
 import pygeoj
@@ -50,6 +53,7 @@ class Campaign(JsonModel):
     map_type = ''
     dashboard_settings = ''
     link_to_omk = False
+    thumbnail = ''
 
     def __init__(self, uuid=None):
         if uuid:
@@ -67,6 +71,10 @@ class Campaign(JsonModel):
         self.version += 1
         if uploader:
             self.edited_by = uploader
+
+        # Generate map
+        self.generate_static_map()
+
         # save updated campaign to json
         data = self.to_dict()
         Campaign.validate(data, self.uuid)
@@ -85,6 +93,32 @@ class Campaign(JsonModel):
             )
         except Exception as e:
             print(e)
+
+    def generate_static_map(self):
+        """
+        Download static map from http://staticmap.openstreetmap.de with marker,
+        then save it thumbnail folder
+        """
+        url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
+              'center=0.0,0.0&zoom=1&size=512x512&maptype=mapnik'
+        polygon = self.get_union_polygons()
+        marker_url = '&markers=%s,%s,lightblue' % (
+            polygon.centroid.y, polygon.centroid.x)
+        url = url + marker_url
+
+        safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
+        image_path = os.path.join(
+                Campaign.get_json_folder() + '/thumbnail', safe_name
+        )
+
+        if not os.path.exists(image_path):
+            request = requests.get(url, stream=True)
+            if request.status_code == 200:
+                with open(image_path, 'wb') as f:
+                    request.raw.decode_content = True
+                    shutil.copyfileobj(request.raw, f)
+
+        self.thumbnail = safe_name
 
     def update_participants_count(self, participants_count, campaign_type):
         """ Update paricipants count.
