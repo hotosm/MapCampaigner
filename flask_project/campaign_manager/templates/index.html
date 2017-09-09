@@ -7,25 +7,33 @@
 
     <div class="v2-home-header">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-6" style="height: 300px">
                 <div style="text-align: center; margin-top: 30px">
                     <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
                         <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
                     <p><a class="underline-text" href="#">Display inactive campaigns</a></p>
                 </div>
-                <div  style="text-align: center; margin-top: 40px">
-                    <span class="home-option">Showing</span>
-                    <select class="home-option">
-                        <option>nearest</option>
-                        <option>my</option>
-                        <option>all</option>
-                    </select>
-                    <span class="home-option">5</span>
-                    <select class="home-option">
-                        <option>campaigns</option>
-                        <option>km radius</option>
-                    </select>
-                    <span class="home-option"><input type="checkbox" id="check-show-map" style="vertical-align: bottom" checked> show map</span>
+                <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
+                    <table class="home-option">
+                        <tr class="home-option">
+                            <td class="home-option">Showing:</td>
+                            <td class="home-option">
+                                <select>
+                                    <option>nearest</option>
+                                    <option>my</option>
+                                    <option>all</option>
+                                </select>
+                            </td>
+                            <td class="home-option">5</td>
+                            <td class="home-option">
+                                <select>
+                                    <option>campaigns</option>
+                                    <option>km radius</option>
+                                </select>
+                            </td>
+                            <td class="home-option"><input type="checkbox" id="check-show-map" style="vertical-align: bottom" checked> show map</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -402,32 +410,34 @@
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
-                                '<div class="campaign-card panel panel-custom">'+
+                                '<div class="campaign-card panel">'+
                                     '<div class="panel-heading">'+
-                                        '<div class="campaign-name">'+
+                                        '<div class="campaign-name"><a href=/campaign/'+ campaign['uuid'] +'>'+
                                             campaign['name'] +
-                                        '</div>'+
-                                    '</div>'+
-                                    '<div class="panel-body">'+
+                                        '</a></div>'+
                                         '<div class="row">'+
                                             '<div class="col-lg-7">'+
                                                 '<div class="campaign-start-date">'+
                                                     'started '+ campaign['start_date'] +
                                                 '</div>'+
-                                                '<div class="campaign-tags">'+
-                                                    'tag tag'+
+                                                '<div>'+
+                                                    '<span class="campaign-tags">tag</span>'+
                                                 '</div>'+
                                                 '<div class="campaign-description">'+
                                                     campaign['description']+
                                                 '</div>'+
-                                                '<div class="campaign-creator">'+
-                                                    'Campaign creator : '+ campaign['campaign_creator'] +
-                                                '</div>'+
                                             '</div>'+
                                             '<div class="col-lg-5">'+
-                                                'Map'+
+                                                '<img src="/static/img/map-dummy.png" height="100px" align=right>'+
                                             '</div>'+
                                         '</div>'+
+                                        '<div class="row">'+
+                                            '<div class="col-lg-12">'+
+                                                '<div class="campaign-creator">'+
+                                                        'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>' +
                                     '</div>'+
                                 '</div>'+
                             '</li>')

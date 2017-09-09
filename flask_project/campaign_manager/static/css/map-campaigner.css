@@ -1083,16 +1083,14 @@ body {
     color: #AC3232;
 }
 
-.home-option {
+.home-option table, .home-option td, .home-option tr{
     border: 1px solid #E7E7E7;
     padding: 15px;
-    margin-left: -4pt;
     font-weight: normal !important;
 }
 
-span.home-option, label.home-option, select.home-option {
-    display: inline-block;
-    height: 52px;
+.home-option table {
+    align-self: center;
 }
 
 input.search {
@@ -1113,9 +1111,51 @@ input.search {
     border-bottom: 1px solid #E7E7E7;
     padding: 5px 10px;
     width:7%;
-    margin-left: -13px;
+    margin-left: -2%;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     display: inline-block;
     height: 32px;
+}
+
+.campaign-name a {
+    font-weight: bold;
+    color: inherit;
+    font-size: 14pt;
+}
+
+.campaign-card {
+    padding: 7px;
+    line-height: 16pt;
+    border: 1px solid #E7E7E7;
+    box-shadow: 0 0 3px #d1d1d1;
+    border-radius: 2px;
+}
+
+.campaign-start-date {
+    font-style: italic;
+}
+
+.campaign-tags {
+    padding: 0 10px;
+    background-color: #e2e2e2;
+    border-radius: 5px;
+}
+
+.campaign-creator {
+    margin-top: 10px;
+    color: grey;
+}
+
+.campaign-creator-name {
+    text-decoration: underline;
+    color: black;
+}
+
+.campaign-name, .campaign-start-date, .campaign-description, .campaign-tags {
+    margin-bottom: 5px;
+}
+
+.campaign-description {
+    margin-top: 10px;
 }
