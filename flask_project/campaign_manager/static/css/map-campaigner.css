@@ -539,7 +539,7 @@ body {
 }
 
 #campaign-map {
-    height: 400px;
+    height: 300px;
     margin-top: 4px;
 }
 
@@ -799,6 +799,11 @@ body {
     margin-left: 10px !important;
 }
 
+.v2-home-header {
+    padding-left: 80px;
+    padding-right: 80px;
+}
+
 .home-header {
     min-height: 76px;
     padding: 15px 80px;
@@ -1043,4 +1048,9 @@ body {
 .grey-italic {
     color: #898989;
     font-style: italic;
+}
+
+#campaign-list ul {
+    padding: 0;
+    list-style-type: none;
 }

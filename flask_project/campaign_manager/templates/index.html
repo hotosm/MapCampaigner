@@ -1,84 +1,79 @@
 {% extends 'new_base.html' %}
 
 {% block header_content %}
-        <div class="home-header">
+
+    <!-- List Javascript  -->
+    <script type="text/javascript" src="/static/libs/list.min.js"></script>
+
+    <div class="v2-home-header">
+        <div class="row">
             <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>
-                    </div>
-                </div>
+                <h3>Active campaigns 36 / Show expired</h3>
+                <h4>Nearest 5 / Show all</h4>
+                <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
             </div>
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
+            <div class="col-lg-6">
+                <div id="campaign-map"></div>
             </div>
-            <div class="col-lg-2 header-info">
-                <span class="header-number" id="active-campaign-number">0</span>
-                <span class="header-number-text">active campaigns</span>
-            </div>
-
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
-            </div>
-            <div class="col-lg-2 header-info crimson">
-                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
-            </div>
-
         </div>
+    </div>
+{#    <div class="home-header">#}
+{#        <div class="col-lg-6">#}
+{#            <div class="row">#}
+{#                <div class="col-md-6">#}
+{#                    <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>#}
+{#                </div>#}
+{#                <div class="col-md-6">#}
+{#                    <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-lg-1">#}
+{#            <span class="v-separator"></span>#}
+{#        </div>#}
+{#        <div class="col-lg-2 header-info">#}
+{#            <span class="header-number" id="active-campaign-number">0</span>#}
+{#            <span class="header-number-text">active campaigns</span>#}
+{#        </div>#}
+{##}
+{#        <div class="col-lg-1">#}
+{#            <span class="v-separator"></span>#}
+{#        </div>#}
+{#        <div class="col-lg-2 header-info crimson">#}
+{#            <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>#}
+{#        </div>#}
+{##}
+{#    </div>#}
 {% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-custom">
-                <div class="panel-heading">
-                    <div id="campaign-map"></div>
-                </div>
-                <div id="panel-campaign">
-                    <div class="panel-body">
-                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
+{#    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">#}
+{#        <i class="fa fa-globe" aria-hidden="true"></i>#}
+{#        <span style="margin-left: 5px;">All Campaigns</span>#}
+{#    </button>#}
+{##}
+{#    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">#}
+{#        <i class="fa fa-globe" aria-hidden="true"></i>#}
+{#        <span style="margin-left: 5px;">Nearest Campaigns</span>#}
+{#    </button>#}
 
-                    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">All Campaigns</span>
-                    </button>
+    <div class="row" id="campaign-list">
 
-                    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">Nearest Campaigns</span>
-                    </button>
+        <!-- class="search" automagically makes an input a search field. -->
+        <input class="search" placeholder="Search"/>
+        <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
 
+        <button class="sort" data-sort="campaign-name">
+            Sort By Name
+        </button>
+        <button class="sort" data-sort="campaign-start-date">
+            Sort By Date
+        </button>
 
-                    <table id="campaign-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    NAME
-                                </th>
-                                <th>
-                                    TYPES
-                                </th>
-                                <th>
-                                    PARTICIPANTS
-                                </th>
-                                <th>
-                                    ACTION
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
-            </div>
+        <ul class="list card-wrapper">
 
-
-        </div>
+        </ul>
 
     </div>
 
@@ -197,9 +192,10 @@
 
     <script type="text/javascript">
 
-        var table = $('#campaign-table').DataTable({
-            "lengthChange": false
-        });
+{#        var table = $('#campaign-table').DataTable({#}
+{#            "lengthChange": false#}
+{#        });#}
+        var table = null;
         $('.dataTables_filter').addClass('pull-left');
         var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
@@ -209,31 +205,6 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
-        var homeHeaderTop = $('.home-header').offset().top;
-
-        $(window).scroll(function() {
-            var currentScroll = $(window).scrollTop();
-
-            if(currentScroll >= homeHeaderTop) {
-                $('.home-header').css({
-                    position: 'fixed',
-                    top: '0',
-                    width: '100%',
-                    'z-index': '9999'
-                })
-                $('#first-row').css({
-                    'margin-top':'78px'
-                });
-            } else {
-                $('.home-header').css({
-                    position: 'static'
-                })
-                $('#first-row').css({
-                    'margin-top':'0'
-                });
-            }
-        });
-
         function participate() {
             var participateUrl = "/participate"
             if(userCoordinate) {
@@ -310,7 +281,7 @@
         }
 
         function clearTable() {
-            table.clear().draw('false');
+            // table.clear().draw('false');
         }
 
         function getBrowserLocation() {
@@ -396,12 +367,37 @@
                             }
                         })
 
-                        table.row.add([
-                            '<span class="campaign-td"><a href="/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
-                            '<span class="tag">'+types+'</span>',
-                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
-                            action_button
-                        ]).draw( false );
+                        $('.card-wrapper').append(
+                            '<li class="col-lg-6">'+
+                                '<div class="campaign-card panel panel-custom">'+
+                                    '<div class="panel-heading">'+
+                                        '<div class="campaign-name">'+
+                                            campaign['name'] +
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class="panel-body">'+
+                                        '<div class="row">'+
+                                            '<div class="col-lg-7">'+
+                                                '<div class="campaign-start-date">'+
+                                                    'started '+ campaign['start_date'] +
+                                                '</div>'+
+                                                '<div class="campaign-tags">'+
+                                                    'tag tag'+
+                                                '</div>'+
+                                                '<div class="campaign-description">'+
+                                                    campaign['description']+
+                                                '</div>'+
+                                                '<div class="campaign-creator">'+
+                                                    'Campaign creator : '+ campaign['campaign_creator'] +
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="col-lg-5">'+
+                                                'Map'+
+                                            '</div>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</li>')
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+
@@ -440,6 +436,11 @@
                     {% if all %}
                         map.fitBounds(mapLayers.getBounds());
                     {% endif %}
+
+                    var options = {
+                        valueNames: ['campaign-name', 'campaign-start-date']
+                    }
+                    var campaignList = new List('campaign-list', options);
                 }
             });
         }
