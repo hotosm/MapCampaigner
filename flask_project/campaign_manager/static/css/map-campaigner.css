@@ -1180,3 +1180,7 @@ input.search {
 .ellipsis.multiline {
     white-space: normal;
 }
+
+.nearest-option {
+    display: none;
+}

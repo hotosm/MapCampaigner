@@ -19,16 +19,18 @@
                         <tr class="home-option">
                             <td class="home-option">Showing:</td>
                             <td class="home-option">
-                                <select class="form-control">
-                                    <option>nearest</option>
-                                    <option>all</option>
+                                <select class="form-control" id="campaigns-select">
+                                    <option value="nearest">nearest</option>
+                                    <option value="all">all</option>
                                 </select>
                             </td>
-                            <td class="home-option">5</td>
-                            <td class="home-option">
+                            <td class="home-option nearest-option">
+                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
+                            </td>
+                            <td class="home-option nearest-option">
                                 campaigns
                             </td>
-                            <td class="home-option"><input type="checkbox" id="check-show-map" checked> show map</td>
+                            <td class="home-option nearest-option"><input type="checkbox" id="check-show-map" checked> show map</td>
                         </tr>
                     </table>
                 </div>
@@ -41,16 +43,6 @@
 {% endblock %}
 
 {% block content %}
-
-{#    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">#}
-{#        <i class="fa fa-globe" aria-hidden="true"></i>#}
-{#        <span style="margin-left: 5px;">All Campaigns</span>#}
-{#    </button>#}
-{##}
-{#    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">#}
-{#        <i class="fa fa-globe" aria-hidden="true"></i>#}
-{#        <span style="margin-left: 5px;">Nearest Campaigns</span>#}
-{#    </button>#}
 
     <div class="row" id="campaign-list">
 
@@ -174,6 +166,16 @@
                    location.href='/all';
                 }
             }
+
+            {% if not all %}
+                $('#campaigns-select').val("nearest");
+                var limitPage = Cookies.get('limit_page');
+                if(limitPage)
+                    $('#limit-page').val(Cookies.get('limit_page'));
+            {% else %}
+                $('#campaigns-select').val("all");
+            {% endif %}
+
         });
 
         var map = L.map('campaign-map').setView([0, 0], 2);
@@ -205,6 +207,9 @@
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
         var tag = "{{ tag }}";
+        var currentUrl = '';
+        var currentUser = '';
+
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
 
@@ -226,6 +231,31 @@
             }
         });
 
+        $('#campaigns-select').change(function () {
+            var value = this.value;
+            if(value == 'all') {
+                Cookies.set('user_location_setting', 'all');
+                location.href='/all'
+            } else if(value == 'nearest') {
+                Cookies.set('user_location_setting', 'nearest');
+                location.href='/'
+            }
+        });
+
+        $("#limit-page").on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                var limitPage = $("#limit-page").val();
+                Cookies.set('limit_page', limitPage);
+                getCampaigns(currentUrl, currentUser, limitPage);
+            }
+        });
+
+        $('#limit-page').focusout(function (e) {
+            var limitPage = $("#limit-page").val();
+                Cookies.set('limit_page', limitPage);
+            getCampaigns(currentUrl, currentUser, limitPage);
+        });
+
         function participate() {
             var participateUrl = "/participate"
             if(userCoordinate) {
@@ -245,26 +275,17 @@
             }
             clearMap();
             clearTable();
-            getCampaigns(url, currentUser, 5);
             getTotalCampaigns();
             {% if not all %}
-                $('#all-campaigns').show();
+                var limitPage = $('#limit-page').val();
+                getCampaigns(url, currentUser, limitPage);
+                $('.nearest-option').show();
             {% else %}
-                $('#nearest-campaigns').show();
+                getCampaigns(url, currentUser);
             {% endif %}
         }
 
         $('.remove-tag').click(function () {
-            location.href='/'
-        });
-
-        $('#all-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'all');
-            location.href='/all'
-        });
-
-        $('#nearest-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'nearest');
             location.href='/'
         });
 
@@ -337,6 +358,14 @@
         }
 
         function getCampaigns(url, user, limit) {
+
+            if(url) {
+                currentUrl = url;
+            }
+
+            if(user) {
+                currentUser = user;
+            }
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
