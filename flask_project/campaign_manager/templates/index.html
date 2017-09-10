@@ -4,6 +4,7 @@
 
     <!-- List Javascript  -->
     <script type="text/javascript" src="/static/libs/list.min.js"></script>
+    <script type="text/javascript" src="/static/libs/ellipsis.js"></script>
 
     <div class="v2-home-header">
         <div class="row">
@@ -406,7 +407,7 @@
                             if($.inArray(manager, participants)==-1) {
                                 participants.push(manager);
                             }
-                        })
+                        });
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
@@ -415,19 +416,28 @@
                                         '<div class="campaign-name"><a href=/campaign/'+ campaign['uuid'] +'>'+
                                             campaign['name'] +
                                         '</a></div>'+
-                                        '<div class="row">'+
-                                            '<div class="col-lg-7">'+
+                                        '<div class="row">' +
+                                            '<div class="col-lg-6">'+
                                                 '<div class="campaign-start-date">'+
                                                     'started '+ campaign['start_date'] +
                                                 '</div>'+
+                                            '</div>'+
+                                            '<div class="col-lg-6">'+
+                                                '<div class="campaign-progress-bar">'+
+                                                    '<img src="/static/img/progress-dummy.png" height="20px" width="200px">' + ' 60%' +
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>' +
+                                        '<div class="row">'+
+                                            '<div class="col-lg-8">'+
                                                 '<div>'+
                                                     '<span class="campaign-tags">tag</span>'+
                                                 '</div>'+
-                                                '<div class="campaign-description">'+
+                                                '<div class="campaign-description ellipsis multiline">'+
                                                     campaign['description']+
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-5">'+
+                                            '<div class="col-lg-4">'+
                                                 '<img src="/static/img/map-dummy.png" height="100px" align=right>'+
                                             '</div>'+
                                         '</div>'+
@@ -440,7 +450,9 @@
                                         '</div>' +
                                     '</div>'+
                                 '</div>'+
-                            '</li>')
+                            '</li>');
+
+                        $(".ellipsis").ellipsis();
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+
