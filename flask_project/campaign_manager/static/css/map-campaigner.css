@@ -1158,4 +1158,16 @@ input.search {
 
 .campaign-description {
     margin-top: 10px;
+    overflow: hidden;
+    width: 95%;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5em;
+    height: 3em;
+}
+
+.campaign-progress-bar {
+    text-align: right;
 }
