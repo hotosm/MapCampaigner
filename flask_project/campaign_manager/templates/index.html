@@ -4,6 +4,7 @@
 
     <!-- List Javascript  -->
     <script type="text/javascript" src="/static/libs/list.min.js"></script>
+    <script type="text/javascript" src="/static/libs/ellipsis.js"></script>
 
     <div class="v2-home-header">
         <div class="row">
@@ -406,7 +407,7 @@
                             if($.inArray(manager, participants)==-1) {
                                 participants.push(manager);
                             }
-                        })
+                        });
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
@@ -432,7 +433,7 @@
                                                 '<div>'+
                                                     '<span class="campaign-tags">tag</span>'+
                                                 '</div>'+
-                                                '<div class="campaign-description">'+
+                                                '<div class="campaign-description ellipsis multiline">'+
                                                     campaign['description']+
                                                 '</div>'+
                                             '</div>'+
@@ -450,6 +451,8 @@
                                     '</div>'+
                                 '</div>'+
                             '</li>');
+
+                        $(".ellipsis").ellipsis();
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+

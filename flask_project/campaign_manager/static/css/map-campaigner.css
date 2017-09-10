@@ -1171,3 +1171,12 @@ input.search {
 .campaign-progress-bar {
     text-align: right;
 }
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ellipsis.multiline {
+    white-space: normal;
+}
