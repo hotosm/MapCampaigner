@@ -561,29 +561,34 @@ class Campaign(JsonModel):
         :type coordinate: str
         """
         campaigns = []
+        sort_list = []
         coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
                 [float(coordinates[1]), float(coordinates[0])])
-        distance = 4
-        circle_buffer = point.buffer(distance)
+        per_page = None
+        is_close = False
+        circle_buffer = None
+
+        if 'per_page' in kwargs:
+            is_close = True
+            per_page = int(kwargs['per_page'][0])
+        else:
+            circle_buffer = point.buffer(4)
 
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    #
+
                     polygon = campaign.get_union_polygons()
-                    if circle_buffer.contains(polygon):
-                        campaign_dict = campaign.to_dict()
+
+                    if circle_buffer:
+                        if circle_buffer.contains(polygon):
+                            is_close = True
+
+                    if is_close:
 
                         allowed = True
-
-                        if kwargs:
-                            for key, value in kwargs.items():
-                                if key not in campaign_dict:
-                                    allowed = False
-                                elif value not in campaign_dict[key]:
-                                    allowed = False
 
                         if campaign.end_date:
                             end_datetime = datetime.strptime(
@@ -598,12 +603,22 @@ class Campaign(JsonModel):
                             allowed = False
 
                         if allowed:
-                            campaigns.append(campaign)
+                            if per_page:
+                                distance = point.distance(polygon.centroid)
+                                position = bisect.bisect(sort_list,
+                                                         distance)
+                                bisect.insort(sort_list, distance)
+                                campaigns.insert(position, campaign)
+                            else:
+                                campaigns.append(campaign)
+
+                        if not per_page:
+                            is_close = False
+
                 except Campaign.DoesNotExist:
                     pass
 
-        if 'per_page' in kwargs:
-            per_page = int(kwargs['per_page'][0])
+        if per_page:
 
             page = 1
             if 'page' in kwargs:

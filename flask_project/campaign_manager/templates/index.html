@@ -19,20 +19,16 @@
                         <tr class="home-option">
                             <td class="home-option">Showing:</td>
                             <td class="home-option">
-                                <select>
+                                <select class="form-control">
                                     <option>nearest</option>
-                                    <option>my</option>
                                     <option>all</option>
                                 </select>
                             </td>
                             <td class="home-option">5</td>
                             <td class="home-option">
-                                <select>
-                                    <option>campaigns</option>
-                                    <option>km radius</option>
-                                </select>
+                                campaigns
                             </td>
-                            <td class="home-option"><input type="checkbox" id="check-show-map" style="vertical-align: bottom" checked> show map</td>
+                            <td class="home-option"><input type="checkbox" id="check-show-map" checked> show map</td>
                         </tr>
                     </table>
                 </div>
@@ -42,33 +38,6 @@
             </div>
         </div>
     </div>
-{#    <div class="home-header">#}
-{#        <div class="col-lg-6">#}
-{#            <div class="row">#}
-{#                <div class="col-md-6">#}
-{#                    <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>#}
-{#                </div>#}
-{#                <div class="col-md-6">#}
-{#                    <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#        <div class="col-lg-1">#}
-{#            <span class="v-separator"></span>#}
-{#        </div>#}
-{#        <div class="col-lg-2 header-info">#}
-{#            <span class="header-number" id="active-campaign-number">0</span>#}
-{#            <span class="header-number-text">active campaigns</span>#}
-{#        </div>#}
-{##}
-{#        <div class="col-lg-1">#}
-{#            <span class="v-separator"></span>#}
-{#        </div>#}
-{#        <div class="col-lg-2 header-info crimson">#}
-{#            <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>#}
-{#        </div>#}
-{##}
-{#    </div>#}
 {% endblock %}
 
 {% block content %}
@@ -94,12 +63,16 @@
             </div>
 
             <div class="col-lg-6" style="text-align: right">
-                <button class="sort" data-sort="campaign-name">
+                <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
                     Sort By Name
                 </button>
-                <button class="sort" data-sort="campaign-start-date">
+                <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
                     Sort By Date
                 </button>
+                <select class="form-control" id="filter-select" style="width: 40%;float: right">
+                    <option value="name">Sort By Name</option>
+                    <option value="date">Sort By Date</option>
+                </select>
             </div>
         </div>
 
@@ -244,6 +217,15 @@
            }
         });
 
+        $('#filter-select').change(function () {
+            var value = this.value;
+            if(value == 'name') {
+                $('#sort-campaign-by-name').click();
+            } else if(value == 'date') {
+                $('#sort-campaign-by-date').click();
+            }
+        });
+
         function participate() {
             var participateUrl = "/participate"
             if(userCoordinate) {
@@ -263,7 +245,7 @@
             }
             clearMap();
             clearTable();
-            getCampaigns(url, currentUser);
+            getCampaigns(url, currentUser, 5);
             getTotalCampaigns();
             {% if not all %}
                 $('#all-campaigns').show();
@@ -331,7 +313,7 @@
                 var zoom = 10;
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
                 var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
-                getCampaigns(url);
+                getCampaigns(url, null);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
             }
@@ -340,7 +322,7 @@
                 console.log('Error get browser location');
                 clearMap();
                 clearTable();
-                getCampaigns();
+                getCampaigns(null, null);
             }
         }
 
@@ -354,7 +336,7 @@
             })
         }
 
-        function getCampaigns(url, user) {
+        function getCampaigns(url, user, limit) {
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
@@ -373,8 +355,15 @@
                 url += '/'+tag;
             }
 
+            url += '?';
+
+            if(limit) {
+                url += 'per_page='+limit+'&';
+            }
+
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
+            $('.card-wrapper').html('');
 
             var participants = [];
 
@@ -416,9 +405,9 @@
                             '<li class="col-lg-6">'+
                                 '<div class="campaign-card panel">'+
                                     '<div class="panel-heading">'+
-                                        '<div class="campaign-name"><a href=/campaign/'+ campaign['uuid'] +'>'+
+                                        '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name">'+
                                             campaign['name'] +
-                                        '</a></div>'+
+                                        '</div></a>'+
                                         '<div class="row">' +
                                             '<div class="col-lg-6">'+
                                                 '<div class="campaign-start-date">'+
@@ -499,6 +488,7 @@
                         valueNames: ['campaign-name', 'campaign-start-date']
                     }
                     var campaignList = new List('campaign-list', options);
+                    $('#sort-campaign-by-name').click();
                 }
             });
         }
