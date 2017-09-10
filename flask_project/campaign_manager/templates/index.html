@@ -424,6 +424,17 @@
                             }
                         });
 
+                        // Campaign progress
+                        var startDate = moment(campaign['start_date'], 'YYYY-MM-DD', true);
+                        var endDate = moment(campaign['end_date'], 'YYYY-MM-DD', true);
+                        var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
+                        var remainingDays = endDate.diff(moment(), 'days') + 1;
+                        var progress = 100 - (remainingDays / campaignRange * 100);
+                        var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
+                                                    '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
+                                                    '</div>'+
+                                                '</div>'+ Math.round(progress) + '%';
+
                         var tags = '';
 
                         $.each(campaign['types'], function(index, type) {
@@ -445,7 +456,7 @@
                                             '</div>'+
                                             '<div class="col-lg-6">'+
                                                 '<div class="campaign-progress-bar">'+
-                                                    '<img src="/static/img/progress-dummy.png" height="20px" width="200px">' + ' 60%' +
+                                                    campaignProgress +
                                                 '</div>'+
                                             '</div>'+
                                         '</div>' +
