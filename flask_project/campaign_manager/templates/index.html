@@ -8,8 +8,8 @@
 
     <div class="v2-home-header">
         <div class="row">
-            <div class="col-lg-6" style="height: 300px">
-                <div style="text-align: center; margin-top: 30px">
+            <div class="col-lg-6" style="height: 220px">
+                <div style="text-align: center; margin-top: 10px">
                     <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
                         <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
                     <p><a class="underline-text" href="#">Display inactive campaigns</a></p>
@@ -459,14 +459,17 @@
                                                 '</div>'+
                                             '</div>'+
                                             '<div class="col-lg-4">'+
-                                                '<img src="/static/img/map-dummy.png" height="100px" align=right>'+
+                                                '<img src="/thumbnail/'+campaign['thumbnail']+'" height="100px" width="100%" align=right>'+
                                             '</div>'+
                                         '</div>'+
                                         '<div class="row">'+
-                                            '<div class="col-lg-12">'+
+                                            '<div class="col-lg-8">'+
                                                 '<div class="campaign-creator">'+
                                                         'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
                                                 '</div>'+
+                                            '</div>'+
+                                            '<div class=col-lg-4>'+
+                                                action_button+
                                             '</div>'+
                                         '</div>' +
                                     '</div>'+

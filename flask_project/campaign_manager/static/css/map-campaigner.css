@@ -602,6 +602,9 @@ body {
     background-color: #a3a3a3 !important;
     color: white;
     border-radius: 10px;
+    margin-top: 10px;
+    padding: 5px 30px !important;
+    float: right;
 }
 
 .campaign-list.btn:hover {
@@ -1118,7 +1121,7 @@ input.search {
     height: 32px;
 }
 
-.campaign-name a {
+a>.campaign-name {
     font-weight: bold;
     color: inherit;
     font-size: 14pt;
@@ -1130,6 +1133,7 @@ input.search {
     border: 1px solid #E7E7E7;
     box-shadow: 0 0 3px #d1d1d1;
     border-radius: 2px;
+    height: 235px;
 }
 
 .campaign-start-date {
