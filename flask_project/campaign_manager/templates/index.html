@@ -226,9 +226,6 @@
 
     <script type="text/javascript">
 
-{#        var table = $('#campaign-table').DataTable({#}
-{#            "lengthChange": false#}
-{#        });#}
         var table = null;
         $('.dataTables_filter').addClass('pull-left');
         var userCoordinate = '';
@@ -409,6 +406,12 @@
                             }
                         });
 
+                        var tags = '';
+
+                        $.each(campaign['types'], function(index, type) {
+                            tags += '<span class="campaign-tags">'+ type['type'] +'</span> ';
+                        });
+
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
                                 '<div class="campaign-card panel">'+
@@ -431,7 +434,7 @@
                                         '<div class="row">'+
                                             '<div class="col-lg-8">'+
                                                 '<div>'+
-                                                    '<span class="campaign-tags">tag</span>'+
+                                                    tags+
                                                 '</div>'+
                                                 '<div class="campaign-description ellipsis multiline">'+
                                                     campaign['description']+
