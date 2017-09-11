@@ -1014,7 +1014,26 @@ body {
     padding-left: 5px;
 }
 
+.campaign-card {
+    padding: 7px;
+    line-height: 16pt;
+    border: 1px solid #E7E7E7;
+    box-shadow: 0 0 3px #d1d1d1;
+    border-radius: 2px;
+    height: 240px;
+}
+
+.campaign-thumbnail img{
+    height:100px;
+    width:100%;
+    float:right;
+}
+
 @media (max-width: 600px) {
+
+    #showing-div {
+        display: none;
+    }
 
 	.footer-basic-centered{
 		padding: 35px;
@@ -1036,6 +1055,18 @@ body {
 	.footer-basic-centered .footer-links a{
 		line-height: 1.8;
 	}
+
+    .campaign-card {
+        height: 250px !important;
+    }
+
+    .campaign-thumbnail img{
+        display: none;
+    }
+
+    #search-campaign {
+        display: none;
+    }
 }
 
 .information {
@@ -1126,16 +1157,6 @@ a>.campaign-name {
     color: inherit;
     font-size: 14pt;
 }
-
-.campaign-card {
-    padding: 7px;
-    line-height: 16pt;
-    border: 1px solid #E7E7E7;
-    box-shadow: 0 0 3px #d1d1d1;
-    border-radius: 2px;
-    height: 240px;
-}
-
 .campaign-start-date {
     font-style: italic;
 }

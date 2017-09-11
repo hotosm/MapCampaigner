@@ -20,7 +20,7 @@
                 <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
                     <table class="home-option">
                         <tr class="home-option">
-                            <td class="home-option">Showing:</td>
+                            <td id="showing-div" class="home-option">Showing:</td>
                             <td class="home-option">
                                 <select class="form-control" id="campaigns-select">
                                     <option value="nearest">nearest</option>
@@ -51,7 +51,7 @@
 
         <div class="row" style="margin-bottom: 20px">
 
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="search-campaign">
                 <!-- class="search" automagically makes an input a search field. -->
                 <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
                 <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
@@ -530,8 +530,8 @@
                                                     campaign['description']+
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-4">'+
-                                                '<img src="/thumbnail/'+campaign['thumbnail']+'" height="100px" width="100%" align=right>'+
+                                            '<div class="col-lg-4 campaign-thumbnail">'+
+                                                '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
                                             '</div>'+
                                         '</div>'+
                                         '<div class="row">'+
