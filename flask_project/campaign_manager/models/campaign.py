@@ -107,8 +107,13 @@ class Campaign(JsonModel):
         url = url + marker_url
 
         safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
+        thumbnail_dir = os.path.join(Campaign.get_json_folder(), 'thumbnail')
+
+        if not os.path.exists(thumbnail_dir):
+            os.makedirs(thumbnail_dir)
+
         image_path = os.path.join(
-                Campaign.get_json_folder() + '/thumbnail', safe_name
+                thumbnail_dir, safe_name
         )
 
         if not os.path.exists(image_path):

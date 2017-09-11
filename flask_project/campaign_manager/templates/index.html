@@ -179,6 +179,12 @@
                 $('#campaigns-select').val("all");
             {% endif %}
 
+            var current_url = window.location.href.split('/');
+            current_url = current_url[current_url.length-1]
+            if(!current_url) {
+                $('#campaigns-select').val("all");
+            }
+
             var campaignStatus = Cookies.get('campaign-status');
             if(!campaignStatus) {
                 campaignStatus = 'active';
@@ -302,12 +308,20 @@
         function updateLimitPage() {
             var limitPage = $("#limit-page").val();
             var oldLimitPage = Cookies.get('limit_page');
+            var shouldUpdate = false;
+
             if(oldLimitPage) {
                 if(oldLimitPage != limitPage) {
-                    Cookies.set('limit_page', limitPage);
-                    clearMap();
-                    getCampaigns(currentUrl, currentUser, limitPage);
+                    shouldUpdate = true;
                 }
+            } else {
+                shouldUpdate = true;
+            }
+
+            if(shouldUpdate) {
+                clearMap();
+                getCampaigns(currentUrl, currentUser, limitPage);
+                Cookies.set('limit_page', limitPage);
             }
         }
 
