@@ -79,11 +79,11 @@
 
 .progress-bar {
     border-radius: 10px;
-    background-color: #77a1aa;
+    background-color: #57c962;
 }
 
 .running {
-    color: #46828f;
+    color: #57c962;
 }
 
 .finished {
@@ -103,11 +103,11 @@
 }
 
 .btn-manage {
-    background-color: #ac3232;
+    background-color: #46828f;
     display: none;
     border: 0;
     font-weight: bold;
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 13pt;
     padding-left: 50px !important;
     padding-right: 50px !important;
@@ -158,11 +158,11 @@
 }
 
 .btn-manage:hover {
-    background-color: #992c2c;
+    background-color: #54a2b3;
 }
 
 .btn-manage:active {
-    background-color: #832424 !important;
+    background-color: #54a2b3 !important;
 }
 
 .insight-content {

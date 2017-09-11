@@ -599,16 +599,16 @@ body {
 }
 
 .btn.campaign-list {
-    background-color: #a3a3a3 !important;
+    background-color: #fb6624 !important;
     color: white;
-    border-radius: 10px;
+    border-radius: 5px;
     margin-top: 10px;
     padding: 5px 30px !important;
     float: right;
 }
 
 .campaign-list.btn:hover {
-    background-color: #878787 !important;
+    background-color: #ff8440 !important;
 }
 
 .campaign-list-disabled {
@@ -1152,11 +1152,12 @@ input.search {
     height: 32px;
 }
 
-a>.campaign-name {
+.campaign-card a {
     font-weight: bold;
-    color: inherit;
     font-size: 14pt;
+    color: #555;
 }
+
 .campaign-start-date {
     font-style: italic;
 }
@@ -1196,6 +1197,15 @@ a>.campaign-name {
 
 .campaign-progress-bar {
     text-align: right;
+}
+
+.campaign-progress-bar .progress-bar {
+    background-color: #57c962 !important;
+}
+
+.campaign-progress-bar .progress {
+    margin-top: 5px;
+    height: 12px;
 }
 
 .ellipsis {
