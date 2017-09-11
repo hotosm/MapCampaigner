@@ -223,6 +223,7 @@
         var tag = "{{ tag }}";
         var currentUrl = '';
         var currentUser = '';
+        var initialLoad = true;
 
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
@@ -594,7 +595,14 @@
                         valueNames: ['campaign-name', 'campaign-start-date']
                     }
                     var campaignList = new List('campaign-list', options);
+
                     $('#sort-campaign-by-name').click();
+
+                    if(initialLoad) {
+                        initialLoad = false;
+                    } else {
+                        $('#sort-campaign-by-name').click();
+                    }
                 }
             });
         }
