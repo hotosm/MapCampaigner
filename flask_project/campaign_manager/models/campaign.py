@@ -543,9 +543,9 @@ class Campaign(JsonModel):
             if 'page' in kwargs:
                 page = int(kwargs['page'][0])
 
-            start_index = (page-1) * per_page
+            start_index = (page - 1) * per_page
 
-            campaigns = campaigns[start_index:start_index+per_page]
+            campaigns = campaigns[start_index:start_index + per_page]
 
         return campaigns
 
@@ -625,9 +625,9 @@ class Campaign(JsonModel):
             if 'page' in kwargs:
                 page = int(kwargs['page'][0])
 
-            start_index = (page-1) * per_page
+            start_index = (page - 1) * per_page
 
-            campaigns = campaigns[start_index:start_index+per_page]
+            campaigns = campaigns[start_index:start_index + per_page]
 
         return campaigns
 
