@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div id="campaign-map"></div>
+                <div id="campaign-map" class="nearest-option"></div>
             </div>
         </div>
     </div>
@@ -246,13 +246,15 @@
             if (e.keyCode == 13) {
                 var limitPage = $("#limit-page").val();
                 Cookies.set('limit_page', limitPage);
+                clearMap();
                 getCampaigns(currentUrl, currentUser, limitPage);
             }
         });
 
         $('#limit-page').focusout(function (e) {
             var limitPage = $("#limit-page").val();
-                Cookies.set('limit_page', limitPage);
+            Cookies.set('limit_page', limitPage);
+            clearMap();
             getCampaigns(currentUrl, currentUser, limitPage);
         });
 
@@ -494,36 +496,39 @@
                             '<a href="/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
                         '</li>');
 
-                        // Add campaign layer
-                        var campaignLayer = L.geoJson(campaign['geometry'], {
-                            onEachFeature: function (feature, layer) {
-                                // Check if feature is a polygon
-                                if (feature.geometry.type === 'Polygon') {
-                                    // Don't stroke and do opaque fill
-                                    layer.setStyle({
-                                        'weight': 0.3,
-                                        'fillOpacity': 0.2,
-                                        'color': '#FF5722'
-                                    });
+                        {% if not all %}
+                            // Add campaign layer
+                            var campaignLayer = L.geoJson(campaign['geometry'], {
+                                onEachFeature: function (feature, layer) {
+                                    // Check if feature is a polygon
+                                    if (feature.geometry.type === 'Polygon') {
+                                        // Don't stroke and do opaque fill
+                                        layer.setStyle({
+                                            'weight': 0.3,
+                                            'fillOpacity': 0.2,
+                                            'color': '#FF5722'
+                                        });
+                                    }
                                 }
-                            }
-                        }).addTo(mapLayers);
+                            }).addTo(mapLayers);
 
-                        var bounds = campaignLayer.getBounds();
-                        var center = bounds.getCenter();
+                            var bounds = campaignLayer.getBounds();
+                            var center = bounds.getCenter();
 
-                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
-                        marker.bindPopup(
-                            '<div class="campaign-marker"><a href="/campaign/'+
-                                campaign['uuid'] +'"> ' +
-                                campaign['name'] +
-                            '</a></div>'
-                        );
+                            var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                            marker.bindPopup(
+                                '<div class="campaign-marker"><a href="/campaign/'+
+                                    campaign['uuid'] +'"> ' +
+                                    campaign['name'] +
+                                '</a></div>'
+                            );
+                        {% endif %}
                     });
 
                     $('#panel-campaign').LoadingOverlay("hide");
 
-                    {% if all %}
+                    {% if not all %}
+                        map.invalidateSize();
                         map.fitBounds(mapLayers.getBounds());
                     {% endif %}
 
