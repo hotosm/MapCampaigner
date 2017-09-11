@@ -1133,7 +1133,7 @@ a>.campaign-name {
     border: 1px solid #E7E7E7;
     box-shadow: 0 0 3px #d1d1d1;
     border-radius: 2px;
-    height: 235px;
+    height: 240px;
 }
 
 .campaign-start-date {
@@ -1170,6 +1170,7 @@ a>.campaign-name {
     -webkit-line-clamp: 2;
     line-height: 1.5em;
     height: 3em;
+    font-size: 10pt;
 }
 
 .campaign-progress-bar {

@@ -12,7 +12,10 @@
                 <div style="text-align: center; margin-top: 10px">
                     <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
                         <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
-                    <p><a class="underline-text" href="#">Display inactive campaigns</a></p>
+                    <p>
+                        <a class="underline-text" href="javascript:void(0)" id="display-inactive" style="display: none;">Display inactive campaigns</a>
+                        <a class="underline-text" href="javascript:void(0)" id="hide-inactive" style="display: none">Hide inactive campaigns</a>
+                    </p>
                 </div>
                 <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
                     <table class="home-option">
@@ -176,6 +179,17 @@
                 $('#campaigns-select').val("all");
             {% endif %}
 
+            var campaignStatus = Cookies.get('campaign-status');
+            if(!campaignStatus) {
+                campaignStatus = 'active';
+            }
+
+            if(campaignStatus === 'active') {
+                $('#display-inactive').show();
+            } else if(campaignStatus === 'all') {
+                $('#hide-inactive').show();
+            }
+
         });
 
         var map = L.map('campaign-map').setView([0, 0], 2);
@@ -244,19 +258,57 @@
 
         $("#limit-page").on('keyup', function (e) {
             if (e.keyCode == 13) {
-                var limitPage = $("#limit-page").val();
-                Cookies.set('limit_page', limitPage);
-                clearMap();
-                getCampaigns(currentUrl, currentUser, limitPage);
+                updateLimitPage();
             }
         });
 
-        $('#limit-page').focusout(function (e) {
-            var limitPage = $("#limit-page").val();
-            Cookies.set('limit_page', limitPage);
-            clearMap();
-            getCampaigns(currentUrl, currentUser, limitPage);
+        $('#display-inactive').click(function () {
+            Cookies.set('campaign-status', 'all');
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+
+            $('#display-inactive').hide();
+            $('#hide-inactive').show();
         });
+
+        $('#hide-inactive').click(function () {
+            Cookies.set('campaign-status', 'active');
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+
+            $('#display-inactive').show();
+            $('#hide-inactive').hide();
+        })
+
+        $('#limit-page').focusout(function (e) {
+            updateLimitPage();
+        });
+
+        function updateLimitPage() {
+            var limitPage = $("#limit-page").val();
+            var oldLimitPage = Cookies.get('limit_page');
+            if(oldLimitPage) {
+                if(oldLimitPage != limitPage) {
+                    Cookies.set('limit_page', limitPage);
+                    clearMap();
+                    getCampaigns(currentUrl, currentUser, limitPage);
+                }
+            }
+        }
 
         function participate() {
             var participateUrl = "/participate"
@@ -378,9 +430,12 @@
                 url = "/campaigns";
             {% endif %}
 
-            var campaign_status = '/active';
+            var campaign_status = Cookies.get('campaign-status');
+            if(!campaign_status) {
+                campaign_status = 'active';
+            }
 
-            url += campaign_status;
+            url += '/' + campaign_status;
 
             if(tag) {
                 url += '/'+tag;
@@ -432,6 +487,9 @@
                         var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
                         var remainingDays = endDate.diff(moment(), 'days') + 1;
                         var progress = 100 - (remainingDays / campaignRange * 100);
+                        if(progress>100) {
+                            progress = 100;
+                        }
                         var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
