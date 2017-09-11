@@ -3,7 +3,11 @@ __date__ = '10/05/17'
 
 from datetime import datetime, date, timedelta
 import bisect
+import math
 import copy
+import hashlib
+import requests
+import shutil
 import json
 import os
 import pygeoj
@@ -49,6 +53,7 @@ class Campaign(JsonModel):
     map_type = ''
     dashboard_settings = ''
     link_to_omk = False
+    thumbnail = ''
 
     def __init__(self, uuid=None):
         if uuid:
@@ -66,6 +71,10 @@ class Campaign(JsonModel):
         self.version += 1
         if uploader:
             self.edited_by = uploader
+
+        # Generate map
+        self.generate_static_map()
+
         # save updated campaign to json
         data = self.to_dict()
         Campaign.validate(data, self.uuid)
@@ -84,6 +93,32 @@ class Campaign(JsonModel):
             )
         except Exception as e:
             print(e)
+
+    def generate_static_map(self):
+        """
+        Download static map from http://staticmap.openstreetmap.de with marker,
+        then save it thumbnail folder
+        """
+        url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
+              'center=0.0,0.0&zoom=1&size=512x512&maptype=mapnik'
+        polygon = self.get_union_polygons()
+        marker_url = '&markers=%s,%s,lightblue' % (
+            polygon.centroid.y, polygon.centroid.x)
+        url = url + marker_url
+
+        safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
+        image_path = os.path.join(
+                Campaign.get_json_folder() + '/thumbnail', safe_name
+        )
+
+        if not os.path.exists(image_path):
+            request = requests.get(url, stream=True)
+            if request.status_code == 200:
+                with open(image_path, 'wb') as f:
+                    request.raw.decode_content = True
+                    shutil.copyfileobj(request.raw, f)
+
+        self.thumbnail = safe_name
 
     def update_participants_count(self, participants_count, campaign_type):
         """ Update paricipants count.
@@ -364,6 +399,11 @@ class Campaign(JsonModel):
                 Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
+    def get_thumbnail_folder():
+        return os.path.join(
+                Campaign.get_json_folder(), 'thumbnail')
+
+    @staticmethod
     def serialize(data):
         """Serialize campaign dictionary
 
@@ -447,7 +487,7 @@ class Campaign(JsonModel):
         :return: Campaigns that found or none
         :rtype: [Campaign]
         """
-        name_list = []
+        sort_list = []
         campaigns = []
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
@@ -462,27 +502,51 @@ class Campaign(JsonModel):
                             elif value not in campaign_dict[key]:
                                 allowed = False
 
-                    if campaign.end_date:
+                    if campaign_status == 'all':
+                        allowed = True
+                    elif campaign.end_date:
                         end_datetime = datetime.strptime(
                                 campaign.end_date,
                                 "%Y-%m-%d")
 
-                        if campaign_status:
-                            if campaign_status == 'active':
-                                allowed = end_datetime.date() > (
-                                    date.today() - timedelta(days=1)
-                                )
-                            elif campaign_status == 'inactive':
-                                allowed = end_datetime.date() <= date.today()
+                        if campaign_status == 'active':
+                            allowed = end_datetime.date() > date.today()
+                        elif campaign_status == 'inactive':
+                            allowed = end_datetime.date() <= date.today()
                     else:
                         allowed = False
 
                     if allowed:
-                        position = bisect.bisect(name_list, campaign.name)
-                        bisect.insort(name_list, campaign.name)
+                        sort_object = campaign.name
+
+                        if 'sort_by' in kwargs:
+                            if kwargs['sort_by'][0] == 'recent':
+
+                                sort_object = int(
+                                        datetime.today().strftime('%s')
+                                            ) - int(
+                                        datetime.strptime(
+                                                campaign.edited_at,
+                                                "%a %b %d %H:%M:%S %Y"
+                                        ).strftime('%s'))
+
+                        position = bisect.bisect(sort_list, sort_object)
+                        bisect.insort(sort_list, sort_object)
                         campaigns.insert(position, campaign)
                 except Campaign.DoesNotExist:
                     pass
+
+        if 'per_page' in kwargs:
+            per_page = int(kwargs['per_page'][0])
+
+            page = 1
+            if 'page' in kwargs:
+                page = int(kwargs['page'][0])
+
+            start_index = (page - 1) * per_page
+
+            campaigns = campaigns[start_index:start_index + per_page]
+
         return campaigns
 
     @staticmethod
@@ -496,31 +560,38 @@ class Campaign(JsonModel):
         :type coordinate: str
         """
         campaigns = []
+        sort_list = []
         coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
                 [float(coordinates[1]), float(coordinates[0])])
-        distance = 3
-        circle_buffer = point.buffer(distance)
+        per_page = None
+        is_close = False
+        circle_buffer = None
+
+        if 'per_page' in kwargs:
+            is_close = True
+            per_page = int(kwargs['per_page'][0])
+        else:
+            circle_buffer = point.buffer(4)
 
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    #
+
                     polygon = campaign.get_union_polygons()
-                    if circle_buffer.contains(polygon):
-                        campaign_dict = campaign.to_dict()
+
+                    if circle_buffer:
+                        if circle_buffer.contains(polygon):
+                            is_close = True
+
+                    if is_close:
 
                         allowed = True
 
-                        if kwargs:
-                            for key, value in kwargs.items():
-                                if key not in campaign_dict:
-                                    allowed = False
-                                elif value not in campaign_dict[key]:
-                                    allowed = False
-
-                        if campaign.end_date:
+                        if campaign_status == 'all':
+                            allowed = True
+                        elif campaign.end_date:
                             end_datetime = datetime.strptime(
                                     campaign.end_date,
                                     "%Y-%m-%d")
@@ -533,9 +604,30 @@ class Campaign(JsonModel):
                             allowed = False
 
                         if allowed:
-                            campaigns.append(campaign)
+                            if per_page:
+                                distance = point.distance(polygon.centroid)
+                                position = bisect.bisect(sort_list,
+                                                         distance)
+                                bisect.insort(sort_list, distance)
+                                campaigns.insert(position, campaign)
+                            else:
+                                campaigns.append(campaign)
+
+                        if not per_page:
+                            is_close = False
+
                 except Campaign.DoesNotExist:
                     pass
+
+        if per_page:
+
+            page = 1
+            if 'page' in kwargs:
+                page = int(kwargs['page'][0])
+
+            start_index = (page - 1) * per_page
+
+            campaigns = campaigns[start_index:start_index + per_page]
 
         return campaigns
 

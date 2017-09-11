@@ -622,7 +622,7 @@ function renderInsightFunctionsTypes(username) {
                     '</div>'+
                     '<div class="col-lg-2 map-side-list-action">'+
                         '<div class="side-action '+ active +'">'+
-                            '<i class="fa fa-eye" data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide insight summary" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
+                            '<i class="fa fa-bar-chart" data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide insight summary" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+

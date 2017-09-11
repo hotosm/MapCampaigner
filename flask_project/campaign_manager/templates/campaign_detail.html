@@ -37,6 +37,17 @@
                     <span class="grey-italic">No description</span>
                 {% endif %}
             </p>
+
+            <div class="detail-button-wrapper" style="margin-top: 20px;">
+                <div class="btn-group btn-share-group" role="group" aria-label="...">
+                    {% if link_to_omk %}
+                        <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+                    {% endif %}
+                    <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
+                    <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
+                </div>
+            </div>
         </div>
         <div class="col-lg-5">
             <div class="panel panel-default detail-panel-information">
@@ -92,20 +103,14 @@
                             {% endif %}
                         </p>
                     </div>
-                    <div class="detail-button-wrapper">
-                        <div class="btn-group btn-share-group" role="group" aria-label="...">
-                            {% if link_to_omk %}
-                                <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-                            {% endif %}
-                            <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
-                            <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
-                        </div>
 
+                    <div class="button-manage">
+                        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="row">
@@ -114,6 +119,23 @@
                 <div class="panel-body">
                     <div class="row side-panel-wrapper">
                         <div class="col-lg-3 map-side-panel">
+                            <div class="map-side-list">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="pull-left map-side-list-name">
+                                            Areas Covered
+                                        </div>
+                                        <div class="pull-right map-side-list-number">
+                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 map-side-list-action">
+                                        <div class="side-action active">
+                                            <i class="fa fa-globe" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="map-side-list ">
                                 <div class="row">
 
@@ -126,8 +148,8 @@
                                     </span>
                                 </div>
                                 <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action inactive-panel">
-                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    <div class="side-action active" id="area-covered-button">
+                                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
                                     </div>
                                 </div>
                                 </div>
@@ -144,24 +166,6 @@
                                     </div>
                                     <div class="col-lg-2 map-side-list-action">
                                         <div class="side-action inactive-panel">
-                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="map-side-list">
-                                <div class="row">
-                                    <div class="col-lg-10">
-                                        <div class="pull-left map-side-list-name">
-                                            Areas Covered
-                                        </div>
-                                        <div class="pull-right map-side-list-number">
-                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 map-side-list-action">
-                                        <div class="side-action inactive-panel">
-                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -261,10 +265,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="button-manage">
-        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
     </div>
 
 {% endblock %}
@@ -384,7 +384,7 @@
                             '</div>'+
                                 '<div class="col-lg-2 map-side-list-action">'+
                                     '<i data-toggle="tooltip" data-placement="top" data-original-title="Locate project" class="fa fa-map-pin" onclick="pointProjectMap(this, ' + data['projectId'] + ')" style="margin-right: 10px" aria-hidden="true"></i>'+
-                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide project in map" class="fa fa-eye active" aria-hidden="true" onclick="toggleProjectMap(this, ' + data['projectId'] + ')"></i>'+
+                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide project in map" class="fa fa-bar-chart active" aria-hidden="true" onclick="toggleProjectMap(this, ' + data['projectId'] + ')"></i>'+
                                 '</div>'+
                             '</div>'
                         );
@@ -689,6 +689,12 @@
                 showNotifications(app + ' is not available in your current device', 'danger');
             }
         }
+
+        $('#area-covered-button').click(function (e) {
+            $('html, body').animate({
+                scrollTop: $("#user-engagement-panel").offset().top
+            }, 1000);
+        });
 
     </script>
 

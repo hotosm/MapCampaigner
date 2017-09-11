@@ -3,11 +3,18 @@ import json
 import os
 import shutil
 from datetime import datetime
+
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
 
 from bs4 import BeautifulSoup
-from flask import request, render_template, Response, abort
+from flask import (
+    request,
+    render_template,
+    Response,
+    abort,
+    send_file
+)
 
 from app_config import Config
 from campaign_manager import campaign_manager
@@ -772,6 +779,14 @@ def about():
 @campaign_manager.route('/how-it-works')
 def how_it_works():
     return render_template('how_it_works.html')
+
+
+@campaign_manager.route('/thumbnail/<image>')
+def thumbnail(image):
+    map_image = os.path.join(Campaign.get_thumbnail_folder(), image)
+    if not os.path.exists(map_image):
+        return send_file('./campaign_manager/static/img/no_map.png')
+    return send_file(map_image)
 
 
 def not_found_page(error):

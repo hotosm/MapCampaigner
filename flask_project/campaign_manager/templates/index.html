@@ -1,83 +1,80 @@
 {% extends 'new_base.html' %}
 
 {% block header_content %}
-        <div class="home-header">
-            <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>
-                    </div>
+
+    <!-- List Javascript  -->
+    <script type="text/javascript" src="/static/libs/list.min.js"></script>
+    <script type="text/javascript" src="/static/libs/ellipsis.js"></script>
+
+    <div class="v2-home-header">
+        <div class="row">
+            <div class="col-lg-6" style="height: 220px">
+                <div style="text-align: center; margin-top: 10px">
+                    <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
+                    <p>
+                        <a class="underline-text" href="javascript:void(0)" id="display-inactive" style="display: none;">Display inactive campaigns</a>
+                        <a class="underline-text" href="javascript:void(0)" id="hide-inactive" style="display: none">Hide inactive campaigns</a>
+                    </p>
+                </div>
+                <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
+                    <table class="home-option">
+                        <tr class="home-option">
+                            <td id="showing-div" class="home-option">Showing:</td>
+                            <td class="home-option">
+                                <select class="form-control" id="campaigns-select">
+                                    <option value="nearest">nearest</option>
+                                    <option value="all">all</option>
+                                </select>
+                            </td>
+                            <td class="home-option nearest-option">
+                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
+                            </td>
+                            <td class="home-option nearest-option">
+                                campaigns
+                            </td>
+                            <td class="home-option nearest-option"><input type="checkbox" id="check-show-map" checked> show map</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
+            <div class="col-lg-6">
+                <div id="campaign-map" class="nearest-option"></div>
             </div>
-            <div class="col-lg-2 header-info">
-                <span class="header-number" id="active-campaign-number">0</span>
-                <span class="header-number-text">active campaigns</span>
-            </div>
-
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
-            </div>
-            <div class="col-lg-2 header-info crimson">
-                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
-            </div>
-
         </div>
+    </div>
 {% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-custom">
-                <div class="panel-heading">
-                    <div id="campaign-map"></div>
-                </div>
-                <div id="panel-campaign">
-                    <div class="panel-body">
-                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
+    <div class="row" id="campaign-list">
 
-                    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">All Campaigns</span>
-                    </button>
+        <div class="row" style="margin-bottom: 20px">
 
-                    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">Nearest Campaigns</span>
-                    </button>
-
-
-                    <table id="campaign-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    NAME
-                                </th>
-                                <th>
-                                    TYPES
-                                </th>
-                                <th>
-                                    PARTICIPANTS
-                                </th>
-                                <th>
-                                    ACTION
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
+            <div class="col-lg-6" id="search-campaign">
+                <!-- class="search" automagically makes an input a search field. -->
+                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
+                <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
             </div>
 
+            <div class="col-lg-6" style="text-align: right">
+                <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
+                    Sort By Name
+                </button>
+                <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
+                    Sort By Date
+                </button>
+                <select class="form-control" id="filter-select" style="width: 40%;float: right">
+                    <option value="name">Sort By Name</option>
+                    <option value="date">Sort By Date</option>
+                </select>
+            </div>
+        </div>
 
+        <div class="row">
+        <ul class="list card-wrapper">
+
+        </ul>
         </div>
 
     </div>
@@ -172,6 +169,27 @@
                    location.href='/all';
                 }
             }
+
+            {% if not all %}
+                $('#campaigns-select').val("nearest");
+                var limitPage = Cookies.get('limit_page');
+                if(limitPage)
+                    $('#limit-page').val(Cookies.get('limit_page'));
+            {% else %}
+                $('#campaigns-select').val("all");
+            {% endif %}
+
+            var campaignStatus = Cookies.get('campaign-status');
+            if(!campaignStatus) {
+                campaignStatus = 'active';
+            }
+
+            if(campaignStatus === 'active') {
+                $('#display-inactive').show();
+            } else if(campaignStatus === 'all') {
+                $('#hide-inactive').show();
+            }
+
         });
 
         var map = L.map('campaign-map').setView([0, 0], 2);
@@ -197,42 +215,101 @@
 
     <script type="text/javascript">
 
-        var table = $('#campaign-table').DataTable({
-            "lengthChange": false
-        });
+        var table = null;
         $('.dataTables_filter').addClass('pull-left');
         var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
         var tag = "{{ tag }}";
+        var currentUrl = '';
+        var currentUser = '';
+        var initialLoad = true;
+
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
-        var homeHeaderTop = $('.home-header').offset().top;
+        $('#check-show-map').click(function () {
+           if( $(this).is(':checked') ){
+               $('#campaign-map').show();
+           } else{
+               $('#campaign-map').hide();
+           }
+        });
 
-        $(window).scroll(function() {
-            var currentScroll = $(window).scrollTop();
-
-            if(currentScroll >= homeHeaderTop) {
-                $('.home-header').css({
-                    position: 'fixed',
-                    top: '0',
-                    width: '100%',
-                    'z-index': '9999'
-                })
-                $('#first-row').css({
-                    'margin-top':'78px'
-                });
-            } else {
-                $('.home-header').css({
-                    position: 'static'
-                })
-                $('#first-row').css({
-                    'margin-top':'0'
-                });
+        $('#filter-select').change(function () {
+            var value = this.value;
+            if(value == 'name') {
+                $('#sort-campaign-by-name').click();
+            } else if(value == 'date') {
+                $('#sort-campaign-by-date').click();
             }
         });
+
+        $('#campaigns-select').change(function () {
+            var value = this.value;
+            if(value == 'all') {
+                Cookies.set('user_location_setting', 'all');
+                location.href='/all'
+            } else if(value == 'nearest') {
+                Cookies.set('user_location_setting', 'nearest');
+                location.href='/'
+            }
+        });
+
+        $("#limit-page").on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                updateLimitPage();
+            }
+        });
+
+        $('#display-inactive').click(function () {
+            Cookies.set('campaign-status', 'all');
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+
+            $('#display-inactive').hide();
+            $('#hide-inactive').show();
+        });
+
+        $('#hide-inactive').click(function () {
+            Cookies.set('campaign-status', 'active');
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+
+            $('#display-inactive').show();
+            $('#hide-inactive').hide();
+        })
+
+        $('#limit-page').focusout(function (e) {
+            updateLimitPage();
+        });
+
+        function updateLimitPage() {
+            var limitPage = $("#limit-page").val();
+            var oldLimitPage = Cookies.get('limit_page');
+            if(oldLimitPage) {
+                if(oldLimitPage != limitPage) {
+                    Cookies.set('limit_page', limitPage);
+                    clearMap();
+                    getCampaigns(currentUrl, currentUser, limitPage);
+                }
+            }
+        }
 
         function participate() {
             var participateUrl = "/participate"
@@ -253,26 +330,17 @@
             }
             clearMap();
             clearTable();
-            getCampaigns(url, currentUser);
             getTotalCampaigns();
             {% if not all %}
-                $('#all-campaigns').show();
+                var limitPage = $('#limit-page').val();
+                getCampaigns(url, currentUser, limitPage);
+                $('.nearest-option').show();
             {% else %}
-                $('#nearest-campaigns').show();
+                getCampaigns(url, currentUser);
             {% endif %}
         }
 
         $('.remove-tag').click(function () {
-            location.href='/'
-        });
-
-        $('#all-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'all');
-            location.href='/all'
-        });
-
-        $('#nearest-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'nearest');
             location.href='/'
         });
 
@@ -310,7 +378,7 @@
         }
 
         function clearTable() {
-            table.clear().draw('false');
+            // table.clear().draw('false');
         }
 
         function getBrowserLocation() {
@@ -321,7 +389,7 @@
                 var zoom = 10;
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
                 var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
-                getCampaigns(url);
+                getCampaigns(url, null);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
             }
@@ -330,7 +398,7 @@
                 console.log('Error get browser location');
                 clearMap();
                 clearTable();
-                getCampaigns();
+                getCampaigns(null, null);
             }
         }
 
@@ -344,7 +412,15 @@
             })
         }
 
-        function getCampaigns(url, user) {
+        function getCampaigns(url, user, limit) {
+
+            if(url) {
+                currentUrl = url;
+            }
+
+            if(user) {
+                currentUser = user;
+            }
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
@@ -355,16 +431,26 @@
                 url = "/campaigns";
             {% endif %}
 
-            var campaign_status = '/active';
+            var campaign_status = Cookies.get('campaign-status');
+            if(!campaign_status) {
+                campaign_status = 'active';
+            }
 
-            url += campaign_status;
+            url += '/' + campaign_status;
 
             if(tag) {
                 url += '/'+tag;
             }
 
+            url += '?';
+
+            if(limit) {
+                url += 'per_page='+limit+'&';
+            }
+
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
+            $('.card-wrapper').html('');
 
             var participants = [];
 
@@ -386,7 +472,7 @@
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
                             action_button = '<button type="button" href="#" class="campaign-list btn"'+
                                                 'onclick="location.href=\'/edit/'+campaign['uuid']+'\'">'+
-                                                '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
+                                                '<span class="pull-left">Manage</span>'+
                                              '</button>'
                         }
 
@@ -394,52 +480,129 @@
                             if($.inArray(manager, participants)==-1) {
                                 participants.push(manager);
                             }
-                        })
+                        });
 
-                        table.row.add([
-                            '<span class="campaign-td"><a href="/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
-                            '<span class="tag">'+types+'</span>',
-                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
-                            action_button
-                        ]).draw( false );
+                        // Campaign progress
+                        var startDate = moment(campaign['start_date'], 'YYYY-MM-DD', true);
+                        var endDate = moment(campaign['end_date'], 'YYYY-MM-DD', true);
+                        var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
+                        var remainingDays = endDate.diff(moment(), 'days') + 1;
+                        var progress = 100 - (remainingDays / campaignRange * 100);
+                        if(progress>100) {
+                            progress = 100;
+                        }
+                        var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
+                                                    '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
+                                                    '</div>'+
+                                                '</div>'+ Math.round(progress) + '%';
+
+                        var tags = '';
+
+                        $.each(campaign['types'], function(index, type) {
+                            tags += '<span class="campaign-tags">'+ type['type'] +'</span> ';
+                        });
+
+                        $('.card-wrapper').append(
+                            '<li class="col-lg-6">'+
+                                '<div class="campaign-card panel">'+
+                                    '<div class="panel-heading">'+
+                                        '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name">'+
+                                            campaign['name'] +
+                                        '</div></a>'+
+                                        '<div class="row">' +
+                                            '<div class="col-lg-6">'+
+                                                '<div class="campaign-start-date">'+
+                                                    'started '+ campaign['start_date'] +
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="col-lg-6">'+
+                                                '<div class="campaign-progress-bar">'+
+                                                    campaignProgress +
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>' +
+                                        '<div class="row">'+
+                                            '<div class="col-lg-8">'+
+                                                '<div>'+
+                                                    tags+
+                                                '</div>'+
+                                                '<div class="campaign-description ellipsis multiline">'+
+                                                    campaign['description']+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="col-lg-4 campaign-thumbnail">'+
+                                                '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div class="row">'+
+                                            '<div class="col-lg-8">'+
+                                                '<div class="campaign-creator">'+
+                                                        'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class=col-lg-4>'+
+                                                action_button+
+                                            '</div>'+
+                                        '</div>' +
+                                    '</div>'+
+                                '</div>'+
+                            '</li>');
+
+                        $(".ellipsis").ellipsis();
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+
                             '<a href="/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
                         '</li>');
 
-                        // Add campaign layer
-                        var campaignLayer = L.geoJson(campaign['geometry'], {
-                            onEachFeature: function (feature, layer) {
-                                // Check if feature is a polygon
-                                if (feature.geometry.type === 'Polygon') {
-                                    // Don't stroke and do opaque fill
-                                    layer.setStyle({
-                                        'weight': 0.3,
-                                        'fillOpacity': 0.2,
-                                        'color': '#FF5722'
-                                    });
+                        {% if not all %}
+                            // Add campaign layer
+                            var campaignLayer = L.geoJson(campaign['geometry'], {
+                                onEachFeature: function (feature, layer) {
+                                    // Check if feature is a polygon
+                                    if (feature.geometry.type === 'Polygon') {
+                                        // Don't stroke and do opaque fill
+                                        layer.setStyle({
+                                            'weight': 0.3,
+                                            'fillOpacity': 0.2,
+                                            'color': '#FF5722'
+                                        });
+                                    }
                                 }
-                            }
-                        }).addTo(mapLayers);
+                            }).addTo(mapLayers);
 
-                        var bounds = campaignLayer.getBounds();
-                        var center = bounds.getCenter();
+                            var bounds = campaignLayer.getBounds();
+                            var center = bounds.getCenter();
 
-                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
-                        marker.bindPopup(
-                            '<div class="campaign-marker"><a href="/campaign/'+
-                                campaign['uuid'] +'"> ' +
-                                campaign['name'] +
-                            '</a></div>'
-                        );
+                            var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                            marker.bindPopup(
+                                '<div class="campaign-marker"><a href="/campaign/'+
+                                    campaign['uuid'] +'"> ' +
+                                    campaign['name'] +
+                                '</a></div>'
+                            );
+                        {% endif %}
                     });
 
                     $('#panel-campaign').LoadingOverlay("hide");
 
-                    {% if all %}
+                    {% if not all %}
+                        map.invalidateSize();
                         map.fitBounds(mapLayers.getBounds());
                     {% endif %}
+
+                    var options = {
+                        valueNames: ['campaign-name', 'campaign-start-date']
+                    }
+                    var campaignList = new List('campaign-list', options);
+
+                    $('#sort-campaign-by-name').click();
+
+                    if(initialLoad) {
+                        initialLoad = false;
+                    } else {
+                        $('#sort-campaign-by-name').click();
+                    }
                 }
             });
         }

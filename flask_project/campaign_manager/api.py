@@ -1,4 +1,5 @@
 from flask_restful import Resource, Api
+from flask import request
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
@@ -11,15 +12,16 @@ api = Api(campaign_manager)
 class CampaignList(Resource):
     """Shows a list of all campaigns"""
 
-    def get_all_campaign(self, campaign_status):
+    def get_all_campaign(self, campaign_status, args):
         """Returns all campaign from model.
         """
-        return Campaign.all(campaign_status=campaign_status)
+        return Campaign.all(campaign_status=campaign_status, **args)
 
     def get(self, campaign_status):
         """Get all campaigns.
         """
-        campaigns = self.get_all_campaign(campaign_status)
+        args = request.args
+        campaigns = self.get_all_campaign(campaign_status, args)
         campaigns_json = []
 
         for campaign in campaigns:
@@ -30,7 +32,7 @@ class CampaignList(Resource):
 
 class CampaignNearestList(Resource):
     """Show a list of nearest campaigns"""
-    def get_nearest_campaigns(self, coordinate, campaign_status):
+    def get_nearest_campaigns(self, coordinate, campaign_status, args):
         """Returns all nearest campaign.
 
         :param campaign_status: status of campaign, active or inactive
@@ -39,7 +41,7 @@ class CampaignNearestList(Resource):
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str.
         """
-        return Campaign.nearest_campaigns(coordinate, campaign_status)
+        return Campaign.nearest_campaigns(coordinate, campaign_status, **args)
 
     def get(self, campaign_status, coordinate):
         """Get all nearest campaigns.
@@ -47,9 +49,11 @@ class CampaignNearestList(Resource):
         :param coordinate: coordinate of user e.g. -4.1412,1.412
         :type coordinate: str.
         """
+        args = request.args
         campaigns = self.get_nearest_campaigns(
                 coordinate,
-                campaign_status
+                campaign_status,
+                args
         )
         campaigns_json = []
 

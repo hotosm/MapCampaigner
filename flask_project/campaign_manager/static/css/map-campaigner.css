@@ -48,7 +48,7 @@ body {
     #page-wrapper {
         position: inherit;
         margin: 20px 0 0 0;
-        padding: 0 80px;
+        padding: 0 50px;
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -539,7 +539,7 @@ body {
 }
 
 #campaign-map {
-    height: 400px;
+    height: 300px;
     margin-top: 4px;
 }
 
@@ -599,13 +599,16 @@ body {
 }
 
 .btn.campaign-list {
-    background-color: #a3a3a3 !important;
+    background-color: #fb6624 !important;
     color: white;
-    border-radius: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 5px 30px !important;
+    float: right;
 }
 
 .campaign-list.btn:hover {
-    background-color: #878787 !important;
+    background-color: #ff8440 !important;
 }
 
 .campaign-list-disabled {
@@ -797,6 +800,12 @@ body {
 
 .info .pull-right {
     margin-left: 10px !important;
+}
+
+.v2-home-header {
+    padding: 20px;
+    background-color: white;
+    border-bottom: 2px solid #E7E7E7;
 }
 
 .home-header {
@@ -1005,7 +1014,26 @@ body {
     padding-left: 5px;
 }
 
+.campaign-card {
+    padding: 7px;
+    line-height: 16pt;
+    border: 1px solid #E7E7E7;
+    box-shadow: 0 0 3px #d1d1d1;
+    border-radius: 2px;
+    height: 240px;
+}
+
+.campaign-thumbnail img{
+    height:100px;
+    width:100%;
+    float:right;
+}
+
 @media (max-width: 600px) {
+
+    #showing-div {
+        display: none;
+    }
 
 	.footer-basic-centered{
 		padding: 35px;
@@ -1027,6 +1055,18 @@ body {
 	.footer-basic-centered .footer-links a{
 		line-height: 1.8;
 	}
+
+    .campaign-card {
+        height: 250px !important;
+    }
+
+    .campaign-thumbnail img{
+        display: none;
+    }
+
+    #search-campaign {
+        display: none;
+    }
 }
 
 .information {
@@ -1037,10 +1077,146 @@ body {
 }
 
 .nav.navbar-nav {
-    margin-left: 50px;
+    margin-left: 30px;
 }
 
 .grey-italic {
     color: #898989;
     font-style: italic;
+}
+
+#campaign-list ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.active-campaign-text, .active-campaign-text-bold {
+    font-size: 25pt;
+    color: inherit;
+    font-weight: lighter;
+}
+
+.active-campaign-text-bold, .nearest-campaign-text-bold {
+     font-weight: bold;
+}
+
+.nearest-campaign-text-bold, .nearest-campaign-text {
+    font-size: 16pt;
+    color: inherit;
+}
+
+.underline-text {
+    color: inherit;
+    font-size: 14pt;
+    font-weight: 600;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.underline-text:hover {
+    color: #AC3232;
+}
+
+.home-option table, .home-option td, .home-option tr{
+    border: 1px solid #E7E7E7;
+    padding: 15px;
+    font-weight: normal !important;
+}
+
+.home-option table {
+    align-self: center;
+}
+
+input.search {
+    width: 95%;
+    border-radius: 5px;
+    border-top: 1px solid #E7E7E7;
+    border-left: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    display: inline-block;
+    height: 32px;
+}
+
+.search-icon {
+    background-color: white;
+    border-top: 1px solid #E7E7E7;
+    border-right: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    width:7%;
+    margin-left: -2%;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: inline-block;
+    height: 32px;
+}
+
+.campaign-card a {
+    font-weight: bold;
+    font-size: 14pt;
+    color: #555;
+}
+
+.campaign-start-date {
+    font-style: italic;
+}
+
+.campaign-tags {
+    padding: 0 10px;
+    background-color: #e2e2e2;
+    border-radius: 5px;
+}
+
+.campaign-creator {
+    margin-top: 10px;
+    color: grey;
+}
+
+.campaign-creator-name {
+    text-decoration: underline;
+    color: black;
+}
+
+.campaign-name, .campaign-start-date, .campaign-description, .campaign-tags {
+    margin-bottom: 5px;
+}
+
+.campaign-description {
+    margin-top: 10px;
+    overflow: hidden;
+    width: 95%;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5em;
+    height: 3em;
+    font-size: 10pt;
+}
+
+.campaign-progress-bar {
+    text-align: right;
+}
+
+.campaign-progress-bar .progress-bar {
+    background-color: #57c962 !important;
+}
+
+.campaign-progress-bar .progress {
+    margin-top: 5px;
+    height: 12px;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ellipsis.multiline {
+    white-space: normal;
+}
+
+.nearest-option {
+    display: none;
 }
