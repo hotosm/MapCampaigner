@@ -114,7 +114,7 @@ class Campaign(JsonModel):
         if not os.path.exists(image_path):
             request = requests.get(url, stream=True)
             if request.status_code == 200:
-                with open(image_path, 'wb') as f:
+                with open(image_path, 'w+') as f:
                     request.raw.decode_content = True
                     shutil.copyfileobj(request.raw, f)
 
