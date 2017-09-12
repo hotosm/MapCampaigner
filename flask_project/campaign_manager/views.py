@@ -522,6 +522,8 @@ def valid_map_list():
             '&copy; <a href="http://www.openstreetmap.org/copyright">'
             'OpenStreetMap</a> &copy; <a href="https://carto.com/attribution">'
             'CARTO</a>',
+        'http://{s}.aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg':
+            'Tiles &copy; <a href="http://www.ngi.gov.za/">CD:NGI Aerial</a>'
     })
     return valid_map
 
