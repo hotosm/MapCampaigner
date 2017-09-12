@@ -184,7 +184,7 @@
         });
 
         var map = L.map('campaign-map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFkeXgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 15
@@ -396,6 +396,9 @@
                 var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
                 var limitPage = Cookies.get('limit_page')
                 clearMap();
+                if(!limitPage){
+                    limitPage = $('#limit-page').val();
+                }
                 getCampaigns(url, null, limitPage);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
@@ -501,6 +504,9 @@
                         if(progress>100) {
                             progress = 100;
                         }
+                        else if(progress<0) {
+                            progress = 0;
+                        }
                         var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
@@ -598,7 +604,9 @@
 
                     {% if not all %}
                         map.invalidateSize();
-                        map.fitBounds(mapLayers.getBounds());
+                        if(mapLayers.length > 0) {
+                            map.fitBounds(mapLayers.getBounds());
+                        }
                     {% endif %}
 
                     var options = {

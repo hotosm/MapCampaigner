@@ -37,7 +37,6 @@ class Campaign(JsonModel):
     uuid = ''
     name = ''
     campaign_creator = ''
-    campaign_status = ''
     participants_count_per_type = {}
     total_participants_count = 0
     coverage = {}
@@ -60,9 +59,10 @@ class Campaign(JsonModel):
             self.uuid = uuid
             self.json_path = Campaign.get_json_file(uuid)
             self.edited_at = time.ctime(os.path.getmtime(self.json_path))
+            self.geojson_path = Campaign.get_geojson_file(uuid)
             self.parse_json_file()
 
-    def save(self, uploader=None):
+    def save(self, uploader=None, save_to_git=True):
         """Save current campaign
 
         :param uploader: uploader who created
@@ -75,9 +75,13 @@ class Campaign(JsonModel):
         # Generate map
         self.generate_static_map()
 
-        # save updated campaign to json
         data = self.to_dict()
         Campaign.validate(data, self.uuid)
+
+        geometry = data['geometry']
+        del data['geometry']
+
+        # save updated campaign to json
         json_str = Campaign.serialize(data)
         json_path = os.path.join(
                 Campaign.get_json_folder(), '%s.json' % self.uuid
@@ -86,13 +90,23 @@ class Campaign(JsonModel):
         _file.write(json_str)
         _file.close()
 
+        # save geometry campaign to geojson
+        geometry_str = json.dumps(geometry)
+        geometry_path = os.path.join(
+                Campaign.get_json_folder(), '%s.geojson' % self.uuid
+        )
+        _file = open(geometry_path, 'w+')
+        _file.write(geometry_str)
+        _file.close()
+
         # create commit as git
-        try:
-            save_with_git(
-                    'Update campaign - %s' % self.uuid
-            )
-        except Exception as e:
-            print(e)
+        if save_to_git:
+            try:
+                save_with_git(
+                        'Update campaign - %s' % self.uuid
+                )
+            except Exception as e:
+                print(e)
 
     def generate_static_map(self):
         """
@@ -190,6 +204,7 @@ class Campaign(JsonModel):
         If file is corrupted,
         it will raise Campaign.CorruptedFile exception.
         """
+        # campaign data
         if self.json_path:
             try:
                 _file = open(self.json_path, 'r')
@@ -201,6 +216,17 @@ class Campaign(JsonModel):
                 for key, value in content_json.items():
                     if key in attributes:
                         setattr(self, key, value)
+            except json.decoder.JSONDecodeError:
+                raise JsonModel.CorruptedFile
+
+        # geometry data
+        if self.geojson_path:
+            try:
+                _file = open(self.geojson_path, 'r')
+                content = _file.read()
+                geometry = parse_json_string(content)
+                self.geometry = geometry
+                self._content_json['geometry'] = geometry
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
 
@@ -384,6 +410,33 @@ class Campaign(JsonModel):
         )
         return get_survey_json(survey_file)
 
+    def get_current_status(self):
+        """ Get campaign status based on start/end date.
+
+        - active : start date <= now < end date
+        - inactive : start date > now or now >= end date
+        - remote mapping : inactive and self.remote_projects
+
+        :return: status of campaign
+        :rtype: str
+        """
+        start_datetime = datetime.strptime(
+                self.start_date,
+                "%Y-%m-%d")
+        end_datetime = datetime.strptime(
+                self.end_date,
+                "%Y-%m-%d")
+
+        status = 'inactive'
+        if start_datetime.date() <= date.today():
+            if end_datetime.date() > date.today():
+                status = 'active'
+
+        if status == 'inactive':
+            if self.remote_projects:
+                status = 'remote-mapping'
+        return status
+
     # ----------------------------------------------------------
     # coverage functions
     # ----------------------------------------------------------
@@ -445,7 +498,6 @@ class Campaign(JsonModel):
         data['campaign_creator'] = uploader
 
         uuid = data['uuid']
-        data['geometry'] = parse_json_string(data['geometry'])
         data['types'] = parse_json_string(data['types'])
         data['selected_functions'] = parse_json_string(
                 data['selected_functions'])
@@ -464,14 +516,28 @@ class Campaign(JsonModel):
         :type uploader: str
         """
         campaign_data = Campaign.parse_campaign_data(data, uploader)
+        geometry = data['geometry']
+        del data['geometry']
+
         json_str = Campaign.serialize(
                 Campaign.parse_campaign_data(data, uploader)
         )
+
+        # save updated campaign to json
         json_path = os.path.join(
                 Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
+        _file.close()
+
+        # save geometry campaign to geojson
+        geojson_path = os.path.join(
+                Campaign.get_json_folder(),
+                '%s.geojson' % campaign_data['uuid']
+        )
+        _file = open(geojson_path, 'w+')
+        _file.write(json.dumps(parse_json_string(geometry)))
         _file.close()
 
         # create commit as git
@@ -498,26 +564,11 @@ class Campaign(JsonModel):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    allowed = True
-                    if kwargs:
-                        campaign_dict = campaign.to_dict()
-                        for key, value in kwargs.items():
-                            if key not in campaign_dict:
-                                allowed = False
-                            elif value not in campaign_dict[key]:
-                                allowed = False
 
                     if campaign_status == 'all':
                         allowed = True
-                    elif campaign.end_date:
-                        end_datetime = datetime.strptime(
-                                campaign.end_date,
-                                "%Y-%m-%d")
-
-                        if campaign_status == 'active':
-                            allowed = end_datetime.date() > date.today()
-                        elif campaign_status == 'inactive':
-                            allowed = end_datetime.date() <= date.today()
+                    elif campaign_status == campaign.get_current_status():
+                        allowed = True
                     else:
                         allowed = False
 
@@ -592,19 +643,10 @@ class Campaign(JsonModel):
 
                     if is_close:
 
-                        allowed = True
-
                         if campaign_status == 'all':
                             allowed = True
-                        elif campaign.end_date:
-                            end_datetime = datetime.strptime(
-                                    campaign.end_date,
-                                    "%Y-%m-%d")
-
-                            if campaign_status == 'active':
-                                allowed = end_datetime.date() > date.today()
-                            elif campaign_status == 'inactive':
-                                allowed = end_datetime.date() <= date.today()
+                        elif campaign_status == campaign.get_current_status():
+                            allowed = True
                         else:
                             allowed = False
 
@@ -666,6 +708,23 @@ class Campaign(JsonModel):
             raise Campaign.DoesNotExist()
 
     @staticmethod
+    def get_geojson_file(uuid):
+        """ Get path of geojson file of uuid.
+        :param uuid: UUID of json model that to be returned
+        :type uuid: str
+
+        :return: path of json or none if not found
+        :rtype: str
+        """
+        json_path = os.path.join(
+                Campaign.get_json_folder(), '%s.geojson' % uuid
+        )
+        if os.path.isfile(json_path):
+            return json_path
+        else:
+            return None
+
+    @staticmethod
     def validate(data, uuid):
         """Validate found dict based on campaign class.
         uuid should be same as uuid file.
@@ -690,6 +749,12 @@ class Campaign(JsonModel):
         def __init__(self):
             self.message = "Campaign doesn't exist"
             super(Campaign.DoesNotExist, self).__init__(self.message)
+
+    @staticmethod
+    class GeometryDoesNotExist(Exception):
+        def __init__(self):
+            self.message = "Campaign Geometry doesn't exist"
+            super(Campaign.GeometryDoesNotExist, self).__init__(self.message)
 
     @staticmethod
     class InsightsFunctionNotAssignedToCampaign(Exception):

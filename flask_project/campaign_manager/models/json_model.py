@@ -31,6 +31,7 @@ class JsonModel(Version):
         for attribute in self.get_attributes():
             dict[attribute] = getattr(self, attribute)
         dict.pop('json_path')
+        dict.pop('geojson_path')
         return dict
 
     @staticmethod

@@ -11,7 +11,6 @@ import yaml
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
-import numpy
 
 from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
@@ -146,7 +145,11 @@ def load_osm_document_cached(
         if not os.path.exists(file_path):
             try:
                 if post_data:
-                    fetch_osm_with_post(file_path, url_path, post_data)
+                    fetch_osm_with_post(
+                            file_path,
+                            url_path,
+                            post_data,
+                            returns_format='json' if returns_json else 'xml')
                 else:
                     fetch_osm(file_path, url_path)
             except (OverpassBadRequestException, OverpassDoesNotReturnData):

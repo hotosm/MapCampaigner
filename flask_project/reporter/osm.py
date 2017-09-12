@@ -187,7 +187,7 @@ def load_osm_document(file_path, url_path):
     return file_handle
 
 
-def fetch_osm_with_post(file_path, url_path, post_data):
+def fetch_osm_with_post(file_path, url_path, post_data, returns_format='json'):
     """Fetch an osm map and store locally.
 
     :param url_path: The path (relative to the ftp root) from which the
@@ -201,6 +201,9 @@ def fetch_osm_with_post(file_path, url_path, post_data):
     :param post_data: Overpass data
     :type post_data: str
 
+    :param returns_format: Format of the response, could be json or xml
+    :type returns_format: str
+
     :returns: The path to the downloaded file.
 
     """
@@ -210,13 +213,15 @@ def fetch_osm_with_post(file_path, url_path, post_data):
                 url=url_path,
                 data={'data': post_data},
                 headers=headers)
-        regex = '<remark> runtime error:'
-        if re.search(regex, data.text):
-            raise OverpassTimeoutException
 
-        regex = '(elements|meta)'
-        if not re.search(regex, data.text):
-            raise OverpassDoesNotReturnData
+        if returns_format != 'xml':
+            regex = '<remark> runtime error:'
+            if re.search(regex, data.text):
+                raise OverpassTimeoutException
+
+            regex = '(elements|meta)'
+            if not re.search(regex, data.text):
+                raise OverpassDoesNotReturnData
 
         if os.path.exists(file_path):
             os.remove(file_path)

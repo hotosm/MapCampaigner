@@ -107,6 +107,20 @@ log:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) logs dev
 
+shell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker exec -it $(PROJECT_ID)_web /bin/bash
+
+generate-geojson:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker exec -it $(PROJECT_ID)_web /bin/bash -c "python manage.py generate_geometry"
+
 dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"

@@ -52,8 +52,8 @@
         <div class="col-lg-5">
             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div class="detail-campaign-status running">
-                        <i class="fa fa-circle" aria-hidden="true"></i> <label>Running</label>
+                    <div class="detail-campaign-status {{ current_status }}">
+                        <i class="fa fa-circle" aria-hidden="true"></i> <label>{{ current_status }}</label>
                     </div>
                     <div class="detail-campaign-timeline">
                         <span class="pull-left">
@@ -274,6 +274,12 @@
     <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
 
     <script type="text/javascript">
+        var currentStatus = capitalizeFirstLetter(
+             $('.detail-campaign-status label').text()
+        )
+         $('.detail-campaign-status label').html(
+                currentStatus.replace('-',' ')
+         );
 
         var uuid = '{{ uuid }}';
         var managers = {{ campaign_managers|safe }};
@@ -377,7 +383,7 @@
                             '<div class="row summary single-row remote-project-list" style="font-size:9pt;">'+
                                '<div class="col-lg-10" style="padding-top: 0 !important;">'+
                             '<div class="pull-left">'+
-                                '<a target="_blank" href="http://tasks.hotosm.org/project/'+data['projectId']+'" style="word-wrap:break-word;">'+
+                                '<a target="_blank" href="http://tm3.hotosm.org/project/'+data['projectId']+'" style="word-wrap:break-word;">'+
                                 '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
                                 '</a>'+
                             '</div>'+
@@ -491,7 +497,7 @@
 
         function chooseDefault() {
             custom_map.removeFrom(map);
-            default_map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            default_map = L.tileLayer('https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFkeXgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 20
@@ -518,7 +524,7 @@
         var map_type = '{{ map_type }}';
         var attribution = '{{ attribution|safe }}';
         if (!map_type) {
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer('https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFkeXgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 20

@@ -365,6 +365,9 @@ def get_campaign(uuid):
         except TypeError:
             context['start_date_date'] = '-'
             context['start_date_year'] = '-'
+        context['current_status'] = campaign.get_current_status()
+        if context['current_status'] == 'active':
+            context['current_status'] = 'running'
 
         # End date
         try:
@@ -523,7 +526,13 @@ def valid_map_list():
             'OpenStreetMap</a> &copy; <a href="https://carto.com/attribution">'
             'CARTO</a>',
         'http://{s}.aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg':
-            'Tiles &copy; <a href="http://www.ngi.gov.za/">CD:NGI Aerial</a>'
+            'Tiles &copy; <a href="http://www.ngi.gov.za/">CD:NGI Aerial</a>',
+        'https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/'
+        '256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFke'
+        'XgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ':
+            'OpenStreetMap</a> and contributors, under an '
+            '<a href="http://www.openstreetmap.org/copyright" '
+            'target="_parent">open license</a>',
     })
     return valid_map
 

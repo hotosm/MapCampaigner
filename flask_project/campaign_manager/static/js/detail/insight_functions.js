@@ -287,14 +287,18 @@ function calculateCampaignProgress() {
     var remaining_days = end_date.diff(moment(), 'days') + 1;
 
     var progress = 0;
-
     if (remaining_days <= 0) {
         progress = 100;
-        $campaignStatus.removeClass('running');
-        $campaignStatus.addClass('finished');
-        $campaignStatusLabel.html('Finished');
+        if($campaignStatusLabel.text() == 'Inactive') {
+            $campaignStatus.removeClass('running');
+            $campaignStatus.addClass('finished');
+            $campaignStatusLabel.html('Finished');
+        }
     } else {
         progress = 100 - (remaining_days / campaign_range * 100);
+        if(progress < 0){
+            progress = 0
+        }
     }
 
     $('#campaign-progress').css({

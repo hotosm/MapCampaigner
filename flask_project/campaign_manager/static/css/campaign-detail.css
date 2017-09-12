@@ -82,11 +82,11 @@
     background-color: #57c962;
 }
 
-.running {
+.running, .remote-mapping {
     color: #57c962;
 }
 
-.finished {
+.finished ,.inactive {
     color: #ac3232;
 }
 
