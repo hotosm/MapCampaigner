@@ -396,6 +396,9 @@
                 var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
                 var limitPage = Cookies.get('limit_page')
                 clearMap();
+                if(!limitPage){
+                    limitPage = $('#limit-page').val();
+                }
                 getCampaigns(url, null, limitPage);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
@@ -598,7 +601,9 @@
 
                     {% if not all %}
                         map.invalidateSize();
-                        map.fitBounds(mapLayers.getBounds());
+                        if(mapLayers.length > 0) {
+                            map.fitBounds(mapLayers.getBounds());
+                        }
                     {% endif %}
 
                     var options = {
