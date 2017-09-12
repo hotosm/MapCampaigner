@@ -111,7 +111,7 @@ function searchProjects(pageNum, searchText, mapperLevel, mappingTypes, organisa
                 $('#list-projects').append(
                     '<div class="panel panel-default">'+
                     '<div class="panel-body project-detail" data-project-id="'+result['projectId']+'" id="list-'+result['projectId']+'">' +
-                        '<a target="_blank" href="http://tasks.hotosm.org/project/'+result['projectId']+'"> #' + result['projectId'] + ' ' + result['name']+ '</a>' +
+                        '<a target="_blank" href="http://tm3.hotosm.org/project/'+result['projectId']+'"> #' + result['projectId'] + ' ' + result['name']+ '</a>' +
                         '<div class="grey-italic"> Mapped : '+ result['percentMapped']+'%, Validated : '+ result['percentValidated'] +'% </div>'+
                         '<div class="project-detail-desc">'+ result['shortDescription'] + '</div>' +
                         '<button type="button" class="btn btn-success btn-sm" onclick="addProject(this, '+result['projectId']+')">Add Project</button>' +

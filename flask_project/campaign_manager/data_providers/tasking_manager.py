@@ -8,7 +8,7 @@ from reporter import LOGGER
 class TaskingManagerProvider(object):
     """Call tasking manager api, and returns the data."""
 
-    api_url = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com' \
+    api_url = 'http://tm3.hotosm.org' \
               '/api/v1/project/'
     headers = {'Accept-Language': 'en'}
 
