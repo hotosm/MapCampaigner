@@ -296,6 +296,9 @@ function calculateCampaignProgress() {
         }
     } else {
         progress = 100 - (remaining_days / campaign_range * 100);
+        if(progress < 0){
+            progress = 0
+        }
     }
 
     $('#campaign-progress').css({

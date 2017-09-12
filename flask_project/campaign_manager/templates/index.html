@@ -501,6 +501,9 @@
                         if(progress>100) {
                             progress = 100;
                         }
+                        else if(progress<0) {
+                            progress = 0;
+                        }
                         var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
