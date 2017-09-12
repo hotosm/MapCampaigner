@@ -187,7 +187,7 @@ def load_osm_document(file_path, url_path):
     return file_handle
 
 
-def fetch_osm_with_post(file_path, url_path, post_data, returns_format):
+def fetch_osm_with_post(file_path, url_path, post_data, returns_format='json'):
     """Fetch an osm map and store locally.
 
     :param url_path: The path (relative to the ftp root) from which the

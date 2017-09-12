@@ -86,6 +86,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
             except OverpassDoesNotReturnData:
                 error = 'No data from overpass.'
             else:
+                if not overpass_data:
+                    return []
                 try:
                     last_update = overpass_data['last_update']
                     is_updating = overpass_data['updating_status']

@@ -314,6 +314,12 @@ class OverpassProvider(AbstractDataProvider):
             except ValueError:
                 pass
 
+        if not osm_data:
+            safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
+            file_path = os.path.join(config.CACHE_DIR, safe_name)
+            osm_data, osm_doc_time, updating = load_osm_document_cached(
+                    file_path, server_url, query, True)
+
         if osm_data:
             element_ids = {
                 'node': [],
