@@ -14,3 +14,4 @@ shapely
 flask-restful==0.3.6
 PyYAML
 numpy
+Flask-Script
