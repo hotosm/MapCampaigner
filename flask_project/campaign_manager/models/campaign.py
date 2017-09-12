@@ -37,7 +37,6 @@ class Campaign(JsonModel):
     uuid = ''
     name = ''
     campaign_creator = ''
-    campaign_status = ''
     participants_count_per_type = {}
     total_participants_count = 0
     coverage = {}
@@ -411,6 +410,33 @@ class Campaign(JsonModel):
         )
         return get_survey_json(survey_file)
 
+    def get_current_status(self):
+        """ Get campaign status based on start/end date.
+
+        - active : start date <= now < end date
+        - inactive : start date > now or now >= end date
+        - remote mapping : inactive and self.remote_projects
+
+        :return: status of campaign
+        :rtype: str
+        """
+        start_datetime = datetime.strptime(
+                self.start_date,
+                "%Y-%m-%d")
+        end_datetime = datetime.strptime(
+                self.end_date,
+                "%Y-%m-%d")
+
+        status = 'inactive'
+        if start_datetime.date() <= date.today():
+            if end_datetime.date() > date.today():
+                status = 'active'
+
+        if status == 'inactive':
+            if self.remote_projects:
+                status = 'remote-mapping'
+        return status
+
     # ----------------------------------------------------------
     # coverage functions
     # ----------------------------------------------------------
@@ -538,26 +564,11 @@ class Campaign(JsonModel):
             for file in files:
                 try:
                     campaign = Campaign.get(os.path.splitext(file)[0])
-                    allowed = True
-                    if kwargs:
-                        campaign_dict = campaign.to_dict()
-                        for key, value in kwargs.items():
-                            if key not in campaign_dict:
-                                allowed = False
-                            elif value not in campaign_dict[key]:
-                                allowed = False
 
                     if campaign_status == 'all':
                         allowed = True
-                    elif campaign.end_date:
-                        end_datetime = datetime.strptime(
-                                campaign.end_date,
-                                "%Y-%m-%d")
-
-                        if campaign_status == 'active':
-                            allowed = end_datetime.date() > date.today()
-                        elif campaign_status == 'inactive':
-                            allowed = end_datetime.date() <= date.today()
+                    elif campaign_status == campaign.get_current_status():
+                        allowed = True
                     else:
                         allowed = False
 
@@ -632,19 +643,10 @@ class Campaign(JsonModel):
 
                     if is_close:
 
-                        allowed = True
-
                         if campaign_status == 'all':
                             allowed = True
-                        elif campaign.end_date:
-                            end_datetime = datetime.strptime(
-                                    campaign.end_date,
-                                    "%Y-%m-%d")
-
-                            if campaign_status == 'active':
-                                allowed = end_datetime.date() > date.today()
-                            elif campaign_status == 'inactive':
-                                allowed = end_datetime.date() <= date.today()
+                        elif campaign_status == campaign.get_current_status():
+                            allowed = True
                         else:
                             allowed = False
 

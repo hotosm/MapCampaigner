@@ -52,8 +52,8 @@
         <div class="col-lg-5">
             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div class="detail-campaign-status running">
-                        <i class="fa fa-circle" aria-hidden="true"></i> <label>Running</label>
+                    <div class="detail-campaign-status {{ current_status }}">
+                        <i class="fa fa-circle" aria-hidden="true"></i> <label>{{ current_status }}</label>
                     </div>
                     <div class="detail-campaign-timeline">
                         <span class="pull-left">
@@ -274,6 +274,12 @@
     <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
 
     <script type="text/javascript">
+        var currentStatus = capitalizeFirstLetter(
+             $('.detail-campaign-status label').text()
+        )
+         $('.detail-campaign-status label').html(
+                currentStatus.replace('-',' ')
+         );
 
         var uuid = '{{ uuid }}';
         var managers = {{ campaign_managers|safe }};
