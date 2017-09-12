@@ -11,7 +11,6 @@ import yaml
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
-import numpy
 
 from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
