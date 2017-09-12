@@ -365,6 +365,9 @@ def get_campaign(uuid):
         except TypeError:
             context['start_date_date'] = '-'
             context['start_date_year'] = '-'
+        context['current_status'] = campaign.get_current_status()
+        if context['current_status'] == 'active':
+            context['current_status'] = 'running'
 
         # End date
         try:
