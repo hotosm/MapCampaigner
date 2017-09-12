@@ -170,21 +170,6 @@
                 }
             }
 
-            {% if not all %}
-                $('#campaigns-select').val("nearest");
-                var limitPage = Cookies.get('limit_page');
-                if(limitPage)
-                    $('#limit-page').val(Cookies.get('limit_page'));
-            {% else %}
-                $('#campaigns-select').val("all");
-            {% endif %}
-
-            var current_url = window.location.href.split('/');
-            current_url = current_url[current_url.length-1]
-            if(!current_url) {
-                $('#campaigns-select').val("all");
-            }
-
             var campaignStatus = Cookies.get('campaign-status');
             if(!campaignStatus) {
                 campaignStatus = 'active';
@@ -271,6 +256,7 @@
 
         $('#display-inactive').click(function () {
             Cookies.set('campaign-status', 'all');
+            clearMap();
             {% if all %}
                 getCampaigns(currentUrl, currentUser);
             {% else %}
@@ -287,6 +273,7 @@
 
         $('#hide-inactive').click(function () {
             Cookies.set('campaign-status', 'active');
+            clearMap();
             {% if all %}
                 getCampaigns(currentUrl, currentUser);
             {% else %}
@@ -347,10 +334,14 @@
             getTotalCampaigns();
             {% if not all %}
                 var limitPage = $('#limit-page').val();
+                if(limitPage)
+                    $('#limit-page').val(Cookies.get('limit_page'));
+                $('#campaigns-select').val("nearest");
                 getCampaigns(url, currentUser, limitPage);
                 $('.nearest-option').show();
             {% else %}
                 getCampaigns(url, currentUser);
+                $('#campaigns-select').val("all");
             {% endif %}
         }
 
@@ -361,19 +352,19 @@
         function logoutSuccess() {
             clearMap();
             clearTable();
+            $('.nearest-option').hide();
             // Clear cookies
             Cookies.set('user_location_setting', '');
             {% if all %}
                 location.href='/';
             {% endif %}
-            $('#all-campaigns').hide();
-            $('#nearest-campaigns').hide();
         }
 
         if(!auth.authenticated()) {
             {% if all %}
                 location.href='/';
             {% endif %}
+            $('#campaigns-select').val("all");
             getBrowserLocation();
             getTotalCampaigns();
         }
@@ -403,15 +394,20 @@
                 var zoom = 10;
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
                 var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
-                getCampaigns(url, null);
+                var limitPage = Cookies.get('limit_page')
+                clearMap();
+                getCampaigns(url, null, limitPage);
                 userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
                 map.setView(userLocation, zoom);
+                $('#campaigns-select').val('nearest');
+                $('.nearest-option').show();
             }
 
             function errorGetBrowserLocation() {
                 console.log('Error get browser location');
                 clearMap();
                 clearTable();
+                $('#campaigns-select').val('all');
                 getCampaigns(null, null);
             }
         }
