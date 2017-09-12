@@ -1,6 +1,5 @@
 import os
 from flask_script import Manager
-from flask_migrate import MigrateCommand
 
 from app import osm_app
 from campaign_manager.script.generate_geometry import (
@@ -14,8 +13,6 @@ manager = Manager(osm_app)
 @manager.command
 def generate_geometry():
     generate_geometry_script()
-
-manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
     manager.run()
