@@ -17,7 +17,7 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
 }));
 
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFkeXgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ', {
     attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
     'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
     maxZoom: 18
