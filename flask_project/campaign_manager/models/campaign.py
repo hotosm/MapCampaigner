@@ -231,7 +231,6 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
 
-
     def json(self):
         """Returns campaign as json format."""
         return self._content_json
@@ -508,7 +507,8 @@ class Campaign(JsonModel):
 
         # save geometry campaign to geojson
         geojson_path = os.path.join(
-                Campaign.get_json_folder(), '%s.geojson' % campaign_data['uuid']
+                Campaign.get_json_folder(),
+                '%s.geojson' % campaign_data['uuid']
         )
         _file = open(geojson_path, 'w+')
         _file.write(json.dumps(parse_json_string(geometry)))

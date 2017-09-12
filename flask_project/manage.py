@@ -10,9 +10,11 @@ osm_app.config.from_object(os.environ['APP_SETTINGS'])
 
 manager = Manager(osm_app)
 
+
 @manager.command
 def generate_geometry():
     generate_geometry_script()
+
 
 if __name__ == '__main__':
     manager.run()
