@@ -333,7 +333,7 @@
             clearTable();
             getTotalCampaigns();
             {% if not all %}
-                var limitPage = $('#limit-page').val();
+                var limitPage = Cookies.get('limit_page');
                 if(limitPage)
                     $('#limit-page').val(Cookies.get('limit_page'));
                 $('#campaigns-select').val("nearest");
