@@ -8,7 +8,7 @@
 
     <div class="v2-home-header">
         <div class="row">
-            <div class="col-lg-6" style="height: 220px">
+            <div class="col-lg-6">
                 <div style="text-align: center; margin-top: 10px">
                     <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
                         <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
@@ -16,26 +16,6 @@
                         <a class="underline-text" href="javascript:void(0)" id="display-inactive" style="display: none;">Display inactive campaigns</a>
                         <a class="underline-text" href="javascript:void(0)" id="hide-inactive" style="display: none">Hide inactive campaigns</a>
                     </p>
-                </div>
-                <div  style="text-align: center; margin-top: 40px; display: flex; justify-content: center;">
-                    <table class="home-option">
-                        <tr class="home-option">
-                            <td id="showing-div" class="home-option">Showing:</td>
-                            <td class="home-option">
-                                <select class="form-control" id="campaigns-select">
-                                    <option value="nearest">nearest</option>
-                                    <option value="all">all</option>
-                                </select>
-                            </td>
-                            <td class="home-option nearest-option">
-                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
-                            </td>
-                            <td class="home-option nearest-option">
-                                campaigns
-                            </td>
-                            <td class="home-option nearest-option"><input type="checkbox" id="check-show-map" checked> show map</td>
-                        </tr>
-                    </table>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -51,20 +31,40 @@
 
         <div class="row" style="margin-bottom: 20px">
 
-            <div class="col-lg-6" id="search-campaign">
+            <div class="col-md-5 custom-5" id="search-campaign">
                 <!-- class="search" automagically makes an input a search field. -->
                 <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
-                <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
             </div>
 
-            <div class="col-lg-6" style="text-align: right">
+            <div class="col-md-5" style="text-align: center; display: flex; justify-content: center;">
+                    <table class="home-option">
+                        <tr class="home-option">
+                            <td id="showing-div" class="home-option">Showing:</td>
+                            <td class="home-option no-padding">
+                                <select class="form-control" id="campaigns-select">
+                                    <option value="nearest">nearest</option>
+                                    <option value="all">all</option>
+                                </select>
+                            </td>
+                            <td class="home-option nearest-option no-padding">
+                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
+                            </td>
+                            <td class="home-option nearest-option">
+                                campaigns
+                            </td>
+                            <td class="home-option nearest-option"><input type="checkbox" id="check-show-map" checked> show map</td>
+                        </tr>
+                    </table>
+                </div>
+
+            <div class="col-md-2 no-padding" style="text-align: center">
                 <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
                     Sort By Name
                 </button>
                 <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
                     Sort By Date
                 </button>
-                <select class="form-control" id="filter-select" style="width: 40%;float: right">
+                <select class="form-control" id="filter-select" style="width: 80%; display: inline-block">
                     <option value="name">Sort By Name</option>
                     <option value="date">Sort By Date</option>
                 </select>
@@ -507,7 +507,7 @@
                         else if(progress<0) {
                             progress = 0;
                         }
-                        var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
+                        var campaignProgress = '<div class="progress" style="width:82%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
                                                 '</div>'+ Math.round(progress) + '%';
@@ -526,19 +526,19 @@
                                             campaign['name'] +
                                         '</div></a>'+
                                         '<div class="row">' +
-                                            '<div class="col-lg-6">'+
+                                            '<div class="col-xs-6">'+
                                                 '<div class="campaign-start-date">'+
                                                     'started '+ campaign['start_date'] +
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-6">'+
+                                            '<div class="col-xs-6">'+
                                                 '<div class="campaign-progress-bar">'+
                                                     campaignProgress +
                                                 '</div>'+
                                             '</div>'+
                                         '</div>' +
                                         '<div class="row">'+
-                                            '<div class="col-lg-8">'+
+                                            '<div class="col-xs-8">'+
                                                 '<div>'+
                                                     tags+
                                                 '</div>'+
@@ -546,17 +546,17 @@
                                                     campaign['description']+
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-4 campaign-thumbnail">'+
+                                            '<div class="col-xs-4 campaign-thumbnail">'+
                                                 '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
                                             '</div>'+
                                         '</div>'+
                                         '<div class="row">'+
-                                            '<div class="col-lg-8">'+
+                                            '<div class="col-xs-8">'+
                                                 '<div class="campaign-creator">'+
                                                         'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class=col-lg-4>'+
+                                            '<div class=col-xs-4>'+
                                                 action_button+
                                             '</div>'+
                                         '</div>' +
