@@ -608,7 +608,6 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types

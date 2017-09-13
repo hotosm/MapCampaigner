@@ -270,7 +270,18 @@
 }
 
 .map-side-list {
+    min-height: 100px;
     border-bottom: 1px solid #cdcdcd;
+    background-color: #f6f6f6;
+}
+
+.map-side-list.active {
+    background-color: #ffffff;
+    border-right: 2px solid #fc6525;
+}
+
+.map-side-list:hover {
+    cursor: pointer;
 }
 
 .map-side-panel {
@@ -322,9 +333,9 @@
     color: #565656;
 }
 
-.map-side-type {
-    background-color: white;
-}
+/*.map-side-type {*/
+    /*background-color: white;*/
+/*}*/
 
 .type-title {
     height: 60px;
@@ -423,7 +434,7 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 .summary .pull-right {
     font-size: 12pt;
-    color: #fc6525;
+    color: #5f5f5f;
     font-weight: bold;
 }
 
@@ -686,4 +697,17 @@ tr.odd {
     color: #fc6525;
     font-size: 40pt;
     font-weight: 100;
+}
+
+.remote-project-list {
+    margin-bottom: 10px;
+}
+
+.remote-project-list a {
+    color: #fc6525;
+}
+
+.features-collected {
+    font-size: 14pt;
+    color: #565656 !important;
 }

@@ -220,6 +220,7 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+
         $('#check-show-map').click(function () {
            if( $(this).is(':checked') ){
                $('#campaign-map').show();
@@ -318,6 +319,14 @@
                 participateUrl += "?coordinate="+userCoordinate;
             }
             window.location.href = participateUrl;
+        }
+        function openCampaign(event, element, campaignUUID) {
+            location.href = '/campaign/'+ campaignUUID;
+        }
+
+        function openManageCampaign(event, element, campaignUUID) {
+            event.stopPropagation();
+            location.href= '/edit/' + campaignUUID;
         }
 
         function updated(user) {
@@ -484,7 +493,7 @@
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
                             action_button = '<button type="button" href="#" class="campaign-list btn"'+
-                                                'onclick="location.href=\'/edit/'+campaign['uuid']+'\'">'+
+                                                'onclick="openManageCampaign(event, this, \''+campaign['uuid']+'\')">'+
                                                 '<span class="pull-left">Manage</span>'+
                                              '</button>'
                         }
@@ -520,7 +529,7 @@
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
-                                '<div class="campaign-card panel">'+
+                                '<div class="campaign-card panel" onclick="openCampaign(event, this, \''+campaign['uuid']+'\')">'+
                                     '<div class="panel-heading">'+
                                         '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name">'+
                                             campaign['name'] +

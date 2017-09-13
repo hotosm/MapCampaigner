@@ -315,13 +315,9 @@
            $('.map-side-panel').append(
                 '<div class="map-side-list map-side-type" id="type-remote-projects">'+
                     '<div class="row">'+
-                        '<div class="col-lg-10">'+
+                        '<div class="col-lg-12">'+
                             '<div class="pull-left map-side-list-name">'+
                                     'Remote Projects'+
-                            '</div>'+
-                        '</div>'+
-                        '<div class="col-lg-2 map-side-list-action">'+
-                            '<div class="side-action ">'+
                             '</div>'+
                         '</div>'+
                     '</div>'+
@@ -377,9 +373,8 @@
                                 '</a>'+
                             '</div>'+
                             '</div>'+
-                                '<div class="col-lg-2 map-side-list-action">'+
+                                '<div class="col-lg-2">'+
                                     '<i data-toggle="tooltip" data-placement="top" data-original-title="Locate project" class="fa fa-map-pin" onclick="pointProjectMap(this, ' + data['projectId'] + ')" style="margin-right: 10px" aria-hidden="true"></i>'+
-                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide project in map" class="fa fa-bar-chart active" aria-hidden="true" onclick="toggleProjectMap(this, ' + data['projectId'] + ')"></i>'+
                                 '</div>'+
                             '</div>'
                         );
