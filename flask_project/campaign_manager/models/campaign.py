@@ -563,7 +563,10 @@ class Campaign(JsonModel):
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
-                    campaign = Campaign.get(os.path.splitext(file)[0])
+                    campaign_uuid, extension = os.path.splitext(file)
+                    if extension != '.json':
+                        continue
+                    campaign = Campaign.get(campaign_uuid)
 
                     if campaign_status == 'all':
                         allowed = True
@@ -633,7 +636,10 @@ class Campaign(JsonModel):
         for root, dirs, files in os.walk(Campaign.get_json_folder()):
             for file in files:
                 try:
-                    campaign = Campaign.get(os.path.splitext(file)[0])
+                    campaign_uuid, extension = os.path.splitext(file)
+                    if extension != '.json':
+                        continue
+                    campaign = Campaign.get(campaign_uuid)
 
                     polygon = campaign.get_union_polygons()
 
