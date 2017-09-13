@@ -38,14 +38,13 @@
                 {% endif %}
             </p>
 
-            <div class="detail-button-wrapper" style="margin-top: 20px;">
+            <div class="detail-button-wrapper participate-button" style="margin-top: 20px;">
                 <div class="btn-group btn-share-group" role="group" aria-label="...">
+                    <span class="btn btn-default unclickable" >Participate</span>
                     {% if link_to_omk %}
                         <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                     {% endif %}
                     <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
-                    <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
                 </div>
             </div>
         </div>
@@ -72,13 +71,16 @@
                     <div class="detail-creator-info">
                         <p>
                             <span class="grey-italic">Creator : </span>
-                            {{ campaign_creator }}</p>
+                            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
+                            {{ campaign_creator }}
+                            </a>
+                        </p>
                         <p>
                             <span class="grey-italic">Campaign Manager : </span>
                             <span class="text-muted">
                                 {% if campaign_managers %}
                                     {% for campaign_manager in campaign_managers %}
-                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>
+                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
                                         {% if campaign_manager != campaign_managers[-1] %}
                                             ,
                                         {% endif %}
@@ -103,14 +105,52 @@
                             {% endif %}
                         </p>
                     </div>
-
+                    <div class="detail-button-wrapper" style="margin-top: 10px;float: left;">
+                        <div class="btn-group btn-share-group" role="group" aria-label="...">
+                            <span class="btn btn-default unclickable" >Share</span>
+                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+                            <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
+                        </div>
+                    </div>
                     <div class="button-manage">
                         <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="panel panel-default detail-panel-information">
+        <div class="panel-body summary-stats">
+            <div class="row">
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Features Collected
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="features-collected"><span class="grey-italic">...</span></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Users Engaged
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="contributors"><span class="grey-italic">...</span></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Areas Covered
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="areas-covered"><span class="grey-italic">...</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -119,57 +159,6 @@
                 <div class="panel-body">
                     <div class="row side-panel-wrapper">
                         <div class="col-lg-3 map-side-panel">
-                            <div class="map-side-list">
-                                <div class="row">
-                                    <div class="col-lg-10">
-                                        <div class="pull-left map-side-list-name">
-                                            Areas Covered
-                                        </div>
-                                        <div class="pull-right map-side-list-number">
-                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 map-side-list-action">
-                                        <div class="side-action active">
-                                            <i class="fa fa-globe" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="map-side-list ">
-                                <div class="row">
-
-                                <div class="col-lg-10">
-                                    <div class="pull-left map-side-list-name">
-                                        Users engaged
-                                    </div>
-                                    <span class="pull-right map-side-list-number">
-                                        <span id="contributors"><span class="grey-italic">...</span></span>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action active" id="area-covered-button">
-                                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="map-side-list">
-                                <div class="row">
-                                    <div class="col-lg-10">
-                                        <div class="pull-left map-side-list-name">
-                                            Features collected
-                                        </div>
-                                        <div class="pull-right map-side-list-number">
-                                            <span id="features-collected"><span class="grey-italic">...</span></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 map-side-list-action">
-                                        <div class="side-action inactive-panel">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="col-lg-9">
                             <div id="campaign-map-detail"></div>
