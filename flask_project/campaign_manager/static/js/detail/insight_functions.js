@@ -614,20 +614,15 @@ function renderInsightFunctionsTypes(username) {
         }
 
         $('.map-side-panel').append(
-            '<div class="map-side-list map-side-type" id="type-'+tabId+'">'+
+            '<div class="map-side-list map-side-type '+active+'" id="type-'+tabId+'" onclick="showInsightFunction(this, \''+tabId+'\')">'+
                 '<div class="row">'+
-                    '<div class="col-lg-10">'+
+                    '<div class="col-lg-12">'+
                         '<div class="pull-left map-side-list-name">'+
                                 tabName +
                         '</div>'+
                         '<span class="pull-right map-side-list-number">'+
                                 '<span class="features-collected">...</span>'+
                                 '</span>'+
-                    '</div>'+
-                    '<div class="col-lg-2 map-side-list-action">'+
-                        '<div class="side-action '+ active +'">'+
-                            '<i class="fa fa-bar-chart" data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide insight summary" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
-                        '</div>'+
                     '</div>'+
                 '</div>'+
                 '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
@@ -699,14 +694,14 @@ function renderInsightFunctionsTypes(username) {
 }
 
 function showInsightFunction(element, tabId) {
-    var $divParent = $(element).parent();
+    var $divParent = $(element);
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
     } else {
         $('#'+activeInsightPanel).hide();
         map.removeLayer(featureGroups[activeInsightPanel]);
-        $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
+        $('#type-'+activeInsightPanel).removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
         activeInsightPanel = tabId;
