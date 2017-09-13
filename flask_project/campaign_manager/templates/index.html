@@ -31,13 +31,12 @@
 
         <div class="row" style="margin-bottom: 20px">
 
-            <div class="col-lg-5" id="search-campaign">
+            <div class="col-md-5 custom-5" id="search-campaign">
                 <!-- class="search" automagically makes an input a search field. -->
                 <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
-                <!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
             </div>
 
-            <div class="col-lg-5" style="text-align: center; display: flex; justify-content: center;">
+            <div class="col-md-5" style="text-align: center; display: flex; justify-content: center;">
                     <table class="home-option">
                         <tr class="home-option">
                             <td id="showing-div" class="home-option">Showing:</td>
@@ -58,14 +57,14 @@
                     </table>
                 </div>
 
-            <div class="col-lg-2" style="text-align: right">
+            <div class="col-md-2 no-padding" style="text-align: center">
                 <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
                     Sort By Name
                 </button>
                 <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
                     Sort By Date
                 </button>
-                <select class="form-control" id="filter-select" style="width: 80%;float: right">
+                <select class="form-control" id="filter-select" style="width: 80%; display: inline-block">
                     <option value="name">Sort By Name</option>
                     <option value="date">Sort By Date</option>
                 </select>
@@ -508,7 +507,7 @@
                         else if(progress<0) {
                             progress = 0;
                         }
-                        var campaignProgress = '<div class="progress" style="width:85%;float:left;">'+
+                        var campaignProgress = '<div class="progress" style="width:82%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
                                                 '</div>'+ Math.round(progress) + '%';
@@ -527,19 +526,19 @@
                                             campaign['name'] +
                                         '</div></a>'+
                                         '<div class="row">' +
-                                            '<div class="col-lg-6">'+
+                                            '<div class="col-xs-6">'+
                                                 '<div class="campaign-start-date">'+
                                                     'started '+ campaign['start_date'] +
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-6">'+
+                                            '<div class="col-xs-6">'+
                                                 '<div class="campaign-progress-bar">'+
                                                     campaignProgress +
                                                 '</div>'+
                                             '</div>'+
                                         '</div>' +
                                         '<div class="row">'+
-                                            '<div class="col-lg-8">'+
+                                            '<div class="col-xs-8">'+
                                                 '<div>'+
                                                     tags+
                                                 '</div>'+
@@ -547,17 +546,17 @@
                                                     campaign['description']+
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="col-lg-4 campaign-thumbnail">'+
+                                            '<div class="col-xs-4 campaign-thumbnail">'+
                                                 '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
                                             '</div>'+
                                         '</div>'+
                                         '<div class="row">'+
-                                            '<div class="col-lg-8">'+
+                                            '<div class="col-xs-8">'+
                                                 '<div class="campaign-creator">'+
                                                         'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class=col-lg-4>'+
+                                            '<div class=col-xs-4>'+
                                                 action_button+
                                             '</div>'+
                                         '</div>' +

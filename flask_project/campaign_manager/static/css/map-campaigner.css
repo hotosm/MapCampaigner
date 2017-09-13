@@ -1129,6 +1129,11 @@ body {
     padding: 0 !important;
 }
 
+select#filter-select {
+    box-shadow: none;
+    border: 1px solid #E7E7E7;
+}
+
 select#campaigns-select, input#limit-page {
     border: none;
     box-shadow: none;
