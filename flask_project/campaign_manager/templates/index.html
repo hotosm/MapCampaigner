@@ -220,6 +220,7 @@
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
+
         $('#check-show-map').click(function () {
            if( $(this).is(':checked') ){
                $('#campaign-map').show();
@@ -318,6 +319,10 @@
                 participateUrl += "?coordinate="+userCoordinate;
             }
             window.location.href = participateUrl;
+        }
+
+        function openCampaign(campaignUUID) {
+            location.replace('/campaign/'+ campaignUUID);
         }
 
         function updated(user) {
@@ -520,7 +525,7 @@
 
                         $('.card-wrapper').append(
                             '<li class="col-lg-6">'+
-                                '<div class="campaign-card panel">'+
+                                '<div class="campaign-card panel" onclick="openCampaign(\''+campaign['uuid']+'\')">'+
                                     '<div class="panel-heading">'+
                                         '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name">'+
                                             campaign['name'] +

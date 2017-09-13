@@ -4,15 +4,16 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 body {
+    -webkit-font-smoothing: antialiased;
     background-color: #f7f7f7;
     height: 100%;
     font-family: 'Open Sans', sans-serif;
+    color: #494646;
 }
 
 .navbar-default {
     background-color: #ffffff;
     padding: 5px;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 .navbar-brand {
@@ -21,13 +22,14 @@ body {
 }
 
 .navbar-nav a {
-    font-size: 12pt;
-    color: black !important;
-    font-weight: 300 !important;
+    font-size: 11pt;
+    color: #888080 !important;
+    font-weight: 100 !important;
 }
 
 .navbar-nav a:hover {
-    color: #ac3232 !important;
+    border-bottom: 2px solid #fc6525;
+    padding-bottom: 12px;
 }
 
 #wrapper {
@@ -41,7 +43,7 @@ body {
 #page-wrapper {
     padding:  0 15px;
     min-height: 600px;
-    background-color: #f7f7f7;
+    background-color: #f9f9f9;
 }
 
 @media (min-width: 768px) {
@@ -601,7 +603,7 @@ body {
 .btn.campaign-list {
     background-color: #fb6624 !important;
     color: white;
-    border-radius: 5px;
+    border-radius: 3px;
     margin-top: 10px;
     padding: 5px 30px !important;
     float: right;
@@ -1000,7 +1002,7 @@ body {
 .footer-basic-centered .footer-links{
 	list-style: none;
 	font-weight: bold;
-	color:  #46828f;
+	color:  #fc6525;
     font-size: 14pt;
 	padding: 0 0 8px;
 	margin: 0;
@@ -1022,13 +1024,32 @@ body {
     padding-left: 5px;
 }
 
+.footer-company-name a {
+    color: #fc6525;
+}
+
 .campaign-card {
     padding: 7px;
     line-height: 16pt;
     border: 1px solid #E7E7E7;
-    box-shadow: 0 0 3px #d1d1d1;
     border-radius: 2px;
     height: 240px;
+}
+
+.campaign-card.panel {
+    -webkit-transition: 0.24s ease-in-out;
+    -moz-transition: 0.24s ease-in-out;
+    -o-transition: 0.24s ease-in-out;
+    transition: 0.24s ease-in-out;
+}
+
+.campaign-card.panel:hover {
+     -moz-transform: translate(0, -3px);
+    -ms-transform: translate(0, -3px);
+    -o-transform: translate(0, -3px);
+    -webkit-transform: translate(0, -3px);
+    transform: translate(0, -3px);
+    cursor: pointer;
 }
 
 .campaign-thumbnail img{
@@ -1123,7 +1144,7 @@ body {
 }
 
 .underline-text:hover {
-    color: #AC3232;
+    color: #fc6525;
 }
 
 .home-option table, .home-option td, .home-option tr{
@@ -1227,7 +1248,7 @@ input.search {
 }
 
 .campaign-progress-bar .progress-bar {
-    background-color: #57c962 !important;
+    background-color: #a0a0a0 !important;
 }
 
 .campaign-progress-bar .progress {
