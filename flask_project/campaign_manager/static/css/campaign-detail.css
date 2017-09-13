@@ -381,6 +381,18 @@
         padding-top: 20px !important;
     }
 
+    .summary-stats .col-lg-4:nth-child(2), .summary-stats .col-lg-4:nth-child(3){
+        padding-left: 35px;
+    }
+
+    #user-engagement-wrapper {
+        height: 220px !important;
+    }
+
+    .type-1 {
+        border-right: none !important;
+    }
+
 }
 
 div.side-action a{
