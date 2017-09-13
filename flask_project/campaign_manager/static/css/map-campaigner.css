@@ -934,6 +934,14 @@ body {
     .home-header .btn {
         margin-bottom: 10px;
     }
+    #filter-select {
+        margin-top: 10px;
+        float: none !important;
+        text-align: center;
+    }
+    .home-option {
+        margin-top: 10px;
+    }
 }
 
 .label-participants {
@@ -1067,6 +1075,7 @@ body {
     #search-campaign {
         display: none;
     }
+
 }
 
 .information {
@@ -1132,6 +1141,8 @@ body {
 select#filter-select {
     box-shadow: none;
     border: 1px solid #E7E7E7;
+    width: 60%;
+    float: right;
 }
 
 select#campaigns-select, input#limit-page {
@@ -1235,4 +1246,32 @@ input.search {
 
 .nearest-option {
     display: none;
+}
+
+select.flat-select {
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50px' height='50px'><polyline points='46.139,15.518 25.166,36.49 4.193,15.519'/></svg>");
+    background-color: #f0f0f0;
+    background-repeat:no-repeat;
+    background-position: right 10px top 12px;
+    background-size: 12px 12px;
+    padding:10px;
+    width:100%;
+    font-size:13px;
+    color: #3b3b3b;
+    text-align:center;
+    border-radius:3px;
+    -webkit-border-radius:3px;
+    -webkit-appearance: none;
+    border:0;
+    outline:0;
+    -webkit-transition:0.3s ease all;
+       -moz-transition:0.3s ease all;
+        -ms-transition:0.3s ease all;
+         -o-transition:0.3s ease all;
+            transition:0.3s ease all;
+}
+
+select#campaigns-select {
+    width: 80px;
+    border-radius:0;
 }
