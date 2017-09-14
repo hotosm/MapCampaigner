@@ -288,7 +288,7 @@
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
         var remote_projects = {{ remote_projects|safe }};
-        var addedLayers = {};
+        var remoteLayers = {};
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
             'unassigned': '#D3D3D3',
@@ -361,15 +361,14 @@
                                 layer.bindPopup(popupContent);
                             }
                         });
-                        layerGroup.addTo(map);
-
-                        addedLayers[data['projectId']] = layerGroup;
-
                         var active = '';
                         if(isFirstActiveRemote) {
                             active = 'active';
+                            layerGroup.addTo(map);
                             isFirstActiveRemote = false;
                         }
+
+                        remoteLayers[data['projectId']] = layerGroup;
 
                         $('#remote-projects-summaries').append(
                             '<div class="row summary single-row remote-project-list '+active+'" style="font-size:9pt;" onclick="pointProjectMap(event, this, ' + data['projectId'] + ')">' +
@@ -388,18 +387,22 @@
         }
 
         function pointProjectMap(event, element, projectId) {
+            var layer = remoteLayers[projectId];
             if($(element).hasClass('active')) {
 
             } else {
+                $.each(remoteLayers, function (key, addedLayer) {
+                    map.removeLayer(addedLayer);
+                });
+                map.addLayer(layer);
                 $('#type-remote-projects').find('.remote-project-list').removeClass('active');
                 $(element).addClass('active');
             }
-            var layer = addedLayers[projectId];
             map.fitBounds(layer.getBounds());
         }
 
         function toggleProjectMap(el, projectId) {
-            var layer = addedLayers[projectId];
+            var layer = remoteLayers[projectId];
             if($(el).hasClass('active')) {
                 map.removeLayer(layer);
                 $(el).removeClass('active');
