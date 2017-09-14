@@ -113,12 +113,36 @@ class Campaign(JsonModel):
         Download static map from http://staticmap.openstreetmap.de with marker,
         then save it thumbnail folder
         """
-        url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
-              'center=0.0,0.0&zoom=1&size=512x512&maptype=mapnik'
-        polygon = self.get_union_polygons()
-        marker_url = '&markers=%s,%s,lightblue' % (
-            polygon.centroid.y, polygon.centroid.x)
-        url = url + marker_url
+        try:
+            from secret import MAPBOX_TOKEN
+            url = 'https://api.mapbox.com/styles/v1/hot/' \
+                   'cj7hdldfv4d2e2qp37cm09tl8/static/geojson({overlay})/' \
+                   'auto/{width}x{height}?' \
+                   'access_token=' + MAPBOX_TOKEN
+            if len(self.geometry['features']) > 1:
+                geometry = {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': mapping(self.get_union_polygons())
+                }
+                geometry = json.dumps(geometry, separators=(',', ':'))
+            else:
+                geometry = json.dumps(
+                        self.geometry['features'][0],
+                        separators=(',', ':'))
+            url = url.format(
+                overlay=geometry,
+                width=512,
+                height=300
+            )
+
+        except ImportError:
+            url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
+                  'center=0.0,0.0&zoom=1&size=512x512&maptype=mapnik'
+            polygon = self.get_union_polygons()
+            marker_url = '&markers=%s,%s,lightblue' % (
+                polygon.centroid.y, polygon.centroid.x)
+            url = url + marker_url
 
         safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
         thumbnail_dir = os.path.join(Campaign.get_json_folder(), 'thumbnail')
@@ -317,12 +341,14 @@ class Campaign(JsonModel):
 
     def get_union_polygons(self):
         """Return union polygons"""
+        simplify = False
         if len(self.geometry['features']) > 1:
             polygons = []
             for feature in self.geometry['features']:
                 polygons.append(shapely_geometry.Polygon(
                         feature['geometry']['coordinates'][0]))
             cascaded_polygons = cascaded_union(polygons)
+            simplify = True
         else:
             cascaded_polygons = shapely_geometry.Polygon(
                     self.geometry['features'][0]
@@ -333,6 +359,9 @@ class Campaign(JsonModel):
         ).buffer(
                 -0.001, 1, join_style=JOIN_STYLE.mitre
         )
+
+        if simplify:
+            joined_polygons = simplify_polygon(joined_polygons, 0.001)
 
         return joined_polygons
 
