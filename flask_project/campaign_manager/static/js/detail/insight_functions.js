@@ -362,16 +362,14 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     for (var key in featureData) {
                         if(featureData.hasOwnProperty(key)) {
                             renderFeatures(key, featureData[key], insightTypeIndex === 0);
+                            insightTypeIndex++;
                         }
                     }
 
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
                 } else if (function_name === 'MapperEngagement') {
-                    if(insightTypeIndex === Object.keys(campaign_types).length - 1) {
-                        updateMapperEngagementTotal();
-                    }
-                    insightTypeIndex++;
+                    updateMapperEngagementTotal();
                 }
             }
 
@@ -708,3 +706,7 @@ function showInsightFunction(element, tabId) {
         map.addLayer(featureGroups[activeInsightPanel]);
     }
 }
+
+(renderInsights = function () {
+   renderInsightFunctionsTypes('');
+});

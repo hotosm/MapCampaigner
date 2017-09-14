@@ -258,13 +258,22 @@
 
 {% endblock %}
 
+{% block before_base_js %}
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
+
 {% block after_base_js %}
 
     <script type="text/javascript">
 
         //------------------ EVENT ------------------//
 
+        var renderInsights;
+
         function loginSuccess(user) {
+            location.href='/campaign/{{ uuid }}';
         }
 
         function updated(user) {
@@ -281,8 +290,19 @@
         }
 
         function logoutSuccess() {
-            $('.btn-manage').hide();
-            renderInsightFunctionsTypes('');
+            location.href='/campaign/{{ uuid }}';
+        }
+
+        if(!auth.authenticated()) {
+            waitForFunctions();
+        }
+
+        function waitForFunctions(){
+            if(!$.isFunction(renderInsights)) {
+                setTimeout(waitForFunctions, 100);
+                return;
+            }
+            renderInsights();
         }
 
         $(function () {
@@ -301,7 +321,8 @@
 
         var currentStatus = capitalizeFirstLetter(
              $('.detail-campaign-status label').text()
-        )
+        );
+
          $('.detail-campaign-status label').html(
                 currentStatus.replace('-',' ')
          );
