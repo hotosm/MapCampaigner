@@ -268,3 +268,18 @@ def parse_json_string(json_string):
     except (ValueError, TypeError):
         pass
     return json_object
+
+
+def map_provider():
+    """Return map provider, if mapbox api token provided then use mapbox map.
+    """
+    try:
+        from secret import MAPBOX_TOKEN
+        provider = 'https://api.mapbox.com/styles/v1/hot/' \
+                   'cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?' \
+                   'access_token=' + MAPBOX_TOKEN
+
+    except ImportError:
+        provider = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+    return provider
