@@ -399,12 +399,11 @@
 
             function successGetBrowserLocation(position) {
 
-                if('lat' in userLocation) {
+                if(Object.keys(userLocation).length > 0) {
                     return;
                 }
 
                 var zoom = 10;
-                var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
                 userLocation = {
                     'lat': position.coords.latitude,
                     'lon': position.coords.longitude
@@ -416,16 +415,18 @@
                 }
                 $('#limit-page').val(limitPage);
 
+                clearMap();
                 {% if not all %}
                     url += "nearest_campaigns";
                     $('#campaigns-select').val('nearest');
                     $('.nearest-option').show();
+                    getCampaigns(url, null, limitPage)
                 {% else %}
                     url += "campaigns";
+                    $('#campaigns-select').val('all');
+                    getCampaigns(url, null, null)
                 {% endif %}
-
-                clearMap();
-                getCampaigns(url, null, limitPage);
+;
             }
 
             function errorGetBrowserLocation() {
@@ -436,18 +437,27 @@
                     limitPage = $('#limit-page').val();
                 }
                 $('#limit-page').val(limitPage);
-                console.log(limitPage);
+
+                clearMap();
 
                 {% if not all %}
                     url += "nearest_campaigns";
+                    $.getJSON('https://ipapi.co/json/', function(data) {
+                        var latitude = data['latitude'];
+                        var longitude = data['longitude'];
+                        userLocation = {
+                            'lat': latitude,
+                            'lon': longitude
+                        }
+                        getCampaigns(url, null, limitPage);
+                    });
                     $('#campaigns-select').val('nearest');
                     $('.nearest-option').show();
                 {% else %}
                     url += "campaigns";
+                    $('#campaigns-select').val('all');
+                    getCampaigns(url, null, null);
                 {% endif %}
-
-                clearMap();
-                getCampaigns(url, null, limitPage);
 
                 console.log('Error get browser location');
             }
@@ -464,7 +474,6 @@
         }
 
         function getCampaigns(url, user, limit) {
-
             if(url) {
                 currentUrl = url;
             }
@@ -499,8 +508,6 @@
                 url += 'per_page='+limit+'&';
             }
 
-            console.log(userLocation);
-
             if('lon' in userLocation) {
                 url += 'lon='+userLocation['lon']+'&';
             }
@@ -508,8 +515,6 @@
             if('lat' in userLocation) {
                 url += 'lat='+userLocation['lat']+'&';
             }
-
-            console.log(url);
 
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');

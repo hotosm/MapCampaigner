@@ -1,5 +1,7 @@
 from flask_restful import Resource, Api
 from flask import request
+import logging
+from flask import current_app
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
