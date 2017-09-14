@@ -738,3 +738,8 @@ tr.odd {
     font-size: 14pt;
     color: #565656 !important;
 }
+
+.piechart-wrapper {
+    width: 90%;
+    padding-left: 10px;
+}

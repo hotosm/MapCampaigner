@@ -157,8 +157,8 @@
 
         function logout() {
             auth.logout();
-            update();
             logoutSuccess();
+            update();
         }
 
         function update() {
@@ -219,12 +219,12 @@
                     }
                 }
 
-                updated(o);
-
                 if(loginProcess) {
                     loginSuccess(o);
                     loginProcess = false;
                 }
+
+                updated(o);
 
             }, this);
         }
