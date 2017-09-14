@@ -270,7 +270,7 @@
 }
 
 .map-side-list {
-    min-height: 100px;
+    min-height: 110px;
     border-bottom: 1px solid #cdcdcd;
     background-color: #f6f6f6;
 }
@@ -700,7 +700,34 @@ tr.odd {
 }
 
 .remote-project-list {
-    margin-bottom: 10px;
+    border-top: 1px solid #cdcdcd;
+    padding-top: 12px;
+    margin-bottom: 0;
+    padding-bottom: 12px;
+    margin-left: 0;
+    width: 100%;
+}
+
+.remote-project-list:hover {
+    cursor: pointer;
+}
+
+.remote-project-list.active {
+    background-color: #ffffff;
+    border-right: 2px solid #fc6525;
+}
+
+#type-remote-projects {
+    background-color: #eae8e8;
+    min-height: 50px !important;
+}
+
+#type-remote-projects:hover {
+    cursor: default;
+}
+
+#remote-projects-summaries {
+    background-color: #f6f6f6;
 }
 
 .remote-project-list a {
