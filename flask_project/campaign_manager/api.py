@@ -1,10 +1,13 @@
 from flask_restful import Resource, Api
 from flask import request
+import logging
+from flask import current_app
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.mapper_engagement import \
     MapperEngagement
+from campaign_manager.utilities import get_coordinate_from_ip
 
 api = Api(campaign_manager)
 
@@ -43,13 +46,19 @@ class CampaignNearestList(Resource):
         """
         return Campaign.nearest_campaigns(coordinate, campaign_status, **args)
 
-    def get(self, campaign_status, coordinate):
+    def get(self, campaign_status):
         """Get all nearest campaigns.
 
-        :param coordinate: coordinate of user e.g. -4.1412,1.412
-        :type coordinate: str.
+        :param campaign_status: status of campaign, active or inactive
+        :type campaign_status: str
         """
         args = request.args
+        if 'lon' in args and 'lat' in args:
+            lon = args['lon']
+            lat = args['lat']
+            coordinate = lat + ',' + lon
+        else:
+            coordinate = get_coordinate_from_ip()
         campaigns = self.get_nearest_campaigns(
                 coordinate,
                 campaign_status,
@@ -174,7 +183,7 @@ api.add_resource(
         '/campaigns/<string:tag>')
 api.add_resource(
         CampaignNearestList,
-        '/nearest_campaigns/<string:coordinate>/<string:campaign_status>')
+        '/nearest_campaigns/<string:campaign_status>')
 api.add_resource(
         CampaignNearestWithTagList,
         '/nearest_campaigns/<string:coordinate>/<string:tag>')

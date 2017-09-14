@@ -4,6 +4,7 @@ __date__ = '16/05/17'
 import json
 import os
 import threading
+import requests
 from utilities import absolute_path
 import tempfile
 import time
@@ -283,3 +284,12 @@ def map_provider():
         provider = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 
     return provider
+
+
+def get_coordinate_from_ip():
+    """Get coordinate information from ip address.
+    """
+    url = 'http://ipinfo.io/json'
+    response = requests.get(url)
+    data = response.json()
+    return data['loc']
