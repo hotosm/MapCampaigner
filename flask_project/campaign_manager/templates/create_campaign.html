@@ -399,7 +399,7 @@
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
         var errors = {{ form['errors'] | safe}};
         var functions = {{ functions|safe }};
-        var mapbox_token = "{{ mapbox_token }}";
+        var map_provider = "{{ map_provider }}";
         var oneTimeFunctions = [];
         $.each(functions, function (key, value) {
             if (!value['need_feature']) {

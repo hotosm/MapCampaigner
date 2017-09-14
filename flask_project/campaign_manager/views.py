@@ -19,7 +19,8 @@ from flask import (
 from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
-    get_types
+    get_types,
+    map_provider
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -35,11 +36,10 @@ from reporter import LOGGER
 from reporter.static_files import static_file
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, MAPBOX_TOKEN
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
-    MAPBOX_TOKEN = ''
 
 MAX_AREA_SIZE = 320000000
 
@@ -54,7 +54,7 @@ def home():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        mapbox_token=MAPBOX_TOKEN
+        map_provider=map_provider()
     )
 
     # noinspection PyUnresolvedReferences
@@ -72,7 +72,7 @@ def home_all():
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
         all=True,
-        mapbox_token=MAPBOX_TOKEN
+        map_provider=map_provider()
     )
 
     # noinspection PyUnresolvedReferences
@@ -356,7 +356,7 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
-        context['mapbox_token'] = MAPBOX_TOKEN
+        context['map_provider'] = map_provider()
         context['geometry'] = json.dumps(campaign.geometry)
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
@@ -578,7 +578,7 @@ def create_campaign():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        mapbox_token=MAPBOX_TOKEN
+        map_provider=map_provider()
     )
     context['url'] = '/create'
     context['action'] = 'create'
@@ -642,7 +642,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
-    context['mapbox_token'] = MAPBOX_TOKEN
+    context['map_provider'] = map_provider()
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['functions'] = get_selected_functions()
