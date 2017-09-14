@@ -35,10 +35,11 @@ from reporter import LOGGER
 from reporter.static_files import static_file
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, MAPBOX_TOKEN
 except ImportError:
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+    MAPBOX_TOKEN = ''
 
 MAX_AREA_SIZE = 320000000
 
@@ -52,7 +53,8 @@ def home():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        mapbox_token=MAPBOX_TOKEN
     )
 
     # noinspection PyUnresolvedReferences
@@ -69,7 +71,8 @@ def home_all():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        all=True
+        all=True,
+        mapbox_token=MAPBOX_TOKEN
     )
 
     # noinspection PyUnresolvedReferences
@@ -353,6 +356,7 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
+        context['mapbox_token'] = MAPBOX_TOKEN
         context['geometry'] = json.dumps(campaign.geometry)
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
@@ -528,8 +532,7 @@ def valid_map_list():
         'http://{s}.aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg':
             'Tiles &copy; <a href="http://www.ngi.gov.za/">CD:NGI Aerial</a>',
         'https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/'
-        '256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNqN2hkbWJiZjFke'
-        'XgzM3Bmd2R6NHpqMmIifQ.ENoEQ3Hzh2udpmTX9FFRaQ':
+        '256/{z}/{x}/{y}':
             'OpenStreetMap</a> and contributors, under an '
             '<a href="http://www.openstreetmap.org/copyright" '
             'target="_parent">open license</a>',
@@ -574,7 +577,8 @@ def create_campaign():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        mapbox_token=MAPBOX_TOKEN
     )
     context['url'] = '/create'
     context['action'] = 'create'
@@ -638,6 +642,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
+    context['mapbox_token'] = MAPBOX_TOKEN
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['functions'] = get_selected_functions()
