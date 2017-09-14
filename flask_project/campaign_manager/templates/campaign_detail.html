@@ -306,26 +306,27 @@
         var mapperEngagementFrequency = [];
         var contributors = [];
 
+        var isFirstActiveRemote = true;
+
         function renderRemoteProjects() {
 
             if (remote_projects.length === 0) {
                 return;
             }
 
-           $('.map-side-panel').append(
-                '<div class="map-side-list map-side-type" id="type-remote-projects">'+
-                    '<div class="row">'+
-                        '<div class="col-lg-12">'+
-                            '<div class="pull-left map-side-list-name">'+
-                                    'Remote Projects'+
-                            '</div>'+
-                        '</div>'+
-                    '</div>'+
-                    '<div id="remote-projects-summaries" class="side-panel-summaries"></div>'+
+            $('.map-side-panel').append(
+                '<div class="map-side-list map-side-type" id="type-remote-projects">' +
+                '<div class="row">' +
+                '<div class="col-lg-12">' +
+                '<div class="pull-left map-side-list-name">' +
+                'Remote Projects' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div id="remote-projects-summaries" class="side-panel-summaries"></div>' +
                 '</div>'
             );
 
-            var active = '';
 
             for (var i = 0; i < remote_projects.length; i++) {
 
@@ -353,7 +354,7 @@
                             },
                             onEachFeature: function (feature, layer) {
                                 totalArea++;
-                                if(feature.properties.taskStatus == 'VALIDATED') {
+                                if (feature.properties.taskStatus === 'VALIDATED') {
                                     totalAreaCovered++;
                                 }
                                 var popupContent = feature.properties.taskStatus;
@@ -364,18 +365,21 @@
 
                         addedLayers[data['projectId']] = layerGroup;
 
+                        var active = '';
+                        if(isFirstActiveRemote) {
+                            active = 'active';
+                            isFirstActiveRemote = false;
+                        }
+
                         $('#remote-projects-summaries').append(
-                            '<div class="row summary single-row remote-project-list" style="font-size:9pt;">'+
-                               '<div class="col-lg-10" style="padding-top: 0 !important;">'+
-                            '<div class="pull-left">'+
-                                '<a target="_blank" href="http://tm3.hotosm.org/project/'+data['projectId']+'" style="word-wrap:break-word;">'+
-                                '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
-                                '</a>'+
-                            '</div>'+
-                            '</div>'+
-                                '<div class="col-lg-2">'+
-                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Locate project" class="fa fa-map-pin" onclick="pointProjectMap(this, ' + data['projectId'] + ')" style="margin-right: 10px" aria-hidden="true"></i>'+
-                                '</div>'+
+                            '<div class="row summary single-row remote-project-list '+active+'" style="font-size:9pt;" onclick="pointProjectMap(event, this, ' + data['projectId'] + ')">' +
+                            '<div class="col-lg-12" style="padding-top: 0 !important;">' +
+                            '<div class="pull-left">' +
+                            '<a target="_blank" href="http://tm3.hotosm.org/project/' + data['projectId'] + '" style="word-wrap:break-word;">' +
+                            '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
+                            '</a>' +
+                            '</div>' +
+                            '</div>' +
                             '</div>'
                         );
                     }
@@ -383,7 +387,13 @@
             }
         }
 
-        function pointProjectMap(el, projectId) {
+        function pointProjectMap(event, element, projectId) {
+            if($(element).hasClass('active')) {
+
+            } else {
+                $('#type-remote-projects').find('.remote-project-list').removeClass('active');
+                $(element).addClass('active');
+            }
             var layer = addedLayers[projectId];
             map.fitBounds(layer.getBounds());
         }
