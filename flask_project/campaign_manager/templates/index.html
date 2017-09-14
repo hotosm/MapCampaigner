@@ -208,13 +208,13 @@
 
         var table = null;
         $('.dataTables_filter').addClass('pull-left');
-        var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
         var tag = "{{ tag }}";
         var currentUrl = '';
         var currentUser = '';
         var initialLoad = true;
+        var userLocation = {};
 
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
@@ -315,8 +315,8 @@
 
         function participate() {
             var participateUrl = "/participate"
-            if(userCoordinate) {
-                participateUrl += "?coordinate="+userCoordinate;
+            if('lat' in userLocation) {
+                participateUrl += "?coordinate="+userLocation['lat']+','+userLocation['lon'];
             }
             window.location.href = participateUrl;
         }
@@ -333,18 +333,25 @@
             clearNotification();
             var currentUser = user.display_name;
             var url = "/campaigns";
-            userCoordinate = user['lat'] + ',' + user['lon'];
 
             if(user['lon'] && user['lat']) {
-                url = "/nearest_campaigns/" + user['lat'] + ',' + user['lon'];
+                userLocation = {
+                    'lat': user['lat'],
+                    'lon': user['lon']
+                }
+                url = "/nearest_campaigns";
             }
             clearMap();
             clearTable();
             getTotalCampaigns();
             {% if not all %}
                 var limitPage = Cookies.get('limit_page');
-                if(limitPage)
+                if(limitPage) {
                     $('#limit-page').val(Cookies.get('limit_page'));
+                } else {
+                    limitPage = $('#limit-page').val();
+                    Cookies.set('limit_page', limitPage);
+                }
                 $('#campaigns-select').val("nearest");
                 getCampaigns(url, currentUser, limitPage);
                 $('.nearest-option').show();
@@ -361,19 +368,10 @@
         function logoutSuccess() {
             clearMap();
             clearTable();
-            $('.nearest-option').hide();
-            // Clear cookies
-            Cookies.set('user_location_setting', '');
-            {% if all %}
-                location.href='/';
-            {% endif %}
+            userLocation = {};
         }
 
         if(!auth.authenticated()) {
-            {% if all %}
-                location.href='/';
-            {% endif %}
-            $('#campaigns-select').val("all");
             getBrowserLocation();
             getTotalCampaigns();
         }
@@ -400,27 +398,58 @@
             navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
 
             function successGetBrowserLocation(position) {
+
+                if('lat' in userLocation) {
+                    return;
+                }
+
                 var zoom = 10;
                 var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
-                var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
-                var limitPage = Cookies.get('limit_page')
-                clearMap();
+                userLocation = {
+                    'lat': position.coords.latitude,
+                    'lon': position.coords.longitude
+                }
+                var url = '/';
+                var limitPage = Cookies.get('limit_page');
                 if(!limitPage){
                     limitPage = $('#limit-page').val();
                 }
+                $('#limit-page').val(limitPage);
+
+                {% if not all %}
+                    url += "nearest_campaigns";
+                    $('#campaigns-select').val('nearest');
+                    $('.nearest-option').show();
+                {% else %}
+                    url += "campaigns";
+                {% endif %}
+
+                clearMap();
                 getCampaigns(url, null, limitPage);
-                userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
-                map.setView(userLocation, zoom);
-                $('#campaigns-select').val('nearest');
-                $('.nearest-option').show();
             }
 
             function errorGetBrowserLocation() {
-                console.log('Error get browser location');
+                var url = '/';
+                var limitPage = Cookies.get('limit_page');
+                userLocation = {};
+                if(!limitPage){
+                    limitPage = $('#limit-page').val();
+                }
+                $('#limit-page').val(limitPage);
+                console.log(limitPage);
+
+                {% if not all %}
+                    url += "nearest_campaigns";
+                    $('#campaigns-select').val('nearest');
+                    $('.nearest-option').show();
+                {% else %}
+                    url += "campaigns";
+                {% endif %}
+
                 clearMap();
-                clearTable();
-                $('#campaigns-select').val('all');
-                getCampaigns(null, null);
+                getCampaigns(url, null, limitPage);
+
+                console.log('Error get browser location');
             }
         }
 
@@ -469,6 +498,18 @@
             if(limit) {
                 url += 'per_page='+limit+'&';
             }
+
+            console.log(userLocation);
+
+            if('lon' in userLocation) {
+                url += 'lon='+userLocation['lon']+'&';
+            }
+
+            if('lat' in userLocation) {
+                url += 'lat='+userLocation['lat']+'&';
+            }
+
+            console.log(url);
 
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
@@ -613,7 +654,11 @@
 
                     {% if not all %}
                         map.invalidateSize();
-                        if(mapLayers.length > 0) {
+                        var layers = mapLayers;
+                        if(typeof mapLayers.length === 'undefined') {
+                            layers = mapLayers.getLayers();
+                        }
+                        if(layers.length > 0) {
                             map.fitBounds(mapLayers.getBounds());
                         }
                     {% endif %}
