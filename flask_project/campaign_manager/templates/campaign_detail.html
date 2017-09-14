@@ -260,9 +260,45 @@
 
 {% block after_base_js %}
 
-    <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
-
     <script type="text/javascript">
+
+        //------------------ EVENT ------------------//
+
+        function loginSuccess(user) {
+        }
+
+        function updated(user) {
+            renderInsightFunctionsTypes(user.display_name);
+            var managers = {{ campaign_managers | safe }};
+            // Shows manage button if current user is one of the manager
+            if ($.inArray(user.display_name, managers) > -1) {
+                $('.btn-manage').show();
+            }
+        }
+
+        function loginError() {
+            renderInsightFunctionsTypes('');
+        }
+
+        function logoutSuccess() {
+            $('.btn-manage').hide();
+            renderInsightFunctionsTypes('');
+        }
+
+        $(function () {
+
+            calculateCampaignProgress();
+
+            // Check share button
+            if (isMobile.Android()) {
+            } else if (isMobile.iOS()) {
+                $('#btn-omk-link').addClass('disabled');
+            } else {
+                $('#btn-omk-link').addClass('disabled');
+                $('#btn-mapsme-link').addClass('disabled');
+            }
+        });
+
         var currentStatus = capitalizeFirstLetter(
              $('.detail-campaign-status label').text()
         )
@@ -411,47 +447,6 @@
                 $(el).addClass('active');
             }
         }
-
-        //------------------ EVENT ------------------//
-
-        function loginSuccess(user) {
-        }
-
-        function updated(user) {
-            renderInsightFunctionsTypes(user.display_name);
-            var managers = {{ campaign_managers | safe }};
-            // Shows manage button if current user is one of the manager
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.btn-manage').show();
-            }
-        }
-
-        function loginError() {
-            renderInsightFunctionsTypes('');
-        }
-
-        function logoutSuccess() {
-            $('.btn-manage').hide();
-            renderInsightFunctionsTypes('');
-        }
-
-        $(function () {
-            window.isAuthenticated = auth.authenticated();
-            if (!auth.authenticated()) {
-                update();
-            }
-
-            calculateCampaignProgress();
-
-            // Check share button
-            if (isMobile.Android()) {
-            } else if (isMobile.iOS()) {
-                $('#btn-omk-link').addClass('disabled');
-            } else {
-                $('#btn-omk-link').addClass('disabled');
-                $('#btn-mapsme-link').addClass('disabled');
-            }
-        });
 
         var useDefault = L.Control.extend({
 
