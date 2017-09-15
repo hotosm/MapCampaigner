@@ -285,6 +285,17 @@
             }
         }
 
+        function logout() {
+            auth.logout();
+            location.href='/campaign/{{ uuid }}';
+        }
+
+        function login() {
+            auth.authenticate(function () {
+                location.href='/campaign/{{ uuid }}';
+            })
+        }
+
         function loginError() {
             renderInsightFunctionsTypes('');
         }
