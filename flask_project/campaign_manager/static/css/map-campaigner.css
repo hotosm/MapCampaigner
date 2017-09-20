@@ -17,7 +17,7 @@ body {
 }
 
 .navbar-brand {
-    color: #ac3232 !important;
+    color: #5c5c5c !important;
     font-weight: 900;
 }
 
@@ -28,7 +28,7 @@ body {
 }
 
 .navbar-nav a:hover {
-    border-bottom: 2px solid #fc6525;
+    border-bottom: 2px solid #5e5e5e;
     padding-bottom: 12px;
 }
 
@@ -977,7 +977,7 @@ body {
 }
 
 .footer-basic-centered{
-	background-color: #e7e7e7;
+	background-color: #ffffff;
 	box-sizing: border-box;
 	width: 100%;
 	text-align: center;
@@ -985,6 +985,7 @@ body {
 	padding-top: 15px;
     padding-bottom: 15px;
 	margin-top: 80px;
+    border-top: 1px solid #ececec;
 }
 
 .footer-basic-centered .footer-company-motto{
@@ -993,10 +994,14 @@ body {
 	margin: 0;
 }
 
+.footer-company-name {
+    height: 25px;
+    margin-top: 10px;
+}
+
 .footer-basic-centered .footer-company-name{
 	color:  #756e6e;
 	font-size: 10pt;
-	margin: 0;
 }
 
 .footer-basic-centered .footer-links{
@@ -1120,13 +1125,21 @@ body {
     list-style-type: none;
 }
 
-.active-campaign-text, .active-campaign-text-bold {
+.active-campaign-text-bold {
     font-size: 25pt;
-    color: inherit;
-    font-weight: lighter;
+    color: #ff8440;
 }
 
-.active-campaign-text-bold, .nearest-campaign-text-bold {
+.active-campaign-text {
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.active-campaing-text-wrapper {
+    padding-top: 25px;
+}
+
+.nearest-campaign-text-bold {
      font-weight: bold;
 }
 
@@ -1295,4 +1308,15 @@ select.flat-select {
 select#campaigns-select {
     width: 80px;
     border-radius:0;
+}
+
+.head-title {
+    font-weight: bold;
+    font-size: 18pt;
+}
+
+.head-desc {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 15px;
 }
