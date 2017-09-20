@@ -10,12 +10,19 @@
         <div class="row">
             <div class="col-lg-6">
                 <div style="text-align: center; margin-top: 10px">
-                    <p><span class="active-campaign-text">Active campaigns:&nbsp;</span>
-                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span></p>
-                    <p>
-                        <a class="underline-text" href="javascript:void(0)" id="display-inactive" style="display: none;">Display inactive campaigns</a>
-                        <a class="underline-text" href="javascript:void(0)" id="hide-inactive" style="display: none">Hide inactive campaigns</a>
-                    </p>
+                    <div class="head-title">Map Campaigner</div>
+                    <div class="head-desc">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec pulvinar diam.
+                        Mauris id laoreet justo, eget ornare enim. Ut fermentum eget magna vel tincidunt.
+                        Fusce mollis pretium tempor. Ut sollicitudin semper ipsum vitae egestas.
+                        Curabitur velit mauris, egestas at nunc id, congue condimentum orci.
+                        Praesent non nulla sagittis, cursus elit sit amet, rhoncus lectus.
+                        Donec in nunc eros. Duis dignissim ligula ac nunc pulvinar, nec ultrices dui convallis.
+                    </div>
+                    <div class="active-campaing-text-wrapper">
+                        <span class="active-campaign-text">Active campaigns:&nbsp;</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -44,6 +51,7 @@
                                 <select class="flat-select" id="campaigns-select">
                                     <option value="nearest">nearest</option>
                                     <option value="all">all</option>
+                                    <option value="inactive">inactive</option>
                                 </select>
                             </td>
                             <td class="home-option nearest-option no-padding">
@@ -242,10 +250,15 @@
             var value = this.value;
             if(value == 'all') {
                 Cookies.set('user_location_setting', 'all');
+                Cookies.set('campaign-status', 'active');
                 location.href='/all'
             } else if(value == 'nearest') {
                 Cookies.set('user_location_setting', 'nearest');
+                Cookies.set('campaign-status', 'active');
                 location.href='/'
+            } else if(value == 'inactive') {
+                displayInactive();
+                location.href='/';
             }
         });
 
@@ -255,8 +268,8 @@
             }
         });
 
-        $('#display-inactive').click(function () {
-            Cookies.set('campaign-status', 'all');
+        function displayInactive() {
+            Cookies.set('campaign-status', 'inactive');
             clearMap();
             {% if all %}
                 getCampaigns(currentUrl, currentUser);
@@ -267,10 +280,7 @@
                 }
                 getCampaigns(currentUrl, currentUser, limitPage);
             {% endif %}
-
-            $('#display-inactive').hide();
-            $('#hide-inactive').show();
-        });
+        }
 
         $('#hide-inactive').click(function () {
             Cookies.set('campaign-status', 'active');
@@ -493,6 +503,8 @@
             var campaign_status = Cookies.get('campaign-status');
             if(!campaign_status) {
                 campaign_status = 'active';
+            } else if(campaign_status === 'inactive') {
+                $('#campaigns-select').val('inactive');
             }
 
             url += '/' + campaign_status;
