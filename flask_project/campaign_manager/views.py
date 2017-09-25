@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 from datetime import datetime
+from flask import jsonify
 
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
@@ -144,7 +145,7 @@ def get_osmcha_errors_data(uuid):
 
         osmcha_changeset.run()
         data = osmcha_changeset.get_function_data()
-        return Response(json.dumps(data))
+        return jsonify(data)
     except Campaign.DoesNotExist:
         abort(404)
 

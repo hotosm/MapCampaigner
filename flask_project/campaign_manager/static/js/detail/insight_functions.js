@@ -203,7 +203,7 @@ function createErrorPanel() {
          columns: [
             { title: "Name", "width": "20%"  },
             { title: "Date", "width": "20%" },
-            { title: "Status", "width": "50%" }
+            { title: "Comment", "width": "50%" }
          ],
          columnDefs: [{
              targets: 1,
@@ -368,6 +368,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
 
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                    getOSMCHAErrors();
                 } else if (function_name === 'MapperEngagement') {
                     updateMapperEngagementTotal();
                 }
@@ -382,11 +383,23 @@ function getInsightFunctions(function_id, function_name, type_id) {
 }
 
 function getOSMCHAErrors() {
-    var url = '/campaign/osmcha_errors/'+ uuid;
+    var url = '/campaign/osmcha_errors_data/'+ uuid +'?page_size=100';
     $.ajax({
         url: url,
         success: function (data) {
-            $('#total-osmcha-errors').html(data);
+            var totalOsmchaErrors = parseInt(data["total"]);
+            var totalError = parseInt($('#total-feature-completeness-errors').html());
+            $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
+            $.each(data["data"], function (index, error) {
+                var rowData = [];
+                rowData.push(
+                    '<a target="_blank" href="https://osmcha.mapbox.com/changesets/'+error['ChangeSetId']+'">changesets :'+error['ChangeSetId']+'</a>'
+                );
+                rowData.push(moment(error['Date'], 'YYYY-MM-DD HH:mm').format());
+                rowData.push('<div class="error-completeness">'+error['Reasons']+'</div>');
+
+                addRowToErrorPanel(rowData);
+            })
         }
     });
 }
@@ -687,7 +700,7 @@ function renderInsightFunctionsTypes(username) {
         index++;
     }
 
-    getOSMCHAErrors();
+    // getOSMCHAErrors();
     renderInsightFunctions(username);
 }
 
