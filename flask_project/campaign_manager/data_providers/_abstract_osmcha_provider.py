@@ -23,7 +23,12 @@ class AbstractOsmchaProvider(AbstractDataProvider):
         """
         raise NotImplementedError()
 
-    def get_data(self, geometry, page=1, start_date='', end_date=''):
+    def get_data(self,
+                 geometry,
+                 page=1,
+                 start_date='',
+                 end_date='',
+                 max_page=None):
         """Get data from osmcha.
         :param geometry: geometry that used by osmcha
         :type geometry: dict
@@ -41,6 +46,9 @@ class AbstractOsmchaProvider(AbstractDataProvider):
         :rtype: dict
         """
         try:
+            if max_page:
+                self.limit_per_page = max_page
+
             single_geometry = multi_feature_to_polygon(geometry)
             payload_geometry = json.dumps(
                     single_geometry['features'][0]['geometry'])
