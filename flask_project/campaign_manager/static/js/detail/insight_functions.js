@@ -387,6 +387,7 @@ function getOSMCHAErrors() {
     $.ajax({
         url: url,
         success: function (data) {
+            console.log(data);
             var totalOsmchaErrors = parseInt(data["total"]);
             var totalError = parseInt($('#total-feature-completeness-errors').html());
             $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
@@ -396,7 +397,11 @@ function getOSMCHAErrors() {
                     '<a target="_blank" href="https://osmcha.mapbox.com/changesets/'+error['ChangeSetId']+'">changesets :'+error['ChangeSetId']+'</a>'
                 );
                 rowData.push(moment(error['Date'], 'YYYY-MM-DD HH:mm').format());
-                rowData.push('<div class="error-completeness">'+error['Reasons']+'</div>');
+                if(error['Reasons']) {
+                    rowData.push('<div class="error-completeness">'+error['Reasons']+'</div>');
+                } else {
+                    rowData.push('<div class="error-completeness">'+error['Comment']+'</div>');
+                }
 
                 addRowToErrorPanel(rowData);
             })
