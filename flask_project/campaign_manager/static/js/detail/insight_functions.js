@@ -700,7 +700,6 @@ function renderInsightFunctionsTypes(username) {
         index++;
     }
 
-    // getOSMCHAErrors();
     renderInsightFunctions(username);
 }
 
