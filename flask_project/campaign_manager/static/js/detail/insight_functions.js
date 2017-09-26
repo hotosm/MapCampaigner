@@ -403,6 +403,26 @@ function dictToTable(dictObject) {
     return result;
 }
 
+function colorCompleteness(error_value) {
+
+    var color = '#00840d';
+    if(error_value >= 8){
+        color = '#ff0000';
+    } else if(error_value >= 6){
+        color = '#ff5d00';
+    } else if(error_value >= 4){
+        color = '#ffaa00';
+    } else if(error_value >= 2){
+        color = '#b6ff00';
+    } else if(error_value > 0){
+        color = '#a8ff4c'
+    } else {
+        color = '#00840d'
+    }
+
+    return color;
+}
+
 function renderFeatures(feature_type, feature_data, show_feature) {
     var unusedNodes = {};
     var unusedWays = {};
@@ -439,8 +459,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
         if(featureTag) {
             if(feature['type'] === 'node') {
                 L.circle([feature['lat'],feature['lon']], 5, {
-                    color: '#' + intToRGB(hashCode(featureTag)),
-                    fillColor: '#' +  intToRGB(hashCode(featureTag)),
+                    color: colorCompleteness(feature['completeness']),
+                    fillColor: colorCompleteness(feature['completeness']),
                     fillOpacity: 0.7,
                     zIndexOffset: 999
                 }).bindPopup(
@@ -478,8 +498,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
 
         if(typeof wayTag !== 'undefined') {
             L.polygon(latlngs, {
-                color: '#' + intToRGB(hashCode(wayTag)),
-                fillColor: '#' +  intToRGB(hashCode(wayTag)),
+                color: colorCompleteness(way['completeness']),
+                fillColor: colorCompleteness(way['completeness']),
                 fillOpacity: 0.5
             }).bindPopup(
                 '<div class="feature-detail"><h4>Feature - '+wayTag+'</h4>'+
@@ -527,8 +547,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
 
             if(typeof relationTag !== 'undefined') {
                 L.polygon(latlngs, {
-                    color: '#' + intToRGB(hashCode(relationTag)),
-                    fillColor: '#' +  intToRGB(hashCode(relationTag)),
+                    color: colorCompleteness(relationTag['completeness']),
+                    fillColor: colorCompleteness(relationTag['completeness']),
                     fillOpacity: fillOpacity
                 }).bindPopup(
                     '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
