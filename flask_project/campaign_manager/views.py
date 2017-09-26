@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 from datetime import datetime
+from flask import jsonify
 
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
@@ -31,6 +32,8 @@ from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.insights_functions.osmcha_changesets import \
+    OsmchaChangesets
 
 from reporter import LOGGER
 from reporter.static_files import static_file
@@ -123,6 +126,26 @@ def get_osmcha_errors_function(uuid):
             additional_data=clean_argument(request.args)
         )
         return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        abort(404)
+
+
+@campaign_manager.route('/campaign/osmcha_errors_data/<uuid>')
+def get_osmcha_errors_data(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        page_size = request.args.get('page_size', None)
+        page = request.args.get('page', None)
+        osmcha_changeset = OsmchaChangesets(campaign=campaign)
+
+        if page_size:
+            osmcha_changeset.max_page = int(page_size)
+        if page:
+            osmcha_changeset.current_page = int(page)
+
+        osmcha_changeset.run()
+        data = osmcha_changeset.get_function_data()
+        return jsonify(data)
     except Campaign.DoesNotExist:
         abort(404)
 
