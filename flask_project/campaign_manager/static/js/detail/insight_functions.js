@@ -307,6 +307,12 @@ function calculateCampaignProgress() {
 }
 
 var insightTypeIndex = 0;
+var errorFeatures = {
+    'node': [],
+    'way': [],
+    'relation': []
+};
+
 function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
@@ -356,6 +362,8 @@ function getInsightFunctions(function_id, function_name, type_id) {
             if(typeof type_id !== 'undefined') {
                 if(function_name === 'FeatureAttributeCompleteness') {
                     for(var i=0; i<featureCompleteness.length;i++){
+                        var idCol = $(featureCompleteness[i][0]);
+                        errorFeatures[idCol.data('type')].push(idCol.data('id').toString());
                         addRowToErrorPanel(featureCompleteness[i]);
                     }
 
@@ -726,4 +734,22 @@ function showInsightFunction(element, tabId) {
 
 (renderInsights = function () {
    renderInsightFunctionsTypes('');
+});
+
+$('#download-xml').click(function (event) {
+    var download_url = '/generate_josm';
+    var data = {};
+    data['error_features'] = JSON.stringify(errorFeatures);
+    $.ajax({
+        type: "POST",
+        url: download_url,
+        data: data,
+        success: function (data) {
+            var dataDict = JSON.parse(data);
+            if('file_name' in dataDict) {
+                document.getElementById('download_xml_frame').src = '/download_josm/'+dataDict['file_name'];
+            }
+
+        }
+    })
 });

@@ -176,7 +176,7 @@
         {% if row['error'] == 'True' %}
 
             _featureCompleteness.push(
-                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">'+
+                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}" data-id="{{ row['id'] }}" data-type="{{ row['type'] }}">'+
                     '{{ row['type'] }} :'+
                     '{{ row['id'] }}'+
                 '</a>'
