@@ -648,6 +648,20 @@
             map.fitBounds(e.target.getBounds());
         }
 
+        var legend = L.control({position: 'bottomleft'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<span>Completeness</span><br/>';
+            div.innerHTML += '<i style="background: #00840d"></i> <span>100%</span><br/>';
+            div.innerHTML += '<i style="background: #a8ff4c"></i> <span>80% - 99%</span><br/>';
+            div.innerHTML += '<i style="background: #b6ff00"></i> <span>60% - 79%</span><br/>';
+            div.innerHTML += '<i style="background: #ffaa00"></i> <span>40% - 59%</span><br/>';
+            div.innerHTML += '<i style="background: #ff5d00"></i> <span>20% - 39%</span><br/>';
+            div.innerHTML += '<i style="background: #ff0000"></i> <span>< 20%</span><br/>';
+        return div;
+        };
+        legend.addTo(map);
+
         function shareTweet(uuid) {
             var host = window.location.origin;
             var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
