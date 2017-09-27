@@ -641,7 +641,7 @@
             {% if action == 'edit' %}
                 var is_manager = $.inArray(response.display_name, managers_list);
                 if(is_manager == -1){
-                    location.href='/';
+                    location.href='/404';
                 }
             {% endif %}
             $('#campaign-panel').show();
