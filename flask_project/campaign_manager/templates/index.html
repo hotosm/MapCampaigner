@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div id="campaign-map" class="nearest-option"></div>
+                <div id="campaign-map"></div>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
                             <td class="home-option nearest-option">
                                 campaigns
                             </td>
-                            <td class="home-option nearest-option"><input type="checkbox" id="check-show-map" checked> show map</td>
+                            <td class="home-option"><input type="checkbox" id="check-show-map" checked> show map</td>
                         </tr>
                     </table>
                 </div>
@@ -637,47 +637,43 @@
                             '<a href="/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
                         '</li>');
 
-                        {% if not all %}
-                            // Add campaign layer
-                            var campaignLayer = L.geoJson(campaign['geometry'], {
-                                onEachFeature: function (feature, layer) {
-                                    // Check if feature is a polygon
-                                    if (feature.geometry.type === 'Polygon') {
-                                        // Don't stroke and do opaque fill
-                                        layer.setStyle({
-                                            'weight': 0.3,
-                                            'fillOpacity': 0.2,
-                                            'color': '#FF5722'
-                                        });
-                                    }
+                        // Add campaign layer
+                        var campaignLayer = L.geoJson(campaign['geometry'], {
+                            onEachFeature: function (feature, layer) {
+                                // Check if feature is a polygon
+                                if (feature.geometry.type === 'Polygon') {
+                                    // Don't stroke and do opaque fill
+                                    layer.setStyle({
+                                        'weight': 0.3,
+                                        'fillOpacity': 0.2,
+                                        'color': '#FF5722'
+                                    });
                                 }
-                            }).addTo(mapLayers);
+                            }
+                        }).addTo(mapLayers);
 
-                            var bounds = campaignLayer.getBounds();
-                            var center = bounds.getCenter();
+                        var bounds = campaignLayer.getBounds();
+                        var center = bounds.getCenter();
 
-                            var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
-                            marker.bindPopup(
-                                '<div class="campaign-marker"><a href="/campaign/'+
-                                    campaign['uuid'] +'"> ' +
-                                    campaign['name'] +
-                                '</a></div>'
-                            );
-                        {% endif %}
+                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                        marker.bindPopup(
+                            '<div class="campaign-marker"><a href="/campaign/'+
+                                campaign['uuid'] +'"> ' +
+                                campaign['name'] +
+                            '</a></div>'
+                        );
                     });
 
                     $('#panel-campaign').LoadingOverlay("hide");
 
-                    {% if not all %}
-                        map.invalidateSize();
-                        var layers = mapLayers;
-                        if(typeof mapLayers.length === 'undefined') {
-                            layers = mapLayers.getLayers();
-                        }
-                        if(layers.length > 0) {
-                            map.fitBounds(mapLayers.getBounds());
-                        }
-                    {% endif %}
+                    map.invalidateSize();
+                    var layers = mapLayers;
+                    if(typeof mapLayers.length === 'undefined') {
+                        layers = mapLayers.getLayers();
+                    }
+                    if(layers.length > 0) {
+                        map.fitBounds(mapLayers.getBounds());
+                    }
 
                     var options = {
                         valueNames: ['campaign-name', 'campaign-start-date']
