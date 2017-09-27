@@ -648,16 +648,25 @@
             map.fitBounds(e.target.getBounds());
         }
 
+        var completenessPallete = [
+            '#00840d',
+            '#3eff1c',
+            '#e2f90e',
+            '#ffe41c',
+            '#f9be0e',
+            '#ff0000'
+        ];
+
         var legend = L.control({position: 'bottomleft'});
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<span>Completeness</span><br/>';
-            div.innerHTML += '<i style="background: #00840d"></i> <span>100%</span><br/>';
-            div.innerHTML += '<i style="background: #a8ff4c"></i> <span>80% - 99%</span><br/>';
-            div.innerHTML += '<i style="background: #b6ff00"></i> <span>60% - 79%</span><br/>';
-            div.innerHTML += '<i style="background: #ffaa00"></i> <span>40% - 59%</span><br/>';
-            div.innerHTML += '<i style="background: #ff5d00"></i> <span>20% - 39%</span><br/>';
-            div.innerHTML += '<i style="background: #ff0000"></i> <span>< 20%</span><br/>';
+            div.innerHTML += '<span><b>Completeness</b></span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[0] +'"></i> <span>100%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[1] +'"></i> <span>< 100%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[2] +'"></i> <span>< 75%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[3] +'"></i> <span>< 50%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[4] +'"></i> <span>< 25%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete[5] +'"></i> <span>0%</span><br/>';
         return div;
         };
         legend.addTo(map);

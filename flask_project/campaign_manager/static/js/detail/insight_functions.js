@@ -405,19 +405,19 @@ function dictToTable(dictObject) {
 
 function colorCompleteness(error_value) {
 
-    var color = '#00840d';
-    if(error_value >= 8){
-        color = '#ff0000';
-    } else if(error_value >= 6){
-        color = '#ff5d00';
-    } else if(error_value >= 4){
-        color = '#ffaa00';
-    } else if(error_value >= 2){
-        color = '#b6ff00';
+    var color = completenessPallete[0];
+    if(error_value == 100){
+        color = completenessPallete[5];
+    } else if(error_value >= 75){
+        color = completenessPallete[4];
+    } else if(error_value >= 50){
+        color = completenessPallete[3];
+    } else if(error_value >= 25){
+        color = completenessPallete[2];
     } else if(error_value > 0){
-        color = '#a8ff4c'
+        color = completenessPallete[1];
     } else {
-        color = '#00840d'
+        color = completenessPallete[0];
     }
 
     return color;
@@ -456,6 +456,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             unusedNodes[feature['id']] = feature;
         }
 
+        var completenessPercentage = (100 - feature['completeness']).toFixed(1);
+
         if(featureTag) {
             if(feature['type'] === 'node') {
                 L.circle([feature['lat'],feature['lon']], 5, {
@@ -469,7 +471,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((feature['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ feature['error_message'] + '</div>') : '') +
                         ((feature['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ feature['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: node</div>'+
-                    dictToTable(feature['tags']) + '</div>'
+                    dictToTable(feature['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' +'</div>'
                 ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
@@ -495,6 +497,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
         }
 
         var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
+        var completenessPercentage = (100 - way['completeness']).toFixed(1);
 
         if(typeof wayTag !== 'undefined') {
             L.polygon(latlngs, {
@@ -507,7 +510,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     ((way['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ way['error_message'] + '</div>') : '') +
                     ((way['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ way['warning_message'] + '</div>') : '') +
                 '<div><b>type </b>: way</div>'+
-                dictToTable(way['tags']) + '</div>'
+                dictToTable(way['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
             ).addTo(waysGroup);
         } else {
             unusedWays[way['id']] = way;
@@ -544,6 +547,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             }
 
             var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
+            var completenessPercentage = (100 - relationTag['completeness']).toFixed(1);
 
             if(typeof relationTag !== 'undefined') {
                 L.polygon(latlngs, {
@@ -556,7 +560,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((relation['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ relation['error_message'] + '</div>') : '') +
                         ((relation['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ relation['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: relation</div>'+
-                    dictToTable(relation['tags']) + '</div>'
+                    dictToTable(relation['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
                 ).addTo(relationsGroup);
             }
         });

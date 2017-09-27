@@ -129,7 +129,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         feature_data['error_message'] = ', '.join(error_message)
         feature_data['warning_message'] = ', '.join(warning_message)
         feature_data['completeness'] = \
-            (len(error_message) / len(required_attribute)) * 10
+            (len(error_message) / len(required_attribute)) * 100
 
     def is_string_int(self, text):
         """Check whether the text is int or not."""
