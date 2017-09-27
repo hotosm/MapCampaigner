@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-red" onclick="saveCustomType()">Add</button>
+                <button type="button" id="btn-add-custom-type" class="btn btn-default btn-red" onclick="saveCustomType()">Add</button>
                 <button type="button" class="btn btn-default btn-red" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -103,7 +103,7 @@
         lastTypeRow = null;
         var relatedTarget = e.relatedTarget;
         var type_selected = $(relatedTarget).closest('.form-group').find('select').val();
-        modalReset()
+        modalReset();
         if (type_selected) {
             lastTypeRow = $(relatedTarget).closest('.row');
             var type = types[type_selected];
@@ -116,6 +116,8 @@
                 }
                 addNewCustomTags(tag_value)
             });
+            $('#custom-types-tags .modal-title').html('Edit custom type');
+            $('#btn-add-custom-type').html('Save');
         }
     });
     function addCustomType(typeData) {
@@ -131,6 +133,8 @@
         };
     }
     function modalReset() {
+        $('#custom-types-tags .modal-title').html('+ Add custom type');
+        $('#btn-add-custom-type').html('Add');
         $('#custom_type_name').val('');
         $('#custom_type_feature').val('');
         $('#custom-tags').html('');
