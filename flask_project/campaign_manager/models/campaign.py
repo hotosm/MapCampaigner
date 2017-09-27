@@ -17,7 +17,7 @@ from flask import render_template
 from shapely import geometry as shapely_geometry
 from shapely.geometry import mapping, shape, JOIN_STYLE
 from shapely.ops import cascaded_union
-# import numpy
+import numpy
 
 from app_config import Config
 import campaign_manager.insights_functions as insights_functions
@@ -383,10 +383,10 @@ class Campaign(JsonModel):
                 cascaded_geojson = mapping(cascaded_polygons)
                 coordinates_str = json.dumps(cascaded_geojson['coordinates'])
                 coordinates = json.loads(coordinates_str)
-                # elif cascaded_polygons.type == 'MultiPolygon':
-                #     coordinates = numpy.asarray(
-                #             cascaded_polygons.envelope.exterior.coords)
-                #     coordinates = coordinates.tolist()
+            elif cascaded_polygons.type == 'MultiPolygon':
+                coordinates = numpy.asarray(
+                        cascaded_polygons.envelope.exterior.coords)
+                coordinates = coordinates.tolist()
 
         correct_coordinates = self.swap_coordinates(coordinates)
         return correct_coordinates
