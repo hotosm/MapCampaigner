@@ -123,7 +123,10 @@
                             </div>
                             <div id="typesTagsContainer"></div>
                             <div class="row">
-                                <div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div>
+                                <div class="form-body form-group col-lg-4" style="margin-top: 10px">
+                                    <input id="btn-add" type="button" value="+ Add type" onclick="addTypes()">
+                                    <input id="btn-add" type="button" value="+ Add custom type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                </div>
                             </div>
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
@@ -379,6 +382,8 @@
             <!-- /.panel-body -->
         </div>
     </div>
+
+    {% include 'modals/custom-types-and-tags.html' %}
 
 {% endblock %}
 

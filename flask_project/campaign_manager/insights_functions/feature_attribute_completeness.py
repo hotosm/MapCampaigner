@@ -52,7 +52,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
             return []
         try:
             required_attributes = self.get_required_attributes()
-            survey_attributes = self.campaign.get_json_type(self.feature_type)
             for value in raw_data:
 
                 if 'tags' not in value:
@@ -60,7 +59,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
 
                 self._function_good_data.append(value)
                 self.check_feature_completeness(
-                    value, required_attributes, survey_attributes)
+                    value, required_attributes)
 
                 if value['error'] == 'False':
                     list_good_data.append(value)
@@ -85,7 +84,7 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
         return None
 
     def check_feature_completeness(
-            self, feature_data, required_attributes, survey_attributes):
+            self, feature_data, required_attributes):
         """Check feature completeness.
 
         :param feature_data: Feature data
@@ -93,9 +92,6 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
 
         :param required_attributes: Required attributes
         :type required_attributes: dict
-
-        :param survey_attributes: Survey Attributes
-        :type survey_attributes: dict
         """
         warning_message = []
         error_message = []
