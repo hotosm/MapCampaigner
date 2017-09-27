@@ -492,13 +492,18 @@ def generate_josm():
         return Response(json.dumps({'file_name': safe_name}))
 
 
-@campaign_manager.route('/download_josm/<file_name>')
-def download_josm(file_name):
+@campaign_manager.route('/download_josm/<uuid>/<file_name>')
+def download_josm(uuid, file_name):
     """Download josm file."""
+    campaign = Campaign.get(uuid)
+    campaign_name = campaign.name + '.osm'
     file_path = os.path.join(config.CACHE_DIR, file_name)
     if not os.path.exists(file_path):
         abort(404)
-    return send_file(file_path)
+    return send_file(
+            file_path,
+            as_attachment=True,
+            attachment_filename=campaign_name)
 
 
 def get_selected_functions():

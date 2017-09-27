@@ -395,7 +395,7 @@ function getOSMCHAErrors() {
     $.ajax({
         url: url,
         success: function (data) {
-            console.log(data);
+
             var totalOsmchaErrors = parseInt(data["total"]);
             var totalError = parseInt($('#total-feature-completeness-errors').html());
             $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
@@ -409,6 +409,13 @@ function getOSMCHAErrors() {
                     rowData.push('<div class="error-completeness">'+error['Reasons']+'</div>');
                 } else {
                     rowData.push('<div class="error-completeness">'+error['Comment']+'</div>');
+                }
+
+                if(error['Features'].length > 0) {
+                    for(var i=0; i < error['Features'].length; i++) {
+                        var feature = error['Features'][i]['url'].split('-');
+                        errorFeatures[feature[0]].push(feature[1]);
+                    }
                 }
 
                 addRowToErrorPanel(rowData);
@@ -738,6 +745,7 @@ function showInsightFunction(element, tabId) {
 
 $('#download-xml').click(function (event) {
     var download_url = '/generate_josm';
+    $('#download-xml').prop('disabled', true);
     var data = {};
     data['error_features'] = JSON.stringify(errorFeatures);
     $.ajax({
@@ -747,9 +755,12 @@ $('#download-xml').click(function (event) {
         success: function (data) {
             var dataDict = JSON.parse(data);
             if('file_name' in dataDict) {
-                document.getElementById('download_xml_frame').src = '/download_josm/'+dataDict['file_name'];
+                document.getElementById('download_xml_frame').src = '/download_josm/'+uuid+'/'+dataDict['file_name'];
             }
-
+            $('#download-xml').prop('disabled', false);
+        },
+        error: function () {
+            $('#download-xml').prop('disabled', false);
         }
     })
 });

@@ -104,6 +104,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
                         "%Y-%m-%d %H:%M"),
                     'User': properties['user'],
                     'Comment': properties['comment'],
+                    'Features': properties['features'],
                     'Count': {
                         'create': properties['create'],
                         'modify': properties['modify'],
