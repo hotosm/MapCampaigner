@@ -638,6 +638,12 @@
         }
 
         function updated(response) {
+            {% if action == 'edit' %}
+                var is_manager = $.inArray(response.display_name, managers_list);
+                if(is_manager == -1){
+                    location.href='/';
+                }
+            {% endif %}
             $('#campaign-panel').show();
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
