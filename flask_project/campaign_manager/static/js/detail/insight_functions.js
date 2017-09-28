@@ -405,19 +405,19 @@ function dictToTable(dictObject) {
 
 function colorCompleteness(error_value) {
 
-    var color = completenessPallete[0];
+    var color = completenessPallete['100'];
     if(error_value == 100){
-        color = completenessPallete[5];
-    } else if(error_value >= 75){
-        color = completenessPallete[4];
-    } else if(error_value >= 50){
-        color = completenessPallete[3];
-    } else if(error_value >= 25){
-        color = completenessPallete[2];
+        color = completenessPallete['0'];
+    } else if(error_value > 75){
+        color = completenessPallete['25'];
+    } else if(error_value > 50){
+        color = completenessPallete['50'];
+    } else if(error_value > 25){
+        color = completenessPallete['75'];
     } else if(error_value > 0){
-        color = completenessPallete[1];
+        color = completenessPallete['99'];
     } else {
-        color = completenessPallete[0];
+        color = completenessPallete['100'];
     }
 
     return color;
