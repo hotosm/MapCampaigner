@@ -436,6 +436,26 @@ function dictToTable(dictObject) {
     return result;
 }
 
+function colorCompleteness(error_value) {
+
+    var color = completenessPallete['100'];
+    if(error_value == 100){
+        color = completenessPallete['0'];
+    } else if(error_value > 75){
+        color = completenessPallete['25'];
+    } else if(error_value > 50){
+        color = completenessPallete['50'];
+    } else if(error_value > 25){
+        color = completenessPallete['75'];
+    } else if(error_value > 0){
+        color = completenessPallete['99'];
+    } else {
+        color = completenessPallete['100'];
+    }
+
+    return color;
+}
+
 function renderFeatures(feature_type, feature_data, show_feature) {
     var unusedNodes = {};
     var unusedWays = {};
@@ -469,11 +489,13 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             unusedNodes[feature['id']] = feature;
         }
 
+        var completenessPercentage = (100 - feature['completeness']).toFixed(1);
+
         if(featureTag) {
             if(feature['type'] === 'node') {
                 L.circle([feature['lat'],feature['lon']], 5, {
-                    color: '#' + intToRGB(hashCode(featureTag)),
-                    fillColor: '#' +  intToRGB(hashCode(featureTag)),
+                    color: colorCompleteness(feature['completeness']),
+                    fillColor: colorCompleteness(feature['completeness']),
                     fillOpacity: 0.7,
                     zIndexOffset: 999
                 }).bindPopup(
@@ -482,7 +504,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((feature['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ feature['error_message'] + '</div>') : '') +
                         ((feature['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ feature['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: node</div>'+
-                    dictToTable(feature['tags']) + '</div>'
+                    dictToTable(feature['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' +'</div>'
                 ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
@@ -508,11 +530,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
         }
 
         var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
+        var completenessPercentage = (100 - way['completeness']).toFixed(1);
 
         if(typeof wayTag !== 'undefined') {
             L.polygon(latlngs, {
-                color: '#' + intToRGB(hashCode(wayTag)),
-                fillColor: '#' +  intToRGB(hashCode(wayTag)),
+                color: colorCompleteness(way['completeness']),
+                fillColor: colorCompleteness(way['completeness']),
                 fillOpacity: 0.5
             }).bindPopup(
                 '<div class="feature-detail"><h4>Feature - '+wayTag+'</h4>'+
@@ -520,7 +543,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     ((way['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ way['error_message'] + '</div>') : '') +
                     ((way['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ way['warning_message'] + '</div>') : '') +
                 '<div><b>type </b>: way</div>'+
-                dictToTable(way['tags']) + '</div>'
+                dictToTable(way['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
             ).addTo(waysGroup);
         } else {
             unusedWays[way['id']] = way;
@@ -557,11 +580,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             }
 
             var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
+            var completenessPercentage = (100 - relation['completeness']).toFixed(1);
 
             if(typeof relationTag !== 'undefined') {
                 L.polygon(latlngs, {
-                    color: '#' + intToRGB(hashCode(relationTag)),
-                    fillColor: '#' +  intToRGB(hashCode(relationTag)),
+                    color: colorCompleteness(relation['completeness']),
+                    fillColor: colorCompleteness(relation['completeness']),
                     fillOpacity: fillOpacity
                 }).bindPopup(
                     '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
@@ -569,7 +593,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((relation['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ relation['error_message'] + '</div>') : '') +
                         ((relation['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ relation['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: relation</div>'+
-                    dictToTable(relation['tags']) + '</div>'
+                    dictToTable(relation['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
                 ).addTo(relationsGroup);
             }
         });
