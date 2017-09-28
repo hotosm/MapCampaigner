@@ -125,7 +125,7 @@
     margin-right: 15px;
 }
 
-.btn-next, .btn-prev, .submit-button {
+.btn-next, .btn-prev, .submit-button, .btn-red {
     color: white;
     background-color: #ac3232;
     border: 0;
@@ -134,12 +134,12 @@
     width: 180px;
 }
 
-.btn-next:hover, .btn-prev:hover {
+.btn-next:hover, .btn-prev:hover, .btn-red:hover {
     color: white;
     background-color: #992c2c;
 }
 
-.btn-next:active, .btn-prev:active {
+.btn-next:active, .btn-prev:active, .btn-red:active {
     color: white;
     background-color: #832424 !important;
 }
@@ -461,6 +461,10 @@ input#search-osm-user-text {
     width: 100% !important;
     margin-left: 13px;
     margin-top: 5px;
+}
+
+.select-types:disabled {
+    background-color: #eee;
 }
 
 .btn-add-tag {

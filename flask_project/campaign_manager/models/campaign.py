@@ -84,7 +84,7 @@ class Campaign(JsonModel):
         # save updated campaign to json
         json_str = Campaign.serialize(data)
         json_path = os.path.join(
-                Campaign.get_json_folder(), '%s.json' % self.uuid
+            Campaign.get_json_folder(), '%s.json' % self.uuid
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
@@ -93,7 +93,7 @@ class Campaign(JsonModel):
         # save geometry campaign to geojson
         geometry_str = json.dumps(geometry)
         geometry_path = os.path.join(
-                Campaign.get_json_folder(), '%s.geojson' % self.uuid
+            Campaign.get_json_folder(), '%s.geojson' % self.uuid
         )
         _file = open(geometry_path, 'w+')
         _file.write(geometry_str)
@@ -103,7 +103,7 @@ class Campaign(JsonModel):
         if save_to_git:
             try:
                 save_with_git(
-                        'Update campaign - %s' % self.uuid
+                    'Update campaign - %s' % self.uuid
                 )
             except Exception as e:
                 print(e)
@@ -116,9 +116,9 @@ class Campaign(JsonModel):
         try:
             from secret import MAPBOX_TOKEN
             url = 'https://api.mapbox.com/styles/v1/hot/' \
-                   'cj7hdldfv4d2e2qp37cm09tl8/static/geojson({overlay})/' \
-                   'auto/{width}x{height}?' \
-                   'access_token=' + MAPBOX_TOKEN
+                  'cj7hdldfv4d2e2qp37cm09tl8/static/geojson({overlay})/' \
+                  'auto/{width}x{height}?' \
+                  'access_token=' + MAPBOX_TOKEN
             if len(self.geometry['features']) > 1:
                 geometry = {
                     'type': 'Feature',
@@ -128,8 +128,8 @@ class Campaign(JsonModel):
                 geometry = json.dumps(geometry, separators=(',', ':'))
             else:
                 geometry = json.dumps(
-                        self.geometry['features'][0],
-                        separators=(',', ':'))
+                    self.geometry['features'][0],
+                    separators=(',', ':'))
             url = url.format(
                 overlay=geometry,
                 width=512,
@@ -151,7 +151,7 @@ class Campaign(JsonModel):
             os.makedirs(thumbnail_dir)
 
         image_path = os.path.join(
-                thumbnail_dir, safe_name
+            thumbnail_dir, safe_name
         )
 
         if not os.path.exists(image_path):
@@ -174,8 +174,8 @@ class Campaign(JsonModel):
         """
         if campaign_type in self.participants_count_per_type:
             self.total_participants_count -= self.participants_count_per_type[
-                                                campaign_type
-                                            ]
+                campaign_type
+            ]
         self.participants_count_per_type[campaign_type] = participants_count
         self.total_participants_count += participants_count
         self.save()
@@ -192,7 +192,7 @@ class Campaign(JsonModel):
         for key, value in data.items():
             setattr(self, key, value)
         self.geometry = parse_json_string(self.geometry)
-        self.types = parse_json_string(self.types.replace('\'', '"'))
+        self.types = Campaign.parse_types_string(self.types.replace('\'', '"'))
         self.selected_functions = parse_json_string(self.selected_functions)
         self.save(uploader)
 
@@ -204,15 +204,15 @@ class Campaign(JsonModel):
         for key, value in self.selected_functions.items():
             try:
                 SelectedFunction = getattr(
-                        insights_functions, value['function'])
+                    insights_functions, value['function'])
                 additional_data = {}
                 if 'type' in value:
                     additional_data['type'] = value['type']
                 selected_function = SelectedFunction(
-                        self,
-                        feature=value['feature'],
-                        required_attributes=value['attributes'],
-                        additional_data=additional_data)
+                    self,
+                    feature=value['feature'],
+                    required_attributes=value['attributes'],
+                    additional_data=additional_data)
 
                 value['type_required'] = \
                     ('%s' % selected_function.type_required).lower()
@@ -242,6 +242,7 @@ class Campaign(JsonModel):
                         setattr(self, key, value)
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
+        self.types = Campaign.parse_types_string(json.dumps(self.types))
 
         # geometry data
         if self.geojson_path:
@@ -281,27 +282,27 @@ class Campaign(JsonModel):
         try:
             if insight_function_name:
                 SelectedFunction = getattr(
-                        insights_functions, insight_function_name)
+                    insights_functions, insight_function_name)
                 additional_data['function_name'] = insight_function_name
                 additional_data['function_id'] = insight_function_id
                 selected_function = SelectedFunction(
-                        self,
-                        feature=None,
-                        required_attributes=None,
-                        additional_data=additional_data
+                    self,
+                    feature=None,
+                    required_attributes=None,
+                    additional_data=additional_data
                 )
             else:
                 insight_function = self.selected_functions[insight_function_id]
                 SelectedFunction = getattr(
-                        insights_functions, insight_function['function'])
+                    insights_functions, insight_function['function'])
                 additional_data['function_id'] = insight_function_id
                 if 'type' in insight_function:
                     additional_data['type'] = insight_function['type']
                 selected_function = SelectedFunction(
-                        self,
-                        feature=insight_function['feature'],
-                        required_attributes=insight_function['attributes'],
-                        additional_data=additional_data
+                    self,
+                    feature=insight_function['feature'],
+                    required_attributes=insight_function['attributes'],
+                    additional_data=additional_data
                 )
         except (AttributeError, KeyError) as e:
             return campaign_ui
@@ -313,8 +314,8 @@ class Campaign(JsonModel):
             'widget': selected_function.get_ui_html()
         }
         campaign_ui += render_template(
-                'campaign_widget/insight_template.html',
-                **context
+            'campaign_widget/insight_template.html',
+            **context
         )
         return campaign_ui
 
@@ -330,11 +331,11 @@ class Campaign(JsonModel):
         try:
             function = self.selected_functions[insight_function_id]
             SelectedFunction = getattr(
-                    insights_functions, function['function'])
+                insights_functions, function['function'])
             selected_function = SelectedFunction(
-                    self,
-                    feature=function['feature'],
-                    required_attributes=function['attributes'])
+                self,
+                feature=function['feature'],
+                required_attributes=function['attributes'])
             return selected_function.metadata()
         except AttributeError as e:
             return {}
@@ -346,18 +347,18 @@ class Campaign(JsonModel):
             polygons = []
             for feature in self.geometry['features']:
                 polygons.append(shapely_geometry.Polygon(
-                        feature['geometry']['coordinates'][0]))
+                    feature['geometry']['coordinates'][0]))
             cascaded_polygons = cascaded_union(polygons)
             simplify = True
         else:
             cascaded_polygons = shapely_geometry.Polygon(
-                    self.geometry['features'][0]
-                    ['geometry']['coordinates'][0])
+                self.geometry['features'][0]
+                ['geometry']['coordinates'][0])
 
         joined_polygons = cascaded_polygons.buffer(
-                0.001, 1, join_style=JOIN_STYLE.mitre
+            0.001, 1, join_style=JOIN_STYLE.mitre
         ).buffer(
-                -0.001, 1, join_style=JOIN_STYLE.mitre
+            -0.001, 1, join_style=JOIN_STYLE.mitre
         )
 
         if simplify:
@@ -401,7 +402,7 @@ class Campaign(JsonModel):
         for coordinate in coordinates:
             if isinstance(coordinate[0], float):
                 correct_coordinate.append(
-                        [coordinate[1], coordinate[0]]
+                    [coordinate[1], coordinate[0]]
                 )
             else:
                 correct_coordinate.extend(self.swap_coordinates(coordinate))
@@ -430,12 +431,12 @@ class Campaign(JsonModel):
             return {}
         # getting features and required attributes from types
         survey_folder = os.path.join(
-                Config.campaigner_data_folder,
-                'surveys'
+            Config.campaigner_data_folder,
+            'surveys'
         )
         survey_file = os.path.join(
-                survey_folder,
-                type
+            survey_folder,
+            type
         )
         return get_survey_json(survey_file)
 
@@ -450,11 +451,11 @@ class Campaign(JsonModel):
         :rtype: str
         """
         start_datetime = datetime.strptime(
-                self.start_date,
-                "%Y-%m-%d")
+            self.start_date,
+            "%Y-%m-%d")
         end_datetime = datetime.strptime(
-                self.end_date,
-                "%Y-%m-%d")
+            self.end_date,
+            "%Y-%m-%d")
 
         status = 'inactive'
         if start_datetime.date() <= date.today():
@@ -475,20 +476,20 @@ class Campaign(JsonModel):
         :rtype: str
         """
         return os.path.join(
-                Config.campaigner_data_folder,
-                'coverage',
-                self.uuid
+            Config.campaigner_data_folder,
+            'coverage',
+            self.uuid
         )
 
     @staticmethod
     def get_json_folder():
         return os.path.join(
-                Config.campaigner_data_folder, 'campaign')
+            Config.campaigner_data_folder, 'campaign')
 
     @staticmethod
     def get_thumbnail_folder():
         return os.path.join(
-                Campaign.get_json_folder(), 'thumbnail')
+            Campaign.get_json_folder(), 'thumbnail')
 
     @staticmethod
     def serialize(data):
@@ -527,11 +528,29 @@ class Campaign(JsonModel):
         data['campaign_creator'] = uploader
 
         uuid = data['uuid']
-        data['types'] = parse_json_string(data['types'])
+        data['types'] = Campaign.parse_types_string(data['types'])
         data['selected_functions'] = parse_json_string(
-                data['selected_functions'])
+            data['selected_functions'])
         Campaign.validate(data, uuid)
         return data
+
+    @staticmethod
+    def parse_types_string(types_string):
+        types = parse_json_string(types_string)
+        for type, value in types.items():
+            json_tags = {}
+            tags = value['tags']
+            if (isinstance(tags, list)):
+                for tag in value['tags']:
+                    tag = tag.replace(']', '')
+                    tag_splitted = tag.split('[')
+                    tag_key = tag_splitted[0].strip()
+                    if len(tag_splitted) == 2:
+                        json_tags[tag_key] = tag_splitted[1].split(',')
+                    else:
+                        json_tags[tag_key] = []
+                value['tags'] = json_tags
+        return types
 
     @staticmethod
     def create(data, uploader):
@@ -549,12 +568,12 @@ class Campaign(JsonModel):
         del data['geometry']
 
         json_str = Campaign.serialize(
-                Campaign.parse_campaign_data(data, uploader)
+            Campaign.parse_campaign_data(data, uploader)
         )
 
         # save updated campaign to json
         json_path = os.path.join(
-                Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
+            Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
         )
         _file = open(json_path, 'w+')
         _file.write(json_str)
@@ -562,8 +581,8 @@ class Campaign(JsonModel):
 
         # save geometry campaign to geojson
         geojson_path = os.path.join(
-                Campaign.get_json_folder(),
-                '%s.geojson' % campaign_data['uuid']
+            Campaign.get_json_folder(),
+            '%s.geojson' % campaign_data['uuid']
         )
         _file = open(geojson_path, 'w+')
         _file.write(json.dumps(parse_json_string(geometry)))
@@ -572,7 +591,7 @@ class Campaign(JsonModel):
         # create commit as git
         try:
             save_with_git(
-                    'Create campaign - %s' % data['uuid']
+                'Create campaign - %s' % data['uuid']
             )
         except Exception as e:
             print(e)
@@ -609,14 +628,13 @@ class Campaign(JsonModel):
 
                         if 'sort_by' in kwargs:
                             if kwargs['sort_by'][0] == 'recent':
-
                                 sort_object = int(
-                                        datetime.today().strftime('%s')
-                                            ) - int(
-                                        datetime.strptime(
-                                                campaign.edited_at,
-                                                "%a %b %d %H:%M:%S %Y"
-                                        ).strftime('%s'))
+                                    datetime.today().strftime('%s')
+                                ) - int(
+                                    datetime.strptime(
+                                        campaign.edited_at,
+                                        "%a %b %d %H:%M:%S %Y"
+                                    ).strftime('%s'))
 
                         position = bisect.bisect(sort_list, sort_object)
                         bisect.insort(sort_list, sort_object)
@@ -651,7 +669,7 @@ class Campaign(JsonModel):
         sort_list = []
         coordinates = coordinate.split(',')
         point = shapely_geometry.Point(
-                [float(coordinates[1]), float(coordinates[0])])
+            [float(coordinates[1]), float(coordinates[0])])
         per_page = None
         is_close = False
         circle_buffer = None
@@ -735,7 +753,7 @@ class Campaign(JsonModel):
         :rtype: str
         """
         json_path = os.path.join(
-                Campaign.get_json_folder(), '%s.json' % uuid
+            Campaign.get_json_folder(), '%s.json' % uuid
         )
         if os.path.isfile(json_path):
             return json_path
@@ -752,7 +770,7 @@ class Campaign(JsonModel):
         :rtype: str
         """
         json_path = os.path.join(
-                Campaign.get_json_folder(), '%s.geojson' % uuid
+            Campaign.get_json_folder(), '%s.geojson' % uuid
         )
         if os.path.isfile(json_path):
             return json_path
@@ -798,5 +816,5 @@ class Campaign(JsonModel):
                            "This insights function not " \
                            "assigned to this campaign"
             super(
-                    Campaign.InsightsFunctionNotAssignedToCampaign, self).\
+                Campaign.InsightsFunctionNotAssignedToCampaign, self). \
                 __init__(self.message)
