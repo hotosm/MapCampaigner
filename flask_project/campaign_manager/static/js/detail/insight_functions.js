@@ -547,12 +547,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             }
 
             var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
-            var completenessPercentage = (100 - relationTag['completeness']).toFixed(1);
+            var completenessPercentage = (100 - relation['completeness']).toFixed(1);
 
             if(typeof relationTag !== 'undefined') {
                 L.polygon(latlngs, {
-                    color: colorCompleteness(relationTag['completeness']),
-                    fillColor: colorCompleteness(relationTag['completeness']),
+                    color: colorCompleteness(relation['completeness']),
+                    fillColor: colorCompleteness(relation['completeness']),
                     fillOpacity: fillOpacity
                 }).bindPopup(
                     '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
