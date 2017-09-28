@@ -1,6 +1,7 @@
 import inspect
 import json
 import os
+import hashlib
 import shutil
 from datetime import datetime
 from flask import jsonify
@@ -14,7 +15,8 @@ from flask import (
     render_template,
     Response,
     abort,
-    send_file
+    send_file,
+    send_from_directory
 )
 
 from app_config import Config
@@ -35,6 +37,11 @@ from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
 
+from campaign_manager.data_providers.overpass_provider import OverpassProvider
+from reporter import config
+from campaign_manager.utilities import (
+    load_osm_document_cached
+)
 from reporter import LOGGER
 from reporter.static_files import static_file
 
@@ -461,6 +468,42 @@ def participate():
         )
     else:
         abort(404)
+
+
+@campaign_manager.route('/generate_josm', methods=['POST'])
+def generate_josm():
+    """Get overpass xml data from ids store it to temporary folder."""
+    error_features = request.values.get('error_features', None)
+    if not error_features:
+        abort(404)
+
+    server_url = 'http://exports-prod.hotosm.org:6080/api/' \
+                 'interpreter'
+    error_features = json.loads(error_features)
+    element_query = OverpassProvider().parse_url_parameters(
+        element_ids=error_features
+    )
+    safe_name = hashlib.md5(
+            element_query.encode('utf-8')).hexdigest() + '_josm.osm'
+    file_path = os.path.join(config.CACHE_DIR, safe_name)
+    osm_data, osm_doc_time, updating = load_osm_document_cached(
+            file_path, server_url, element_query, False)
+    if osm_data:
+        return Response(json.dumps({'file_name': safe_name}))
+
+
+@campaign_manager.route('/download_josm/<uuid>/<file_name>')
+def download_josm(uuid, file_name):
+    """Download josm file."""
+    campaign = Campaign.get(uuid)
+    campaign_name = campaign.name + '.osm'
+    file_path = os.path.join(config.CACHE_DIR, file_name)
+    if not os.path.exists(file_path):
+        abort(404)
+    return send_file(
+            file_path,
+            as_attachment=True,
+            attachment_filename=campaign_name)
 
 
 def get_selected_functions():
