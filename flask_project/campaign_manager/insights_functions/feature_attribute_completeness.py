@@ -119,8 +119,13 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                         warning_message.append(warning)
 
         feature_data['error'] = 'False'
+        feature_data['warning'] = 'False'
+
         if warning_message or error_message:
             feature_data['error'] = 'True'
+
+        if not error_message and warning_message:
+            feature_data['warning'] = 'True'
 
         feature_data['error_message'] = ', '.join(error_message)
         feature_data['warning_message'] = ', '.join(warning_message)

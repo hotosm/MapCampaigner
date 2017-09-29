@@ -198,15 +198,15 @@ function sortObject(o) {
 function createErrorPanel() {
      errorPanel = $('#feature-completeness-error-table').DataTable( {
          data: [],
-         bFilter: false,
          bLengthChange: false,
          columns: [
+            { title: "Status" },
             { title: "Name", "width": "20%"  },
             { title: "Date", "width": "20%" },
             { title: "Comment", "width": "50%" }
          ],
          columnDefs: [{
-             targets: 1,
+             targets: 2,
              render: function (data) {
                  var momentObj = moment(data, 'YYYY-MM-DDTHH:mm:ssZ');
                  return momentObj.format('YYYY-MM-DD');
@@ -361,8 +361,12 @@ function getInsightFunctions(function_id, function_name, type_id) {
 
             if(typeof type_id !== 'undefined') {
                 if(function_name === 'FeatureAttributeCompleteness') {
+                    var errorCount = 0;
                     for(var i=0; i<featureCompleteness.length;i++){
-                        var idCol = $(featureCompleteness[i][0]);
+                        if(featureCompleteness[i][0] === 'error') {
+                            errorCount++;
+                        }
+                        var idCol = $(featureCompleteness[i][1]);
                         errorFeatures[idCol.data('type')].push(idCol.data('id').toString());
                         addRowToErrorPanel(featureCompleteness[i]);
                     }
@@ -375,7 +379,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
                     }
 
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
-                    $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                    $('#total-feature-completeness-errors').html(totalError + errorCount);
                     getOSMCHAErrors();
                 } else if (function_name === 'MapperEngagement') {
                     updateMapperEngagementTotal();
@@ -401,6 +405,7 @@ function getOSMCHAErrors() {
             $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
             $.each(data["data"], function (index, error) {
                 var rowData = [];
+                rowData.push('error');
                 rowData.push(
                     '<a target="_blank" href="https://osmcha.mapbox.com/changesets/'+error['ChangeSetId']+'">changesets :'+error['ChangeSetId']+'</a>'
                 );
@@ -788,3 +793,19 @@ $('#download-xml').click(function (event) {
         }
     })
 });
+
+$('#exclude-warning').change(function () {
+    if(this.checked) {
+        excludeWarning();
+    } else {
+        showWarning();
+    }
+});
+
+function showWarning() {
+    errorPanel.columns(0).search('').draw();
+}
+
+function excludeWarning() {
+    errorPanel.columns(0).search('error').draw();
+}
