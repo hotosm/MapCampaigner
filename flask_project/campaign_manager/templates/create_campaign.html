@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row" id="form-panel">
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
@@ -526,6 +526,7 @@
                 })
             }
         }
+        $('#form-panel').hide();
         $(function () {
             updateManagerList();
         });
@@ -643,7 +644,18 @@
         }
 
         function updated(response) {
-            $('#campaign-panel').show();
+            {% if action == 'edit' %}
+                var is_manager = $.inArray(response.display_name, managers_list);
+                if(is_manager == -1){
+                    location.href='/404';
+                }else {
+                    $('#form-panel').show();
+                    $('#campaign-panel').show();
+                }
+            {% else %}
+                $('#form-panel').show();
+                $('#campaign-panel').show();
+            {% endif %}
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
                 $('#managers-list').append(
@@ -663,7 +675,10 @@
         if (!window.isAuthenticated) {
             window.location.replace("/");
         } else {
-            $('#campaign-panel').show();
+            {% if action=='create' %}
+                $('#form-panel').show();
+                $('#campaign-panel').show();
+            {% endif %}
         }
 
         //------------------ STEPS ------------------//
