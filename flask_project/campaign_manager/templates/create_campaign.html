@@ -84,14 +84,14 @@
                                 <div class="row" style="margin-bottom: 20px">
                                 <div class="col-md-3">
                                     <div class="form-group required-form">
-                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        <i id="start-date-icon" class="fa fa-calendar" aria-hidden="true"></i>
                                         {{ form.start_date }}
                                         <p class="help-block"></p>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group required-form">
-                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        <span id="end-date-icon" class="fa fa-calendar" aria-hidden="true"></span>
                                         {{ form.end_date }}
                                         <p class="help-block"></p>
                                     </div>
@@ -1139,6 +1139,14 @@
                 $("#start_date").val(date);
                 $("#start_date").datepicker({maxDate: new Date(date)})
             }
+        });
+
+        $("#start-date-icon").click(function () {
+            $('#start_date').datepicker().data('datepicker').show()
+        });
+
+        $("#end-date-icon").click(function () {
+            $('#end_date').datepicker().data('datepicker').show()
         });
 
         $(function () {

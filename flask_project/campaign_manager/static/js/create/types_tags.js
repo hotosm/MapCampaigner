@@ -179,7 +179,7 @@ function onTypesChange() {
             for (var j = 0; j < key_tags.length; j++) {
                 var tag_string = key_tags[j];
                 if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += ' <span>: ' + tags[tag_string].join() + '</span>';
+                    tag_string += ' <span>: ' + tags[tag_string].join(', ') + '</span>';
                 }
                 div.append(
                     '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + tag_string + ' </span>');
@@ -192,7 +192,7 @@ function onTypesChange() {
             for (var j = 0; j < key_tags_default.length; j++) {
                 var tag_string = key_tags_default[j];
                 if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += ' <span>: ' + tags[tag_string].join() + '</span>';
+                    tag_string += ' <span> ' + tags[tag_string].join(', ') + '</span>';
                 }
                 span_select.append('<li onclick="addTag(this)">' + tag_string + '</li>')
             }

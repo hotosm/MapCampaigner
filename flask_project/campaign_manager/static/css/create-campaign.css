@@ -180,6 +180,7 @@ input#btn-add:hover {
     color: white;
     width: 150px !important;
     height: 40px !important;
+    font-weight: bold;
 }
 
 .btn-orange:hover, .submit-button:hover {
@@ -573,7 +574,6 @@ input#btn-add {
     padding: 4px 8px;
     margin: 5px;
     margin-left: 0px !important;
-    word-break: break-all;
 }
 
 #TypesTagsContainer {
