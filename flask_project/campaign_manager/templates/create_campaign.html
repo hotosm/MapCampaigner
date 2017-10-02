@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row form-border" id="form-panel">
+    <div id="form-panel">
+    <div class="row form-border">
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
@@ -370,7 +371,8 @@
         </div>
     </div>
     <div class="col-lg-10 pull-right">
-        <input id="submit" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
+        <input id="submit" style="display: none" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
+    </div>
     </div>
     {% include 'modals/custom-types-and-tags.html' %}
 
@@ -639,10 +641,12 @@
                 }else {
                     $('#form-panel').show();
                     $('#campaign-panel').show();
+                    $('#submit').show();
                 }
             {% else %}
                 $('#form-panel').show();
                 $('#campaign-panel').show();
+                $('#submit').show();
             {% endif %}
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
@@ -666,6 +670,7 @@
             {% if action=='create' %}
                 $('#form-panel').show();
                 $('#campaign-panel').show();
+                $('#submit').show();
             {% endif %}
         }
 

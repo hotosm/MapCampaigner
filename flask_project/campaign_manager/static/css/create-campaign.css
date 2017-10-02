@@ -544,15 +544,17 @@ input#btn-add {
 .additional-key-tags {
     display: none;
     position: absolute;
+    right: -200px;
     left: -2px;
     top: 34px;
-    z-index: 999;
+    z-index: 1004;
     list-style-type: none;
     border: 1px solid #dedede !important;
     background-color: white;
     border-radius: 5px;
     padding-left: 0px;
     color: black;
+    white-space: pre-wrap;
 }
 
 .additional-key-tags li {
