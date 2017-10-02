@@ -1,10 +1,11 @@
-.cc-panel {
-    border-radius: 10px !important;
-}
-
 #campaign-panel {
     /*padding: 40px !important;*/
     padding-right: 0 !important;
+}
+
+.panel {
+    border-bottom: none !important;
+    border-radius: 0;
 }
 
 .cc-title {
@@ -175,7 +176,7 @@ input#btn-add:hover {
 
 .submit-button {
     background-color: #FC6525 !important;
-    margin: 0 auto;
+    margin: 20px auto;
     display: table;
     color: white;
     width: 150px !important;
@@ -289,7 +290,7 @@ input#btn-add:hover {
 }
 
 .col-lg-10 {
-    width: 78.3%;
+    width: 79.3%;
     padding-left: 0;
     padding-right: 0;
 }
@@ -631,6 +632,10 @@ input#btn-add {
     color: #727070 !important;
 }
 
+.times-red:hover {
+    color: #832424 !important;
+}
+
 .btn-icon-next {
     float: right;
     margin: auto 5px;
@@ -693,4 +698,8 @@ input[type="checkbox"]{
 
 input#start_date.form-control, input#end_date.form-control {
     padding-left: 35px !important;
+}
+
+.form-border {
+    border-bottom: 1px solid #E7E7E7;
 }

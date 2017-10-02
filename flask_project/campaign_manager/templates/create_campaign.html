@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row form-border">
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
@@ -59,24 +59,6 @@
                                     </div>
                                 </div>
                             </div>
-{#                            <div class="form-header col-lg-3">#}
-{#                                <div class="panel panel-default panel-header">#}
-{#                                    <div class="form-header col-md-6">#}
-{#                                        <div class="form-group required-form">#}
-{#                                            <label class="panel-header-info" for="start_date">START DATE</label>#}
-{#                                            {{ form.start_date }}#}
-{#                                            <p class="help-block"></p>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <div class="form-header col-md-6">#}
-{#                                        <div class="form-group required-form">#}
-{#                                            <label class="panel-header-info" for="end_date">END DATE</label>#}
-{#                                            {{ form.end_date }}#}
-{#                                            <p class="help-block"></p>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
                         </div>
                         <fieldset id="fieldset-1" data-fieldset-step="1">
                             <div class="row">
@@ -366,9 +348,6 @@
                             </div>
                         </div>
                     </fieldset>
-                <div>
-                    <input id="submit" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
-                </div>
 
                     <fieldset id="fieldset-5" data-fieldset-step="5">
                         <div class="row insight-functions">
@@ -390,7 +369,9 @@
             <!-- /.panel-body -->
         </div>
     </div>
-
+    <div class="col-lg-10 pull-right">
+        <input id="submit" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
+    </div>
     {% include 'modals/custom-types-and-tags.html' %}
 
 {% endblock %}
