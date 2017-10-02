@@ -51,7 +51,7 @@
                     <form id="campaign-form" method="POST" action="{{ url }}" role="form">
                         {{ form.hidden_tag() }}
                         <div class="row">
-                            <div class="form-header col-lg-9">
+                            <div class="form-header col-lg-12">
                                 <div class="panel panel-default panel-header">
                                     <span class="panel-header-info">NAME</span><br/>
                                     <div class="form-group required-form">
@@ -59,29 +59,46 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-header col-lg-3">
-                                <div class="panel panel-default panel-header">
-                                    <div class="form-header col-md-6">
-                                        <div class="form-group required-form">
-                                            <label class="panel-header-info" for="start_date">START DATE</label>
-                                            {{ form.start_date }}
-                                            <p class="help-block"></p>
-                                        </div>
-                                    </div>
-                                    <div class="form-header col-md-6">
-                                        <div class="form-group required-form">
-                                            <label class="panel-header-info" for="end_date">END DATE</label>
-                                            {{ form.end_date }}
-                                            <p class="help-block"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+{#                            <div class="form-header col-lg-3">#}
+{#                                <div class="panel panel-default panel-header">#}
+{#                                    <div class="form-header col-md-6">#}
+{#                                        <div class="form-group required-form">#}
+{#                                            <label class="panel-header-info" for="start_date">START DATE</label>#}
+{#                                            {{ form.start_date }}#}
+{#                                            <p class="help-block"></p>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                    <div class="form-header col-md-6">#}
+{#                                        <div class="form-group required-form">#}
+{#                                            <label class="panel-header-info" for="end_date">END DATE</label>#}
+{#                                            {{ form.end_date }}#}
+{#                                            <p class="help-block"></p>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
                         </div>
                         <fieldset id="fieldset-1" data-fieldset-step="1">
                             <div class="row">
                                 <div class="form-body col-lg-9">
+                                <div class="row" style="margin-bottom: 20px">
+                                <div class="col-md-3">
+                                    <div class="form-group required-form">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        {{ form.start_date }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group required-form">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        {{ form.end_date }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                </div>
                                     <div class="form-group">
+                                        <label for="description">Description</label><span class="help-block pull-right">Describes which features campaign collects, the AOI, and the reason of the campaign creation.</span>
                                         {{ form.description }}
                                     </div>
                                     <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
@@ -99,8 +116,9 @@
                                             leave blank to use default</p>
                                     </div>
                                     <div class="form-group" id="link-to-omk-form">
-                                        {{ form.link_to_omk.label }}
                                         {{ form.link_to_omk(checked=link_to_omk) }}
+                                        {{ form.link_to_omk.label }}
+                                        <br/><span class="help-block">Check the box if you like your campaign automatically opens OpenMapKit application in mobile</span>
                                     </div>
                                     <br/>
                                 </div>
@@ -110,13 +128,13 @@
                             <div class="row">
                                 <div class="form-body col-lg-4">
                                     <div class="form-group">
-                                        <label for="types">Types</label>
+                                        <label for="types">Types</label><span class="help-block">&nbsp;&nbsp;&nbsp;Add at least one campaign type</span>
                                         <div class="types-required-message">This field is required</div>
                                     </div>
                                 </div>
                                 <div class="form-body col-lg-7">
                                     <div class="form-group">
-                                        <label>Tags</label><br/>
+                                        <label>&nbsp;&nbsp;Tags</label><span class="help-block">&nbsp;&nbsp;&nbsp;You can add new/remove the campaign tags</span> <br/>
                                         <span id="warning-tag" style="color: #ac3232"></span>
                                     </div>
                                 </div>
@@ -131,9 +149,9 @@
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
                                     <div class="form-group">
-                                        <label for="campaign_managers">Managers</label>
+                                        <label for="campaign_managers">Managers</label><span class="help-block">&nbsp;&nbsp;&nbsp;You may add additional manager by searching their osm username in the box below.</span>
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
-                                        <div id="managers-list">
+                                        <div id="managers-list" class="manager-list">
                                         </div>
                                         <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
                                         <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
@@ -156,7 +174,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -227,14 +245,11 @@
                             </div>
                         </div>
                         <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
                             </div>
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -322,12 +337,7 @@
                         </div>
 
                         <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
-                            </div>
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
                         </div>
                     </fieldset>
 
@@ -355,12 +365,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                        </div>
                     </fieldset>
+                <div>
+                    <input id="submit" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
+                </div>
 
                     <fieldset id="fieldset-5" data-fieldset-step="5">
                         <div class="row insight-functions">
@@ -519,8 +527,7 @@
                         )
                     } else {
                         $('#managers-list').append(
-                                '<span class="manager">' + value +
-                                '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
+                                '<span class="manager">' + '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i>' + value + '</span>'
                         )
                     }
                 })
@@ -696,10 +703,10 @@
             $currentActiveStep.find('.cc-nav-icon').show();
             if (!valid) {
                 $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
-                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times');
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times times-red');
             } else {
                 $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-check');
-                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times');
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times times-red');
             }
             return valid;
         }
