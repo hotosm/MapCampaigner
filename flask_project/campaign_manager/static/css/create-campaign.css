@@ -340,17 +340,6 @@ input#btn-add:hover {
     margin-bottom: 0;
 }
 
-/*#campaign-form input#start_date, #campaign-form input#end_date {*/
-    /*border: none;*/
-    /*box-shadow: none;*/
-    /*padding: 0;*/
-    /*height: auto !important;*/
-/*}*/
-
-/*input#start_date, input#end_date {*/
-    /*background-color: inherit;*/
-/*}*/
-
 #campaign-form input#start_date, #campaign-form input#end_date {
     background-color: white !important;
 }
@@ -468,7 +457,7 @@ select.dashboard-settings {
 
 input#start_date.form-control.error::placeholder,
 input#end_date.form-control.error::placeholder {
-    font-size: 10pt !important;
+    font-size: 7.5pt !important;
 }
 
 input#name {
