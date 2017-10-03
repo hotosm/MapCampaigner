@@ -52,11 +52,27 @@
                     <form id="campaign-form" method="POST" action="{{ url }}" role="form">
                         {{ form.hidden_tag() }}
                         <div class="row">
-                            <div class="form-header col-lg-12">
+                            <div class="form-header col-lg-9">
                                 <div class="panel panel-default panel-header">
                                     <span class="panel-header-info">NAME</span><br/>
                                     <div class="form-group required-form">
                                         {{ form.name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-header col-lg-3">
+                                <div class="panel panel-default panel-header">
+                                    <div class="form-header col-md-6">
+                                        <div class="form-group required-form">
+                                            <label class="panel-header-info">START DATE</label>
+                                            <div id="start-date-value">---</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-header col-md-6">
+                                        <div class="form-group required-form">
+                                            <label class="panel-header-info">END DATE</label>
+                                            <div id="end-date-value">---</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1129,6 +1145,7 @@
             onSelect: function (date) {
                 $("#end_date").val(date);
                 $("#end_date").datepicker({minDate: new Date(date)})
+                $('#start-date-value').html(date.toString())
             }
         });
 
@@ -1139,6 +1156,7 @@
             onSelect: function (date) {
                 $("#start_date").val(date);
                 $("#start_date").datepicker({maxDate: new Date(date)})
+                $('#end-date-value').html(date.toString())
             }
         });
 
@@ -1160,6 +1178,8 @@
             {% if form.start_date.data and form.end_date.data %}
                 var start_date = $("#start_date").val();
                 var end_date = $("#end_date").val();
+                $('#start-date-value').html(start_date.toString());
+                $('#end-date-value').html(end_date.toString());
 
                 $("#start_date").datepicker({
                     maxDate: new Date($("#end_date").val().toString())
