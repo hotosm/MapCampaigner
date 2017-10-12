@@ -179,10 +179,10 @@ function onTypesChange() {
             for (var j = 0; j < key_tags.length; j++) {
                 var tag_string = key_tags[j];
                 if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += ' <span>[' + tags[tag_string].join() + ']</span>';
+                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
                 }
                 div.append(
-                    '<span class="key-tags" style="display: inline-block">' + tag_string + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + ' </span>');
+                    '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + tag_string + ' </span>');
             }
 
             var select_tag = $("<span />");
@@ -192,21 +192,21 @@ function onTypesChange() {
             for (var j = 0; j < key_tags_default.length; j++) {
                 var tag_string = key_tags_default[j];
                 if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += ' <span>[' + tags[tag_string].join() + ']</span>';
+                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
                 }
                 span_select.append('<li onclick="addTag(this)">' + tag_string + '</li>')
             }
             select_tag.html(span_select);
 
-            div.append('<div class="btn btn-danger btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
-                '<i class="fa fa-plus" style="font-size: 8pt"></i> Add tag' + select_tag.html() +
+            div.append('<div class="btn btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
+                '<i class="fa fa-plus" style="font-size: 8pt"></i> Add' + select_tag.html() +
                 '</div>' +
                 '</span>');
             column.html(div);
 
             // append to parent
-            row.append('<div class="col-lg-1 row-tags">' +
-                '<button class="btn btn-danger btn-sm btn-block"' +
+            row.prepend('<div class="row-tags">' +
+                '<button class="btn btn-remove-type btn-sm"' +
                 'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                 '<i class="fa fa-minus"></i></button></div>');
         }
@@ -233,7 +233,7 @@ function addTag(wrapper) {
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
-            '<span class="key-tags" style="display: inline-block">' + $(wrapper).text() + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + ' </span>')
+            '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" style="color: grey" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + $(wrapper).text() + ' </span>')
     } else {
         $('#warning-tag').html('Tag is already selected, please select another.');
     }

@@ -33,6 +33,12 @@
         font-size: 20px;
         cursor: pointer;
     }
+
+    .custom-help-block {
+        font-size: 9.4pt;
+        padding-left: 20px;
+    }
+
 </style>
 <div id="custom-types-tags" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -56,7 +62,7 @@
                     <div class="form-group">
                         <input id="custom_type_feature" placeholder="Feature" type="text" value="" class="form-control">
                         <div class="modal-required-message">This field is required</div>
-                        <ul class="help-block">
+                        <ul class="custom-help-block">
                             <li>This is specific feature of data for this type. For example: building, amenity, etc.</li>
                             <li>To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.</li>
                         </ul>
@@ -68,7 +74,7 @@
                     </div>
                     <div class="form-group">
                         <input id="btn-add" class="form-control" type="button" value="+ Add tag" onclick="addNewCustomTags()">
-                        <ul class="help-block">
+                        <ul class="custom-help-block">
                             <li>Add new multiple tags for this type.</li>
                             <li>Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.</li>
                             <li>For specific tag, add pairing key=value in here. For example: emergency=yes,no. This will check if 'yes' or 'no' is value for emergency attribute.</li>
@@ -77,8 +83,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btn-add-custom-type" class="btn btn-default btn-red" onclick="saveCustomType()">Add</button>
-                <button type="button" class="btn btn-default btn-red" data-dismiss="modal">Close</button>
+                <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveCustomType()">Add</button>
+                <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
             </div>
         </div>
 
@@ -93,7 +99,7 @@
             </div>
         </div>
         <div class="col-lg-2">
-            <button class="btn btn-danger btn-sm btn-block" style="margin-top: 1px" type="button" onclick="removeCustomTags(this)"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-warning btn-sm btn-block" style="margin-top: 1px" type="button" onclick="removeCustomTags(this)"><i class="fa fa-minus"></i></button>
         </div>
     </div>
 </script>
