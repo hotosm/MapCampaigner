@@ -757,7 +757,7 @@ tr.odd {
 
 .checked-attributes span {
     border: 1px solid #EAE8E8;
-    padding: 0 5px;
+    padding: 1px 5px;
     border-radius: 5px;
-    line-height: 18pt !important;
+    line-height: 20pt !important;
 }
