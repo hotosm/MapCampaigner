@@ -749,3 +749,15 @@ tr.odd {
     background-color: rgba(255,255,255,0.8);
     border-radius: 3px;
 }
+
+.checked-attributes {
+    margin-top: 15px !important;
+    margin-bottom: 5px !important;
+}
+
+.checked-attributes span {
+    border: 1px solid #EAE8E8;
+    padding: 0 5px;
+    border-radius: 5px;
+    line-height: 18pt !important;
+}
