@@ -67,6 +67,19 @@ function updateMapperEngagementTotal() {
             filler: {
                 propagate: false
             }
+        },
+        legend: {
+            display: false
+        },
+        legendCallback: function(chart) {
+            console.log(chart.data.datasets)
+            var text = [];
+                text.push('<div>');
+                for (var i=0; i<chart.data.datasets.length; i++) {
+                    text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
+                }
+                text.push('</div>');
+                return text.join("");
         }
     };
 
@@ -145,6 +158,8 @@ function updateMapperEngagementTotal() {
             datasets: allFrequencyDatasets
         }
     });
+
+    $('#frequency-legend').html(frequencyDatasets.generateLegend());
 
     contributionsAmount = sortObject(contributionsAmount);
     var contributionCtx = $('#contribution-amount');
