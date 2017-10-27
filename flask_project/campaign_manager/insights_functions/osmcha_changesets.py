@@ -16,6 +16,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
     icon = 'list'
 
     current_page = 1
+    max_page = 100
     function_id = ''
 
     def initiate(self, additional_data):
@@ -28,6 +29,8 @@ class OsmchaChangesets(AbstractInsightsFunction):
             self.current_page = int(additional_data['page'])
         if 'type' in additional_data:
             self.feature_type = additional_data['type']
+        if 'max_page' in additional_data:
+            self.max_page = additional_data['max_page']
 
     def get_ui_html_file(self):
         """ Get ui name in templates
@@ -59,8 +62,11 @@ class OsmchaChangesets(AbstractInsightsFunction):
         start_date = self.campaign.start_date
         end_date = self.campaign.end_date
         return OsmchaChangesetsProvider().get_data(
-            geometry, self.current_page,
-            start_date=start_date, end_date=end_date)
+                geometry,
+                self.current_page,
+                start_date=start_date,
+                end_date=end_date,
+                max_page=self.max_page)
 
     def process_data(self, raw_data):
         """ Process data from raw.
@@ -98,6 +104,7 @@ class OsmchaChangesets(AbstractInsightsFunction):
                         "%Y-%m-%d %H:%M"),
                     'User': properties['user'],
                     'Comment': properties['comment'],
+                    'Features': properties['features'],
                     'Count': {
                         'create': properties['create'],
                         'modify': properties['modify'],

@@ -4,15 +4,7 @@
     <div class="insight-title" style="margin-bottom: 40px;">Count Feature</div>
 {% endif %}
 <div class="row piechart-wrapper">
-
-    <div class="col-lg-1"></div>
-    <div class="col-lg-6">
-        <canvas class="pieChart"></canvas>
-    </div>
-    <div class="col-lg-5">
-        <div class="chart-legends"></div>
-    </div>
-
+    <canvas class="pieChart" style="padding-left: 15px;"></canvas>
 </div>
 <div class="row">
     {% if feature_type %}
@@ -41,8 +33,7 @@
         labels: [],
         datasets: [{
             data: [],
-            backgroundColor: [],
-            borderWidth: 0
+            backgroundColor: []
         }]
     };
 
@@ -58,25 +49,11 @@
         var ctx = $wrapper.find(".pieChart");
         // And for a doughnut chart
         var myDoughnutChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'bar',
             data: chart_data,
             options: {
                 legend: {
                     display: false
-                },
-                legendCallback: function (chart) {
-                    var text = [];
-                    text.push('<ul>');
-                    for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
-                        text.push('<li>');
-                        text.push('<span style="display:inline-block;width:25px;height:10px; background-color: ' + chart.data.datasets[0].backgroundColor[i] + '"></span> ');
-                        if (chart.data.labels[i]) {
-                            text.push(chart.data.labels[i]);
-                        }
-                        text.push('</li>');
-                    }
-                    text.push('</ul>');
-                    return text.join("");
                 }
             }
         });

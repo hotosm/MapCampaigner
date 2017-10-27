@@ -23,6 +23,7 @@ function rerenderFunction() {
         var attibutes_on_insights = value['tags'];
         var attributes = {};
         $.each(attibutes_on_insights, function (index, tag) {
+            tag = tag.split('[')[0].trim();
             if (tags[tag]) {
                 attributes[tag] = tags[tag];
             } else {
@@ -63,6 +64,7 @@ function getTypesSelectionValue() {
 
             types_value['type-' + (index + 1)] = {
                 type: addedType,
+                feature: types[addedType]['feature'],
                 tags: tags
             }
         }
@@ -108,6 +110,14 @@ function addTypes(value) {
 
     if (value) {
         // Add empty value with no default selection
+        if (select.find('option[value="' + value + '"]').length === 0) {
+            column.append('' +
+                '<div class="edit-custom-type">' +
+                '<i class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal" data-target="#custom-types-tags"></i>' +
+                '</div>');
+            select.prepend('<option value="' + value + '">' + value + '</option>');
+            select.prop("disabled", true);
+        }
         select.prepend('<option value="">Select type</option>');
         select.children().removeAttr('selected');
         select.find('option[value="' + value + '"]').prop('selected', true);
@@ -146,11 +156,11 @@ function onTypesChange() {
     if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {
             if (type['type'] == selected_type) {
-                if (jQuery.type(type['tags']) === "array") {
-                    selected_tags = type['tags'];
-                } else {
-                    selected_tags = [];
-                }
+                selected_tags = type['tags'];
+            }
+            if (!types[type['type']]) {
+                addCustomType(type);
+                type['tags'] = undefined;
             }
         });
     }
@@ -162,12 +172,17 @@ function onTypesChange() {
             var key_tags_default = Object.keys(tags);
 
             if (typeof selected_tags != 'undefined') {
-                key_tags = selected_tags;
+                key_tags = Object.keys(selected_tags);
             } else {
                 key_tags = Object.keys(tags);
             }
             for (var j = 0; j < key_tags.length; j++) {
-                div.append('<span class="key-tags" style="display: inline-block">' + key_tags[j] + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + key_tags[j] + '\')" aria-hidden="true"></i>' + ' </span>');
+                var tag_string = key_tags[j];
+                if (tags[tag_string] && tags[tag_string].length > 0) {
+                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
+                }
+                div.append(
+                    '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + tag_string + ' </span>');
             }
 
             var select_tag = $("<span />");
@@ -175,19 +190,23 @@ function onTypesChange() {
             var span_select = $("<ul />");
             span_select.addClass('additional-key-tags');
             for (var j = 0; j < key_tags_default.length; j++) {
-                span_select.append('<li onclick="addTag(this)">' + key_tags_default[j] + '</li>')
+                var tag_string = key_tags_default[j];
+                if (tags[tag_string] && tags[tag_string].length > 0) {
+                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
+                }
+                span_select.append('<li onclick="addTag(this)">' + tag_string + '</li>')
             }
             select_tag.html(span_select);
 
-            div.append('<div class="btn btn-danger btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
-                '<i class="fa fa-plus" style="font-size: 8pt"></i> Add tag' + select_tag.html() +
+            div.append('<div class="btn btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
+                '<i class="fa fa-plus" style="font-size: 8pt"></i> Add' + select_tag.html() +
                 '</div>' +
                 '</span>');
             column.html(div);
 
             // append to parent
-            row.append('<div class="col-lg-1 row-tags">' +
-                '<button class="btn btn-danger btn-sm btn-block"' +
+            row.prepend('<div class="row-tags">' +
+                '<button class="btn btn-remove-type btn-sm"' +
                 'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
                 '<i class="fa fa-minus"></i></button></div>');
         }
@@ -214,7 +233,7 @@ function addTag(wrapper) {
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
-            '<span class="key-tags" style="display: inline-block">' + $(wrapper).text() + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + ' </span>')
+            '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" style="color: grey" onclick="removeIndividualTag(this, \'' + $(wrapper).text() + '\')" aria-hidden="true"></i>' + $(wrapper).text() + ' </span>')
     } else {
         $('#warning-tag').html('Tag is already selected, please select another.');
     }

@@ -58,26 +58,22 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                 elif len(features) == 2:
                     feature_key = features[0]
                     feature_values = features[1].split(',')
-                    overpass_data = OverpassProvider().get_data(
+                    overpass_data = OverpassProvider().get_attic_data(
                         polygon=self.campaign.corrected_coordinates(),
                         overpass_verbosity='meta',
                         feature_key=feature_key,
                         feature_values=feature_values,
                         date_from=str(start_date),
-                        date_to=str(end_date),
-                        returns_json=False,
-                        need_attic_data=True
+                        date_to=str(end_date)
                     )
                 else:
                     feature_key = features[0]
-                    overpass_data = OverpassProvider().get_data(
+                    overpass_data = OverpassProvider().get_attic_data(
                         polygon=self.campaign.corrected_coordinates(),
                         overpass_verbosity='meta',
                         feature_key=feature_key,
                         date_from=str(start_date),
-                        date_to=str(end_date),
-                        returns_json=False,
-                        need_attic_data=True
+                        date_to=str(end_date)
                     )
             except OverpassTimeoutException:
                 error = 'Timeout, try a smaller area.'
@@ -90,6 +86,8 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
             except OverpassDoesNotReturnData:
                 error = 'No data from overpass.'
             else:
+                if not overpass_data:
+                    return []
                 try:
                     last_update = overpass_data['last_update']
                     is_updating = overpass_data['updating_status']

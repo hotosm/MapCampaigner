@@ -4,6 +4,7 @@ __date__ = '16/05/17'
 import json
 import os
 import threading
+import requests
 from utilities import absolute_path
 import tempfile
 import time
@@ -11,7 +12,6 @@ import yaml
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
-import numpy
 
 from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
@@ -146,7 +146,11 @@ def load_osm_document_cached(
         if not os.path.exists(file_path):
             try:
                 if post_data:
-                    fetch_osm_with_post(file_path, url_path, post_data)
+                    fetch_osm_with_post(
+                            file_path,
+                            url_path,
+                            post_data,
+                            returns_format='json' if returns_json else 'xml')
                 else:
                     fetch_osm(file_path, url_path)
             except (OverpassBadRequestException, OverpassDoesNotReturnData):
@@ -265,3 +269,27 @@ def parse_json_string(json_string):
     except (ValueError, TypeError):
         pass
     return json_object
+
+
+def map_provider():
+    """Return map provider, if mapbox api token provided then use mapbox map.
+    """
+    try:
+        from secret import MAPBOX_TOKEN
+        provider = 'https://api.mapbox.com/styles/v1/hot/' \
+                   'cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?' \
+                   'access_token=' + MAPBOX_TOKEN
+
+    except ImportError:
+        provider = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+    return provider
+
+
+def get_coordinate_from_ip():
+    """Get coordinate information from ip address.
+    """
+    url = 'http://ipinfo.io/json'
+    response = requests.get(url)
+    data = response.json()
+    return data['loc']

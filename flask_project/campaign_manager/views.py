@@ -1,18 +1,29 @@
 import inspect
 import json
 import os
+import hashlib
 import shutil
 from datetime import datetime
+from flask import jsonify
+
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
 
 from bs4 import BeautifulSoup
-from flask import request, render_template, Response, abort
+from flask import (
+    request,
+    render_template,
+    Response,
+    abort,
+    send_file,
+    send_from_directory
+)
 
 from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
-    get_types
+    get_types,
+    map_provider
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -23,7 +34,14 @@ from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.insights_functions.osmcha_changesets import \
+    OsmchaChangesets
 
+from campaign_manager.data_providers.overpass_provider import OverpassProvider
+from reporter import config
+from campaign_manager.utilities import (
+    load_osm_document_cached
+)
 from reporter import LOGGER
 from reporter.static_files import static_file
 
@@ -45,7 +63,8 @@ def home():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
     )
 
     # noinspection PyUnresolvedReferences
@@ -62,7 +81,8 @@ def home_all():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        all=True
+        all=True,
+        map_provider=map_provider()
     )
 
     # noinspection PyUnresolvedReferences
@@ -113,6 +133,26 @@ def get_osmcha_errors_function(uuid):
             additional_data=clean_argument(request.args)
         )
         return Response(rendered_html)
+    except Campaign.DoesNotExist:
+        abort(404)
+
+
+@campaign_manager.route('/campaign/osmcha_errors_data/<uuid>')
+def get_osmcha_errors_data(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        page_size = request.args.get('page_size', None)
+        page = request.args.get('page', None)
+        osmcha_changeset = OsmchaChangesets(campaign=campaign)
+
+        if page_size:
+            osmcha_changeset.max_page = int(page_size)
+        if page:
+            osmcha_changeset.current_page = int(page)
+
+        osmcha_changeset.run()
+        data = osmcha_changeset.get_function_data()
+        return jsonify(data)
     except Campaign.DoesNotExist:
         abort(404)
 
@@ -346,6 +386,7 @@ def get_campaign(uuid):
         context = campaign.to_dict()
         context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
         context['oauth_secret'] = OAUTH_SECRET
+        context['map_provider'] = map_provider()
         context['geometry'] = json.dumps(campaign.geometry)
         context['selected_functions'] = \
             campaign.get_selected_functions_in_string()
@@ -358,6 +399,9 @@ def get_campaign(uuid):
         except TypeError:
             context['start_date_date'] = '-'
             context['start_date_year'] = '-'
+        context['current_status'] = campaign.get_current_status()
+        if context['current_status'] == 'active':
+            context['current_status'] = 'running'
 
         # End date
         try:
@@ -424,6 +468,42 @@ def participate():
         )
     else:
         abort(404)
+
+
+@campaign_manager.route('/generate_josm', methods=['POST'])
+def generate_josm():
+    """Get overpass xml data from ids store it to temporary folder."""
+    error_features = request.values.get('error_features', None)
+    if not error_features:
+        abort(404)
+
+    server_url = 'http://exports-prod.hotosm.org:6080/api/' \
+                 'interpreter'
+    error_features = json.loads(error_features)
+    element_query = OverpassProvider().parse_url_parameters(
+        element_ids=error_features
+    )
+    safe_name = hashlib.md5(
+            element_query.encode('utf-8')).hexdigest() + '_josm.osm'
+    file_path = os.path.join(config.CACHE_DIR, safe_name)
+    osm_data, osm_doc_time, updating = load_osm_document_cached(
+            file_path, server_url, element_query, False)
+    if osm_data:
+        return Response(json.dumps({'file_name': safe_name}))
+
+
+@campaign_manager.route('/download_josm/<uuid>/<file_name>')
+def download_josm(uuid, file_name):
+    """Download josm file."""
+    campaign = Campaign.get(uuid)
+    campaign_name = campaign.name + '.osm'
+    file_path = os.path.join(config.CACHE_DIR, file_name)
+    if not os.path.exists(file_path):
+        abort(404)
+    return send_file(
+            file_path,
+            as_attachment=True,
+            attachment_filename=campaign_name)
 
 
 def get_selected_functions():
@@ -515,6 +595,13 @@ def valid_map_list():
             '&copy; <a href="http://www.openstreetmap.org/copyright">'
             'OpenStreetMap</a> &copy; <a href="https://carto.com/attribution">'
             'CARTO</a>',
+        'http://{s}.aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg':
+            'Tiles &copy; <a href="http://www.ngi.gov.za/">CD:NGI Aerial</a>',
+        'https://api.mapbox.com/styles/v1/hot/cj7hdldfv4d2e2qp37cm09tl8/tiles/'
+        '256/{z}/{x}/{y}':
+            'OpenStreetMap</a> and contributors, under an '
+            '<a href="http://www.openstreetmap.org/copyright" '
+            'target="_parent">open license</a>',
     })
     return valid_map
 
@@ -556,7 +643,8 @@ def create_campaign():
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
-        oauth_secret=OAUTH_SECRET
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
     )
     context['url'] = '/create'
     context['action'] = 'create'
@@ -590,7 +678,6 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_status.data = campaign.campaign_status
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
@@ -621,6 +708,7 @@ def edit_campaign(uuid):
         return Response('Campaign not found')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
+    context['map_provider'] = map_provider()
     context['url'] = '/edit/%s' % uuid
     context['action'] = 'edit'
     context['functions'] = get_selected_functions()
@@ -772,6 +860,14 @@ def about():
 @campaign_manager.route('/how-it-works')
 def how_it_works():
     return render_template('how_it_works.html')
+
+
+@campaign_manager.route('/thumbnail/<image>')
+def thumbnail(image):
+    map_image = os.path.join(Campaign.get_thumbnail_folder(), image)
+    if not os.path.exists(map_image):
+        return send_file('./campaign_manager/static/img/no_map.png')
+    return send_file(map_image)
 
 
 def not_found_page(error):

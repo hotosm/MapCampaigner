@@ -4,30 +4,32 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 body {
+    -webkit-font-smoothing: antialiased;
     background-color: #f7f7f7;
     height: 100%;
     font-family: 'Open Sans', sans-serif;
+    color: #494646;
 }
 
 .navbar-default {
     background-color: #ffffff;
     padding: 5px;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 .navbar-brand {
-    color: #ac3232 !important;
+    color: #5c5c5c !important;
     font-weight: 900;
 }
 
 .navbar-nav a {
-    font-size: 12pt;
-    color: black !important;
-    font-weight: 300 !important;
+    font-size: 11pt;
+    color: #888080 !important;
+    font-weight: 100 !important;
 }
 
 .navbar-nav a:hover {
-    color: #ac3232 !important;
+    border-bottom: 2px solid #5e5e5e;
+    padding-bottom: 12px;
 }
 
 #wrapper {
@@ -41,14 +43,14 @@ body {
 #page-wrapper {
     padding:  0 15px;
     min-height: 600px;
-    background-color: #f7f7f7;
+    background-color: #f9f9f9;
 }
 
 @media (min-width: 768px) {
     #page-wrapper {
         position: inherit;
         margin: 20px 0 0 0;
-        padding: 0 80px;
+        padding: 0 50px;
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -539,7 +541,7 @@ body {
 }
 
 #campaign-map {
-    height: 400px;
+    height: 300px;
     margin-top: 4px;
 }
 
@@ -599,13 +601,16 @@ body {
 }
 
 .btn.campaign-list {
-    background-color: #a3a3a3 !important;
+    background-color: #fb6624 !important;
     color: white;
-    border-radius: 10px;
+    border-radius: 3px;
+    margin-top: 10px;
+    padding: 5px 30px !important;
+    float: right;
 }
 
 .campaign-list.btn:hover {
-    background-color: #878787 !important;
+    background-color: #ff8440 !important;
 }
 
 .campaign-list-disabled {
@@ -799,6 +804,12 @@ body {
     margin-left: 10px !important;
 }
 
+.v2-home-header {
+    padding: 20px;
+    background-color: white;
+    border-bottom: 2px solid #E7E7E7;
+}
+
 .home-header {
     min-height: 76px;
     padding: 15px 80px;
@@ -925,6 +936,14 @@ body {
     .home-header .btn {
         margin-bottom: 10px;
     }
+    #filter-select {
+        margin-top: 10px;
+        float: none !important;
+        text-align: center;
+    }
+    .home-option {
+        margin-top: 10px;
+    }
 }
 
 .label-participants {
@@ -958,7 +977,7 @@ body {
 }
 
 .footer-basic-centered{
-	background-color: #e7e7e7;
+	background-color: #ffffff;
 	box-sizing: border-box;
 	width: 100%;
 	text-align: center;
@@ -966,6 +985,7 @@ body {
 	padding-top: 15px;
     padding-bottom: 15px;
 	margin-top: 80px;
+    border-top: 1px solid #ececec;
 }
 
 .footer-basic-centered .footer-company-motto{
@@ -974,16 +994,20 @@ body {
 	margin: 0;
 }
 
+.footer-company-name {
+    height: 25px;
+    margin-top: 10px;
+}
+
 .footer-basic-centered .footer-company-name{
 	color:  #756e6e;
 	font-size: 10pt;
-	margin: 0;
 }
 
 .footer-basic-centered .footer-links{
 	list-style: none;
 	font-weight: bold;
-	color:  #46828f;
+	color:  #fc6525;
     font-size: 14pt;
 	padding: 0 0 8px;
 	margin: 0;
@@ -1005,7 +1029,45 @@ body {
     padding-left: 5px;
 }
 
+.footer-company-name a {
+    color: #fc6525;
+}
+
+.campaign-card {
+    padding: 7px;
+    line-height: 16pt;
+    border: 1px solid #E7E7E7;
+    border-radius: 2px;
+    height: 240px;
+}
+
+.campaign-card.panel {
+    -webkit-transition: 0.24s ease-in-out;
+    -moz-transition: 0.24s ease-in-out;
+    -o-transition: 0.24s ease-in-out;
+    transition: 0.24s ease-in-out;
+}
+
+.campaign-card.panel:hover {
+     -moz-transform: translate(0, -3px);
+    -ms-transform: translate(0, -3px);
+    -o-transform: translate(0, -3px);
+    -webkit-transform: translate(0, -3px);
+    transform: translate(0, -3px);
+    cursor: pointer;
+}
+
+.campaign-thumbnail img{
+    height:100px;
+    width:100%;
+    float:right;
+}
+
 @media (max-width: 600px) {
+
+    #showing-div {
+        display: none;
+    }
 
 	.footer-basic-centered{
 		padding: 35px;
@@ -1027,6 +1089,19 @@ body {
 	.footer-basic-centered .footer-links a{
 		line-height: 1.8;
 	}
+
+    .campaign-card {
+        height: 250px !important;
+    }
+
+    .campaign-thumbnail img{
+        display: none;
+    }
+
+    #search-campaign {
+        display: none;
+    }
+
 }
 
 .information {
@@ -1037,10 +1112,211 @@ body {
 }
 
 .nav.navbar-nav {
-    margin-left: 50px;
+    margin-left: 30px;
 }
 
 .grey-italic {
     color: #898989;
     font-style: italic;
+}
+
+#campaign-list ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.active-campaign-text-bold {
+    font-size: 25pt;
+    color: #ff8440;
+}
+
+.active-campaign-text {
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.active-campaing-text-wrapper {
+    padding-top: 25px;
+}
+
+.nearest-campaign-text-bold {
+     font-weight: bold;
+}
+
+.nearest-campaign-text-bold, .nearest-campaign-text {
+    font-size: 16pt;
+    color: inherit;
+}
+
+.underline-text {
+    color: inherit;
+    font-size: 14pt;
+    font-weight: 600;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.underline-text:hover {
+    color: #fc6525;
+}
+
+.home-option table, .home-option td, .home-option tr{
+    border: 1px solid #E7E7E7;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: normal !important;
+    background-color: white;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+select#filter-select {
+    box-shadow: none;
+    border: 1px solid #E7E7E7;
+    width: 60%;
+    float: right;
+}
+
+select#campaigns-select, input#limit-page {
+    border: none;
+    box-shadow: none;
+}
+
+.home-option table {
+    align-self: center;
+}
+
+input.search {
+    width: 95%;
+    border-radius: 5px;
+    border-top: 1px solid #E7E7E7;
+    border-left: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    display: inline-block;
+    height: 32px;
+}
+
+.search-icon {
+    background-color: white;
+    border-top: 1px solid #E7E7E7;
+    border-right: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E7E7E7;
+    padding: 5px 10px;
+    width:7%;
+    margin-left: -2%;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: inline-block;
+    height: 32px;
+}
+
+.campaign-card a {
+    font-weight: bold;
+    font-size: 14pt;
+    color: #555;
+}
+
+.campaign-start-date {
+    font-style: italic;
+}
+
+.campaign-tags {
+    padding: 0 10px;
+    background-color: #e2e2e2;
+    border-radius: 5px;
+}
+
+.campaign-creator {
+    margin-top: 10px;
+    color: grey;
+}
+
+.campaign-creator-name {
+    text-decoration: underline;
+    color: black;
+}
+
+.campaign-name, .campaign-start-date, .campaign-description, .campaign-tags {
+    margin-bottom: 5px;
+}
+
+.campaign-description {
+    margin-top: 10px;
+    overflow: hidden;
+    width: 95%;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5em;
+    height: 3em;
+    font-size: 10pt;
+}
+
+.campaign-progress-bar {
+    text-align: right;
+}
+
+.campaign-progress-bar .progress-bar {
+    background-color: #a0a0a0 !important;
+}
+
+.campaign-progress-bar .progress {
+    margin-top: 5px;
+    height: 12px;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ellipsis.multiline {
+    white-space: normal;
+}
+
+.nearest-option {
+    display: none;
+}
+
+select.flat-select {
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50px' height='50px'><polyline points='46.139,15.518 25.166,36.49 4.193,15.519'/></svg>");
+    background-color: #f0f0f0;
+    background-repeat:no-repeat;
+    background-position: right 10px top 12px;
+    background-size: 12px 12px;
+    padding:10px;
+    width:100%;
+    font-size:13px;
+    color: #3b3b3b;
+    text-align:center;
+    border-radius:3px;
+    -webkit-border-radius:3px;
+    -webkit-appearance: none;
+    border:0;
+    outline:0;
+    -webkit-transition:0.3s ease all;
+       -moz-transition:0.3s ease all;
+        -ms-transition:0.3s ease all;
+         -o-transition:0.3s ease all;
+            transition:0.3s ease all;
+}
+
+select#campaigns-select {
+    width: 80px;
+    border-radius:0;
+}
+
+.head-title {
+    font-weight: bold;
+    font-size: 18pt;
+}
+
+.head-desc {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 15px;
 }

@@ -37,12 +37,22 @@
                     <span class="grey-italic">No description</span>
                 {% endif %}
             </p>
+
+            <div class="detail-button-wrapper participate-button" style="margin-top: 20px;">
+                <div class="btn-group btn-share-group" role="group" aria-label="...">
+                    <span class="btn btn-default unclickable" >Participate</span>
+                    {% if link_to_omk %}
+                        <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+                    {% endif %}
+                    <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                </div>
+            </div>
         </div>
         <div class="col-lg-5">
             <div class="panel panel-default detail-panel-information">
                 <div class="panel-body">
-                    <div class="detail-campaign-status running">
-                        <i class="fa fa-circle" aria-hidden="true"></i> <label>Running</label>
+                    <div class="detail-campaign-status {{ current_status }}">
+                        <i class="fa fa-circle" aria-hidden="true"></i> <label>{{ current_status }}</label>
                     </div>
                     <div class="detail-campaign-timeline">
                         <span class="pull-left">
@@ -61,13 +71,16 @@
                     <div class="detail-creator-info">
                         <p>
                             <span class="grey-italic">Creator : </span>
-                            {{ campaign_creator }}</p>
+                            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
+                            {{ campaign_creator }}
+                            </a>
+                        </p>
                         <p>
                             <span class="grey-italic">Campaign Manager : </span>
                             <span class="text-muted">
                                 {% if campaign_managers %}
                                     {% for campaign_manager in campaign_managers %}
-                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}">{{ campaign_manager }}</a>
+                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
                                         {% if campaign_manager != campaign_managers[-1] %}
                                             ,
                                         {% endif %}
@@ -92,16 +105,48 @@
                             {% endif %}
                         </p>
                     </div>
-                    <div class="detail-button-wrapper">
+                    <div class="detail-button-wrapper" style="margin-top: 10px;float: left;">
                         <div class="btn-group btn-share-group" role="group" aria-label="...">
-                            {% if link_to_omk %}
-                                <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-                            {% endif %}
-                            <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"><i class="fa fa-twitter" aria-hidden="true"></i> Share</button>
-                            <button type="button" class="btn btn-default" onclick="shareFacebook()"><i class="fa fa-facebook" aria-hidden="true"></i> Share</button>
+                            <span class="btn btn-default unclickable" >Share</span>
+                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+                            <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
                         </div>
+                    </div>
+                    <div class="button-manage">
+                        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="panel panel-default detail-panel-information">
+        <div class="panel-body summary-stats">
+            <div class="row">
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Features Collected
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="features-collected"><span class="grey-italic">...</span></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Users Engaged
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="contributors"><span class="grey-italic">...</span></span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 single-summary-stat">
+                    <div class="summary-stat-title">
+                        Areas Covered
+                    </div>
+                    <div class="summary-stat-desc">
+                        <span id="areas-covered"><span class="grey-italic">...</span></span>
                     </div>
                 </div>
             </div>
@@ -114,58 +159,6 @@
                 <div class="panel-body">
                     <div class="row side-panel-wrapper">
                         <div class="col-lg-3 map-side-panel">
-                            <div class="map-side-list ">
-                                <div class="row">
-
-                                <div class="col-lg-10">
-                                    <div class="pull-left map-side-list-name">
-                                        Users engaged
-                                    </div>
-                                    <span class="pull-right map-side-list-number">
-                                        <span id="contributors"><span class="grey-italic">...</span></span>
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 map-side-list-action">
-                                    <div class="side-action inactive-panel">
-                                        <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="map-side-list">
-                                <div class="row">
-                                    <div class="col-lg-10">
-                                        <div class="pull-left map-side-list-name">
-                                            Features collected
-                                        </div>
-                                        <div class="pull-right map-side-list-number">
-                                            <span id="features-collected"><span class="grey-italic">...</span></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 map-side-list-action">
-                                        <div class="side-action inactive-panel">
-                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="map-side-list">
-                                <div class="row">
-                                    <div class="col-lg-10">
-                                        <div class="pull-left map-side-list-name">
-                                            Areas Covered
-                                        </div>
-                                        <div class="pull-right map-side-list-number">
-                                            <span id="areas-covered"><span class="grey-italic">...</span></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 map-side-list-action">
-                                        <div class="side-action inactive-panel">
-                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="col-lg-9">
                             <div id="campaign-map-detail"></div>
@@ -229,17 +222,17 @@
                         <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="advance-insight-title">OSMCHA Changesets Errors</div>
-                                    <div id="total-osmcha-errors"></div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="advance-insight-title">Attribute Completeness Errors</div>
+                                <div class="col-lg-12" style="padding-left: 20px; padding-right: 20px;">
+                                    <div class="advance-insight-title">Total Errors</div>
                                     <div id="total-feature-completeness-errors">
                                         0
                                     </div>
                                     <table id="feature-completeness-error-table" class="display feature-list-table" width="100%">
                                     </table>
+                                    <div style="padding-bottom: 20px;">
+                                        <button class="btn btn-info btn-manage" id="download-xml" style="display: inline-block;">Download JOSM File</button>
+                                    </div>
+                                    <iframe id="download_xml_frame" style="display:none;"></iframe>
                                 </div>
                             </div>
 
@@ -263,17 +256,87 @@
         </div>
     </div>
 
-    <div class="button-manage">
-        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
-    </div>
+{% endblock %}
 
+{% block before_base_js %}
+    <script type="text/javascript">
+
+    </script>
 {% endblock %}
 
 {% block after_base_js %}
 
-    <script src="/static/libs/chartjs/Chart.bundle.min.js"></script>
-
     <script type="text/javascript">
+
+        //------------------ EVENT ------------------//
+
+        var renderInsights;
+
+        function loginSuccess(user) {
+            location.href='/campaign/{{ uuid }}';
+        }
+
+        function updated(user) {
+            renderInsightFunctionsTypes(user.display_name);
+            var managers = {{ campaign_managers | safe }};
+            // Shows manage button if current user is one of the manager
+            if ($.inArray(user.display_name, managers) > -1) {
+                $('.btn-manage').show();
+            }
+        }
+
+        function logout() {
+            auth.logout();
+            location.href='/campaign/{{ uuid }}';
+        }
+
+        function login() {
+            auth.authenticate(function () {
+                location.href='/campaign/{{ uuid }}';
+            })
+        }
+
+        function loginError() {
+            renderInsightFunctionsTypes('');
+        }
+
+        function logoutSuccess() {
+            location.href='/campaign/{{ uuid }}';
+        }
+
+        if(!auth.authenticated()) {
+            waitForFunctions();
+        }
+
+        function waitForFunctions(){
+            if(!$.isFunction(renderInsights)) {
+                setTimeout(waitForFunctions, 100);
+                return;
+            }
+            renderInsights();
+        }
+
+        $(function () {
+
+            calculateCampaignProgress();
+
+            // Check share button
+            if (isMobile.Android()) {
+            } else if (isMobile.iOS()) {
+                $('#btn-omk-link').addClass('disabled');
+            } else {
+                $('#btn-omk-link').addClass('disabled');
+                $('#btn-mapsme-link').addClass('disabled');
+            }
+        });
+
+        var currentStatus = capitalizeFirstLetter(
+             $('.detail-campaign-status label').text()
+        );
+
+         $('.detail-campaign-status label').html(
+                currentStatus.replace('-',' ')
+         );
 
         var uuid = '{{ uuid }}';
         var managers = {{ campaign_managers|safe }};
@@ -293,7 +356,7 @@
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
         var remote_projects = {{ remote_projects|safe }};
-        var addedLayers = {};
+        var remoteLayers = {};
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
             'unassigned': '#D3D3D3',
@@ -311,30 +374,27 @@
         var mapperEngagementFrequency = [];
         var contributors = [];
 
+        var isFirstActiveRemote = true;
+
         function renderRemoteProjects() {
 
             if (remote_projects.length === 0) {
                 return;
             }
 
-           $('.map-side-panel').append(
-                '<div class="map-side-list map-side-type" id="type-remote-projects">'+
-                    '<div class="row">'+
-                        '<div class="col-lg-10">'+
-                            '<div class="pull-left map-side-list-name">'+
-                                    'Remote Projects'+
-                            '</div>'+
-                        '</div>'+
-                        '<div class="col-lg-2 map-side-list-action">'+
-                            '<div class="side-action ">'+
-                            '</div>'+
-                        '</div>'+
-                    '</div>'+
-                    '<div id="remote-projects-summaries" class="side-panel-summaries"></div>'+
+            $('.map-side-panel').append(
+                '<div class="map-side-list map-side-type" id="type-remote-projects">' +
+                '<div class="row">' +
+                '<div class="col-lg-12">' +
+                '<div class="pull-left map-side-list-name">' +
+                'Remote Projects' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div id="remote-projects-summaries" class="side-panel-summaries"></div>' +
                 '</div>'
             );
 
-            var active = '';
 
             for (var i = 0; i < remote_projects.length; i++) {
 
@@ -362,30 +422,31 @@
                             },
                             onEachFeature: function (feature, layer) {
                                 totalArea++;
-                                if(feature.properties.taskStatus == 'VALIDATED') {
+                                if (feature.properties.taskStatus === 'VALIDATED') {
                                     totalAreaCovered++;
                                 }
                                 var popupContent = feature.properties.taskStatus;
                                 layer.bindPopup(popupContent);
                             }
                         });
-                        layerGroup.addTo(map);
+                        var active = '';
+                        if(isFirstActiveRemote) {
+                            active = 'active';
+                            layerGroup.addTo(map);
+                            isFirstActiveRemote = false;
+                        }
 
-                        addedLayers[data['projectId']] = layerGroup;
+                        remoteLayers[data['projectId']] = layerGroup;
 
                         $('#remote-projects-summaries').append(
-                            '<div class="row summary single-row remote-project-list" style="font-size:9pt;">'+
-                               '<div class="col-lg-10" style="padding-top: 0 !important;">'+
-                            '<div class="pull-left">'+
-                                '<a target="_blank" href="http://tasks.hotosm.org/project/'+data['projectId']+'" style="word-wrap:break-word;">'+
-                                '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
-                                '</a>'+
-                            '</div>'+
-                            '</div>'+
-                                '<div class="col-lg-2 map-side-list-action">'+
-                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Locate project" class="fa fa-map-pin" onclick="pointProjectMap(this, ' + data['projectId'] + ')" style="margin-right: 10px" aria-hidden="true"></i>'+
-                                    '<i data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide project in map" class="fa fa-eye active" aria-hidden="true" onclick="toggleProjectMap(this, ' + data['projectId'] + ')"></i>'+
-                                '</div>'+
+                            '<div class="row summary single-row remote-project-list '+active+'" style="font-size:9pt;" onclick="pointProjectMap(event, this, ' + data['projectId'] + ')">' +
+                            '<div class="col-lg-12" style="padding-top: 0 !important;">' +
+                            '<div class="pull-left">' +
+                            '<a target="_blank" href="http://tm3.hotosm.org/project/' + data['projectId'] + '" style="word-wrap:break-word;">' +
+                            '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
+                            '</a>' +
+                            '</div>' +
+                            '</div>' +
                             '</div>'
                         );
                     }
@@ -393,13 +454,23 @@
             }
         }
 
-        function pointProjectMap(el, projectId) {
-            var layer = addedLayers[projectId];
+        function pointProjectMap(event, element, projectId) {
+            var layer = remoteLayers[projectId];
+            if($(element).hasClass('active')) {
+
+            } else {
+                $.each(remoteLayers, function (key, addedLayer) {
+                    map.removeLayer(addedLayer);
+                });
+                map.addLayer(layer);
+                $('#type-remote-projects').find('.remote-project-list').removeClass('active');
+                $(element).addClass('active');
+            }
             map.fitBounds(layer.getBounds());
         }
 
         function toggleProjectMap(el, projectId) {
-            var layer = addedLayers[projectId];
+            var layer = remoteLayers[projectId];
             if($(el).hasClass('active')) {
                 map.removeLayer(layer);
                 $(el).removeClass('active');
@@ -408,47 +479,6 @@
                 $(el).addClass('active');
             }
         }
-
-        //------------------ EVENT ------------------//
-
-        function loginSuccess(user) {
-        }
-
-        function updated(user) {
-            renderInsightFunctionsTypes(user.display_name);
-            var managers = {{ campaign_managers | safe }};
-            // Shows manage button if current user is one of the manager
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.btn-manage').show();
-            }
-        }
-
-        function loginError() {
-            renderInsightFunctionsTypes('');
-        }
-
-        function logoutSuccess() {
-            $('.btn-manage').hide();
-            renderInsightFunctionsTypes('');
-        }
-
-        $(function () {
-            window.isAuthenticated = auth.authenticated();
-            if (!auth.authenticated()) {
-                update();
-            }
-
-            calculateCampaignProgress();
-
-            // Check share button
-            if (isMobile.Android()) {
-            } else if (isMobile.iOS()) {
-                $('#btn-omk-link').addClass('disabled');
-            } else {
-                $('#btn-omk-link').addClass('disabled');
-                $('#btn-mapsme-link').addClass('disabled');
-            }
-        });
 
         var useDefault = L.Control.extend({
 
@@ -491,7 +521,7 @@
 
         function chooseDefault() {
             custom_map.removeFrom(map);
-            default_map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            default_map = L.tileLayer('{{ map_provider }}', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 20
@@ -519,7 +549,7 @@
         var map_type = '{{ map_type }}';
         var attribution = '{{ attribution|safe }}';
         if (!map_type) {
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer('{{ map_provider }}', {
                 attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
                 'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
                 maxZoom: 20
@@ -620,6 +650,29 @@
             map.fitBounds(e.target.getBounds());
         }
 
+        var completenessPallete = {
+            '100':'#00840d',
+            '99':'#3eff1c',
+            '75':'#e2f90e',
+            '50':'#ffe41c',
+            '25':'#f9be0e',
+            '0':'#ff0000'
+        };
+
+        var legend = L.control({position: 'bottomleft'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<span><b>Completeness</b></span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['100'] +'"></i> <span>100%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['99'] +'"></i> <span>< 100%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['75'] +'"></i> <span>< 75%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['50'] +'"></i> <span>< 50%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['25'] +'"></i> <span>< 25%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['0'] +'"></i> <span>0%</span><br/>';
+        return div;
+        };
+        legend.addTo(map);
+
         function shareTweet(uuid) {
             var host = window.location.origin;
             var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
@@ -711,6 +764,12 @@
                 showNotifications(app + ' is not available in your current device', 'danger');
             }
         }
+
+        $('#area-covered-button').click(function (e) {
+            $('html, body').animate({
+                scrollTop: $("#user-engagement-panel").offset().top
+            }, 1000);
+        });
 
     </script>
 

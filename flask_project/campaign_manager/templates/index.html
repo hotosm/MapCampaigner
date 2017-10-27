@@ -1,83 +1,88 @@
 {% extends 'new_base.html' %}
 
 {% block header_content %}
-        <div class="home-header">
+
+    <!-- List Javascript  -->
+    <script type="text/javascript" src="/static/libs/list.min.js"></script>
+    <script type="text/javascript" src="/static/libs/ellipsis.js"></script>
+
+    <div class="v2-home-header">
+        <div class="row">
             <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button id="create-campaign" class="btn btn-home btn-lg btn-block">Start a campaign</button>
+                <div style="text-align: center; margin-top: 10px">
+                    <div class="head-title">Map Campaigner</div>
+                    <div class="head-desc">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec pulvinar diam.
+                        Mauris id laoreet justo, eget ornare enim. Ut fermentum eget magna vel tincidunt.
+                        Fusce mollis pretium tempor. Ut sollicitudin semper ipsum vitae egestas.
+                        Curabitur velit mauris, egestas at nunc id, congue condimentum orci.
+                        Praesent non nulla sagittis, cursus elit sit amet, rhoncus lectus.
+                        Donec in nunc eros. Duis dignissim ligula ac nunc pulvinar, nec ultrices dui convallis.
                     </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-home btn-lg btn-block" onclick="participate()">Participate</button>
+                    <div class="active-campaing-text-wrapper">
+                        <span class="active-campaign-text">Active campaigns:&nbsp;</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
+            <div class="col-lg-6">
+                <div id="campaign-map"></div>
             </div>
-            <div class="col-lg-2 header-info">
-                <span class="header-number" id="active-campaign-number">0</span>
-                <span class="header-number-text">active campaigns</span>
-            </div>
-
-            <div class="col-lg-1">
-                <span class="v-separator"></span>
-            </div>
-            <div class="col-lg-2 header-info crimson">
-                <span class="header-number" id="participants-number">0</span> <span class="header-number-text">participants</span>
-            </div>
-
         </div>
+    </div>
 {% endblock %}
 
 {% block content %}
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-custom">
-                <div class="panel-heading">
-                    <div id="campaign-map"></div>
-                </div>
-                <div id="panel-campaign">
-                    <div class="panel-body">
-                    <h4 style="font-weight: bolder; margin-top: -10px;">Active Campaigns</h4>
+    <div class="row" id="campaign-list">
 
-                    <button id="all-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">All Campaigns</span>
-                    </button>
+        <div class="row" style="margin-bottom: 20px">
 
-                    <button id="nearest-campaigns" type="button" class="btn btn-outline btn-info btn-lg">
-                        <i class="fa fa-globe" aria-hidden="true"></i>
-                        <span style="margin-left: 5px;">Nearest Campaigns</span>
-                    </button>
-
-
-                    <table id="campaign-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    NAME
-                                </th>
-                                <th>
-                                    TYPES
-                                </th>
-                                <th>
-                                    PARTICIPANTS
-                                </th>
-                                <th>
-                                    ACTION
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
+            <div class="col-md-5 custom-5" id="search-campaign">
+                <!-- class="search" automagically makes an input a search field. -->
+                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
             </div>
 
+            <div class="col-md-5" style="text-align: center; display: flex; justify-content: center;">
+                    <table class="home-option">
+                        <tr class="home-option">
+                            <td id="showing-div" class="home-option">Showing:</td>
+                            <td class="home-option no-padding">
+                                <select class="flat-select" id="campaigns-select">
+                                    <option value="nearest">nearest</option>
+                                    <option value="all">all</option>
+                                    <option value="inactive">inactive</option>
+                                </select>
+                            </td>
+                            <td class="home-option nearest-option no-padding">
+                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
+                            </td>
+                            <td class="home-option nearest-option">
+                                campaigns
+                            </td>
+                            <td class="home-option"><input type="checkbox" id="check-show-map" checked> show map</td>
+                        </tr>
+                    </table>
+                </div>
 
+            <div class="col-md-2 no-padding metroUIform" style="text-align: center">
+                <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
+                    Sort By Name
+                </button>
+                <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
+                    Sort By Date
+                </button>
+                <select class="flat-select" id="filter-select">
+                    <option value="name">Sort By Name</option>
+                    <option value="date">Sort By Date</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+        <ul class="list card-wrapper">
+
+        </ul>
         </div>
 
     </div>
@@ -172,10 +177,22 @@
                    location.href='/all';
                 }
             }
+
+            var campaignStatus = Cookies.get('campaign-status');
+            if(!campaignStatus) {
+                campaignStatus = 'active';
+            }
+
+            if(campaignStatus === 'active') {
+                $('#display-inactive').show();
+            } else if(campaignStatus === 'all') {
+                $('#hide-inactive').show();
+            }
+
         });
 
         var map = L.map('campaign-map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('{{ map_provider }}', {
             attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
             'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
             maxZoom: 15
@@ -197,68 +214,160 @@
 
     <script type="text/javascript">
 
-        var table = $('#campaign-table').DataTable({
-            "lengthChange": false
-        });
+        var table = null;
         $('.dataTables_filter').addClass('pull-left');
-        var userCoordinate = '';
         var mapLayers = new L.FeatureGroup();
         var mapMarkers = new L.FeatureGroup();
         var tag = "{{ tag }}";
+        var currentUrl = '';
+        var currentUser = '';
+        var initialLoad = true;
+        var userLocation = {};
+
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
 
         //---------------- EVENT ------------------//
-        var homeHeaderTop = $('.home-header').offset().top;
 
-        $(window).scroll(function() {
-            var currentScroll = $(window).scrollTop();
+        $('#check-show-map').click(function () {
+           if( $(this).is(':checked') ){
+               $('#campaign-map').show();
+           } else{
+               $('#campaign-map').hide();
+           }
+        });
 
-            if(currentScroll >= homeHeaderTop) {
-                $('.home-header').css({
-                    position: 'fixed',
-                    top: '0',
-                    width: '100%',
-                    'z-index': '9999'
-                })
-                $('#first-row').css({
-                    'margin-top':'78px'
-                });
-            } else {
-                $('.home-header').css({
-                    position: 'static'
-                })
-                $('#first-row').css({
-                    'margin-top':'0'
-                });
+        $('#filter-select').change(function () {
+            var value = this.value;
+            if(value == 'name') {
+                $('#sort-campaign-by-name').click();
+            } else if(value == 'date') {
+                $('#sort-campaign-by-date').click();
             }
         });
 
+        $('#campaigns-select').change(function () {
+            var value = this.value;
+            if(value == 'all') {
+                Cookies.set('user_location_setting', 'all');
+                Cookies.set('campaign-status', 'active');
+                location.href='/all'
+            } else if(value == 'nearest') {
+                Cookies.set('user_location_setting', 'nearest');
+                Cookies.set('campaign-status', 'active');
+                location.href='/'
+            } else if(value == 'inactive') {
+                displayInactive();
+                location.href='/';
+            }
+        });
+
+        $("#limit-page").on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                updateLimitPage();
+            }
+        });
+
+        function displayInactive() {
+            Cookies.set('campaign-status', 'inactive');
+            clearMap();
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+        }
+
+        $('#hide-inactive').click(function () {
+            Cookies.set('campaign-status', 'active');
+            clearMap();
+            {% if all %}
+                getCampaigns(currentUrl, currentUser);
+            {% else %}
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage) {
+                    limitPage = 5;
+                }
+                getCampaigns(currentUrl, currentUser, limitPage);
+            {% endif %}
+
+            $('#display-inactive').show();
+            $('#hide-inactive').hide();
+        })
+
+        $('#limit-page').focusout(function (e) {
+            updateLimitPage();
+        });
+
+        function updateLimitPage() {
+            var limitPage = $("#limit-page").val();
+            var oldLimitPage = Cookies.get('limit_page');
+            var shouldUpdate = false;
+
+            if(oldLimitPage) {
+                if(oldLimitPage != limitPage) {
+                    shouldUpdate = true;
+                }
+            } else {
+                shouldUpdate = true;
+            }
+
+            if(shouldUpdate) {
+                clearMap();
+                getCampaigns(currentUrl, currentUser, limitPage);
+                Cookies.set('limit_page', limitPage);
+            }
+        }
+
         function participate() {
             var participateUrl = "/participate"
-            if(userCoordinate) {
-                participateUrl += "?coordinate="+userCoordinate;
+            if('lat' in userLocation) {
+                participateUrl += "?coordinate="+userLocation['lat']+','+userLocation['lon'];
             }
             window.location.href = participateUrl;
+        }
+        function openCampaign(event, element, campaignUUID) {
+            location.href = '/campaign/'+ campaignUUID;
+        }
+
+        function openManageCampaign(event, element, campaignUUID) {
+            event.stopPropagation();
+            location.href= '/edit/' + campaignUUID;
         }
 
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
             var url = "/campaigns";
-            userCoordinate = user['lat'] + ',' + user['lon'];
 
             if(user['lon'] && user['lat']) {
-                url = "/nearest_campaigns/" + user['lat'] + ',' + user['lon'];
+                userLocation = {
+                    'lat': user['lat'],
+                    'lon': user['lon']
+                }
+                url = "/nearest_campaigns";
             }
             clearMap();
             clearTable();
-            getCampaigns(url, currentUser);
             getTotalCampaigns();
             {% if not all %}
-                $('#all-campaigns').show();
+                var limitPage = Cookies.get('limit_page');
+                if(limitPage) {
+                    $('#limit-page').val(Cookies.get('limit_page'));
+                } else {
+                    limitPage = $('#limit-page').val();
+                    Cookies.set('limit_page', limitPage);
+                }
+                $('#campaigns-select').val("nearest");
+                getCampaigns(url, currentUser, limitPage);
+                $('.nearest-option').show();
             {% else %}
-                $('#nearest-campaigns').show();
+                getCampaigns(url, currentUser);
+                $('#campaigns-select').val("all");
             {% endif %}
         }
 
@@ -266,32 +375,13 @@
             location.href='/'
         });
 
-        $('#all-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'all');
-            location.href='/all'
-        });
-
-        $('#nearest-campaigns').click(function () {
-            Cookies.set('user_location_setting', 'nearest');
-            location.href='/'
-        });
-
         function logoutSuccess() {
             clearMap();
             clearTable();
-            // Clear cookies
-            Cookies.set('user_location_setting', '');
-            {% if all %}
-                location.href='/';
-            {% endif %}
-            $('#all-campaigns').hide();
-            $('#nearest-campaigns').hide();
+            userLocation = {};
         }
 
         if(!auth.authenticated()) {
-            {% if all %}
-                location.href='/';
-            {% endif %}
             getBrowserLocation();
             getTotalCampaigns();
         }
@@ -310,7 +400,7 @@
         }
 
         function clearTable() {
-            table.clear().draw('false');
+            // table.clear().draw('false');
         }
 
         function getBrowserLocation() {
@@ -318,19 +408,67 @@
             navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
 
             function successGetBrowserLocation(position) {
+
+                if(Object.keys(userLocation).length > 0) {
+                    return;
+                }
+
                 var zoom = 10;
-                var userLocation = new L.latLng(position.coords.latitude, position.coords.longitude);
-                var url = "/nearest_campaigns/" + position.coords.latitude + ',' + position.coords.longitude;
-                getCampaigns(url);
-                userCoordinate = position.coords.latitude + ',' + position.coords.longitude;
-                map.setView(userLocation, zoom);
+                userLocation = {
+                    'lat': position.coords.latitude,
+                    'lon': position.coords.longitude
+                }
+                var url = '/';
+                var limitPage = Cookies.get('limit_page');
+                if(!limitPage){
+                    limitPage = $('#limit-page').val();
+                }
+                $('#limit-page').val(limitPage);
+
+                clearMap();
+                {% if not all %}
+                    url += "nearest_campaigns";
+                    $('#campaigns-select').val('nearest');
+                    $('.nearest-option').show();
+                    getCampaigns(url, null, limitPage)
+                {% else %}
+                    url += "campaigns";
+                    $('#campaigns-select').val('all');
+                    getCampaigns(url, null, null)
+                {% endif %}
             }
 
             function errorGetBrowserLocation() {
-                console.log('Error get browser location');
+                var url = '/';
+                var limitPage = Cookies.get('limit_page');
+                userLocation = {};
+                if(!limitPage){
+                    limitPage = $('#limit-page').val();
+                }
+                $('#limit-page').val(limitPage);
+
                 clearMap();
-                clearTable();
-                getCampaigns();
+
+                {% if not all %}
+                    url += "nearest_campaigns";
+                    $.getJSON('https://ipapi.co/json/', function(data) {
+                        var latitude = data['latitude'];
+                        var longitude = data['longitude'];
+                        userLocation = {
+                            'lat': latitude,
+                            'lon': longitude
+                        }
+                        getCampaigns(url, null, limitPage);
+                    });
+                    $('#campaigns-select').val('nearest');
+                    $('.nearest-option').show();
+                {% else %}
+                    url += "campaigns";
+                    $('#campaigns-select').val('all');
+                    getCampaigns(url, null, null);
+                {% endif %}
+
+                console.log('Error get browser location');
             }
         }
 
@@ -344,7 +482,14 @@
             })
         }
 
-        function getCampaigns(url, user) {
+        function getCampaigns(url, user, limit) {
+            if(url) {
+                currentUrl = url;
+            }
+
+            if(user) {
+                currentUser = user;
+            }
 
             $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
@@ -355,16 +500,36 @@
                 url = "/campaigns";
             {% endif %}
 
-            var campaign_status = '/active';
+            var campaign_status = Cookies.get('campaign-status');
+            if(!campaign_status) {
+                campaign_status = 'active';
+            } else if(campaign_status === 'inactive') {
+                $('#campaigns-select').val('inactive');
+            }
 
-            url += campaign_status;
+            url += '/' + campaign_status;
 
             if(tag) {
                 url += '/'+tag;
             }
 
+            url += '?';
+
+            if(limit) {
+                url += 'per_page='+limit+'&';
+            }
+
+            if('lon' in userLocation) {
+                url += 'lon='+userLocation['lon']+'&';
+            }
+
+            if('lat' in userLocation) {
+                url += 'lat='+userLocation['lat']+'&';
+            }
+
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
+            $('.card-wrapper').html('');
 
             var participants = [];
 
@@ -385,8 +550,8 @@
 
                         if($.inArray(user, campaign['campaign_managers'])>-1) {
                             action_button = '<button type="button" href="#" class="campaign-list btn"'+
-                                                'onclick="location.href=\'/edit/'+campaign['uuid']+'\'">'+
-                                                '<span class="pull-left"><i class="fa fa-cog" aria-hidden="true"></i> Manage</span>'+
+                                                'onclick="openManageCampaign(event, this, \''+campaign['uuid']+'\')">'+
+                                                '<span class="pull-left">Manage</span>'+
                                              '</button>'
                         }
 
@@ -394,14 +559,78 @@
                             if($.inArray(manager, participants)==-1) {
                                 participants.push(manager);
                             }
-                        })
+                        });
 
-                        table.row.add([
-                            '<span class="campaign-td"><a href="/campaign/'+campaign['uuid']+'">' + campaign['name'] + '</a></span>',
-                            '<span class="tag">'+types+'</span>',
-                            '<span class="label label-default label-participants">'+campaign['campaign_managers'].length+'</span>',
-                            action_button
-                        ]).draw( false );
+                        // Campaign progress
+                        var startDate = moment(campaign['start_date'], 'YYYY-MM-DD', true);
+                        var endDate = moment(campaign['end_date'], 'YYYY-MM-DD', true);
+                        var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
+                        var remainingDays = endDate.diff(moment(), 'days') + 1;
+                        var progress = 100 - (remainingDays / campaignRange * 100);
+                        if(progress>100) {
+                            progress = 100;
+                        }
+                        else if(progress<0) {
+                            progress = 0;
+                        }
+                        var campaignProgress = '<div class="progress" style="width:82%;float:left;">'+
+                                                    '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
+                                                    '</div>'+
+                                                '</div>'+ Math.round(progress) + '%';
+
+                        var tags = '';
+
+                        $.each(campaign['types'], function(index, type) {
+                            tags += '<span class="campaign-tags">'+ type['type'] +'</span> ';
+                        });
+
+                        $('.card-wrapper').append(
+                            '<li class="col-lg-6">'+
+                                '<div class="campaign-card panel" onclick="openCampaign(event, this, \''+campaign['uuid']+'\')">'+
+                                    '<div class="panel-heading">'+
+                                        '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name">'+
+                                            campaign['name'] +
+                                        '</div></a>'+
+                                        '<div class="row">' +
+                                            '<div class="col-xs-6">'+
+                                                '<div class="campaign-start-date">'+
+                                                    'started '+ campaign['start_date'] +
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="col-xs-6">'+
+                                                '<div class="campaign-progress-bar">'+
+                                                    campaignProgress +
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>' +
+                                        '<div class="row">'+
+                                            '<div class="col-xs-8">'+
+                                                '<div>'+
+                                                    tags+
+                                                '</div>'+
+                                                '<div class="campaign-description ellipsis multiline">'+
+                                                    campaign['description']+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="col-xs-4 campaign-thumbnail">'+
+                                                '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div class="row">'+
+                                            '<div class="col-xs-8">'+
+                                                '<div class="campaign-creator">'+
+                                                        'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class=col-xs-4>'+
+                                                action_button+
+                                            '</div>'+
+                                        '</div>' +
+                                    '</div>'+
+                                '</div>'+
+                            '</li>');
+
+                        $(".ellipsis").ellipsis();
 
                         // Add to navigation bar
                         $('.campaign-list-navbar').append('<li>'+
@@ -437,9 +666,27 @@
 
                     $('#panel-campaign').LoadingOverlay("hide");
 
-                    {% if all %}
+                    map.invalidateSize();
+                    var layers = mapLayers;
+                    if(typeof mapLayers.length === 'undefined') {
+                        layers = mapLayers.getLayers();
+                    }
+                    if(layers.length > 0) {
                         map.fitBounds(mapLayers.getBounds());
-                    {% endif %}
+                    }
+
+                    var options = {
+                        valueNames: ['campaign-name', 'campaign-start-date']
+                    }
+                    var campaignList = new List('campaign-list', options);
+
+                    $('#sort-campaign-by-name').click();
+
+                    if(initialLoad) {
+                        initialLoad = false;
+                    } else {
+                        $('#sort-campaign-by-name').click();
+                    }
                 }
             });
         }

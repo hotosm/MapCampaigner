@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 
 <head>
 
@@ -107,6 +107,7 @@
     <!-- Moment Javascript -->
     <script type="text/javascript" src="/static/libs/moment.js"></script>
 
+    <script type="text/javascript" src="/static/libs/chartjs/Chart.bundle.min.js"></script>
 
     <!-- Leaflet Search -->
     <script type="text/javascript" src="/static/libs/leaflet-search.js"></script>
@@ -116,6 +117,34 @@
 
     <script src="/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
     <script src="/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
+
+    <!-- Modal -->
+    <div id="auth-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Authentication Required</h4>
+                </div>
+                <div class="modal-body" style="padding-top: 25px; padding-bottom: 30px;">
+                    <p>Sign in is required to open this page.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal" onclick="login()">Login
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     {% block before_base_js %}
     {% endblock %}
@@ -156,8 +185,8 @@
 
         function logout() {
             auth.logout();
-            update();
             logoutSuccess();
+            update();
         }
 
         function update() {
@@ -218,12 +247,12 @@
                     }
                 }
 
-                updated(o);
-
                 if(loginProcess) {
                     loginSuccess(o);
                     loginProcess = false;
                 }
+
+                updated(o);
 
             }, this);
         }
@@ -257,6 +286,18 @@
             // Called after finished getting details of a user
         }
 
+        $('#create_campaign').click(function () {
+            if (auth.authenticated()) {
+                location.href = '/create';
+            } else {
+                showAuthAlert();
+            }
+        });
+
+        function showAuthAlert() {
+            $('#auth-modal').modal('show');
+        }
+
     </script>
 
     {% block after_base_js %}
@@ -268,16 +309,10 @@
     <p class="footer-company-motto">
     </p>
 
-    <p class="footer-links">
-        <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-youtube-play" aria-hidden="true"></i></a>
-    </p>
-
-    <p class="footer-company-name">
-        Built by <a href="/about" target="_blank"> HOT & Partners </a> <img src="/static/img/hot-logo.svg" style="height: 25px;"/>
-        <a href="https://github.com/hotosm/field-campaigner"> Contribute on GitHub </a>
-    </p>
+    <div class="footer-company-name">
+        <div style="float:left;padding-left: 20px;"> Built by <a href="/about" target="_blank"> HOT & Partners </a>  </div>
+        <div style="float:right;padding-right: 20px;"> <a href="https://github.com/hotosm/field-campaigner"> Contribute on GitHub </a> </div>
+    </div>
 
 </footer>
 </html>

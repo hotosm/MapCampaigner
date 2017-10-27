@@ -87,7 +87,7 @@
 
 <div class="insight-summaries">
      <div class="row summary multiple-row">
-        <div class="col-lg-10">
+        <div class="col-lg-12">
             <div class="pull-left">
                 Attribute completeness
             </div>
@@ -106,7 +106,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-2 map-side-list-action"></div>
     </div>
 </div>
 
@@ -177,7 +176,7 @@
         {% if row['error'] == 'True' %}
 
             _featureCompleteness.push(
-                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">'+
+                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}" data-id="{{ row['id'] }}" data-type="{{ row['type'] }}">'+
                     '{{ row['type'] }} :'+
                     '{{ row['id'] }}'+
                 '</a>'

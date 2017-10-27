@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div id="form-panel">
+    <div class="row form-border">
         <div class="col-lg-2">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
@@ -63,16 +64,14 @@
                                 <div class="panel panel-default panel-header">
                                     <div class="form-header col-md-6">
                                         <div class="form-group required-form">
-                                            <label class="panel-header-info" for="start_date">START DATE</label>
-                                            {{ form.start_date }}
-                                            <p class="help-block"></p>
+                                            <label class="panel-header-info">START DATE</label>
+                                            <div id="start-date-value">---</div>
                                         </div>
                                     </div>
                                     <div class="form-header col-md-6">
                                         <div class="form-group required-form">
-                                            <label class="panel-header-info" for="end_date">END DATE</label>
-                                            {{ form.end_date }}
-                                            <p class="help-block"></p>
+                                            <label class="panel-header-info">END DATE</label>
+                                            <div id="end-date-value">---</div>
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +80,24 @@
                         <fieldset id="fieldset-1" data-fieldset-step="1">
                             <div class="row">
                                 <div class="form-body col-lg-9">
+                                <div class="row" style="margin-bottom: 20px">
+                                <div class="col-md-3">
+                                    <div class="form-group required-form">
+                                        <i id="start-date-icon" class="fa fa-calendar" aria-hidden="true"></i>
+                                        {{ form.start_date }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group required-form">
+                                        <span id="end-date-icon" class="fa fa-calendar" aria-hidden="true"></span>
+                                        {{ form.end_date }}
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                </div>
                                     <div class="form-group">
+                                        <label for="description">Description</label><span class="help-block pull-right">Describes which features campaign collects, the AOI, and the reason of the campaign creation.</span>
                                         {{ form.description }}
                                     </div>
                                     <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
@@ -99,8 +115,9 @@
                                             leave blank to use default</p>
                                     </div>
                                     <div class="form-group" id="link-to-omk-form">
-                                        {{ form.link_to_omk.label }}
                                         {{ form.link_to_omk(checked=link_to_omk) }}
+                                        {{ form.link_to_omk.label }}
+                                        <br/><span class="help-block">Check the box if you like your campaign automatically opens OpenMapKit application in mobile</span>
                                     </div>
                                     <br/>
                                 </div>
@@ -110,27 +127,30 @@
                             <div class="row">
                                 <div class="form-body col-lg-4">
                                     <div class="form-group">
-                                        <label for="types">Types</label>
+                                        <label for="types">Types</label><span class="help-block">&nbsp;&nbsp;&nbsp;Add at least one campaign type</span>
                                         <div class="types-required-message">This field is required</div>
                                     </div>
                                 </div>
                                 <div class="form-body col-lg-7">
                                     <div class="form-group">
-                                        <label>Tags</label><br/>
+                                        <label>&nbsp;&nbsp;Tags</label><span class="help-block">&nbsp;&nbsp;&nbsp;You can add new/remove the campaign tags</span> <br/>
                                         <span id="warning-tag" style="color: #ac3232"></span>
                                     </div>
                                 </div>
                             </div>
                             <div id="typesTagsContainer"></div>
                             <div class="row">
-                                <div class="form-body form-group col-lg-4" style="margin-top: 10px"><input id="btn-add" type="button" value="+ Add type" onclick="addTypes()"></div>
+                                <div class="form-body form-group col-lg-4" style="margin-top: 10px">
+                                    <input id="btn-add" type="button" value="+ Add type" onclick="addTypes()">
+                                    <input id="btn-add" type="button" value="+ Add custom type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                </div>
                             </div>
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
                                     <div class="form-group">
-                                        <label for="campaign_managers">Managers</label>
+                                        <label for="campaign_managers">Managers</label><span class="help-block">&nbsp;&nbsp;&nbsp;You may add additional manager by searching their osm username in the box below.</span>
                                         <div class="error-form error-managers" style="display: none">This field is required</div>
-                                        <div id="managers-list">
+                                        <div id="managers-list" class="manager-list">
                                         </div>
                                         <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
                                         <input type="text" id="search-osm-user-text" placeholder="Search osm users"/>
@@ -153,7 +173,7 @@
                                 </div>
                             </div>
                             <div class="cc-buttons">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </fieldset>
 
@@ -224,14 +244,11 @@
                             </div>
                         </div>
                         <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
                             </div>
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">Next </span><span class="btn-icon-next"> > </span></button>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
                             </div>
                         </div>
                     </fieldset>
@@ -319,12 +336,7 @@
                         </div>
 
                         <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">Prev </span></button>
-                            </div>
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
+                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
                         </div>
                     </fieldset>
 
@@ -352,11 +364,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="cc-buttons">
-                            <div class="col-lg-4">
-                                <input id="submit" name="submit" type="submit" value="Submit" class="btn submit-button">
-                            </div>
-                        </div>
                     </fieldset>
 
                     <fieldset id="fieldset-5" data-fieldset-step="5">
@@ -379,6 +386,11 @@
             <!-- /.panel-body -->
         </div>
     </div>
+    <div class="col-lg-10 pull-right">
+        <input id="submit" style="display: none" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
+    </div>
+    </div>
+    {% include 'modals/custom-types-and-tags.html' %}
 
 {% endblock %}
 
@@ -399,6 +411,7 @@
         var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
         var errors = {{ form['errors'] | safe}};
         var functions = {{ functions|safe }};
+        var map_provider = "{{ map_provider }}";
         var oneTimeFunctions = [];
         $.each(functions, function (key, value) {
             if (!value['need_feature']) {
@@ -513,13 +526,13 @@
                         )
                     } else {
                         $('#managers-list').append(
-                                '<span class="manager">' + value +
-                                '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i></span>'
+                                '<span class="manager">' + '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i>' + value + '</span>'
                         )
                     }
                 })
             }
         }
+        $('#form-panel').hide();
         $(function () {
             updateManagerList();
         });
@@ -637,7 +650,20 @@
         }
 
         function updated(response) {
-            $('#campaign-panel').show();
+            {% if action == 'edit' %}
+                var is_manager = $.inArray(response.display_name, managers_list);
+                if(is_manager == -1){
+                    location.href='/404';
+                }else {
+                    $('#form-panel').show();
+                    $('#campaign-panel').show();
+                    $('#submit').show();
+                }
+            {% else %}
+                $('#form-panel').show();
+                $('#campaign-panel').show();
+                $('#submit').show();
+            {% endif %}
             {% if action == 'create' %}
                 managers_list.push(response.display_name);
                 $('#managers-list').append(
@@ -657,7 +683,11 @@
         if (!window.isAuthenticated) {
             window.location.replace("/");
         } else {
-            $('#campaign-panel').show();
+            {% if action=='create' %}
+                $('#form-panel').show();
+                $('#campaign-panel').show();
+                $('#submit').show();
+            {% endif %}
         }
 
         //------------------ STEPS ------------------//
@@ -690,10 +720,10 @@
             $currentActiveStep.find('.cc-nav-icon').show();
             if (!valid) {
                 $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
-                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times');
+                $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times times-red');
             } else {
                 $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-check');
-                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times');
+                $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times times-red');
             }
             return valid;
         }
@@ -1115,6 +1145,7 @@
             onSelect: function (date) {
                 $("#end_date").val(date);
                 $("#end_date").datepicker({minDate: new Date(date)})
+                $('#start-date-value').html(date.toString())
             }
         });
 
@@ -1125,7 +1156,16 @@
             onSelect: function (date) {
                 $("#start_date").val(date);
                 $("#start_date").datepicker({maxDate: new Date(date)})
+                $('#end-date-value').html(date.toString())
             }
+        });
+
+        $("#start-date-icon").click(function () {
+            $('#start_date').datepicker().data('datepicker').show()
+        });
+
+        $("#end-date-icon").click(function () {
+            $('#end_date').datepicker().data('datepicker').show()
         });
 
         $(function () {
@@ -1138,6 +1178,8 @@
             {% if form.start_date.data and form.end_date.data %}
                 var start_date = $("#start_date").val();
                 var end_date = $("#end_date").val();
+                $('#start-date-value').html(start_date.toString());
+                $('#end-date-value').html(end_date.toString());
 
                 $("#start_date").datepicker({
                     maxDate: new Date($("#end_date").val().toString())

@@ -30,7 +30,7 @@ def validate_map(form, field):
     valid_map = valid_map_list()
     if tile_layer.scheme != '' \
             and (tile_layer.netloc != '' or tile_layer.path != ''):
-        if tile_layer.scheme != 'https':
+        if tile_layer.scheme != 'https' and field.data not in valid_map:
             raise ValidationError('Please input url using "https://"')
         elif field.data not in valid_map:
             raise ValidationError(
@@ -64,11 +64,11 @@ class CampaignForm(FlaskForm):
     )
     start_date = DateField(
         u'Start date of campaign',
-        render_kw={'placeholder': '---', 'readonly': 'true'}
+        render_kw={'placeholder': 'Start Date', 'readonly': 'true'}
     )
     end_date = DateField(
         u'End date of campaign',
-        render_kw={'placeholder': '---', 'readonly': 'true'}
+        render_kw={'placeholder': 'End Date', 'readonly': 'true'}
     )
     campaign_managers = ManagerSelectMultipleField(
         u'Managers of campaign',

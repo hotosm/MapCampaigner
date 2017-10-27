@@ -203,7 +203,7 @@ function createErrorPanel() {
          columns: [
             { title: "Name", "width": "20%"  },
             { title: "Date", "width": "20%" },
-            { title: "Status", "width": "50%" }
+            { title: "Comment", "width": "50%" }
          ],
          columnDefs: [{
              targets: 1,
@@ -287,14 +287,18 @@ function calculateCampaignProgress() {
     var remaining_days = end_date.diff(moment(), 'days') + 1;
 
     var progress = 0;
-
     if (remaining_days <= 0) {
         progress = 100;
-        $campaignStatus.removeClass('running');
-        $campaignStatus.addClass('finished');
-        $campaignStatusLabel.html('Finished');
+        if($campaignStatusLabel.text() == 'Inactive') {
+            $campaignStatus.removeClass('running');
+            $campaignStatus.addClass('finished');
+            $campaignStatusLabel.html('Finished');
+        }
     } else {
         progress = 100 - (remaining_days / campaign_range * 100);
+        if(progress < 0){
+            progress = 0
+        }
     }
 
     $('#campaign-progress').css({
@@ -303,6 +307,12 @@ function calculateCampaignProgress() {
 }
 
 var insightTypeIndex = 0;
+var errorFeatures = {
+    'node': [],
+    'way': [],
+    'relation': []
+};
+
 function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
@@ -352,22 +362,23 @@ function getInsightFunctions(function_id, function_name, type_id) {
             if(typeof type_id !== 'undefined') {
                 if(function_name === 'FeatureAttributeCompleteness') {
                     for(var i=0; i<featureCompleteness.length;i++){
+                        var idCol = $(featureCompleteness[i][0]);
+                        errorFeatures[idCol.data('type')].push(idCol.data('id').toString());
                         addRowToErrorPanel(featureCompleteness[i]);
                     }
 
                     for (var key in featureData) {
                         if(featureData.hasOwnProperty(key)) {
                             renderFeatures(key, featureData[key], insightTypeIndex === 0);
+                            insightTypeIndex++;
                         }
                     }
 
                     var totalError = parseInt($('#total-feature-completeness-errors').html());
                     $('#total-feature-completeness-errors').html(totalError + featureCompleteness.length);
+                    getOSMCHAErrors();
                 } else if (function_name === 'MapperEngagement') {
-                    if(insightTypeIndex === Object.keys(campaign_types).length - 1) {
-                        updateMapperEngagementTotal();
-                    }
-                    insightTypeIndex++;
+                    updateMapperEngagementTotal();
                 }
             }
 
@@ -380,11 +391,35 @@ function getInsightFunctions(function_id, function_name, type_id) {
 }
 
 function getOSMCHAErrors() {
-    var url = '/campaign/osmcha_errors/'+ uuid;
+    var url = '/campaign/osmcha_errors_data/'+ uuid +'?page_size=100';
     $.ajax({
         url: url,
         success: function (data) {
-            $('#total-osmcha-errors').html(data);
+
+            var totalOsmchaErrors = parseInt(data["total"]);
+            var totalError = parseInt($('#total-feature-completeness-errors').html());
+            $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
+            $.each(data["data"], function (index, error) {
+                var rowData = [];
+                rowData.push(
+                    '<a target="_blank" href="https://osmcha.mapbox.com/changesets/'+error['ChangeSetId']+'">changesets :'+error['ChangeSetId']+'</a>'
+                );
+                rowData.push(moment(error['Date'], 'YYYY-MM-DD HH:mm').format());
+                if(error['Reasons']) {
+                    rowData.push('<div class="error-completeness">'+error['Reasons']+'</div>');
+                } else {
+                    rowData.push('<div class="error-completeness">'+error['Comment']+'</div>');
+                }
+
+                if(error['Features'].length > 0) {
+                    for(var i=0; i < error['Features'].length; i++) {
+                        var feature = error['Features'][i]['url'].split('-');
+                        errorFeatures[feature[0]].push(feature[1]);
+                    }
+                }
+
+                addRowToErrorPanel(rowData);
+            })
         }
     });
 }
@@ -399,6 +434,26 @@ function dictToTable(dictObject) {
         }
     }
     return result;
+}
+
+function colorCompleteness(error_value) {
+
+    var color = completenessPallete['100'];
+    if(error_value == 100){
+        color = completenessPallete['0'];
+    } else if(error_value > 75){
+        color = completenessPallete['25'];
+    } else if(error_value > 50){
+        color = completenessPallete['50'];
+    } else if(error_value > 25){
+        color = completenessPallete['75'];
+    } else if(error_value > 0){
+        color = completenessPallete['99'];
+    } else {
+        color = completenessPallete['100'];
+    }
+
+    return color;
 }
 
 function renderFeatures(feature_type, feature_data, show_feature) {
@@ -434,11 +489,13 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             unusedNodes[feature['id']] = feature;
         }
 
+        var completenessPercentage = (100 - feature['completeness']).toFixed(1);
+
         if(featureTag) {
             if(feature['type'] === 'node') {
                 L.circle([feature['lat'],feature['lon']], 5, {
-                    color: '#' + intToRGB(hashCode(featureTag)),
-                    fillColor: '#' +  intToRGB(hashCode(featureTag)),
+                    color: colorCompleteness(feature['completeness']),
+                    fillColor: colorCompleteness(feature['completeness']),
                     fillOpacity: 0.7,
                     zIndexOffset: 999
                 }).bindPopup(
@@ -447,7 +504,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((feature['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ feature['error_message'] + '</div>') : '') +
                         ((feature['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ feature['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: node</div>'+
-                    dictToTable(feature['tags']) + '</div>'
+                    dictToTable(feature['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' +'</div>'
                 ).addTo(nodesGroup);
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
@@ -473,11 +530,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
         }
 
         var wayTag = capitalizeFirstLetter(way['tags']['amenity']);
+        var completenessPercentage = (100 - way['completeness']).toFixed(1);
 
         if(typeof wayTag !== 'undefined') {
             L.polygon(latlngs, {
-                color: '#' + intToRGB(hashCode(wayTag)),
-                fillColor: '#' +  intToRGB(hashCode(wayTag)),
+                color: colorCompleteness(way['completeness']),
+                fillColor: colorCompleteness(way['completeness']),
                 fillOpacity: 0.5
             }).bindPopup(
                 '<div class="feature-detail"><h4>Feature - '+wayTag+'</h4>'+
@@ -485,7 +543,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     ((way['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ way['error_message'] + '</div>') : '') +
                     ((way['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ way['warning_message'] + '</div>') : '') +
                 '<div><b>type </b>: way</div>'+
-                dictToTable(way['tags']) + '</div>'
+                dictToTable(way['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
             ).addTo(waysGroup);
         } else {
             unusedWays[way['id']] = way;
@@ -522,11 +580,12 @@ function renderFeatures(feature_type, feature_data, show_feature) {
             }
 
             var relationTag = capitalizeFirstLetter(relation['tags']['amenity']);
+            var completenessPercentage = (100 - relation['completeness']).toFixed(1);
 
             if(typeof relationTag !== 'undefined') {
                 L.polygon(latlngs, {
-                    color: '#' + intToRGB(hashCode(relationTag)),
-                    fillColor: '#' +  intToRGB(hashCode(relationTag)),
+                    color: colorCompleteness(relation['completeness']),
+                    fillColor: colorCompleteness(relation['completeness']),
                     fillOpacity: fillOpacity
                 }).bindPopup(
                     '<div class="feature-detail"><h4>Feature - '+relationTag+'</h4>'+
@@ -534,7 +593,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                         ((relation['error_message'] !== '') ? ('<div style="color:red"><b>error </b>: '+ relation['error_message'] + '</div>') : '') +
                         ((relation['warning_message'] !== '') ? ('<div style="color:orange"><b>warning </b>: '+ relation['warning_message'] + '</div>') : '') +
                     '<div><b>type </b>: relation</div>'+
-                    dictToTable(relation['tags']) + '</div>'
+                    dictToTable(relation['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
                 ).addTo(relationsGroup);
             }
         });
@@ -610,20 +669,15 @@ function renderInsightFunctionsTypes(username) {
         }
 
         $('.map-side-panel').append(
-            '<div class="map-side-list map-side-type" id="type-'+tabId+'">'+
+            '<div class="map-side-list map-side-type '+active+'" id="type-'+tabId+'" onclick="showInsightFunction(this, \''+tabId+'\')">'+
                 '<div class="row">'+
-                    '<div class="col-lg-10">'+
+                    '<div class="col-lg-12">'+
                         '<div class="pull-left map-side-list-name">'+
                                 tabName +
                         '</div>'+
                         '<span class="pull-right map-side-list-number">'+
                                 '<span class="features-collected">...</span>'+
                                 '</span>'+
-                    '</div>'+
-                    '<div class="col-lg-2 map-side-list-action">'+
-                        '<div class="side-action '+ active +'">'+
-                            '<i class="fa fa-eye" data-toggle="tooltip" data-placement="top" data-original-title="Toggle show/hide insight summary" aria-hidden="true" onclick="showInsightFunction(this, \''+tabId+'\')"></i>'+
-                        '</div>'+
                     '</div>'+
                 '</div>'+
                 '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
@@ -690,22 +744,47 @@ function renderInsightFunctionsTypes(username) {
         index++;
     }
 
-    getOSMCHAErrors();
     renderInsightFunctions(username);
 }
 
 function showInsightFunction(element, tabId) {
-    var $divParent = $(element).parent();
+    var $divParent = $(element);
     map.fitBounds(drawnItems.getBounds());
 
     if($divParent.hasClass('active')) {
     } else {
         $('#'+activeInsightPanel).hide();
         map.removeLayer(featureGroups[activeInsightPanel]);
-        $('#type-'+activeInsightPanel).find('.side-action').removeClass('active');
+        $('#type-'+activeInsightPanel).removeClass('active');
         $divParent.addClass('active');
         $('#'+tabId).show();
         activeInsightPanel = tabId;
         map.addLayer(featureGroups[activeInsightPanel]);
     }
 }
+
+(renderInsights = function () {
+   renderInsightFunctionsTypes('');
+});
+
+$('#download-xml').click(function (event) {
+    var download_url = '/generate_josm';
+    $('#download-xml').prop('disabled', true);
+    var data = {};
+    data['error_features'] = JSON.stringify(errorFeatures);
+    $.ajax({
+        type: "POST",
+        url: download_url,
+        data: data,
+        success: function (data) {
+            var dataDict = JSON.parse(data);
+            if('file_name' in dataDict) {
+                document.getElementById('download_xml_frame').src = '/download_josm/'+uuid+'/'+dataDict['file_name'];
+            }
+            $('#download-xml').prop('disabled', false);
+        },
+        error: function () {
+            $('#download-xml').prop('disabled', false);
+        }
+    })
+});

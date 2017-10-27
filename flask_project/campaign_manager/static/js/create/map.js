@@ -5,7 +5,7 @@ var error_format_before = false;
 
 // Add search control
 var controlSearch = campaignMap.addControl( new L.Control.Search({
-    url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+    url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
     jsonpParam: 'json_callback',
     propertyName: 'display_name',
     propertyLoc: ['lat','lon'],
@@ -17,7 +17,7 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
 }));
 
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer(map_provider, {
     attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
     'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
     maxZoom: 18

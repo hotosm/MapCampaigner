@@ -1,0 +1,222 @@
+<!-- Modal -->
+<style>
+    .modal-content {
+        background-color: #f7f7f7 !important;
+    }
+
+    .modal-required-message {
+        display: none;
+        color: #ac3232;
+    }
+
+    #modal-form label {
+        margin-bottom: 16px;
+    }
+
+    .custom-tag-row {
+        width: 100%;
+        margin-bottom: 10px;
+        height: 36px;
+    }
+
+    .select-types:disabled {
+        width: 90% !important;
+        float: left;
+    }
+
+    .edit-custom-type {
+        padding-left: 5px;
+        float: left;
+    }
+
+    .edit-custom-type i {
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .custom-help-block {
+        font-size: 9.4pt;
+        padding-left: 20px;
+    }
+
+</style>
+<div id="custom-types-tags" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">+ Add custom type</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modal-form">
+                    <label>Type</label>
+                    <div class="form-group">
+                        <input id="custom_type_name" placeholder="Name" type="text" value="" class="form-control">
+                        <div class="modal-required-message">This field is required</div>
+                        <p class="help-block">
+                            This is name of this type. For example : Educational Facilities.
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <input id="custom_type_feature" placeholder="Feature" type="text" value="" class="form-control">
+                        <div class="modal-required-message">This field is required</div>
+                        <ul class="custom-help-block">
+                            <li>This is specific feature of data for this type. For example: building, amenity, etc.</li>
+                            <li>To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.</li>
+                        </ul>
+                    </div>
+                    <br>
+                    <label>Tags</label>
+                    <div id="tag-requirement-message" class="modal-required-message">Tag is required at least 1.</div>
+                    <div id="custom-tags" class="form-group">
+                    </div>
+                    <div class="form-group">
+                        <input id="btn-add" class="form-control" type="button" value="+ Add tag" onclick="addNewCustomTags()">
+                        <ul class="custom-help-block">
+                            <li>Add new multiple tags for this type.</li>
+                            <li>Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.</li>
+                            <li>For specific tag, add pairing key=value in here. For example: emergency=yes,no. This will check if 'yes' or 'no' is value for emergency attribute.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveCustomType()">Add</button>
+                <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type='text/template' id='_custom_new_tag'>
+    <div class="custom-tag-row">
+        <div class="col-lg-10">
+            <div class="form-group">
+                <input placeholder="New tag" type="text" class="custom-tag-input form-control">
+                <div class="modal-required-message">This field is required</div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <button class="btn btn-warning btn-sm btn-block" style="margin-top: 1px" type="button" onclick="removeCustomTags(this)"><i class="fa fa-minus"></i></button>
+        </div>
+    </div>
+</script>
+<script>
+    var lastTypeRow = null;
+    $('#custom-types-tags').on('show.bs.modal', function (e) {
+        lastTypeRow = null;
+        var relatedTarget = e.relatedTarget;
+        var type_selected = $(relatedTarget).closest('.form-group').find('select').val();
+        modalReset();
+        if (type_selected) {
+            lastTypeRow = $(relatedTarget).closest('.row');
+            var type = types[type_selected];
+            $('#custom_type_name').val(type_selected);
+            $('#custom_type_feature').val(type['feature']);
+            $.each(type['tags'], function (key, value) {
+                var tag_value = key;
+                if (value.length > 0) {
+                    tag_value += '=' + value.join();
+                }
+                addNewCustomTags(tag_value)
+            });
+            $('#custom-types-tags .modal-title').html('Edit custom type');
+            $('#btn-add-custom-type').html('Save');
+        }
+    });
+    function addCustomType(typeData) {
+        types[typeData['type']] = {
+            feature: typeData['feature'],
+            insights: [
+                "FeatureAttributeCompleteness",
+                "CountFeature",
+                "MapperEngagement"
+            ],
+            tags: typeData['tags'],
+            custom: true
+        };
+    }
+    function modalReset() {
+        $('#custom-types-tags .modal-title').html('+ Add custom type');
+        $('#btn-add-custom-type').html('Add');
+        $('#custom_type_name').val('');
+        $('#custom_type_feature').val('');
+        $('#custom-tags').html('');
+        $('.modal-required-message').hide()
+    }
+    function addNewCustomTags(value) {
+        var template = _.template($("#_custom_new_tag").html());
+        var html = template();
+        $('#custom-tags').append(html);
+        if (value) {
+            $('#custom-tags').children().last().find('input').val(value);
+        }
+    }
+    function removeCustomTags(element) {
+        $(element).closest('.custom-tag-row').remove();
+    }
+    function showCustomTypeRequiredMessage(element) {
+        $(element).closest('.form-group').find('.modal-required-message').show();
+    }
+    function customTypeToTypeFormat() {
+        var type_json = {
+            feature: $('#custom_type_feature').val(),
+            insights: [
+                "FeatureAttributeCompleteness",
+                "CountFeature",
+                "MapperEngagement"
+            ],
+            tags: {},
+            custom: true,
+        };
+        $('.custom-tag-input').each(function (i, tag) {
+            var vals = $(tag).val().split('=');
+            var key = vals[0];
+            if (vals[1]) {
+                type_json['tags'][key] = vals[1].split(',');
+            } else {
+                type_json['tags'][key] = [];
+            }
+        });
+        return {
+            custom_type_name: $('#custom_type_name').val(),
+            custom_type_value: type_json
+
+        };
+    }
+    function saveCustomType() {
+        $('.modal-required-message').hide();
+
+        {# check name #}
+        var $name = $('#custom_type_name');
+        if (!$name.val()) {
+            showCustomTypeRequiredMessage($name);
+        }
+        {# check feature #}
+        var $feature = $('#custom_type_feature');
+        if (!$feature.val()) {
+            showCustomTypeRequiredMessage($feature);
+        }
+        {# check tags #}
+        if ($('.custom-tag-input').length === 0) {
+            $('#tag-requirement-message').show();
+        }
+        $('.custom-tag-input').each(function (i, tag) {
+            if (!$(tag).val()) {
+                showCustomTypeRequiredMessage(tag);
+            }
+        });
+        {# save if there is no error #}
+        if ($('.modal-required-message:visible').length === 0) {
+            if (lastTypeRow) {
+                $(lastTypeRow).remove();
+            }
+            $('#custom-types-tags').modal('toggle');
+            var customType = customTypeToTypeFormat();
+            types[customType['custom_type_name']] = customType['custom_type_value'];
+            addTypes(customType['custom_type_name'])
+        }
+    }
+</script>
