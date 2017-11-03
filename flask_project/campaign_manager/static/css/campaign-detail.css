@@ -771,4 +771,15 @@ tr.odd {
     line-height: 14px;
     margin-right: 10px;
     font-size: 9pt;
+
+.checked-attributes {
+    margin-top: 15px !important;
+    margin-bottom: 5px !important;
+}
+
+.checked-attributes span {
+    border: 1px solid #EAE8E8;
+    padding: 1px 5px;
+    border-radius: 5px;
+    line-height: 20pt !important;
 }
