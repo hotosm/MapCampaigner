@@ -650,10 +650,9 @@
 
         var completenessPallete = {
             '100':'#00840d',
-            '99':'#3eff1c',
-            '75':'#e2f90e',
-            '50':'#ffe41c',
-            '25':'#f9be0e',
+            '75':'#faff00',
+            '50':'#ffe500',
+            '25':'#FD9A08',
             '0':'#ff0000'
         };
 
@@ -662,10 +661,9 @@
             var div = L.DomUtil.create('div', 'legend');
             div.innerHTML += '<span><b>Completeness</b></span><br/>';
             div.innerHTML += '<i style="background-color: '+ completenessPallete['100'] +'"></i> <span>100%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['99'] +'"></i> <span>< 100%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['75'] +'"></i> <span>< 75%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['50'] +'"></i> <span>< 50%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['25'] +'"></i> <span>< 25%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['75'] +'"></i> <span>75%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['50'] +'"></i> <span>50%</span><br/>';
+            div.innerHTML += '<i style="background-color: '+ completenessPallete['25'] +'"></i> <span>25%</span><br/>';
             div.innerHTML += '<i style="background-color: '+ completenessPallete['0'] +'"></i> <span>0%</span><br/>';
         return div;
         };
