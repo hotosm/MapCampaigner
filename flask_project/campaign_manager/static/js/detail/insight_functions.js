@@ -447,8 +447,6 @@ function colorCompleteness(error_value) {
         color = completenessPallete['50'];
     } else if(error_value > 0){
         color = completenessPallete['75'];
-    } else {
-        color = completenessPallete['100'];
     }
 
     return color;
