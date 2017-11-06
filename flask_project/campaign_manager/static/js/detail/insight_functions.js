@@ -444,18 +444,14 @@ function dictToTable(dictObject) {
 function colorCompleteness(error_value) {
 
     var color = completenessPallete['100'];
-    if(error_value == 100){
+    if(error_value > 75){
         color = completenessPallete['0'];
-    } else if(error_value > 75){
-        color = completenessPallete['25'];
     } else if(error_value > 50){
-        color = completenessPallete['50'];
+        color = completenessPallete['25'];
     } else if(error_value > 25){
-        color = completenessPallete['75'];
+        color = completenessPallete['50'];
     } else if(error_value > 0){
-        color = completenessPallete['99'];
-    } else {
-        color = completenessPallete['100'];
+        color = completenessPallete['75'];
     }
 
     return color;
