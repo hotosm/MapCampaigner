@@ -318,6 +318,13 @@ function getInsightFunctions(function_id, function_name, type_id) {
     var isFirstFunction = true;
     $.ajax({
         url: url,
+        async: true,
+        beforeSend: function(){
+            $('#'+type_id+'-loading').show();
+        },
+        complete: function(){
+            $('#'+type_id+'-loading').hide();
+        },
         success: function (data) {
             var active = '';
             if (isFirstFunction) {
@@ -675,6 +682,7 @@ function renderInsightFunctionsTypes(username) {
                                 '<span class="features-collected">...</span>'+
                                 '</span>'+
                     '</div>'+
+                '<div id="'+tabId+'-loading" style="text-align: center"><img src="/static/resources/loading-spinner.gif" height="50px"></div>'+
                 '</div>'+
                 '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
             '</div>'
