@@ -227,6 +227,13 @@
         map.addLayer(mapMarkers);
         map.addLayer(mapLayers);
 
+        $(document).ready(function(){
+            $(document).tooltip({
+                selector: "[data-toggle=tooltip]",
+                container: "body"
+            });
+        });
+
         //---------------- EVENT ------------------//
 
         $('#check-show-map').click(function () {
@@ -588,7 +595,7 @@
                             '<li class="col-lg-6">'+
                                 '<div class="campaign-card panel" onclick="openCampaign(event, this, \''+campaign['uuid']+'\')">'+
                                     '<div class="panel-heading">'+
-                                        '<a href=/campaign/'+ campaign['uuid'] +'><div class="campaign-name ellipsis multiline">'+
+                                        '<a href=/campaign/'+ campaign['uuid'] +' data-toggle="tooltip" data-placement="top" data-container="body" title="'+ campaign['name'] +'"><div class="campaign-name ellipsis multiline">'+
                                             campaign['name'] +
                                         '</div></a>'+
                                         '<div class="row">' +
