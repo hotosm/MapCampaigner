@@ -773,6 +773,10 @@ tr.odd {
     font-size: 9pt;
 }
 
+#feature-completeness-error-table_filter.dataTables_filter {
+    display: none;
+}
+
 .checked-attributes {
     margin-top: 15px !important;
     margin-bottom: 5px !important;
