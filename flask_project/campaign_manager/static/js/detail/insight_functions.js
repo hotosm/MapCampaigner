@@ -313,6 +313,10 @@ var errorFeatures = {
     'relation': []
 };
 
+function run(fn) {
+  return new Worker(URL.createObjectURL(new Blob(['('+fn+')()'])));
+}
+
 function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
@@ -336,7 +340,22 @@ function getInsightFunctions(function_id, function_name, type_id) {
             $divFunction.html(data);
             var $subContent = $divFunction.parent().next();
 
-            if($divFunction.find('.total-features').length > 0) {
+            // setTimeout(processDataAjax($divFunction, function_name, type_id), 0)
+
+            var w;
+            if(typeof(Worker) !== "undefined") {
+                w = run(processDataAjax($divFunction, function_name, type_id));
+                w.terminate()
+            }else {
+                setTimeout(processDataAjax($divFunction, function_name, type_id), 0)
+            }
+
+        }
+    });
+}
+
+function processDataAjax($divFunction, function_name, type_id){
+    if($divFunction.find('.total-features').length > 0) {
                 var value = parseInt($divFunction.find('.total-features').html());
                 total_features_collected += value;
                 $('#features-collected').html(total_features_collected);
@@ -393,8 +412,6 @@ function getInsightFunctions(function_id, function_name, type_id) {
             {
                 $('#'+type_id+ ' .type-title').append('<div class="pull-right update-status">'+$divFunction.find('.update-status-information').html()+'</div>');
             }
-        }
-    });
 }
 
 function getOSMCHAErrors() {
@@ -682,7 +699,7 @@ function renderInsightFunctionsTypes(username) {
                                 '<span class="features-collected">...</span>'+
                                 '</span>'+
                     '</div>'+
-                '<div id="'+tabId+'-loading" style="text-align: center"><img src="/static/resources/loading-spinner.gif" height="50px"></div>'+
+                '<div id="'+tabId+'-loading" style="text-align: center"><img src="/static/resources/loading-spinner.gif" height="40px"></div>'+
                 '</div>'+
                 '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
             '</div>'
