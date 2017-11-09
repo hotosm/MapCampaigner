@@ -21,6 +21,7 @@ function updateMapperEngagementTotal() {
     }
 
     var chartDateOption = {
+        maintainAspectRatio: true,
         elements: {
             line: {
                 tension: 0.000001
@@ -39,6 +40,21 @@ function updateMapperEngagementTotal() {
                     }
                 }
             }]
+        },
+        plugins: {
+            filler: {
+                propagate: false
+            }
+        },
+        legend: {
+            display: false
+        },
+        legendCallback: function(chart) {
+            var text = [];
+                text.push('<div>');
+                text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid '+ chart.data.datasets[0].borderColor +'"></i><span>' + chart.data.datasets[0].label + '</span>');
+                text.push('</div>');
+                return text.join("");
         }
     };
 
@@ -67,6 +83,18 @@ function updateMapperEngagementTotal() {
             filler: {
                 propagate: false
             }
+        },
+        legend: {
+            display: false
+        },
+        legendCallback: function(chart) {
+            var text = [];
+                text.push('<div>');
+                for (var i=0; i<chart.data.datasets.length; i++) {
+                    text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
+                }
+                text.push('</div>');
+                return text.join("");
         }
     };
 
@@ -146,6 +174,8 @@ function updateMapperEngagementTotal() {
         }
     });
 
+    $('#frequency-legend').html(frequencyDatasets.generateLegend());
+
     contributionsAmount = sortObject(contributionsAmount);
     var contributionCtx = $('#contribution-amount');
     var contributionDatasets = {
@@ -166,11 +196,14 @@ function updateMapperEngagementTotal() {
                 });
     });
 
-    new Chart(contributionCtx, {
+    var contribution_chart = new Chart(contributionCtx, {
         type: 'line',
         data: contributionDatasets,
         options: chartDateOption
     });
+
+    $('#contribution-legend').html(contribution_chart.generateLegend());
+    $('#contribution-legend').css('margin-top', $('#frequency-legend').height() + 'px')
 
 }
 

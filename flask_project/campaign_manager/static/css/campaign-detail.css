@@ -750,6 +750,30 @@ tr.odd {
     border-radius: 3px;
 }
 
+.chart-legend{
+    max-height:100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.chart-legend i {
+    width: 28px;
+    height: 14px;
+    margin-right: 4px;
+    opacity: 0.7;
+    display: inline-block;
+    margin-top: 3px;
+    vertical-align: top;
+}
+
+.chart-legend span {
+    line-height: 14px;
+    margin-right: 10px;
+    font-size: 9pt;
+}
+
 #feature-completeness-error-table_filter.dataTables_filter {
     display: none;
 }
