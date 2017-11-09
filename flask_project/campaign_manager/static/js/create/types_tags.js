@@ -24,6 +24,7 @@ function rerenderFunction() {
         var attributes = {};
         $.each(attibutes_on_insights, function (index, tag) {
             tag = tag.split('[')[0].trim();
+            tag = tag.split(': ')[0];
             if (tags[tag]) {
                 attributes[tag] = tags[tag];
             } else {
