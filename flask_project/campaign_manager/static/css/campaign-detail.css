@@ -753,6 +753,7 @@ tr.odd {
 .chart-legend{
     max-height:100px;
     overflow-y: auto;
+    overflow-x: hidden;
     margin-bottom: 5px;
     text-align: center;
 }
