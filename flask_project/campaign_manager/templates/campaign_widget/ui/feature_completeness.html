@@ -180,6 +180,12 @@
         var _featureCompleteness = [];
         {% if row['error'] == 'True' %}
 
+            {% if row['warning'] == 'True' %}
+                _featureCompleteness.push('warning');
+            {% else %}
+                _featureCompleteness.push('error');
+            {% endif %}
+
             _featureCompleteness.push(
                 '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}" data-id="{{ row['id'] }}" data-type="{{ row['type'] }}">'+
                     '{{ row['type'] }} :'+
