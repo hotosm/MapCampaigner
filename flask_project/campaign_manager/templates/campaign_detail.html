@@ -197,15 +197,15 @@
                                     <div class="insight-title" style="margin-bottom: 20px;">
                                         Contributions Frequency
                                     </div>
+                                    <div class="chart-legend" id="frequency-legend"></div>
                                     <canvas id="user-frequency">
                                     </canvas>
-{#                                    <div class="overview-container" id="contribution-frequency-wrapper">#}
-{#                                    </div>#}
                                 </div>
                                 <div class="col-lg-4 type-3">
                                     <div class="insight-title" style="margin-bottom: 20px;">
                                         Contributions Amount
                                     </div>
+                                    <div class="chart-legend" id="contribution-legend"></div>
                                     <canvas id="contribution-amount">
                                     </canvas>
                                 </div>
@@ -227,6 +227,7 @@
                                     <div id="total-feature-completeness-errors">
                                         0
                                     </div>
+                                    <input id="exclude-warning" type="checkbox" style="margin-bottom: 20px;"/> Exclude Warning
                                     <table id="feature-completeness-error-table" class="display feature-list-table" width="100%">
                                     </table>
                                     <div style="padding-bottom: 20px;">
