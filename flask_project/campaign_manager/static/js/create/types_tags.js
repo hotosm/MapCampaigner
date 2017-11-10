@@ -158,10 +158,10 @@ function onTypesChange() {
         $.each(selected_types_data, function (index, type) {
             if (type['type'] == selected_type) {
                 selected_tags = type['tags'];
-            }
-            if (!types[type['type']]) {
-                addCustomType(type);
-                type['tags'] = undefined;
+                if (!types[type['type']]) {
+                    addCustomType(type);
+                    type['tags'] = undefined;
+                }
             }
         });
     }

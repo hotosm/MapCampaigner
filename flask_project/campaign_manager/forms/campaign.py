@@ -13,7 +13,7 @@ from wtforms.fields import (
     RadioField,
     BooleanField
 )
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, Optional, ValidationError
 from urllib.parse import urlparse
 from campaign_manager.utilities import get_types
 from campaign_manager.views import valid_map_list
@@ -78,7 +78,9 @@ class CampaignForm(FlaskForm):
     )
     types_options = SelectField(
         u'Types of campaign',
-        choices=[(key, key) for key, value in sorted(get_types().items())])
+        choices=[(key, key) for key, value in sorted(get_types().items())],
+        validators = [Optional()]
+    )
     types = HiddenField(u'Types that selected for this campaign')
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
