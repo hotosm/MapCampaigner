@@ -164,9 +164,7 @@
         $('.modal-required-message').hide()
     }
     function addNewCustomTags(value, is_required) {
-        if (is_required && $('#required-custom-tag-row').length > 0) {
-
-        } else {
+        if (!is_required || $('#required-custom-tag-row').length == 0) {
             var template = _.template($("#_custom_new_tag").html());
             var html = template({
                 is_required: is_required

@@ -79,7 +79,7 @@ class CampaignForm(FlaskForm):
     types_options = SelectField(
         u'Types of campaign',
         choices=[(key, key) for key, value in sorted(get_types().items())],
-        validators = [Optional()]
+        validators=[Optional()]
     )
     types = HiddenField(u'Types that selected for this campaign')
     uploader = HiddenField(u'Uploader for this campaign')
