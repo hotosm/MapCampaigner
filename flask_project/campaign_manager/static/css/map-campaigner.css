@@ -1256,6 +1256,27 @@ input.search {
     font-size: 10pt;
 }
 
+.campaign-tags-list, .campaign-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.campaign-tags-list {
+    width: 95%;
+    line-height: 1.5em;
+    height: 3em;
+    font-size: 10pt;
+}
+
+.campaign-name {
+    width: 100%;
+    line-height: 16pt;
+    height: 17pt;
+}
+
 .campaign-progress-bar {
     text-align: right;
 }
