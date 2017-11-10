@@ -257,6 +257,24 @@ function addRowToErrorPanel(row) {
     }
 }
 
+
+function addRowsToErrorPanel(rows) {
+    if(errorPanel) {
+        if(rows.length > 100) {
+            var totalLoop = rows.length / 100;
+            (function addRowsLoop(i){
+                setTimeout(function(){
+                    var index = totalLoop - i;
+                    errorPanel.rows.add(rows.slice(index + index*100, (index+1) * 100)).draw();
+                    if(--i) addRowsLoop(i);
+                }, 1500)
+            })(totalLoop);
+        } else {
+            errorPanel.rows.add(rows).draw(false);
+        }
+    }
+}
+
 function renderInsightFunctions(username) {
 
     renderRemoteProjects();
@@ -379,7 +397,7 @@ function getInsightFunctions(function_id, function_name, type_id) {
         },
         error: function(xhr, textStatus, errorThrown) {
             // retry when error
-           $.ajax(this);
+           // $.ajax(this);
         }
     });
 }
@@ -418,14 +436,19 @@ function processDataAjax($divFunction, function_name, type_id){
     if(typeof type_id !== 'undefined') {
         if(function_name === 'FeatureAttributeCompleteness') {
             var errorCount = 0;
+            var errorTableData = [];
+
             for(var i=0; i<featureCompleteness.length;i++){
                 if(featureCompleteness[i][0] === 'error') {
                     errorCount++;
                 }
                 var idCol = $(featureCompleteness[i][1]);
-                errorFeatures[idCol.data('type')].push(idCol.data('id').toString());
-                addRowToErrorPanel(featureCompleteness[i]);
+                errorFeatures[idCol.data('type')].push(idCol.data('id'));
+                errorTableData.push(featureCompleteness[i]);
             }
+
+            // Add errors data to table
+            addRowsToErrorPanel(errorTableData);
 
             for (var key in featureData) {
                 if(featureData.hasOwnProperty(key)) {
@@ -436,6 +459,7 @@ function processDataAjax($divFunction, function_name, type_id){
 
             var totalError = parseInt($('#total-feature-completeness-errors').html());
             $('#total-feature-completeness-errors').html(totalError + errorCount);
+
             getOSMCHAErrors();
         } else if (function_name === 'MapperEngagement') {
             updateMapperEngagementTotal();
