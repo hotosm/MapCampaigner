@@ -872,7 +872,7 @@ body {
 
 .panel-custom {
     border: 1px solid #e7e7e7;
-    border-radius: 12px !important;
+    border-radius: 2px !important;
 }
 
 #campaign-table th, table.dataTable thead td {

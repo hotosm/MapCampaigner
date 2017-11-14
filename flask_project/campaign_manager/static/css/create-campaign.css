@@ -694,3 +694,12 @@ input#start_date.form-control, input#end_date.form-control {
 .form-border {
     border-bottom: 1px solid #E7E7E7;
 }
+
+.short-descriptions {
+    background-color: white !important;
+    padding: 17px;
+    font: inherit;
+    color: #737373;
+    border: 1px solid #E7E7E7;
+    margin: 15px 10px;
+}
