@@ -1,6 +1,7 @@
 var activeInsightPanel = '';
 var errorPanel = null;
 var mapperEngagementChart = null;
+var tabNames = [];
 
 function updateMapperEngagementTotal() {
 
@@ -111,7 +112,11 @@ function updateMapperEngagementTotal() {
             cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
         } else {
             cleanedContributor[contributorId] = contributor;
-            cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline)
+            try {
+                cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline);
+            } catch(e) {
+                cleanedContributor[contributorId]['timeline'] =  contributor.timeline;
+            }
         }
     });
 
@@ -256,6 +261,24 @@ function addRowToErrorPanel(row) {
     }
 }
 
+
+function addRowsToErrorPanel(rows) {
+    if(errorPanel) {
+        if(rows.length > 100) {
+            var totalLoop = rows.length / 100;
+            (function addRowsLoop(i){
+                setTimeout(function(){
+                    var index = totalLoop - i;
+                    errorPanel.rows.add(rows.slice(index + index*100, (index+1) * 100)).draw();
+                    if(--i) addRowsLoop(i);
+                }, 1500)
+            })(totalLoop);
+        } else {
+            errorPanel.rows.add(rows).draw(false);
+        }
+    }
+}
+
 function renderInsightFunctions(username) {
 
     renderRemoteProjects();
@@ -346,11 +369,22 @@ var errorFeatures = {
     'relation': []
 };
 
+function run(fn) {
+  return new Worker(URL.createObjectURL(new Blob(['('+fn+')()'])));
+}
+
 function getInsightFunctions(function_id, function_name, type_id) {
     var url = '/campaign/' + uuid + '/' + function_id;
     var isFirstFunction = true;
     $.ajax({
         url: url,
+        async: true,
+        beforeSend: function(){
+            $('#'+type_id+'-loading').show();
+        },
+        complete: function(){
+            $('#'+type_id+'-loading').hide();
+        },
         success: function (data) {
             var active = '';
             if (isFirstFunction) {
@@ -362,69 +396,84 @@ function getInsightFunctions(function_id, function_name, type_id) {
             $divFunction.html(data);
             var $subContent = $divFunction.parent().next();
 
-            if($divFunction.find('.total-features').length > 0) {
-                var value = parseInt($divFunction.find('.total-features').html());
-                total_features_collected += value;
-                $('#features-collected').html(total_features_collected);
+            processDataAjax($divFunction, function_name, type_id);
 
-                if(typeof type_id !== 'undefined') {
-                    var $currentTypeFeatureCollected = $('#type-'+type_id.replace(/\s+/g, '_') + ' .features-collected');
-                    var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
-                    var totalValue = currentValue + value;
-                    $currentTypeFeatureCollected.html(totalValue);
-
-                    $('#total-features-'+type_id.replace(/\s+/g, '_')).html(
-                        '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
-                            'Features Checked ' +
-                            '<div class="completeness"> ' +
-                                '<div class="type-insight-text">' +
-                                    totalValue +
-                                '</div>'+
-                            '</div>'+
-                        '</div>'
-                    );
-                }
-            }
-
-            if($divFunction.find('.insight-summaries').length > 0) {
-                if(typeof type_id !== 'undefined') {
-                    $('#'+type_id+'-summaries').append($divFunction.find('.insight-summaries').html());
-                }
-            }
-
-            if(typeof type_id !== 'undefined') {
-                if(function_name === 'FeatureAttributeCompleteness') {
-                    var errorCount = 0;
-                    for(var i=0; i<featureCompleteness.length;i++){
-                        if(featureCompleteness[i][0] === 'error') {
-                            errorCount++;
-                        }
-                        var idCol = $(featureCompleteness[i][1]);
-                        errorFeatures[idCol.data('type')].push(idCol.data('id').toString());
-                        addRowToErrorPanel(featureCompleteness[i]);
-                    }
-
-                    for (var key in featureData) {
-                        if(featureData.hasOwnProperty(key)) {
-                            renderFeatures(key, featureData[key], insightTypeIndex === 0);
-                            insightTypeIndex++;
-                        }
-                    }
-
-                    var totalError = parseInt($('#total-feature-completeness-errors').html());
-                    $('#total-feature-completeness-errors').html(totalError + errorCount);
-                    getOSMCHAErrors();
-                } else if (function_name === 'MapperEngagement') {
-                    updateMapperEngagementTotal();
-                }
-            }
-
-            if($divFunction.find('.update-status-information').length > 0)
-            {
-                $('#'+type_id+ ' .type-title').append('<div class="pull-right update-status">'+$divFunction.find('.update-status-information').html()+'</div>');
-            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // retry when error
+           // $.ajax(this);
         }
     });
+}
+
+function processDataAjax($divFunction, function_name, type_id){
+    if($divFunction.find('.total-features').length > 0) {
+        var value = parseInt($divFunction.find('.total-features').html());
+        total_features_collected += value;
+        $('#features-collected').html(total_features_collected);
+
+        if(typeof type_id !== 'undefined') {
+            var $currentTypeFeatureCollected = $('#type-'+type_id.replace(/\s+/g, '_') + ' .features-collected');
+            var currentValue = parseInt($currentTypeFeatureCollected.html()) || 0;
+            var totalValue = currentValue + value;
+            $currentTypeFeatureCollected.html(totalValue);
+
+            $('#total-features-'+type_id.replace(/\s+/g, '_')).html(
+                '<div class="insight-title" style="margin-bottom: 20px;margin-top: 20px;"> ' +
+                    'Features Checked ' +
+                    '<div class="completeness"> ' +
+                        '<div class="type-insight-text">' +
+                            totalValue +
+                        '</div>'+
+                    '</div>'+
+                '</div>'
+            );
+        }
+    }
+
+    if($divFunction.find('.insight-summaries').length > 0) {
+        if(typeof type_id !== 'undefined') {
+            $('#'+type_id+'-summaries').append($divFunction.find('.insight-summaries').html());
+        }
+    }
+
+    if(typeof type_id !== 'undefined') {
+        if(function_name === 'FeatureAttributeCompleteness') {
+            var errorCount = 0;
+            var errorTableData = [];
+
+            for(var i=0; i<featureCompleteness.length;i++){
+                if(featureCompleteness[i][0] === 'error') {
+                    errorCount++;
+                }
+                var idCol = $(featureCompleteness[i][1]);
+                errorFeatures[idCol.data('type')].push(idCol.data('id'));
+                errorTableData.push(featureCompleteness[i]);
+            }
+
+            // Add errors data to table
+            addRowsToErrorPanel(errorTableData);
+
+            for (var key in featureData) {
+                if(featureData.hasOwnProperty(key)) {
+                    renderFeatures(key, featureData[key], insightTypeIndex === 0);
+                    insightTypeIndex++;
+                }
+            }
+
+            var totalError = parseInt($('#total-feature-completeness-errors').html());
+            $('#total-feature-completeness-errors').html(totalError + errorCount);
+
+            getOSMCHAErrors();
+        } else if (function_name === 'MapperEngagement') {
+            updateMapperEngagementTotal();
+        }
+    }
+
+    if($divFunction.find('.update-status-information').length > 0)
+    {
+        $('#'+type_id+ ' .type-title').append('<div class="pull-right update-status">'+$divFunction.find('.update-status-information').html()+'</div>');
+    }
 }
 
 function getOSMCHAErrors() {
@@ -695,6 +744,7 @@ function renderInsightFunctionsTypes(username) {
 
         var tabName = campaignType;
         var tabId = tabName.replace(/\s+/g, '_');
+        tabNames.push(tabId);
 
         var active = '';
         if (index === 0) {
@@ -713,6 +763,7 @@ function renderInsightFunctionsTypes(username) {
                                 '<span class="features-collected">...</span>'+
                                 '</span>'+
                     '</div>'+
+                '<div id="'+tabId+'-loading" style="text-align: center"><img src="/static/resources/loading-spinner.gif" height="40px"></div>'+
                 '</div>'+
                 '<div id="'+tabId+'-summaries" class="side-panel-summaries"></div>'+
             '</div>'
@@ -784,6 +835,10 @@ function renderInsightFunctionsTypes(username) {
 function showInsightFunction(element, tabId) {
     var $divParent = $(element);
     map.fitBounds(drawnItems.getBounds());
+
+    if($($divParent.find('.side-panel-summaries')[0]).html().length <= 0) {
+        return false;
+    }
 
     if($divParent.hasClass('active')) {
     } else {
