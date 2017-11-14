@@ -874,9 +874,11 @@ def about():
 def how_it_works():
     return render_template('how_it_works.html')
 
+
 @campaign_manager.route('/403')
 def forbidden():
     return forbidden_page(None)
+
 
 @campaign_manager.route('/thumbnail/<image>')
 def thumbnail(image):
@@ -893,6 +895,7 @@ def not_found_page(error):
     )
     return render_template(
         '404.html', **context)
+
 
 def forbidden_page(error):
     context = dict(

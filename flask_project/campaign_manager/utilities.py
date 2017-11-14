@@ -54,6 +54,7 @@ def get_osm_user():
     users.sort()
     return users
 
+
 def get_allowed_managers():
     allowed_manager_path = os.path.join(
         Config.campaigner_data_folder, 'managers.txt')
@@ -64,6 +65,7 @@ def get_allowed_managers():
     managers = [x.strip() for x in content]
     managers.sort()
     return managers
+
 
 def get_types():
     """ Get all types in json

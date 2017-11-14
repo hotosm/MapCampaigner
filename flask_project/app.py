@@ -20,6 +20,7 @@ except KeyError:
 def not_found(error):
     return not_found_page(error)
 
+
 @osm_app.errorhandler(403)
 def forbidden(error):
     return forbidden_page(error)
