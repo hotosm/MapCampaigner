@@ -112,7 +112,11 @@ function updateMapperEngagementTotal() {
             cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
         } else {
             cleanedContributor[contributorId] = contributor;
-            cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline)
+            try {
+                cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline);
+            } catch(e) {
+                cleanedContributor[contributorId]['timeline'] =  contributor.timeline;
+            }
         }
     });
 
@@ -831,6 +835,10 @@ function renderInsightFunctionsTypes(username) {
 function showInsightFunction(element, tabId) {
     var $divParent = $(element);
     map.fitBounds(drawnItems.getBounds());
+
+    if($($divParent.find('.side-panel-summaries')[0]).html().length <= 0) {
+        return false;
+    }
 
     if($divParent.hasClass('active')) {
     } else {
