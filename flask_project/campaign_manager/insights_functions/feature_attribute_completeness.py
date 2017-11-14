@@ -110,8 +110,8 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                 if survey_values:
                     if value_in_tag not in survey_values:
                         error_message.append(
-                            '%s is not allowed as value tag' %
-                            value_in_tag)
+                            '%s is not allowed as value %s' %
+                            (value_in_tag, required_attribute))
                 if required_attribute in self.tags_capitalizaition_checks:
                     warning = self.check_capitalization(
                         required_attribute, value_in_tag)

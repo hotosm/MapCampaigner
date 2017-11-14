@@ -24,6 +24,7 @@ function rerenderFunction() {
         var attributes = {};
         $.each(attibutes_on_insights, function (index, tag) {
             tag = tag.split('[')[0].trim();
+            tag = tag.split(': ')[0];
             if (tags[tag]) {
                 attributes[tag] = tags[tag];
             } else {
@@ -157,10 +158,10 @@ function onTypesChange() {
         $.each(selected_types_data, function (index, type) {
             if (type['type'] == selected_type) {
                 selected_tags = type['tags'];
-            }
-            if (!types[type['type']]) {
-                addCustomType(type);
-                type['tags'] = undefined;
+                if (!types[type['type']]) {
+                    addCustomType(type);
+                    type['tags'] = undefined;
+                }
             }
         });
     }
