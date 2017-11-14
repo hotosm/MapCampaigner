@@ -23,7 +23,8 @@ from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
     get_types,
-    map_provider
+    map_provider,
+    get_allowed_managers
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -625,6 +626,13 @@ def create_campaign():
     if not os.path.exists(Campaign.get_json_folder()):
         return Response('DATA_SOURCE not found or not valid.')
 
+    # Get managers
+    managers = get_allowed_managers()
+
+    # If there is no managers
+    if not managers:
+        abort(403)
+
     form = CampaignForm(request.form)
     if form.validate_on_submit():
         data = form.data
@@ -633,6 +641,10 @@ def create_campaign():
         data.pop('types_options')
 
         data['uuid'] = uuid.uuid4().hex
+
+        if data['uploader'] not in managers:
+            abort(403)
+
         Campaign.create(data, form.uploader.data)
 
         return redirect(
@@ -646,6 +658,7 @@ def create_campaign():
         oauth_secret=OAUTH_SECRET,
         map_provider=map_provider()
     )
+    context['allowed_managers'] = managers
     context['url'] = '/create'
     context['action'] = 'create'
     context['campaigns'] = Campaign.all()
@@ -861,6 +874,9 @@ def about():
 def how_it_works():
     return render_template('how_it_works.html')
 
+@campaign_manager.route('/403')
+def forbidden():
+    return forbidden_page(None)
 
 @campaign_manager.route('/thumbnail/<image>')
 def thumbnail(image):
@@ -877,3 +893,11 @@ def not_found_page(error):
     )
     return render_template(
         '404.html', **context)
+
+def forbidden_page(error):
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET
+    )
+    return render_template(
+        '403.html', **context)
