@@ -103,8 +103,6 @@ function updateMapperEngagementTotal() {
     var cleanedContributor = {};
     var contributionsAmount = {};
 
-    console.log(contributors);
-
     $.each(contributors, function (index, contributor) {
         var contributorId = contributor.name.replace(/\s+/g, '_');
         if(contributorId in cleanedContributor) {
