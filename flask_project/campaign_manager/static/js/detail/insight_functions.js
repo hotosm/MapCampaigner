@@ -2,9 +2,9 @@ var activeInsightPanel = '';
 var errorPanel = null;
 var mapperEngagementChart = null;
 var tabNames = [];
+var functionsCalled = [];
 
 function updateMapperEngagementTotal() {
-
     $('.user-engagement-loading').hide();
     $('#user-engagement-wrapper').show();
 
@@ -102,6 +102,8 @@ function updateMapperEngagementTotal() {
     // Clean up data
     var cleanedContributor = {};
     var contributionsAmount = {};
+
+    console.log(contributors);
 
     $.each(contributors, function (index, contributor) {
         var contributorId = contributor.name.replace(/\s+/g, '_');
@@ -396,6 +398,11 @@ function getInsightFunctions(function_id, function_name, type_id) {
             $divFunction.html(data);
             var $subContent = $divFunction.parent().next();
 
+            var index = functionsCalled.indexOf(function_id);
+            if(index > -1) {
+                functionsCalled.splice(index, 1);
+            }
+
             processDataAjax($divFunction, function_name, type_id);
 
         },
@@ -464,9 +471,14 @@ function processDataAjax($divFunction, function_name, type_id){
             var totalError = parseInt($('#total-feature-completeness-errors').html());
             $('#total-feature-completeness-errors').html(totalError + errorCount);
 
-            getOSMCHAErrors();
         } else if (function_name === 'MapperEngagement') {
-            updateMapperEngagementTotal();
+            if(functionsCalled.length == 0) {
+                updateMapperEngagementTotal();
+            }
+        }
+
+        if(functionsCalled.length == 0) {
+            getOSMCHAErrors();
         }
     }
 
@@ -485,6 +497,7 @@ function getOSMCHAErrors() {
             var totalOsmchaErrors = parseInt(data["total"]);
             var totalError = parseInt($('#total-feature-completeness-errors').html());
             $('#total-feature-completeness-errors').html(totalError + totalOsmchaErrors);
+            var errorTableData = [];
             $.each(data["data"], function (index, error) {
                 var rowData = [];
                 rowData.push('error');
@@ -504,9 +517,9 @@ function getOSMCHAErrors() {
                         errorFeatures[feature[0]].push(feature[1]);
                     }
                 }
-
-                addRowToErrorPanel(rowData);
+                errorTableData.push(rowData);
             })
+            addRowsToErrorPanel(errorTableData);
         }
     });
 }
@@ -815,6 +828,8 @@ function renderInsightFunctionsTypes(username) {
                                 '</div>'
                         );
                     }
+
+                    functionsCalled.push(insightId);
 
                     getInsightFunctions(insightId, selected_function['function'], tabId);
                     if (!containsObject(selected_function['feature'], feature_type_collected)) {
