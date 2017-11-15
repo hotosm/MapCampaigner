@@ -100,9 +100,7 @@ class OverpassProvider(AbstractDataProvider):
         """
         default_server_url = 'http://exports-prod.hotosm.org:6080/api/' \
                              'interpreter'
-        attic_data_server_url = 'http://' \
-                                'ec2-54-172-198-122.compute-1.amazonaws.com/' \
-                                'api/interpreter'
+        attic_data_server_url = os.environ['ATTIC_DATA_SERVER_URL']
 
         if need_attic_data:
             server_url = attic_data_server_url
@@ -295,8 +293,7 @@ class OverpassProvider(AbstractDataProvider):
         :rtype: dict
         """
 
-        server_url = 'http://ec2-54-172-198-122.compute-1.amazonaws.com/' \
-                     'api/interpreter'
+        server_url = os.environ['ATTIC_DATA_SERVER_URL']
 
         query = self.parse_url_parameters(
                 polygon=polygon,
