@@ -70,8 +70,8 @@ function checkCampaignJsonValue(json) {
         if (!value["tags"]) {
             error.push(key + " need 'tags' value");
         } else {
-            if (jQuery.type(value["tags"]) !== "array") {
-                error.push('Tags of ' + key + ' should be array');
+            if (jQuery.type(value["tags"]) !== "object") {
+                error.push('Tags of ' + key + ' should be object');
             }
         }
     });
