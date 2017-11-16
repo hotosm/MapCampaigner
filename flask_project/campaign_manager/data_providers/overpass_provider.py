@@ -98,8 +98,7 @@ class OverpassProvider(AbstractDataProvider):
         :returns: A dict from retrieved OSM dataset.
         :rtype: dict
         """
-        default_server_url = 'http://exports-prod.hotosm.org:6080/api/' \
-                             'interpreter'
+        default_server_url = os.environ['DEFAULT_OVERPASS_URL']
         attic_data_server_url = os.environ['ATTIC_DATA_SERVER_URL']
 
         if need_attic_data:
