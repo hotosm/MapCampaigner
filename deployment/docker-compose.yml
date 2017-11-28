@@ -33,6 +33,8 @@ services:
         - APP_SETTINGS=app_config.ProductionConfig
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://ec2-54-172-198-122.compute-1.amazonaws.com/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
       ports:
         - "64000:8080"
       volumes:
@@ -56,6 +58,8 @@ services:
         - APP_SETTINGS=app_config.DevelopmentConfig
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
       ports:
         - "64002:5000"
       volumes:
@@ -75,6 +79,8 @@ services:
         - APP_SETTINGS=app_config.DevelopmentConfig
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
       ports:
         - "64001:8080"
       volumes:
