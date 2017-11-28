@@ -870,7 +870,11 @@
                 $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
                         function (data) {
                             $('#advanced-mode-textarea').LoadingOverlay("hide");
-                            $('#advanced-mode-textarea').val(JSON.stringify(JSON.parse(data), null, 4));
+                            var form_data = JSON.parse(data);
+                            var geometry_data = JSON.parse(form_data['geometry']);
+                            form_data['geometry'] = geometry_data;
+                            var form_str = JSON.stringify(form_data, null, 4);
+                            $('#advanced-mode-textarea').val(form_str);
                         }).fail(
                         function () {
                             $('#advanced-mode-textarea').LoadingOverlay("hide");
@@ -1072,11 +1076,11 @@
 
         }
         $("#campaign-form").submit(function (event) {
-            preprocessSubmitForm();
             var allValid = checkingAllStep();
             if (!allValid) {
                 return false;
             }
+            preprocessSubmitForm();
         });
 
         function getFormElement(event, className) {
