@@ -3,6 +3,7 @@ import json
 import os
 import hashlib
 import shutil
+import simplekml
 from datetime import datetime
 from flask import jsonify
 
@@ -505,6 +506,14 @@ def download_josm(uuid, file_name):
             file_path,
             as_attachment=True,
             attachment_filename=campaign_name)
+
+
+@campaign_manager.route('/download_kml/<uuid>')
+def download_kml(uuid):
+    """Download campaign as a kml file"""
+    campaign = Campaign.get(uuid)
+    file_name = campaign.name + '.kml'
+
 
 
 def get_selected_functions():
