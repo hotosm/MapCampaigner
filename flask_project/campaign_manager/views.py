@@ -3,7 +3,7 @@ import json
 import os
 import hashlib
 import shutil
-import simplekml
+from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
 
@@ -513,7 +513,24 @@ def download_kml(uuid):
     """Download campaign as a kml file"""
     campaign = Campaign.get(uuid)
     file_name = campaign.name + '.kml'
-
+    kml = Kml(name=campaign.name)
+    extended_data = ExtendedData()
+    for feature in campaign.geometry['features']:
+        for key, value in feature['properties'].items():
+            extended_data.newdata(key, value)
+        pol = kml.newpolygon(extendeddata=extended_data)
+        pol.outerboundaryis.coords = feature['geometry']['coordinates'][0]
+        kml_string = kml.kml()
+    file_path = os.path.join(
+            temporary_folder(),
+            file_name
+    )
+    kml.save(path=file_path)
+    return send_file(
+        file_path,
+        as_attachment=True,
+        attachment_filename=file_name
+    )
 
 
 def get_selected_functions():
