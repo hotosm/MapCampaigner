@@ -813,7 +813,7 @@ body {
 .home-header {
     min-height: 76px;
     padding: 15px 80px;
-    background-color: #eaeaea;
+    background-color: white;
     border-bottom: 1px solid #e1e1e1;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
@@ -872,7 +872,7 @@ body {
 
 .panel-custom {
     border: 1px solid #e7e7e7;
-    border-radius: 12px !important;
+    border-radius: 2px !important;
 }
 
 #campaign-table th, table.dataTable thead td {
