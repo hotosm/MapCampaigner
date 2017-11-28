@@ -8,3 +8,4 @@ components/
 data
 *~
 secret.py
+.DS_STORE

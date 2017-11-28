@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from campaign_manager import campaign_manager
-from campaign_manager.views import not_found_page
+from campaign_manager.views import not_found_page, forbidden_page
 
 osm_app = Flask(__name__, static_folder='./campaign_manager/static')
 osm_app.register_blueprint(campaign_manager)
@@ -19,3 +19,8 @@ except KeyError:
 @osm_app.errorhandler(404)
 def not_found(error):
     return not_found_page(error)
+
+
+@osm_app.errorhandler(403)
+def forbidden(error):
+    return forbidden_page(error)

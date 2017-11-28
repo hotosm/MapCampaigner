@@ -650,6 +650,9 @@
         }
 
         function updated(response) {
+            if($.inArray(response.display_name, {{ allowed_managers | safe }}) == -1) {
+                location.href='/403';
+            }
             {% if action == 'edit' %}
                 var is_manager = $.inArray(response.display_name, managers_list);
                 if(is_manager == -1){
