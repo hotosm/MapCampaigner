@@ -712,7 +712,7 @@
                 Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
                 BlackBerry: '',
                 iOS: {
-                    'app': 'mapsme://',
+                    'app': '/download_kml/{{ uuid }}',
                     'store': 'https://itunes.apple.com/app/id510623322'
                 }
             }
@@ -733,7 +733,7 @@
                         if (!document.webkitHidden) {
                             location.replace(formLink[app]['iOS']['store']);
                         }
-                    }, 25);
+                    }, 50);
                 }
             }
 

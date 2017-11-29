@@ -6,6 +6,7 @@ import shutil
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
+from shapely import geometry as shapely_geometry
 
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
@@ -518,8 +519,12 @@ def download_kml(uuid):
     for feature in campaign.geometry['features']:
         for key, value in feature['properties'].items():
             extended_data.newdata(key, value)
-        pol = kml.newpolygon(extendeddata=extended_data)
-        pol.outerboundaryis.coords = feature['geometry']['coordinates'][0]
+        campaign_polygon = shapely_geometry.Polygon(
+                feature['geometry']['coordinates'][0])
+        point = kml.newpoint(
+                extendeddata=extended_data,
+                coords=campaign_polygon.centroid.coords
+        )
         kml_string = kml.kml()
     file_path = os.path.join(
             temporary_folder(),
