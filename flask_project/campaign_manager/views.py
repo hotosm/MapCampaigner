@@ -509,32 +509,74 @@ def download_josm(uuid, file_name):
             attachment_filename=campaign_name)
 
 
-@campaign_manager.route('/download_kml/<uuid>')
-def download_kml(uuid):
+@campaign_manager.route('/generate_kml', methods=['POST'])
+def generate_kml():
+    """Generate KML file from geojson."""
+    features = request.values.get('geojson_data', None)
+    uuid = request.values.get('uuid', None)
+    campaign_name = request.values.get('campaign_name', None)
+    if not features or not uuid:
+        abort(404)
+    features = json.loads(features)
+    kml = Kml(name=campaign_name)
+
+    file_name = hashlib.md5(
+        uuid.encode('utf-8') +
+        '{:%m-%d-%Y}'.format(datetime.today()).encode('utf-8')
+    ).hexdigest() + '.kml'
+
+    file_path = os.path.join(
+        config.CACHE_DIR,
+        file_name
+    )
+
+    if os.path.exists(file_path):
+        return Response(json.dumps({'file_name': file_name}))
+
+    for feature_collection in features['features']:
+        for feature in feature_collection['features']:
+            if feature['geometry']['type'] == 'Point':
+                kml.newpoint(
+                    name='test',
+                    coords=[
+                        (
+                            feature['geometry']['coordinates'][0],
+                            feature['geometry']['coordinates'][1]
+                        )
+                    ]
+                )
+            elif feature['geometry']['type'] == 'Polygon':
+                campaign_polygon = shapely_geometry.Polygon(
+                        feature['geometry']['coordinates'][0])
+                kml.newpoint(
+                    name='test',
+                    coords=campaign_polygon.centroid.coords
+                )
+
+    kml.save(path=file_path)
+    if kml:
+        return Response(json.dumps({'file_name': file_name}))
+
+
+@campaign_manager.route('/download_kml/<uuid>/<file_name>')
+def download_kml(uuid, file_name):
     """Download campaign as a kml file"""
     campaign = Campaign.get(uuid)
-    file_name = campaign.name + '.kml'
-    kml = Kml(name=campaign.name)
-    extended_data = ExtendedData()
-    for feature in campaign.geometry['features']:
-        for key, value in feature['properties'].items():
-            extended_data.newdata(key, value)
-        campaign_polygon = shapely_geometry.Polygon(
-                feature['geometry']['coordinates'][0])
-        point = kml.newpoint(
-                extendeddata=extended_data,
-                coords=campaign_polygon.centroid.coords
-        )
-        kml_string = kml.kml()
+
     file_path = os.path.join(
-            temporary_folder(),
-            file_name
+        config.CACHE_DIR,
+        file_name
     )
-    kml.save(path=file_path)
+
+    campaign_file_name = campaign.name + '.kml'
+
+    if not os.path.exists(file_path):
+        abort(404)
+
     return send_file(
         file_path,
         as_attachment=True,
-        attachment_filename=file_name
+        attachment_filename=campaign_file_name
     )
 
 
