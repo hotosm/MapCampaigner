@@ -512,7 +512,7 @@ def download_josm(uuid, file_name):
 @campaign_manager.route('/generate_kml', methods=['POST'])
 def generate_kml():
     """Generate KML file from geojson."""
-    features = request.values.get('geojson_data', None)
+    features = request.values.get('location', None)
     uuid = request.values.get('uuid', None)
     campaign_name = request.values.get('campaign_name', None)
     if not features or not uuid:
@@ -529,29 +529,37 @@ def generate_kml():
         config.CACHE_DIR,
         file_name
     )
+    
+    for feature in features:
+        if feature['type'] == 'Point':
+            kml_name = ''
+            extended_data = ExtendedData()
 
-    if os.path.exists(file_path):
-        return Response(json.dumps({'file_name': file_name}))
+            if 'name' in feature['tags']:
+                kml_name = feature['tags']['name']
+            elif 'amenity' in feature['tags']:
+                kml_name = feature['tags']['amenity']
 
-    for feature_collection in features['features']:
-        for feature in feature_collection['features']:
-            if feature['geometry']['type'] == 'Point':
-                kml.newpoint(
-                    name='test',
-                    coords=[
-                        (
-                            feature['geometry']['coordinates'][0],
-                            feature['geometry']['coordinates'][1]
-                        )
-                    ]
-                )
-            elif feature['geometry']['type'] == 'Polygon':
-                campaign_polygon = shapely_geometry.Polygon(
-                        feature['geometry']['coordinates'][0])
-                kml.newpoint(
-                    name='test',
-                    coords=campaign_polygon.centroid.coords
-                )
+            for key, value in feature['tags'].items():
+                if key != 'name':
+                    extended_data.newdata(key, value)
+
+            kml.newpoint(
+                name=kml_name,
+                extendeddata=extended_data,
+                coords=[
+                    (
+                        feature['latlon'][1],
+                        feature['latlon'][0]
+                    )
+                ]
+            )
+        elif feature['type'] == 'Polygon':
+            campaign_polygon = shapely_geometry.Polygon(
+                    feature['latlon'])
+            kml.newpoint(
+                coords=campaign_polygon.centroid.coords
+            )
 
     kml.save(path=file_path)
     if kml:
