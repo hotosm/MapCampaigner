@@ -688,6 +688,9 @@ def edit_campaign(uuid):
     try:
         campaign = Campaign.get(uuid)
         context = campaign.to_dict()
+        # Get managers
+        managers = get_allowed_managers()
+
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
@@ -719,6 +722,7 @@ def edit_campaign(uuid):
                 )
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
+    context['allowed_managers'] = managers
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
