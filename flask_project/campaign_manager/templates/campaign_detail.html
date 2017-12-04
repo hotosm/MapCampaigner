@@ -375,6 +375,9 @@
         var mapperEngagementFrequency = [];
         var contributors = [];
 
+        // KML
+        var pointsForKML = [];
+
         var isFirstActiveRemote = true;
 
         function renderRemoteProjects() {
@@ -720,6 +723,30 @@
 
         function openOtherDataCollectonForm(element, app) {
             var appUrl = '';
+
+            if(app==="Maps.me") {
+                var data = {};
+
+                var downloadUrl = '/generate_kml';
+                data['location'] = JSON.stringify(pointsForKML);
+                data['uuid'] = '{{ uuid }}';
+
+                data['campaign_name'] = '{{ name }}';
+
+                $.ajax({
+                    type: 'POST',
+                    url: downloadUrl,
+                    data: data,
+                    success: function (data) {
+                        var dataDict = JSON.parse(data);
+                        if('file_name' in dataDict) {
+                            document.getElementById('download_xml_frame').src = '/download_kml/'+uuid+'/'+dataDict['file_name'];
+                        }
+                    }
+                });
+                return;
+            }
+
             if (isMobile.Android()) {
                 appUrl = formLink[app]['Android'];
                 if(appUrl) {

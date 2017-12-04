@@ -600,6 +600,13 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                     '<div><b>type </b>: node</div>'+
                     dictToTable(feature['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' +'</div>'
                 ).addTo(nodesGroup);
+
+                pointsForKML.push({
+                    'latlon': [feature['lat'],feature['lon']],
+                    'tags': feature['tags'],
+                    'type': 'Point'
+                });
+
             } else if(feature['type'] === 'way') {
                 ways.push(feature);
             } else if(feature['type'] === 'relation') {
@@ -627,7 +634,7 @@ function renderFeatures(feature_type, feature_data, show_feature) {
         var completenessPercentage = (100 - way['completeness']).toFixed(1);
 
         if(typeof wayTag !== 'undefined') {
-            L.polygon(latlngs, {
+            var polygon = L.polygon(latlngs, {
                 color: colorCompleteness(way['completeness']),
                 fillColor: colorCompleteness(way['completeness']),
                 fillOpacity: 0.5
@@ -639,6 +646,13 @@ function renderFeatures(feature_type, feature_data, show_feature) {
                 '<div><b>type </b>: way</div>'+
                 dictToTable(way['tags']) + '<div><b>completeness </b>: '+completenessPercentage+'%</div>' + '</div>'
             ).addTo(waysGroup);
+
+            var center = polygon.getBounds().getCenter();
+            pointsForKML.push({
+                'latlon': [center['lat'], center['lng']],
+                'tags': way['tags'],
+                'type': 'Point'
+            })
         } else {
             unusedWays[way['id']] = way;
         }

@@ -554,12 +554,6 @@ def generate_kml():
                     )
                 ]
             )
-        elif feature['type'] == 'Polygon':
-            campaign_polygon = shapely_geometry.Polygon(
-                    feature['latlon'])
-            kml.newpoint(
-                coords=campaign_polygon.centroid.coords
-            )
 
     kml.save(path=file_path)
     if kml:
