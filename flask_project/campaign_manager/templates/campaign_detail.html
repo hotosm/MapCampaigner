@@ -375,6 +375,9 @@
         var mapperEngagementFrequency = [];
         var contributors = [];
 
+        // KML
+        var pointsForKML = [];
+
         var isFirstActiveRemote = true;
 
         function renderRemoteProjects() {
@@ -712,7 +715,7 @@
                 Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
                 BlackBerry: '',
                 iOS: {
-                    'app': 'mapsme://',
+                    'app': '/download_kml/{{ uuid }}',
                     'store': 'https://itunes.apple.com/app/id510623322'
                 }
             }
@@ -720,6 +723,36 @@
 
         function openOtherDataCollectonForm(element, app) {
             var appUrl = '';
+
+            if(app==="Maps.me") {
+                if(pointsForKML.length === 0) {
+                    showNotifications('Features are still being downloaded', 'danger');
+                    return;
+                } else {
+                    clearNotification();
+                }
+                var data = {};
+
+                var downloadUrl = '/generate_kml';
+                data['location'] = JSON.stringify(pointsForKML);
+                data['uuid'] = '{{ uuid }}';
+
+                data['campaign_name'] = '{{ name }}';
+
+                $.ajax({
+                    type: 'POST',
+                    url: downloadUrl,
+                    data: data,
+                    success: function (data) {
+                        var dataDict = JSON.parse(data);
+                        if('file_name' in dataDict) {
+                            document.getElementById('download_xml_frame').src = '/download_kml/'+uuid+'/'+dataDict['file_name'];
+                        }
+                    }
+                });
+                return;
+            }
+
             if (isMobile.Android()) {
                 appUrl = formLink[app]['Android'];
                 if(appUrl) {
@@ -733,7 +766,7 @@
                         if (!document.webkitHidden) {
                             location.replace(formLink[app]['iOS']['store']);
                         }
-                    }, 25);
+                    }, 50);
                 }
             }
 

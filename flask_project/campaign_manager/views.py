@@ -3,8 +3,10 @@ import json
 import os
 import hashlib
 import shutil
+from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
+from shapely import geometry as shapely_geometry
 
 from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
@@ -505,6 +507,79 @@ def download_josm(uuid, file_name):
             file_path,
             as_attachment=True,
             attachment_filename=campaign_name)
+
+
+@campaign_manager.route('/generate_kml', methods=['POST'])
+def generate_kml():
+    """Generate KML file from geojson."""
+    features = request.values.get('location', None)
+    uuid = request.values.get('uuid', None)
+    campaign_name = request.values.get('campaign_name', None)
+    if not features or not uuid:
+        abort(404)
+    features = json.loads(features)
+    kml = Kml(name=campaign_name)
+
+    file_name = hashlib.md5(
+        uuid.encode('utf-8') +
+        '{:%m-%d-%Y}'.format(datetime.today()).encode('utf-8')
+    ).hexdigest() + '.kml'
+
+    file_path = os.path.join(
+        config.CACHE_DIR,
+        file_name
+    )
+
+    for feature in features:
+        if feature['type'] == 'Point':
+            kml_name = ''
+            extended_data = ExtendedData()
+
+            if 'name' in feature['tags']:
+                kml_name = feature['tags']['name']
+            elif 'amenity' in feature['tags']:
+                kml_name = feature['tags']['amenity']
+
+            for key, value in feature['tags'].items():
+                if key != 'name':
+                    extended_data.newdata(key, value)
+
+            kml.newpoint(
+                name=kml_name,
+                extendeddata=extended_data,
+                coords=[
+                    (
+                        feature['latlon'][1],
+                        feature['latlon'][0]
+                    )
+                ]
+            )
+
+    kml.save(path=file_path)
+    if kml:
+        return Response(json.dumps({'file_name': file_name}))
+
+
+@campaign_manager.route('/download_kml/<uuid>/<file_name>')
+def download_kml(uuid, file_name):
+    """Download campaign as a kml file"""
+    campaign = Campaign.get(uuid)
+
+    file_path = os.path.join(
+        config.CACHE_DIR,
+        file_name
+    )
+
+    campaign_file_name = campaign.name + '.kml'
+
+    if not os.path.exists(file_path):
+        abort(404)
+
+    return send_file(
+        file_path,
+        as_attachment=True,
+        attachment_filename=campaign_file_name
+    )
 
 
 def get_selected_functions():
