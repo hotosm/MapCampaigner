@@ -725,6 +725,12 @@
             var appUrl = '';
 
             if(app==="Maps.me") {
+                if(pointsForKML.length === 0) {
+                    showNotifications('Features are still being downloaded', 'danger');
+                    return;
+                } else {
+                    clearNotification();
+                }
                 var data = {};
 
                 var downloadUrl = '/generate_kml';
