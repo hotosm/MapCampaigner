@@ -529,7 +529,7 @@ def generate_kml():
         config.CACHE_DIR,
         file_name
     )
-    
+
     for feature in features:
         if feature['type'] == 'Point':
             kml_name = ''
