@@ -70,12 +70,6 @@
                     </div>
                     <div class="detail-creator-info">
                         <p>
-                            <span class="grey-italic">Creator : </span>
-                            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
-                            {{ campaign_creator }}
-                            </a>
-                        </p>
-                        <p>
                             <span class="grey-italic">Campaign Manager : </span>
                             <span class="text-muted">
                                 {% if campaign_managers %}
@@ -89,6 +83,12 @@
                                     -
                                 {% endif %}
                             </span>
+                        </p>
+                        <p>
+                            <span class="grey-italic">Creator : </span>
+                            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
+                            {{ campaign_creator }}
+                            </a>
                         </p>
                         <p>
                             <span class="grey-italic">Map:</span>

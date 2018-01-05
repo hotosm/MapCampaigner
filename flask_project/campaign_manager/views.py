@@ -948,6 +948,10 @@ if __name__ == '__main__':
 def about():
     return render_template('about.html')
 
+@campaign_manager.route('/resources')
+def resources():
+    return render_template('resources.html')
+
 
 @campaign_manager.route('/how-it-works')
 def how_it_works():
