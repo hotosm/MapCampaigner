@@ -379,8 +379,10 @@ input#btn-add:hover {
 }
 
 .help-block {
-    font-size: 9.4pt;
+    font-size: 10pt;
     display: inline;
+    width: 650px;
+    margin-top: 2px;
 }
 
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
