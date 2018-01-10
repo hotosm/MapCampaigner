@@ -353,6 +353,10 @@ input#btn-add:hover {
     margin-top: 20px;
 }
 
+.form-body label {
+    font-size: 12pt;
+}
+
 .cc-nav.active {
     background-color: #dedede !important;
 }
@@ -375,8 +379,10 @@ input#btn-add:hover {
 }
 
 .help-block {
-    font-size: 9.4pt;
+    font-size: 10pt;
     display: inline;
+    width: 635px;
+    margin-top: 2px;
 }
 
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
@@ -468,6 +474,10 @@ input#search-osm-user-text {
     width: 50%;
 }
 
+input#map_type {
+    width: 50%;
+}
+
 .select-types {
     height: 40px;
     box-shadow: none;
@@ -524,7 +534,7 @@ input#search-osm-user-text {
 }
 
 input#btn-add {
-    width: 150px !important;
+    width: 160px !important;
     height: 35px !important;
     border-radius: 5px !important;
     background-color: #EBEBEB;
@@ -654,6 +664,12 @@ input#btn-add {
     color: #5b5b5b;
 }
 
+.area-table-title .information {
+    font-weight: normal;
+    color: #5b5b5b;
+    margin-bottom: 15px;
+}
+
 .area-table-list .row {
     padding-top: 10px;
     color: #5e5e5e;
@@ -664,7 +680,8 @@ input#btn-add {
 }
 
 input#link_to_omk {
-    margin-top: 20px;
+    float: left;
+    margin-top: 15px;
     height: 20px !important;
     font-size: 20px;
 }
@@ -703,3 +720,49 @@ input#start_date.form-control, input#end_date.form-control {
     border: 1px solid #E7E7E7;
     margin: 15px 10px;
 }
+
+/*Upload files*/
+
+.upload {
+    width: 100%;
+    padding-left: 0px;
+}
+
+.upload {
+    list-style: none;
+    margin-top: 40px;
+    float: left;
+}
+
+.information {
+    font-style: normal;
+    font-size: 10pt;
+    text-align: left;
+}
+
+#fieldpaper-id {
+    display: none;
+}
+/*.btn-upload-fieldpaper {
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #57a1b1;
+}
+
+.btn-upload-fieldpaper:hover{
+    color: white;
+    background-color: #4a8493;
+}
+
+.btn-upload-fieldpaper:active {
+    color: white;
+}*/
+
+.upload-fieldpaper-wrapper {
+    margin-top: 20px;
+    width: 100%;
+}
+

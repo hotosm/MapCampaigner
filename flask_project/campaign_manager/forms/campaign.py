@@ -49,7 +49,8 @@ class CampaignForm(FlaskForm):
     description = TextAreaField(
         u'Campaign description',
         description='Description for the campaign',
-        render_kw={'placeholder': 'Campaign descriptions'}
+        render_kw={'placeholder': 'Describe the type of features that ' +
+                   'are being collected and any other participation details.'}
     )
     campaign_status = RadioField(
         u'Campaign status',
@@ -60,7 +61,7 @@ class CampaignForm(FlaskForm):
         ]
     )
     link_to_omk = BooleanField(
-        u'Add OMK link?'
+        u'Add button to integrate OpenMapKit'
     )
     start_date = DateField(
         u'Start date of campaign',
@@ -90,7 +91,8 @@ class CampaignForm(FlaskForm):
         u'Campaign Map',
         description='Campaign manager may change the map view',
         validators=[validate_map],
-        render_kw={'placeholder': 'Campaign map'}
+        render_kw={'placeholder': 'Add custom basemap tiles URL. ' +
+                   'Use TMS scheme.'}
     )
     selected_functions = HiddenField(
         u'Selected Functions')

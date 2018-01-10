@@ -1,39 +1,10 @@
 <div class="upload-fieldpaper-wrapper">
     <input id="fieldpaper-id" type="file" name="filename" hidden/>
-    <button type="button" class="btn btn-upload-fieldpaper" id="upload-fieldpaper">
+    <button type="button" class="btn btn-outline btn-primary btn-lg btn-upload-fieldpaper" id="upload-fieldpaper">
         Upload GeoJSON File
     </button>
 
 </div>
-
-<style>
-    #fieldpaper-id {
-        display: none;
-    }
-    .btn-upload-fieldpaper {
-        height: 50px;
-        padding-left: 150px;
-        padding-right: 150px;
-        border-radius: 10px;
-        font-size: 16px;
-        color: white;
-        background-color: #57a1b1;
-    }
-
-    .btn-upload-fieldpaper:hover{
-        color: white;
-        background-color: #4a8493;
-    }
-
-    .btn-upload-fieldpaper:active {
-        color: white;
-    }
-
-    .upload-fieldpaper-wrapper {
-        margin-top: 20px;
-    }
-
-</style>
 
 <script>
     $('#upload-fieldpaper').click(uploadFieldpaper);

@@ -46,7 +46,8 @@
                 </div>
             </div>
             <div class="short-descriptions">
-                <span>Campaign is one way you could collect data in a specific location at a given period of time.</span>
+                <p>Campaign is one way you could collect data in a specific location at a given period of time.</p>
+                <p>Explore an <a href="/resources">example campaign</a> to understand how collecting and monitoring features in an area can be organized.</p>
             </div>
         </div>
         <div class="col-lg-10">
@@ -100,28 +101,10 @@
                                 </div>
                                 </div>
                                     <div class="form-group">
-                                        <label for="description">Description</label><span class="help-block pull-right">Describes which features campaign collects, the AOI, and the reason of the campaign creation.</span>
+                                        <label for="description">Description</label><span class="help-block pull-right">Provide more detail about which features the campaign will  collect, the area being mapped, and the reason of the campaign creation.</span>
                                         {{ form.description }}
                                     </div>
                                     <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
-                                    <br/>
-                                    <div class="form-group map-input">
-                                        {{ form.map_type }}
-                                        {% if form['errors'] %}
-                                            <p class="error-form">
-                                                {% if form['errors'].map_type %}
-                                                    {{ form['errors'].map_type[0] }}
-                                                {% endif %}
-                                            </p>
-                                        {% endif %}
-                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display,
-                                            leave blank to use default</p>
-                                    </div>
-                                    <div class="form-group" id="link-to-omk-form">
-                                        {{ form.link_to_omk(checked=link_to_omk) }}
-                                        {{ form.link_to_omk.label }}
-                                        <br/><span class="help-block">Check the box if you like your campaign automatically opens OpenMapKit application in mobile</span>
-                                    </div>
                                     <br/>
                                 </div>
                             </div>
@@ -144,10 +127,11 @@
                             <div id="typesTagsContainer"></div>
                             <div class="row">
                                 <div class="form-body form-group col-lg-4" style="margin-top: 10px">
-                                    <input id="btn-add" type="button" value="+ Add type" onclick="addTypes()">
-                                    <input id="btn-add" type="button" value="+ Add custom type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                    <input id="btn-add" type="button" value="+ Choose a template" onclick="addTypes()">
+                                    <input id="btn-add" type="button" value="+ Add custom tags" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
                                 </div>
                             </div>
+                            <!-- Managers -->
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
                                     <div class="form-group">
@@ -175,6 +159,34 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Other options -->
+                            <div class="row" style="margin-bottom: -12px;">
+                                <div class="form-body">
+                                    <label>Other Options</label>
+                                    <!-- omk link -->
+                                    <div class="form-group" id="link-to-omk-form">
+                                        {{ form.link_to_omk(checked=link_to_omk) }}
+                                        {{ form.link_to_omk.label }}
+                                        <br/><span class="help-block">Check the box if you like your campaign automatically opens OpenMapKit application in mobile. Default setting includes link to Maps.me application.</span>
+                                    </div>
+                                    <br/>
+                                    <!-- map url -->
+                                    <div class="form-group map-input">
+                                        <label>Custom Basemap</label>
+                                        <br/>
+                                        {{ form.map_type }}
+                                        {% if form['errors'] %}
+                                            <p class="error-form">
+                                                {% if form['errors'].map_type %}
+                                                    {{ form['errors'].map_type[0] }}
+                                                {% endif %}
+                                            </p>
+                                        {% endif %}
+                                        <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display,
+                                            leave blank to use default</p>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="cc-buttons">
                                 <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
                             </div>
@@ -187,49 +199,43 @@
                             <!-- /.col-lg-6 (nested) -->
                             <div class="form-body col-lg-8">
                                 <div class="form-group map-wrapper" data-error="">
-                                    <label>Create AOI</label>
+                                    <label>Define Campaign Area</label>
+                                    <div>
+                                        The campaign area (AOI) is specified in one of the following ways: digitize a single area using the map, or upload multiple areas using a shapefile or geojson file.
+                                    </div>
                                     <div id="campaign-map" style="margin-top: 30px"></div>
                                     <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
-                                <div style="margin-top: 20px;font-weight: bold; margin-bottom: 20px;">
-                                    The AOI is specified in one of the following ways:
-                                </div>
-                                <ul>
-                                    <li>
-                                        Digitising on the map.
+                            <div class="col-lg-4">
+                                <ul class="upload">
+                                    <li class="upload">
+                                        <div class="form-body col-lg-6 upload">
+                                            <div class="form-group">
+                                                <label>Upload Shapefiles</label>
+                                                {% include 'campaign_widget/ui/upload_boundary.html' %}
+                                            </div>
+                                        </div>
                                     </li>
                                     <li>
-                                        Upload a SHP file which either has only one polygon containing the AOI or multiple polygons each indicating a campaign area.
-                                        Teams can be assigned in this file by adding a "team" column and the status is deduced from a "date" column indicating on which date the team will complete
-                                        their mapping.
-                                        When using multiple polygons these must be union-able into a single polygon.
-                                    </li>
-                                    <li>
-                                        Upload a GeoJSON file.
+                                        <div class="form-body col-lg-6 upload">
+                                            <div class="form-group">
+                                                <label>Upload GeoJSON file</label>
+                                                {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
+                                            </div>
+                                        </div>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-body col-lg-6">
-                                <div class="form-group">
-                                    <label>Upload Shapefiles</label>
-                                    {% include 'campaign_widget/ui/upload_boundary.html' %}
-                                </div>
-                            </div>
-                            <div class="form-body col-lg-6">
-                                <div class="form-group">
-                                    <label>Upload GeoJSON file</label>
-                                    {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
-                                </div>
                             </div>
                         </div>
                         <hr/>
                         <div class="row form-body">
                             <div class="col-lg-8 area-table">
                                 <div class="area-table-title row">
+                                    <label>Label and Assign Campaign Areas (Optional)</label>
+                                    <div class="information">
+                                        If using teams for your campaign, label each area and assign a team. Mark as incomplete or complete.
+                                    </div>
                                     <div class="col-lg-4">
                                         AREA
                                     </div>
