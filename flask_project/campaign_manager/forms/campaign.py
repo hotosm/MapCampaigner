@@ -49,7 +49,7 @@ class CampaignForm(FlaskForm):
     description = TextAreaField(
         u'Campaign description',
         description='Description for the campaign',
-        render_kw={'placeholder': 'Describe the type of features that '
+        render_kw={'placeholder': 'Describe the type of features that ' +
                    'are being collected and any other participation details.'}
     )
     campaign_status = RadioField(
@@ -91,7 +91,7 @@ class CampaignForm(FlaskForm):
         u'Campaign Map',
         description='Campaign manager may change the map view',
         validators=[validate_map],
-        render_kw={'placeholder': 'Add custom basemap tiles URL. '
+        render_kw={'placeholder': 'Add custom basemap tiles URL. ' +
                    'Use TMS scheme.'}
     )
     selected_functions = HiddenField(
