@@ -1,14 +1,12 @@
-# field-campaigner
+# MapCampaigner
 
-This repository is the starting point for upcoming work focused on organizing field mapping at scale.  
+MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in or select a campaign to offer remote mapping support. The result – improved data collection standards and project management.
 
 Join the development: 
 
   * Add to the discussion in the [issue tracker](https://github.com/hotosm/field-campaigner/issues). Tag issues as Discussion or Ideas to contribute. 
   * More information and project documentation about the vision and scope in the [wiki](https://github.com/hotosm/field-campaigner/wiki)
-  * Join online chat on [HOT’s Slack community](https://hotosm-slack.herokuapp.com/), #field-campaigner channel. 
-  
-  <img src="https://hotosm-slack.herokuapp.com/badge.svg">
+  * Join online chat on [HOT’s Slack community](https://slack.hotosm.org/), #field-campaigner channel. 
 
 # Project Overview
 
