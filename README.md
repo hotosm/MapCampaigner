@@ -56,6 +56,8 @@ The Insights Function takes data from a Data Provider and performs a calculation
 
 ## License
 
+See LICENSE.md file.
+
 ## Contributors
 
 Built by [Kartoza](http://kartoza.com/): 
