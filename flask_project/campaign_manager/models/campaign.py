@@ -247,7 +247,7 @@ class Campaign(JsonModel):
         # geometry data
         if self.geojson_path:
             try:
-                _file = open(self.geojson_path, 'r')
+                _file = open(self.geojson_path, 'r', encoding='utf-8')
                 content = _file.read()
                 geometry = parse_json_string(content)
                 self.geometry = geometry

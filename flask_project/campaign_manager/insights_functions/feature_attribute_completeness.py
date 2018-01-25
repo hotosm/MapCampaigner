@@ -57,6 +57,16 @@ class FeatureAttributeCompleteness(AbstractOverpassInsightFunction):
                 if 'tags' not in value:
                     continue
 
+                feature_key = self.feature.split('=')[0]
+                feature_key_found_in_tags = False
+
+                for key, tag in value['tags'].items():
+                    if key == feature_key:
+                        feature_key_found_in_tags = True
+
+                if not feature_key_found_in_tags:
+                    continue
+
                 self._function_good_data.append(value)
                 self.check_feature_completeness(
                     value, required_attributes)
