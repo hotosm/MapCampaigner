@@ -556,6 +556,8 @@ function renderFeatures(feature_type, feature_data, show_feature) {
     var ways = [];
     var relations = [];
 
+    feature_type = feature_type.replace(/\s+/g, '_');
+
     if(featureGroups.hasOwnProperty(feature_type)) {
         return;
     }
