@@ -37,15 +37,23 @@
                     <span class="grey-italic">No description</span>
                 {% endif %}
             </p>
-
-            <div class="detail-button-wrapper participate-button" style="margin-top: 20px;">
+            <div>
+            <div class="detail-button-wrapper participate-button" style="margin-top: 20px; float: left">
+                <span class="btn btn-label"><strong>Participate</strong></span>
                 <div class="btn-group btn-share-group" role="group" aria-label="...">
-                    <span class="btn btn-default unclickable" >Participate</span>
                     {% if link_to_omk %}
                         <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                     {% endif %}
                     <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
                 </div>
+            </div>
+            <div class="detail-button-wrapper" style="margin-top: 25px;float: right;">
+                <div class="btn-group btn-share-group" role="group" aria-label="...">
+                    <span class="btn btn-default unclickable" >Share</span>
+                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+                    <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
+                </div>
+            </div>
             </div>
         </div>
         <div class="col-lg-5">
@@ -104,13 +112,6 @@
                                 Default
                             {% endif %}
                         </p>
-                    </div>
-                    <div class="detail-button-wrapper" style="margin-top: 10px;float: left;">
-                        <div class="btn-group btn-share-group" role="group" aria-label="...">
-                            <span class="btn btn-default unclickable" >Share</span>
-                            <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
-                            <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
-                        </div>
                     </div>
                     <div class="button-manage">
                         <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
