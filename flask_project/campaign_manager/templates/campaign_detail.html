@@ -37,8 +37,8 @@
                     <span class="grey-italic">No description</span>
                 {% endif %}
             </p>
-            <div>
-            <div class="detail-button-wrapper participate-button" style="margin-top: 20px; float: left">
+            <div class="row">
+            <div class="col-lg-6 detail-button-wrapper participate-button" style="margin-top: 20px">
                 <span class="btn btn-label"><strong>Participate</strong></span>
                 <div class="btn-group btn-share-group" role="group" aria-label="...">
                     {% if link_to_omk %}
@@ -47,8 +47,8 @@
                     <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
                 </div>
             </div>
-            <div class="detail-button-wrapper" style="margin-top: 25px;float: right;">
-                <div class="btn-group btn-share-group" role="group" aria-label="...">
+            <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
+                <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
                     <span class="btn btn-default unclickable" >Share</span>
                     <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
                     <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
