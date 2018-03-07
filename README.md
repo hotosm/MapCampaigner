@@ -18,7 +18,7 @@ The OSM user identity is used in this project. All actions are performed as such
 
 ### How to build field-campaigner
 
-Go to /osm-reporter/deployment
+Go to /field-campaigner/deployment
 ```
 make build
 make run
