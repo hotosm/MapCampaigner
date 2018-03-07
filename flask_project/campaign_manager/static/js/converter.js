@@ -6,6 +6,5 @@ client.onreadystatechange = function() {
     html      = converter.makeHtml(text);
     var page=document.getElementById("markdown-content");
     page.innerHTML=html;
-    console.log(html);
 }
 client.send();
