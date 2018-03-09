@@ -162,6 +162,7 @@
                         <div class="col-lg-3 map-side-panel">
                         </div>
                         <div class="col-lg-9">
+                            <button onclick="scrollActive()" class="btn btn-default" id="scroll-zoom" >enable scroll zoom</button>
                             <div id="campaign-map-detail"></div>
                         </div>
                     </div>
@@ -550,6 +551,20 @@
 
         var drawnItems = new L.FeatureGroup();
         var map = L.map('campaign-map-detail').setView([0, 0], 1);
+        map.scrollWheelZoom.disable();
+        
+        function scrollActive(){
+            var element = document.getElementById('scroll-zoom');
+            if(element.innerHTML == 'enable scroll zoom'){
+                map.scrollWheelZoom.enable();
+                element.innerHTML = 'disable scroll zoom';
+            }
+            else{
+                map.scrollWheelZoom.disable();
+                element.innerHTML = 'enable scroll zoom';
+            }
+        };
+        
         var map_type = '{{ map_type }}';
         var attribution = '{{ attribution|safe }}';
         if (!map_type) {
@@ -724,7 +739,6 @@
 
         function openOtherDataCollectonForm(element, app) {
             var appUrl = '';
-
             if(app==="Maps.me") {
                 if(pointsForKML.length === 0) {
                     showNotifications('Features are still being downloaded', 'danger');

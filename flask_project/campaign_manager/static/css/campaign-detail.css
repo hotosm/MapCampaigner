@@ -119,6 +119,14 @@
     border-radius: 0;
 }
 
+#scroll-zoom{
+    z-index: 999;
+    position: absolute;
+    top:20px;
+    right: 20px;
+    box-shadow: 0 1px 2px grey;
+}
+
 @media (max-width: 450px) {
     .btn-share-group .btn {
         font-size: 11px !important;
