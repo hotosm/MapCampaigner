@@ -1,4 +1,4 @@
-# Map Campaigner
+# Getting Started Creating a Campaign
 
 
 To get started with your new campaign simply click on the &#39;Create a Campaign&#39; link from the top-right hand corner of the homepage next to your username.
