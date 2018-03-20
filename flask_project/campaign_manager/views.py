@@ -3,6 +3,7 @@ import json
 import os
 import hashlib
 import shutil
+import requests
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
@@ -421,6 +422,14 @@ def get_campaign(uuid):
         # Map attribution
         if campaign.map_type != '':
             context['attribution'] = find_attribution(campaign.map_type)
+
+        # User geolocation
+        try:
+            my_ip = requests.get('https://api.ipify.org?format=json')
+            my_ip = json.loads(my_ip.text)['ip']
+            context['ip'] = my_ip
+        except ConnectionError:
+            context['ip'] = 'IP information not available'
 
         return render_template(
             'campaign_detail.html', **context)

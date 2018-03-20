@@ -119,6 +119,14 @@
     border-radius: 0;
 }
 
+.btn-location{
+    position: absolute;
+    top:80px;
+    left: 10px;
+    border:2px solid lightgrey;
+    z-index: 999;
+}
+
 @media (max-width: 450px) {
     .btn-share-group .btn {
         font-size: 11px !important;

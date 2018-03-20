@@ -162,6 +162,7 @@
                         <div class="col-lg-3 map-side-panel">
                         </div>
                         <div class="col-lg-9">
+                            <button class="fa fa-location-arrow btn btn-default btn-location" onclick="getLocation()"></button>
                             <div id="campaign-map-detail"></div>
                         </div>
                     </div>
@@ -273,7 +274,7 @@
         //------------------ EVENT ------------------//
 
         var renderInsights;
-
+        
         function loginSuccess(user) {
             location.href='/campaign/{{ uuid }}';
         }
@@ -505,6 +506,7 @@
             }
         });
 
+
         var useCustom = L.Control.extend({
             options: {
                 position: 'topright'
@@ -546,6 +548,36 @@
             document.getElementById('map-default').classList.add('hide');
             map.removeControl(switchCustom);
             map.addControl(switchMap)
+        }
+
+        // get user's location here
+        function getLocation(){
+            var query_string = 'https://freegeoip.net/json/' + '{{ ip }}';
+            var latitude;
+            var longitude;
+            //console.log('{{ ip }}'); 
+            //console.log(query_string);
+
+            function plotmarker(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4 && this.status == 200){
+                        var response = JSON.parse(this.response);
+                        latitude = response.latitude;
+                        longitude = response.longitude;
+                        var mapMarkers = new L.FeatureGroup();
+                        map.addLayer(mapMarkers);
+                    
+                        center = {'lat':latitude, 'lng':longitude};
+                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                    } 
+                }
+                xhttp.open("GET", query_string, true);
+                xhttp.send();
+            }
+
+            plotmarker();
+            setInterval(plotmarker, 3000);          
         }
 
         var drawnItems = new L.FeatureGroup();
@@ -628,6 +660,7 @@
                 });
             map.addLayer(drawnItems);
             map.fitBounds(drawnItems.getBounds());
+            
             $('#areas-covered').html(Math.round(totalAreaCovered/totalArea * 100) + ' %');
         {% endif %}
 
@@ -781,6 +814,7 @@
                 scrollTop: $("#user-engagement-panel").offset().top
             }, 1000);
         });
+
 
     </script>
 
