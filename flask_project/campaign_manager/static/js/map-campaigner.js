@@ -57,14 +57,15 @@ function hideLoading() {
 }
 
 function showNotifications(text, status) {
-    clearNotification();
-
+	clearNotification();
+		
     $('#first-row').prepend(
-        '<div id="notification" class="alert alert-' + status + ' alert-dismissable" style="margin-bottom: 10px; margin-top: 0;">' +
-        '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
+        '<div id="notification" class="alert alert-' + status + ' alert-dismissable" style="position:fixed; z-index:1000; width:94%; top:20px;">'+
         text +
         '</div>'
     );
+	
+   $('#notification').fadeOut(4000);	
 }
 
 function clearNotification() {
