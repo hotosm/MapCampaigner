@@ -35,11 +35,10 @@
         cursor: pointer;
     }
 
-    .custom-help-block {
-        font-size: 9.4pt;
-        padding-left: 20px;
+    ul.help-block {
+        display: block;
+        padding-left: 18px;
     }
-
 </style>
 <div id="custom-types-tags" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -52,40 +51,41 @@
             </div>
             <div class="modal-body">
                 <div id="modal-form">
-                    <label>Type</label>
-                    <div class="form-group">
+                    <h4>Describe your custom type</h4>
+                    <div class="form-group" style="margin-bottom: 15px !important;">
                         <input id="custom_type_name" placeholder="Name" type="text" value="" class="form-control">
                         <div class="modal-required-message">This field is required</div>
                         <p class="help-block">
-                            This is name of this type. For example : Educational Facilities.
+                            A descriptive name for this custom type. For example: <code>Educational Facilities</code>
                         </p>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 15px !important;">
                         <input id="custom_type_feature" placeholder="Feature" type="text" value="" class="form-control">
                         <div class="modal-required-message">This field is required</div>
-                        <ul class="custom-help-block">
-                            <li>This is specific feature of data for this type. For example: building, amenity, etc.</li>
-                            <li>To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.</li>
-                        </ul>
+                        <p class="help-block">
+                            The feature that is analysed for this type. For example a key like <code>building</code> or <code>amenity</code>
+                            or a <code>key=value</code> pair like <code>building=school</code> or <code>building=school,university</code>.
+                            <br>
+                            The app only analyses OSM elements that match this specification (they are the 100%).
+                        </p>
                     </div>
-                    <br>
-                    <label>Tags</label>
+                    <h4>Define the checks that are performed</h4>
                     <div id="tag-requirement-message" class="modal-required-message">Tag is required at least 1.</div>
                     <div id="custom-tags" class="form-group">
                     </div>
                     <div class="form-group">
                         <input id="btn-add" class="form-control" type="button" value="+ Add tag" onclick="addNewCustomTags()">
-                        <ul class="custom-help-block">
-                            <li>Add new multiple tags for this type.</li>
-                            <li>Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.</li>
-                            <li>For specific tag, add pairing key=value in here. For example: emergency=yes,no. This will check if 'yes' or 'no' is value for emergency attribute.</li>
+                        <ul class="help-block" style="margin-top: 10px;">
+                            <li>The first check is the filter you specified above, therefore it cannot be removed</li>
+                            <li>Check if a key is present: <code>name</code> will show an error if the name key is missing.</li>
+                            <li>Check key-value-pairs: <code>emergency=yes,no</code> will show an error if emergency is present but the value is neither 'yes' nor 'no'.
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveCustomType()">Add</button>
-                <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
 
