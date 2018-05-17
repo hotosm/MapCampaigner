@@ -93,7 +93,7 @@
     color: #46828f;
 }
 
-.btn-manage {
+.btn-manage, .btn-admin {
     background-color: #fc6525;
     display: none;
     border: 0;
@@ -128,7 +128,7 @@
     }
 }
 
-.button-manage {
+.button-manage{
     float: right;
     padding-top: 10px;
 }
@@ -193,7 +193,7 @@
     background-color: #fc913c;
 }
 
-.btn-manage:hover {
+.btn-manage:hover, .btn-admin:hover {
     background-color: #fc7f39;
 }
 

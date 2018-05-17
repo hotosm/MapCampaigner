@@ -6,6 +6,7 @@ Flask-SQLAlchemy
 Flask-Migrate
 Flask-Admin==1.5.1
 Flask-profiler==1.6
+Flask-Mail==0.9.1
 Flask-DebugToolbar==0.10.1
 Flask-DebugToolbar-LineProfilerPanel==1.0.2
 pyshp
