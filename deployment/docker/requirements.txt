@@ -16,3 +16,6 @@ PyYAML
 numpy
 Flask-Script
 simplekml==1.3.0
+psycopg2
+GeoAlchemy2
+sqlalchemy
