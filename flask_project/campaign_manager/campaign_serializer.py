@@ -4,6 +4,8 @@ import json
 
 import campaign_manager.insights_functions as insights_functions
 
+from flask_debugtoolbar_lineprofilerpanel.profile import line_profile
+
 from app_config import Config
 from campaign_manager.models.models import (
     session,
@@ -19,6 +21,7 @@ from campaign_manager.utilities import (
 )
 
 
+@line_profile
 def campaign_data():
     """Campaign data in DB, active and all.
     :returns: campaign attributes for all the campaigns in the DB.
@@ -39,6 +42,7 @@ def campaign_data():
     return context
 
 
+@line_profile
 def get_selected_functions():
     """ Get selected function for form.
     """
@@ -66,6 +70,7 @@ def get_selected_functions():
     return funct_dict
 
 
+@line_profile
 def get_campaign_functions(functions):
     """Serializer for campaign functions.
     :param functions: Function model objects having insight functions for the
@@ -104,6 +109,7 @@ def get_campaign_functions(functions):
     return function_dict
 
 
+@line_profile
 def get_campaign_geometry(campaign):
     """Serializer for campaign geometry.
     :param campaign: Campaign model object to extract the AOI.
@@ -130,6 +136,7 @@ def get_campaign_geometry(campaign):
     return geomtery_dict
 
 
+@line_profile
 def get_campaign_types(campaign_obj):
     """Serializer for campaign feature types.
     :param campaign: Campaign model object to extract feature type for the
@@ -149,6 +156,7 @@ def get_campaign_types(campaign_obj):
     return campaign_types
 
 
+@line_profile
 def get_campaign_context(campaign_obj):
     """Get required context for edit/copy campaign.
     :param campaign_obj: additional parameters for edit/create view.
@@ -175,6 +183,7 @@ def get_campaign_context(campaign_obj):
     return context
 
 
+@line_profile
 def get_campaign_form(campaign_obj):
     """Get campaign form for edit/copy.
     :param campaign_obj: Campaign model object to extract information about
@@ -200,6 +209,7 @@ def get_campaign_form(campaign_obj):
     return form
 
 
+@line_profile
 def get_new_campaign_context():
     """ Returns context for new campaign.
     :returns: campaign context and pre-defined parameters

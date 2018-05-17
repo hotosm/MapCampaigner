@@ -4,7 +4,10 @@ raven
 cherrypy
 Flask-SQLAlchemy
 Flask-Migrate
-flask-admin
+Flask-Admin==1.5.1
+Flask-profiler==1.6
+Flask-DebugToolbar==0.10.1
+Flask-DebugToolbar-LineProfilerPanel==1.0.2
 pyshp
 beautifulsoup4
 PyGeoj
@@ -15,6 +18,6 @@ PyYAML
 numpy
 Flask-Script
 simplekml==1.3.0
-psycopg2==2.7.4
+psycopg2-binary==2.7.5
 GeoAlchemy2==0.4.0
 sqlalchemy
