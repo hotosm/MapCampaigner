@@ -129,7 +129,6 @@
                                             {% for featuretype in types  %}
                                                 {% if featuretype.is_template %}
                                                 <li onclick="addSelectedType(this)">{{ featuretype.name }}<li>
-                                                <p> {{ featuretype.feature_template.description }} </p>    
                                                 {% endif %}
                                             {%endfor%}
                                         </ul>
@@ -644,6 +643,7 @@
         }
 
         function updated(response) {
+
             {% if action == 'edit' %}
                 var is_manager = $.inArray(response.display_name, managers_list);
                 if(is_manager == -1){

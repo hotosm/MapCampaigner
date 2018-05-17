@@ -9,6 +9,7 @@ from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify, flash
 from flask import session as _session
+from flask_socketio import send
 from shapely import geometry as shapely_geometry
 
 from urllib import request as urllibrequest
@@ -27,7 +28,6 @@ from flask import (
     send_from_directory,
     jsonify
 )
-
 from app_config import Config
 from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
@@ -76,24 +76,6 @@ from campaign_manager.context_processor import inject_oauth_param
 inject_oauth_param = campaign_manager.context_processor(inject_oauth_param)
 
 
-@campaign_manager.route('/add_osm_user', methods=['POST'])
-@line_profile
-def add_osm_user():
-    """Adds a new user to DB.
-    :return: confirmation of new user registeration.
-    :rtpye: Status code
-    """
-    osm_user = User().get_by_osm_id(request.json['username'])
-    if osm_user is None:
-        new_user = User(osm_user_id=request.json['username'], email='')
-        new_user.create()
-    return (
-        json.dumps({'success': True}),
-        200,
-        {'ContentType': 'application/json'}
-        )
-
-
 @campaign_manager.route('/')
 @line_profile
 def home():
@@ -122,7 +104,6 @@ def home_all():
 
 
 @campaign_manager.route('/inactive')
-@line_profile
 def home_inactive():
     """Home page view.
     On this page a summary campaign manager view will be shown
@@ -223,7 +204,7 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
 @line_profile
 def get_osmcha_errors_function(uuid):
     try:
-        campaign = Campaign().get_by(uuid)
+        campaign = Campaign().get_by_uuid(uuid)
         rendered_html = render_insights_function(
             campaign=campaign,
             insight_function_id='total-osmcha-errors',
@@ -238,7 +219,7 @@ def get_osmcha_errors_function(uuid):
 @line_profile
 def get_osmcha_errors_data(uuid):
     try:
-        campaign = Campaign().get_by(uuid)
+        campaign = Campaign().get_by_uuid(uuid)
         page_size = request.args.get('page_size', None)
         page = request.args.get('page', None)
         osmcha_changeset = OsmchaChangesets(campaign=campaign)
@@ -329,7 +310,7 @@ def campaign_coverage_upload_chunk_success(uuid):
     )
     # validate coverage
     try:
-        campaign = Campaign().get_by(uuid)
+        campaign = Campaign().get_by_uuid(uuid)
         coverage_function = UploadCoverage(campaign)
         coverage = coverage_function.get_function_raw_data()
         if not coverage:

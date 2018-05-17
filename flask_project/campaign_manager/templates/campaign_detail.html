@@ -27,6 +27,7 @@
             <h3 class="detail-campaign-name">{{ campaign.name }}</h3>
             {% if campaign.feature_types %}
                 {% for feature in campaign.feature_types %}
+
                     <label class="detail-tag"> {{ feature.name }} </label>
                 {% endfor %}
             {% endif %}
@@ -115,6 +116,7 @@
                     </div>
                     <div class="button-manage">
                         <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{campaign.uuid }}'">Manage</button>
+                        <button class="btn btn-info btn-admin" onclick="location.href='/admin/{{campaign.uuid }}'">Admin</button>
                     </div>
                 </div>
             </div>
@@ -284,7 +286,8 @@
 
         function updated(user) {
             if($.inArray(user.display_name , managers) > -1){
-                $('.btn-manage').show();    
+                $('.btn-manage').show(); 
+                $('.btn-admin').show();
             }
             renderInsightFunctionsTypes(user.display_name);
             // Shows manage button if current user is one of the manager
@@ -369,9 +372,8 @@
         var campaign_types = {{ campaign_types | safe}};
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
-        // var remote_projects = {{ remote_projects|safe }};
-        // DISCUSS ABOUT REMOTE PROJECTS IN MEETING: WILL BE IMPLEMENTED AFTER THAT
-        var remote_projects = []
+        var remote_projects = {{ remote_projects|safe }};
+
         var remoteLayers = {};
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
