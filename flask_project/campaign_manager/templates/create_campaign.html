@@ -126,12 +126,25 @@
                             </div>
                             <div id="typesTagsContainer"></div>
                             <div class="row">
+                                <div style="display: none;" class="Template-features">
+                                    {% if types %}
+                                        Please select a Template Feature: 
+                                        <ul>
+                                            {% for featuretype in types  %}
+                                                {% if featuretype.is_template %}
+                                                <li onclick="addSelectedType(this)">{{ featuretype.name }}<li>
+                                                <p> {{ featuretype.featureTemplate.description }} </p>    
+                                                {% endif %}
+                                            {%endfor%}
+                                        </ul>
+                                    {% endif %}    
+                                </div>
                                 <div class="form-body form-group col-lg-4" style="margin-top: 10px">
                                     <input id="btn-add" type="button" value="+ Choose a template" onclick="addTypes()">
-                                    <input id="btn-add" type="button" value="+ Add custom tags" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                    <input id="btn-add" type="button" value="+ Add custom tags" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags" class="Custom-types">
                                 </div>
                             </div>
-                            <!-- Managers -->
+                            <!-- Managers -->   
                             <div class="row" style="margin-bottom: -12px;">
                                 <div class="form-body">
                                     <div class="form-group">
@@ -236,6 +249,24 @@
                                     <div class="information">
                                         If using teams for your campaign, label each area and assign a team. Mark as incomplete or complete.
                                     </div>
+                                    <div class="select-team" style="display: none;">
+                                        Select a pre-formed team or Form a new team for the campaign.
+                                        <h3>Pre-Existing Teams</h3>
+                                        <ul>
+                                            {% for team in teams%}
+                                                <li>{{ team.name }}</li>
+                                                <ul>
+                                                    {% for member in team.users %}
+                                                        {{ member }}
+                                                    {% endfor%}
+                                                </ul>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+
                                     <div class="col-lg-4">
                                         AREA
                                     </div>
@@ -501,6 +532,7 @@
 
     <script type="text/javascript">
         typesOptions = '{{ form.types_options }}';
+        
         var initialLoad = true;
         var selectedFunctions = [];
         var types = {{ types|safe }};
@@ -525,6 +557,50 @@
             var campaign_creator = '{{ campaign_creator }}';
         {% endif %}
 
+        function addSelectedType(e){
+            $('.Template-features').hide();
+            value = e.innerHTML;
+            var row = $("<div/>");
+            row.addClass("row");
+
+            var column = $("<div/>");
+            column.addClass("col-lg-4");
+            column.addClass("form-group");
+            column.addClass("type-selection");
+            row.append(column);
+
+            var select = $("<select />");
+            select.addClass('select-types');
+            select.attr('id', 'types_options');
+            select.attr('name', 'types_options');
+            select.html(typesOptions);
+
+            column.append(select);
+            select.change(onTypesChange);
+            if (value) {
+            // Add empty value with no default selection
+            if (select.find('option[value="' + value + '"]').length === 0) {
+                column.append('' +
+                    '<div class="edit-custom-type">' +
+                    '<i class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal" data-target="#custom-types-tags"></i>' +
+                    '</div>');
+                select.prepend('<option value="' + value + '">' + value + '</option>');
+                select.prop("disabled", true);
+            }
+            select.prepend('<option value="">Select type</option>');
+            select.children().removeAttr('selected');
+            select.find('option[value="' + value + '"]').prop('selected', true);
+            select.trigger('change');
+            } 
+            else {
+            // Add empty value with default selection
+            select.prepend('<option value="" selected="selected">Select type</option>');
+            }
+            $("#typesTagsContainer").append(row);
+        }    
+
+        $('#form-panel').hide();
+
         function updateManagerList() {
             $('#managers-list').html('');
             if (managers_list.length > 0) {
@@ -541,7 +617,7 @@
                 })
             }
         }
-        $('#form-panel').hide();
+
         $(function () {
             updateManagerList();
         });
@@ -553,15 +629,13 @@
             }
             $(e).parent().remove();
         }
-
-        $("#add-to-managers").click(function () {
+        
+         $("#add-to-managers").click(function () {
             var listOsmUsers = [];
             $('#list-osm-users :selected').each(function (i, selected) {
                 listOsmUsers[i] = $(selected).text();
             });
-
             $('.error-managers').hide();
-
             for (var i = 0; i < listOsmUsers.length; i++) {
                 if ($.inArray(listOsmUsers[i], managers_list) === -1) {
                     managers_list.push(listOsmUsers[i]);
@@ -571,7 +645,6 @@
                     )
                 }
             }
-
         });
 
         $("#search-osm-user-button").click(function () {
@@ -599,13 +672,11 @@
                     $searchOsmButton.LoadingOverlay("hide");
                     $('#list-osm-users').html('');
                     var dataObj = JSON.parse(data);
-
                     if (dataObj.length > 0) {
                         $('#users-found').show("slow");
                     } else {
                         $('#users-not-found').show("slow");
                     }
-
                     $.each(dataObj, function (index, value) {
                         $('#list-osm-users').append($('<option/>', {
                             value: value,
@@ -659,9 +730,11 @@
         }
 
         function updated(response) {
-            if($.inArray(response.display_name, {{ allowed_managers | safe }}) == -1) {
+            /*
+            if($.inArray(response.display_name, {{ allowed_managers.osm_user_id | safe }}) == -1) {
                 location.href='/403';
             }
+            */
             {% if action == 'edit' %}
                 var is_manager = $.inArray(response.display_name, managers_list);
                 if(is_manager == -1){
@@ -1015,7 +1088,7 @@
             $('#campaign-form select').addClass('form-control');
             $('#link_to_omk').removeClass('form-control');
 
-            {# selected functions#}
+            {# selected functions #}
             if ($("#selected_functions").val()) {
                 var selected_functions = $.parseJSON($("#selected_functions").val());
                 selectedFunctions = selected_functions;

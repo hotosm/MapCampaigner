@@ -16,7 +16,7 @@
                     </div>
                     <div class="active-campaing-text-wrapper">
                         <span class="active-campaign-text">Active campaigns:&nbsp;</span>
-                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span>
+                        <span class="active-campaign-text-bold" id="active-campaign-number"></span>
                     </div>
                 </div>
             </div>
@@ -168,9 +168,6 @@
             if(user_location_setting === 'all' && auth.authenticated()) {
                 // check current url
                 var current_href = window.location.href.split('/');
-                if(current_href[current_href.length-1] !== 'all' && !tag) {
-                   location.href='/all';
-                }
             }
 
             var campaignStatus = Cookies.get('campaign-status');
@@ -208,7 +205,7 @@
 {% block after_base_js %}
 
     <script type="text/javascript">
-
+        
         var table = null;
         $('.dataTables_filter').addClass('pull-left');
         var mapLayers = new L.FeatureGroup();
@@ -252,12 +249,14 @@
             var value = this.value;
             if(value == 'all') {
                 Cookies.set('user_location_setting', 'all');
-                Cookies.set('campaign-status', 'active');
+                Cookies.set('campaign-status', 'all');
                 location.href='/all'
+                window.location.assign('/all');
             } else if(value == 'nearest') {
                 Cookies.set('user_location_setting', 'nearest');
                 Cookies.set('campaign-status', 'active');
                 location.href='/'
+                window.location.assign('/');
             } else if(value == 'inactive') {
                 displayInactive();
                 location.href='/';
@@ -272,15 +271,16 @@
 
         function displayInactive() {
             Cookies.set('campaign-status', 'inactive');
+            window.location.assign('/inactive');
             clearMap();
             {% if all %}
-                getCampaigns(currentUrl, currentUser);
+                getCampaigns(currentUser);
             {% else %}
                 var limitPage = Cookies.get('limit_page');
                 if(!limitPage) {
                     limitPage = 5;
                 }
-                getCampaigns(currentUrl, currentUser, limitPage);
+                getCampaigns(currentUser, limitPage);
             {% endif %}
         }
 
@@ -288,13 +288,13 @@
             Cookies.set('campaign-status', 'active');
             clearMap();
             {% if all %}
-                getCampaigns(currentUrl, currentUser);
+                getCampaigns(currentUser);
             {% else %}
                 var limitPage = Cookies.get('limit_page');
                 if(!limitPage) {
                     limitPage = 5;
                 }
-                getCampaigns(currentUrl, currentUser, limitPage);
+                getCampaigns(currentUser, limitPage);
             {% endif %}
 
             $('#display-inactive').show();
@@ -320,7 +320,7 @@
 
             if(shouldUpdate) {
                 clearMap();
-                getCampaigns(currentUrl, currentUser, limitPage);
+                getCampaigns(currentUser, limitPage);
                 Cookies.set('limit_page', limitPage);
             }
         }
@@ -365,10 +365,10 @@
                     Cookies.set('limit_page', limitPage);
                 }
                 $('#campaigns-select').val("nearest");
-                getCampaigns(url, currentUser, limitPage);
+                getCampaigns(currentUser, limitPage);
                 $('.nearest-option').show();
             {% else %}
-                getCampaigns(url, currentUser);
+                getCampaigns(currentUser);
                 $('#campaigns-select').val("all");
             {% endif %}
         }
@@ -432,11 +432,11 @@
                     url += "nearest_campaigns";
                     $('#campaigns-select').val('nearest');
                     $('.nearest-option').show();
-                    getCampaigns(url, null, limitPage)
+                    getCampaigns(null, limitPage)
                 {% else %}
                     url += "campaigns";
                     $('#campaigns-select').val('all');
-                    getCampaigns(url, null, null)
+                    getCampaigns(null, null)
                 {% endif %}
             }
 
@@ -460,14 +460,14 @@
                             'lat': latitude,
                             'lon': longitude
                         }
-                        getCampaigns(url, null, limitPage);
+                        getCampaigns(null, limitPage);
                     });
                     $('#campaigns-select').val('nearest');
                     $('.nearest-option').show();
                 {% else %}
                     url += "campaigns";
                     $('#campaigns-select').val('all');
-                    getCampaigns(url, null, null);
+                    getCampaigns(null, null);
                 {% endif %}
 
                 console.log('Error get browser location');
@@ -475,32 +475,18 @@
         }
 
         function getTotalCampaigns() {
-            var url = "/total_campaigns";
-            $.ajax(url, {
-                success: function (response) {
-                    $('#active-campaign-number').html(response['campaign_total']);
-                    $('#participants-number').html(response['participant_total']);
-                }
-            })
+            $('#active-campaign-number').html({{ active_campaigns }});              
         }
 
-        function getCampaigns(url, user, limit) {
-            if(url) {
-                currentUrl = url;
-            }
 
+        function getCampaigns(user, limit) {
             if(user) {
                 currentUser = user;
             }
 
-            $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
+            var slice = parseInt(limit);
 
-            if(!url) {
-                url = "/campaigns";
-            }
-            {% if all %}
-                url = "/campaigns";
-            {% endif %}
+            $('#panel-campaign').LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
 
             var campaign_status = Cookies.get('campaign-status');
             if(!campaign_status) {
@@ -509,188 +495,162 @@
                 $('#campaigns-select').val('inactive');
             }
 
-            url += '/' + campaign_status;
-
-            if(tag) {
-                url += '/'+tag;
-            }
-
-            url += '?';
-
-            if(limit) {
-                url += 'per_page='+limit+'&';
-            }
-
-            if('lon' in userLocation) {
-                url += 'lon='+userLocation['lon']+'&';
-            }
-
-            if('lat' in userLocation) {
-                url += 'lat='+userLocation['lat']+'&';
-            }
-
             // Clear campaign list in navbar
             $('.campaign-list-navbar').html('');
             $('.card-wrapper').html('');
 
+            // DATABASE IMPLEMENTATION OF THE CURRENT API BASED QUERIES
             var participants = [];
+            {% for campaign in campaigns %}
+                var types = [];
+                var action_button = '';
+                {% if campaign.featureTypes %}
+                    {% for featuretype in campaign.featureTypes %}
+                        types.push('{{ featuretype.name }}');
+                    {% endfor %}
+                {% else %}
+                    types.push('-');
+                {% endif %}
 
-            $.ajax(url, {
-                success: function(campaigns){
-                    $.each(campaigns, function (index, campaign) {
-                        var types = [];
-                        var action_button = '';
-
-                        if(campaign['types']) {
-                            $.each(campaign['types'], function (index, type) {
-                               types.push(type['type']);
-                            });
-                            types = types.join()
-                        }else{
-                            types = '-'
-                        }
-
-                        if($.inArray(user, campaign['campaign_managers'])>-1) {
-                            action_button = '<button type="button" href="#" class="campaign-list btn"'+
-                                                'onclick="openManageCampaign(event, this, \''+campaign['uuid']+'\')">'+
+                {% for managers in campaign.users %}
+                if(user == '{{managers.osm_user_id}}'){
+                action_button = '<button type="button" href="#" class="campaign-list btn"'+
+                                                'onclick="openManageCampaign(event, this, \''+'{{ campaign.uuid }}'+'\')">'+
                                                 '<span class="pull-left">Manage</span>'+
-                                             '</button>'
-                        }
+                                '</button>'
+                }                
+                {% endfor %}
 
-                        $.each(campaign['campaign_managers'], function (index, manager) {
-                            if($.inArray(manager, participants)==-1) {
-                                participants.push(manager);
-                            }
-                        });
+                {% for manager in campaign.users %}
+                    participants.push('{{ manager.osm_user_id }}')
+                {% endfor %}
 
-                        // Campaign progress
-                        var startDate = moment(campaign['start_date'], 'YYYY-MM-DD', true);
-                        var endDate = moment(campaign['end_date'], 'YYYY-MM-DD', true);
-                        var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
-                        var remainingDays = endDate.diff(moment(), 'days') + 1;
-                        var progress = 100 - (remainingDays / campaignRange * 100);
-                        if(progress>100) {
-                            progress = 100;
-                        }
-                        else if(progress<0) {
-                            progress = 0;
-                        }
-                        var campaignProgress = '<div class="progress" style="width:82%;float:left;">'+
+                // Campaign progress
+                var startDate =  moment('{{ campaign.start_date }}', 'YYYY-MM-DD', true);
+                var endDate = moment('{{ campaign.end_date }}', 'YYYY-MM-DD', true);
+                var campaignRange = endDate.diff(startDate, 'days') + 1; // Include start
+                var remainingDays = endDate.diff(moment(), 'days') + 1;
+                var progress = 100 - (remainingDays / campaignRange * 100);
+                if(progress>100) {
+                    progress = 100;
+                }
+                else if(progress<0) {
+                    progress = 0;
+                }
+
+                var campaignProgress = '<div class="progress" style="width:82%;float:left;">'+
                                                     '<div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'+progress+'%">'+
                                                     '</div>'+
-                                                '</div>'+ Math.round(progress) + '%';
+                                        '</div>'+ Math.round(progress) + '%';
+                var tags = '';
+                {% for featuretype in campaign.featureTypes %}
+                    tags += '<span class="campaign-tags">'+ '{{ featuretype.name }}' +'</span> ';
+                {% endfor %}
 
-                        var tags = '';
-
-                        $.each(campaign['types'], function(index, type) {
-                            tags += '<span class="campaign-tags">'+ type['type'] +'</span> ';
-                        });
-
-                        $('.card-wrapper').append(
-                            '<li class="col-lg-6">'+
-                                '<div class="campaign-card panel" onclick="openCampaign(event, this, \''+campaign['uuid']+'\')">'+
-                                    '<div class="panel-heading">'+
-                                        '<a href=/campaign/'+ campaign['uuid'] +' data-toggle="tooltip" data-placement="top" data-container="body" title="'+ campaign['name'] +'"><div class="campaign-name ellipsis multiline">'+
-                                            campaign['name'] +
-                                        '</div></a>'+
-                                        '<div class="row">' +
-                                            '<div class="col-xs-6">'+
-                                                '<div class="campaign-start-date">'+
-                                                    'started '+ campaign['start_date'] +
-                                                '</div>'+
-                                            '</div>'+
-                                            '<div class="col-xs-6">'+
-                                                '<div class="campaign-progress-bar">'+
-                                                    campaignProgress +
-                                                '</div>'+
-                                            '</div>'+
-                                        '</div>' +
-                                        '<div class="row">'+
-                                            '<div class="col-xs-8">'+
-                                                '<div class="campaign-tags-list ellipsis multiline">'+
-                                                    tags+
-                                                '</div>'+
-                                                '<div class="campaign-description ellipsis multiline">'+
-                                                    campaign['description']+
-                                                '</div>'+
-                                            '</div>'+
-                                            '<div class="col-xs-4 campaign-thumbnail">'+
-                                                '<img src="/thumbnail/'+campaign['thumbnail']+'">'+
-                                            '</div>'+
+                $('.card-wrapper').append(
+                    '<li class="col-lg-6">'+
+                        '<div class="campaign-card panel" onclick="openCampaign(event, this, \''+'{{ campaign.uuid }}'+'\')">'+
+                            '<div class="panel-heading">'+
+                                '<a href=/campaign/'+ '{{ campaign.uuid }}' +' data-toggle="tooltip" data-placement="top" data-container="body" title="'+ '{{ campaign.name }}' +'"><div class="campaign-name ellipsis multiline">'+
+                                            '{{ campaign.name }}' +
+                                '</div></a>'+
+                                '<div class="row">' +
+                                    '<div class="col-xs-6">'+
+                                        '<div class="campaign-start-date">'+
+                                            'started '+ '{{ campaign.start_date }}' +
                                         '</div>'+
-                                        '<div class="row">'+
-                                            '<div class="col-xs-8">'+
-                                                '<div class="campaign-creator">'+
-                                                        'Campaign creator <span class="campaign-creator-name">'+ campaign['campaign_creator'] + '</span>' +
-                                                '</div>'+
-                                            '</div>'+
-                                            '<div class=col-xs-4>'+
-                                                action_button+
-                                            '</div>'+
-                                        '</div>' +
+                                    '</div>'+
+                                    '<div class="col-xs-6">'+
+                                        '<div class="campaign-progress-bar">'+
+                                            campaignProgress +
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>' +
+                                '<div class="row">'+
+                                    '<div class="col-xs-8">'+
+                                        '<div class="campaign-tags-list ellipsis multiline">'+
+                                            tags+
+                                        '</div>'+
+                                        '<div class="campaign-description ellipsis multiline">'+
+                                            '{{ campaign.description }}'+
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class="col-xs-4 campaign-thumbnail">'+
+                                        '<img src="/thumbnail/'+" Not avialable"+'">'+
                                     '</div>'+
                                 '</div>'+
-                            '</li>');
+                                '<div class="row">'+
+                                    '<div class="col-xs-8">'+
+                                        '<div class="campaign-creator">'+
+                                                'Campaign creator <span class="campaign-creator-name">'+'{{ campaign.creator.osm_user_id }}'+ '</span>' +
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class=col-xs-4>'+
+                                        action_button+
+                                    '</div>'+
+                                '</div>' +
+                            '</div>'+
+                        '</div>'+
+                    '</li>');
 
-                        $(".ellipsis").ellipsis();
+                $(".ellipsis").ellipsis();
 
-                        // Add to navigation bar
-                        $('.campaign-list-navbar').append('<li>'+
-                            '<a href="/campaign/'+campaign['uuid']+'">'+campaign['name']+'</a>'+
-                        '</li>');
+                // Add to navigation bar
+                $('.campaign-list-navbar').append('<li>'+
+                    '<a href="/campaign/'+"{{ campaign.uuid }}"+'">'+"{{ campaign.name }}"+'</a>'+
+                '</li>');
 
-                        // Add campaign layer
-                        var campaignLayer = L.geoJson(campaign['geometry'], {
-                            onEachFeature: function (feature, layer) {
-                                // Check if feature is a polygon
-                                if (feature.geometry.type === 'Polygon') {
-                                    // Don't stroke and do opaque fill
-                                    layer.setStyle({
-                                        'weight': 0.3,
-                                        'fillOpacity': 0.2,
-                                        'color': '#FF5722'
-                                    });
-                                }
-                            }
-                        }).addTo(mapLayers);
-
-                        var bounds = campaignLayer.getBounds();
-                        var center = bounds.getCenter();
-
-                        var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
-                        marker.bindPopup(
-                            '<div class="campaign-marker"><a href="/campaign/'+
-                                campaign['uuid'] +'"> ' +
-                                campaign['name'] +
-                            '</a></div>'
-                        );
-                    });
-
-                    $('#panel-campaign').LoadingOverlay("hide");
-
-                    map.invalidateSize();
-                    var layers = mapLayers;
-                    if(typeof mapLayers.length === 'undefined') {
-                        layers = mapLayers.getLayers();
+                // Add campaign layer
+                
+                var campaignLayer = L.geoJson({{ geometry[loop.index0]|safe }}, {
+                    onEachFeature: function (feature, layer) {
+                        // Check if feature is a polygon
+                        if (feature.geometry.type === 'Polygon') {
+                            // Don't stroke and do opaque fill
+                            layer.setStyle({
+                                'weight': 0.3,
+                                'fillOpacity': 0.2,
+                                'color': '#FF5722'
+                            });
+                        }
                     }
-                    if(layers.length > 0) {
-                        map.fitBounds(mapLayers.getBounds());
-                    }
+                }).addTo(mapLayers);
+                var bounds = campaignLayer.getBounds();
+                var center = bounds.getCenter();
 
-                    var options = {
-                        valueNames: ['campaign-name', 'campaign-start-date']
-                    }
-                    var campaignList = new List('campaign-list', options);
+                var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+                marker.bindPopup(
+                    '<div class="campaign-marker"><a href="/campaign/'+
+                        '{{campaign.uuid }}' +'"> ' +
+                        '{{ campaign.name }}' +
+                    '</a></div>'
+                );
+              
+                $('#panel-campaign').LoadingOverlay("hide");
 
-                    $('#sort-campaign-by-name').click();
-
-                    if(initialLoad) {
-                        initialLoad = false;
-                    } else {
-                        $('#sort-campaign-by-name').click();
-                    }
+                map.invalidateSize();
+                var layers = mapLayers;
+                if(typeof mapLayers.length === 'undefined') {
+                    layers = mapLayers.getLayers();
                 }
-            });
+                if(layers.length > 0) {
+                    map.fitBounds(mapLayers.getBounds());
+                }
+
+                var options = {
+                    valueNames: ['campaign-name', 'campaign-start-date']
+                }
+                var campaignList = new List('campaign-list', options);
+
+                $('#sort-campaign-by-name').click();
+
+                if(initialLoad) {
+                     initialLoad = false;
+                } else {
+                    $('#sort-campaign-by-name').click();
+                }
+                {% endfor %}
+                
         }
 
     </script>
