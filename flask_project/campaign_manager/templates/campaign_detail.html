@@ -24,15 +24,15 @@
 
     <div class="row">
         <div class="col-lg-7">
-            <h3 class="detail-campaign-name">{{ name }}</h3>
-            {% if types %}
-                {% for type, value in types.items() %}
-                    <label class="detail-tag"> {{ value.type }} </label>
+            <h3 class="detail-campaign-name">{{ campaign.name }}</h3>
+            {% if campaign.featureTypes %}
+                {% for feature in campaign.featureTypes %}
+                    <label class="detail-tag"> {{ feature.name }} </label>
                 {% endfor %}
             {% endif %}
             <p>
-                {% if description %}
-                    {{ description }}
+                {% if campaign.description %}
+                    {{ campaign.description }}
                 {% else %}
                     <span class="grey-italic">No description</span>
                 {% endif %}
@@ -41,7 +41,7 @@
             <div class="col-lg-6 detail-button-wrapper participate-button" style="margin-top: 20px">
                 <span class="btn btn-label"><strong>Participate</strong></span>
                 <div class="btn-group btn-share-group" role="group" aria-label="...">
-                    {% if link_to_omk %}
+                    {% if campaign.link_to_OpenMapKit %}
                         <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                     {% endif %}
                     <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
@@ -50,7 +50,7 @@
             <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
                 <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
                     <span class="btn btn-default unclickable" >Share</span>
-                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ campaign.uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
                     <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
                 </div>
             </div>
@@ -64,10 +64,10 @@
                     </div>
                     <div class="detail-campaign-timeline">
                         <span class="pull-left">
-                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Started</span> : {{ start_date_date }} {{ start_date_year }}
+                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Started</span> : {{ start_date }}
                         </span>
                         <span class="pull-right">
-                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Ends</span> : {{ end_date_date }} {{ end_date_year }}
+                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Ends</span> : {{ end_date }}
                         </span>
                     </div>
                     <div class="detail-progress">
@@ -80,10 +80,10 @@
                         <p>
                             <span class="grey-italic">Campaign Manager : </span>
                             <span class="text-muted">
-                                {% if campaign_managers %}
-                                    {% for campaign_manager in campaign_managers %}
-                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
-                                        {% if campaign_manager != campaign_managers[-1] %}
+                                {% if campaign.users %}
+                                    {% for manager in campaign.users %}
+                                        <a href="https://www.openstreetmap.org/user/{{ manager.osm_user_id }}" target="_blank">{{ manager.osm_user_id }}</a>
+                                        {% if manager != campaign.users[-1] %}
                                             ,
                                         {% endif %}
                                     {% endfor %}
@@ -95,7 +95,7 @@
                         <p>
                             <span class="grey-italic">Creator : </span>
                             <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
-                            {{ campaign_creator }}
+                            {{ campaign.creator.osm_user_id }}
                             </a>
                         </p>
                         <p>
@@ -114,7 +114,7 @@
                         </p>
                     </div>
                     <div class="button-manage">
-                        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
+                        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{campaign.uuid }}'">Manage</button>
                     </div>
                 </div>
             </div>
@@ -273,28 +273,32 @@
         //------------------ EVENT ------------------//
 
         var renderInsights;
+        var managers = [];
+        {% for manager in campaign.users %}
+            managers.push('{{ manager.osm_user_id }}');
+        {% endfor %}
 
         function loginSuccess(user) {
-            location.href='/campaign/{{ uuid }}';
+            location.href='/campaign/{{ campaign.uuid }}';
         }
 
         function updated(user) {
-            renderInsightFunctionsTypes(user.display_name);
-            var managers = {{ campaign_managers | safe }};
-            // Shows manage button if current user is one of the manager
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.btn-manage').show();
+            if($.inArray(user.display_name , managers) > -1){
+                $('.btn-manage').show();    
             }
+            renderInsightFunctionsTypes(user.display_name);
+            // Shows manage button if current user is one of the manager
+           
         }
 
         function logout() {
             auth.logout();
-            location.href='/campaign/{{ uuid }}';
+            location.href='/campaign/{{ campaign.uuid }}';
         }
 
         function login() {
             auth.authenticate(function () {
-                location.href='/campaign/{{ uuid }}';
+                location.href='/campaign/{{ campaign.uuid }}';
             })
         }
 
@@ -303,7 +307,7 @@
         }
 
         function logoutSuccess() {
-            location.href='/campaign/{{ uuid }}';
+            location.href='/campaign/{{ campaign.uuid }}';
         }
 
         if(!auth.authenticated()) {
@@ -317,6 +321,19 @@
             }
             renderInsights();
         }
+
+        // Apps
+        var isMobile = {
+            Android: function () {
+                return /Android/i.test(navigator.userAgent);
+            },
+            iOS: function () {
+                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
+            }
+        };
 
         $(function () {
 
@@ -340,8 +357,7 @@
                 currentStatus.replace('-',' ')
          );
 
-        var uuid = '{{ uuid }}';
-        var managers = {{ campaign_managers|safe }};
+        var uuid = '{{ campaign.uuid }}';
         var selected_functions = {{ selected_functions | safe }};
         var total_features_collected = 0;
 
@@ -351,13 +367,17 @@
         // Feature layer group
         var featureGroups = {};
 
-        var campaign_types = null;
-        {% if types %}
-            campaign_types = {{ types | safe }};
+        var campaign_types = [];
+        {% if campaign.featureTypes %}
+            {% for type in campaign.featureTypes %}
+            campaign_types.push('{{ type.name }}');
+            {% endfor %}
         {% endif %}
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
-        var remote_projects = {{ remote_projects|safe }};
+        // var remote_projects = {{ remote_projects|safe }};
+        // DISCUSS ABOUT REMOTE PROJECTS IN MEETING: WILL BE IMPLEMENTED AFTER THAT
+        var remote_projects = []
         var remoteLayers = {};
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
@@ -573,8 +593,7 @@
         {% if geometry %}
             var totalArea = 0;
             var totalAreaCovered = 0;
-            drawnItems = L.geoJSON(
-                $.parseJSON('{{ geometry|safe }}'), {
+            drawnItems = L.geoJSON({{ geometry|safe }}, {
                     style: function (feature) {
                         var status = 'unassigned';
 
@@ -690,19 +709,6 @@
             window.open(url,'popup','width=600,height=500');
             return false;
         }
-
-        // Apps
-        var isMobile = {
-            Android: function () {
-                return /Android/i.test(navigator.userAgent);
-            },
-            iOS: function () {
-                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            },
-            any: function () {
-                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
-            }
-        };
 
         var formLink = {
             "OpenMapKit": {
