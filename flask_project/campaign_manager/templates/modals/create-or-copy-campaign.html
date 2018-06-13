@@ -1,0 +1,105 @@
+<!-- Modal -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="/static/libs/jquery/jquery.min.js"></script>
+<style>
+	.wrapper{
+		position: absolute;
+		width: 98.9vw;
+		z-index: 9999;
+		display: none;
+	}
+	.overlay{
+		width: 100%;
+		height: 100vh;
+		background-color:black;
+		opacity: 0.6;
+		position : fixed
+	}
+	.modal-header{
+		border-bottom: .5px solid lightgrey;
+		font-size: 1.286em;
+	}
+
+	.modal-desc, .modal-header{
+		padding-left: 20px;
+	}
+
+	.modal-desc{
+		font-size: 0.929em;
+	}
+
+	.modal-content{
+		margin-top: 100px;
+		position: absolute;
+		z-index: 999;
+		margin-left: 30vw;
+		width: 40vw;
+		height: 400px;
+		border-radius: 2px;
+		color: #494646;
+		background: #F7F7F7;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
+	}
+
+	.modal-select{
+		margin-top: 50px;
+		display: flex;
+		justify-content: space-around;
+	}
+
+	.select-new, .select-copy{
+        height: 150px;
+        width: 15vw;
+        border: 1px dashed lightgrey;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+	}
+	.select-new:hover, .select-copy:hover{
+		border: none;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
+	}
+
+</style>
+<div class="wrapper">
+	<div class="overlay" onclick="hide_model_content()"></div>
+	<div class="modal-content">
+		<div class="modal-header">
+		    <p> + Create New Campaign</p>
+		</div>
+		<div class="modal-desc">
+			<h5>Choose from create your own campaign or copy pre-existing campaign.</h5>
+			<ul>
+				<li><b>Create New Campaign</b> : Create a campaign from scratch.</li>
+				<li><b>Copy Campaign</b> : Copy and edit a pre-existing campaign.</li>
+			</ul>
+			<div class="modal-select">
+				<div class="select-new" onclick="create_campaign()">
+					<i class="fa fa-plus" style="font-size:80px;color:lightgrey; "></i>
+					<p style="color: #ff8440;">Create Campaign</p>
+				</div>
+				<div class="select-copy" onclick="copy_campaign()">
+					<i class="fa fa-plus" style="font-size:80px;color:lightgrey"></i>
+					<p style="color: #ff8440;">Copy Campaign</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	
+	function create_campaign(){
+        location.href = '/create';
+	}
+    
+    function copy_campaign(){
+        location.href = '/copy';
+	}
+	$('.overlay').click(function(){
+		$('.wrapper').hide();
+	});
+</script>
+
