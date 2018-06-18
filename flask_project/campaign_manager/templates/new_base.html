@@ -231,8 +231,23 @@
                     count: changesets.getAttribute('count'),
                 };
 
+                // FIND A WAY TO SHIFT THIS FUNCTION WHEN USER LOGS IN FOR THE FIRST TIME
+                var user = {};
+                user['username'] = o.display_name;
+                var url = '/add_osm_user'
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify(user, null, '\t'),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function(response){
+                        checkUserEmail(user);
+                    }
+                });
+                
 
                 $('#profile-name').html(o.display_name);
+
 
                 if (typeof location !== 'undefined') {
                     var long = location.getAttribute('lon');
@@ -253,6 +268,7 @@
                 }
 
                 updated(o);
+                
 
             }, this);
         }
@@ -296,6 +312,56 @@
 
         function showAuthAlert() {
             $('#auth-modal').modal('show');
+        }
+
+        function checkUserEmail(user){
+            var url = '/check_email/'+user['username'];
+            $.ajax({
+                    url: url,
+                    success: function(response){
+                        if(response == "not registered"){
+                            showNotifications("Please, register your Email to receive notifications about the campaign you are part of, Thanks.", "danger", user['username']);
+                        }
+                    }
+                });  
+        }
+
+        function registerUserEmail(user){
+            clearNotification();
+            var val;
+            var url = '/check_email/'+user;
+            $.ajax(url,{
+            success: function(response){
+                if(response == "not registered"){
+                $('#first-row').prepend(
+                    '<div id="email" style="margin-bottom: 10px; margin-top: 0;" class="alert alert-danger  alert-dismissable" >'+
+                        '<form action="/register_email" method="POST">'+
+                            '<input id="user" name="user" type="hidden" value="'+user+'">'+
+                            '<input id="email_value" name="email_value" placeholder="Enter your email address" />'+
+                            '<input type="submit" style="margin-left: 10px;"></button>'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
+                        '</form>'+
+                    '</div>'
+                 );
+                }
+            }
+            });
+        }
+
+        function clearNotification() {
+            if ($('#notification').length > 0) {
+                $('#notification').remove();
+            }
+        }
+        
+        function showNotifications(text, status, user) {
+    
+            $('#first-row').prepend(
+                '<div id="notification" class="alert alert-' + status + ' alert-dismissable" style="margin-bottom: 10px; margin-top: 0; cursor:pointer;" onclick=\'(registerUserEmail("'+ user +'"))\' >' +
+                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
+                text +
+                '</div>'
+            );
         }
 
     </script>

@@ -5,6 +5,7 @@ import time
 import datetime
 import xml
 import calendar
+import ast
 from urllib.error import URLError
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
@@ -20,6 +21,7 @@ from reporter.utilities import (
 )
 from campaign_manager.data_providers.overpass_provider import OverpassProvider
 from reporter.queries import TAG_MAPPING_REVERSE
+from campaign_manager.models.models import *
 
 
 class AbstractOverpassUserFunction(AbstractInsightsFunction):
@@ -46,10 +48,14 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
         is_updating = False
 
         if self.feature:
+            s_date = self.campaign.start_date
+            s_date = str(s_date)
             start_date = calendar.timegm(datetime.datetime.strptime(
-                    self.campaign.start_date, '%Y-%m-%d').timetuple()) * 1000
+                    s_date, '%Y-%m-%d').timetuple()) * 1000
+            e_date = self.campaign.end_date
+            e_date = str(s_date)
             end_date = calendar.timegm(datetime.datetime.strptime(
-                    self.campaign.end_date, '%Y-%m-%d').timetuple()) * 1000
+                    e_date, '%Y-%m-%d').timetuple()) * 1000
 
             try:
                 features = self.feature.split('=')
@@ -58,8 +64,15 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                 elif len(features) == 2:
                     feature_key = features[0]
                     feature_values = features[1].split(',')
+                    coordinates = session.query(
+                        TaskBoundary.coordinates.ST_AsGeoJSON()
+                        ).filter(
+                        TaskBoundary.campaign_id == self.campaign.id
+                        ).first()
+                    coordinates = ast.literal_eval(coordinates[0])
+                    coordinates = coordinates['coordinates'][0]
                     overpass_data = OverpassProvider().get_attic_data(
-                        polygon=self.campaign.corrected_coordinates(),
+                        polygon=coordinates,
                         overpass_verbosity='meta',
                         feature_key=feature_key,
                         feature_values=feature_values,
@@ -68,8 +81,15 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     )
                 else:
                     feature_key = features[0]
+                    coordinates = session.query(
+                        TaskBoundary.coordinates.ST_AsGeoJSON()
+                        ).filter(
+                        TaskBoundary.campaign_id == self.campaign.id
+                        ).first()
+                    coordinates = ast.literal_eval(coordinates[0])
+                    coordinates = coordinates['coordinates'][0]
                     overpass_data = OverpassProvider().get_attic_data(
-                        polygon=self.campaign.corrected_coordinates(),
+                        polygon=coordinates,
                         overpass_verbosity='meta',
                         feature_key=feature_key,
                         date_from=str(start_date),

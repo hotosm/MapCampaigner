@@ -2,12 +2,14 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/05/17'
 
 import json
+import ast
 from abc import ABCMeta
 from campaign_manager.insights_functions._abstract_insights_function import (
     AbstractInsightsFunction
 )
 
 from campaign_manager.data_providers.overpass_provider import OverpassProvider
+from campaign_manager.models.models import *
 
 
 class AbstractOverpassInsightFunction(AbstractInsightsFunction):
@@ -59,15 +61,29 @@ class AbstractOverpassInsightFunction(AbstractInsightsFunction):
         elif len(features) == 2:
             feature_key = features[0]
             feature_values = features[1].split(',')
+            coordinates = session.query(
+                TaskBoundary.coordinates.ST_AsGeoJSON()
+                ).filter(
+                TaskBoundary.campaign_id == self.campaign.id
+                ).first()
+            coordinates = ast.literal_eval(coordinates[0])
+            coordinates = coordinates['coordinates'][0]
             overpass_data = OverpassProvider().get_data(
-                self.campaign.corrected_coordinates(),
+                coordinates,
                 feature_key=feature_key,
                 feature_values=feature_values
             )
         else:
             feature_key = features[0]
+            coordinates = session.query(
+                TaskBoundary.coordinates.ST_AsGeoJSON()
+                ).filter(
+                TaskBoundary.campaign_id == self.campaign.id
+                ).first()
+            coordinates = ast.literal_eval(coordinates[0])
+            coordinates = coordinates['coordinates'][0]
             overpass_data = OverpassProvider().get_data(
-                self.campaign.corrected_coordinates(),
+                coordinates,
                 feature_key=feature_key,
             )
         self.last_update = overpass_data['last_update']
