@@ -5,10 +5,10 @@ import ast
 import hashlib
 import shutil
 import requests
+
 from geoalchemy2.shape import from_shape
 from shapely.geometry import asShape
 from sqlalchemy.dialects.postgresql import ARRAY
-
 from sqlalchemy import (
     Column,
     Integer,
@@ -43,6 +43,7 @@ adminAssociations = Table(
         ForeignKey('campaign.id'),
         primary_key=True))
 
+
 typeCampaignAssociations = Table(
     'typeCampaignAssociations',
     Base.metadata,
@@ -56,6 +57,7 @@ typeCampaignAssociations = Table(
         Integer,
         ForeignKey('featureType.id'),
         primary_key=True))
+
 
 featureTypeAssociations = Table(
     'featureTypeAssociations',
@@ -72,6 +74,7 @@ featureTypeAssociations = Table(
         ForeignKey('featureType.id'),
         primary_key=True))
 
+
 teamUserAssociations = Table(
     'teamUserAssociations',
     Base.metadata,
@@ -86,17 +89,20 @@ teamUserAssociations = Table(
         ForeignKey('team.id'),
         primary_key=True))
 
+
 functionCampaignAssociations = Table(
     'functionCampaignAssociations',
     Base.metadata,
     Column(
         'campaign_id',
         Integer,
-        ForeignKey('campaign.id')),
+        ForeignKey('campaign.id'),
+        primary_key=True),
     Column(
         'function_id',
         Integer,
-        ForeignKey('function.id')))
+        ForeignKey('function.id'),
+        primary_key=True))
 
 functionAttributeAssociations = Table(
     'functionAttributeAssociations',
@@ -104,14 +110,13 @@ functionAttributeAssociations = Table(
     Column(
         'function_id',
         Integer,
-        ForeignKey('function.id')
-        ),
+        ForeignKey('function.id'),
+        primary_key=True),
     Column(
         'attribute_id',
         Integer,
-        ForeignKey('attribute.id')
-        )
-    )
+        ForeignKey('attribute.id'),
+        primary_key=True))
 
 
 class User(Base):
@@ -426,7 +431,10 @@ class Campaign(Base):
         geom = data_geometry['features'][0]['geometry']
         geom_obj = from_shape(asShape(geom), srid=4326)
         area = data_geometry['features'][0]['properties']['area']
-        status = data_geometry['features'][0]['properties']['status']
+        if 'status' in data_geometry['features'][0]['properties']:
+            status = data_geometry['features'][0]['properties']['status']
+        else:
+            status = "unassigned"
         taskboundary_type = data_geometry['type']
         taskboundary = TaskBoundary(
             coordinates=geom_obj,
@@ -756,10 +764,6 @@ class FeatureType(Base):
         session.delete(self)
         session.commit()
 
-    def delete(self):
-        """ Adds the object in the delete queue. """
-        session.delete(self)
-
 
 class Tag(Base):
 
@@ -846,8 +850,7 @@ class Team(Base):
         nullable=False)
     boundary_id = Column(
         Integer,
-        ForeignKey('taskBoundary.id'),
-        nullable=False)
+        ForeignKey('taskBoundary.id'))
     boundary = relationship(
         'TaskBoundary',
         back_populates='team')
@@ -887,6 +890,10 @@ class Team(Base):
         if 'name' in team_dto:
             self.name = team_dto['name']
         session.commit()
+
+    def get_by_name(self, team):
+        """Returns team filtered by team-name."""
+        return session.query(Team).filter(Team.name == team).first()
 
     def delete(self):
         """ Deletes the object from DB """

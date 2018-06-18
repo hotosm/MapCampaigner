@@ -7,6 +7,7 @@ from flask_profiler import Profiler
 from app_config import Config
 
 from campaign_manager.context_processor import inject_oauth_param
+from app_sockets import osm_app
 from campaign_manager import campaign_manager
 from campaign_manager.views import not_found_page, forbidden_page
 from campaign_manager.context_processor import inject_oauth_param

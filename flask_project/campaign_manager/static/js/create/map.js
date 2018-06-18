@@ -77,9 +77,8 @@ if ($("#geometry").val()) {
                 )
             }
         }
-    );
-    // CORRECT THIS AND OTHER GEOJSON
-    //campaignMap.fitBounds(drawnItems.getBounds());
+    );    
+    campaignMap.fitBounds(drawnItems.getBounds());
 }
 campaignMap.addLayer(drawnItems);
 
@@ -181,7 +180,6 @@ function createCoverageTable() {
     clearCoverageTable();
     $.each(drawnItems.getLayers(), function(index, layer) {
         var areaName = '';
-        var teamName = '';
         var feature = '';
         var properties = '';
         var layerId = layer._leaflet_id;
@@ -192,7 +190,7 @@ function createCoverageTable() {
         properties = feature.properties = feature.properties || {};
 
         if(properties && 'team' in properties) {
-            teamName = properties['team'];
+            teamName = $('.team_name').val();
         }
 
         if(properties && 'area' in properties) {
@@ -224,7 +222,10 @@ function createCoverageTable() {
                     '<input onblur="updateGeometryString(this, \'area\', '+layerId+')" id="area_name-'+layerId+'" name="area_name" placeholder="Area Name" type="text" value="'+areaName+'" class="form-control area_name">'+
                 '</div>'+
                 '<div class="col-lg-4">'+
-                    '<input onclick="openSelectTeamPopup(this)" onblur="updateGeometryString(this, \'team\', '+layerId+')" name="team_name" placeholder="Team Name" type="text" value="'+teamName+'" class="form-control team_name">'+
+                    '<input onchange="updateGeometryString(this, \'team\', '+layerId+')" onclick="fillval(this, \'team\', '+layerId+')" name="team_name" placeholder="Team Name" type="text" class="form-control team_name">'+
+                '</div>'+
+                '<div class="col-lg-4">'+
+                    '<input type="hidden" class="layerId" value="'+layerId+'">'+
                 '</div>'+
                 '<div class="col-lg-4">'+
                     '<select id="status-'+layerId+'" onchange="updateGeometryString(this, \'status\', '+layerId+')" class="form-control">'+
@@ -242,8 +243,9 @@ function createCoverageTable() {
     });
 }
 
-function openSelectTeamPopup(el){
-    $('.select-team').show();
+
+function fillval(el, property, layerId){
+    teamSelecetPopup(el);
 }
 
 function updateGeometryString(el, property,  layerId) {

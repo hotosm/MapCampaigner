@@ -58,7 +58,8 @@ from campaign_manager.models.campaign import Campaign
 from campaign_manager.models.models import (
     session,
     User,
-    Campaign
+    Campaign,
+    Team
 )
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
@@ -517,7 +518,6 @@ def get_campaign(uuid):
         return render_template(
             'campaign_detail.html', **context)
     except Exception as e:
-        print(e)
         abort(404)
 
 
@@ -963,6 +963,75 @@ def save_edited_campaign(uuid):
         flash(message)
         return render_template(
             'create_campaign.html', form=form, **context)
+
+
+@campaign_manager.route('/register_team', methods=['POST'])
+def register_team():
+    """Registers new team with fieldcampaigner.
+    :return: confirmation of new team registeration.
+    :rtype: Status Code"""
+    team_name = request.json['team_name']
+    team_members = request.json['members']
+    team = Team(
+        name=team_name
+        )
+    team.create()
+    for member in team_members:
+        user = session.query(User).filter(User.osm_user_id == member).all()
+        # add to db if user is new.
+        if len(user) == 0:
+            new_user = User(osm_user_id=member, email='')
+            new_user.create()
+    # add members to team
+    for member in team_members:
+        user = session.query(User).filter(
+            User.osm_user_id == member
+            ).first()
+        team.users.append(user)
+    session.commit()
+    return (
+        json.dumps({'success': True}),
+        200,
+        {'ContentType': 'application/json'}
+        )
+
+
+@campaign_manager.route('/get_team/<team>', methods=['GET'])
+def get_team(team):
+    """Gets team from the DB.
+    :param team: Team name registered with fieldcampaigner.
+    :type team: str
+    :return: serialized data for the team.
+    :rtype: json
+    """
+    team = Team().get_by_name(team)
+    team_members = []
+    for member in team.users:
+        team_members.append(member.osm_user_id)
+    team_dict = dict(
+        members=team_members)
+    print(team_dict)
+    return jsonify(team_dict)
+
+
+@campaign_manager.route('/get_registered_teams', methods=['GET'])
+def get_registered_teams():
+    """Gets details for all the teams in DB.
+    :return: serialized data for the team.
+    :rtype: json
+    """
+    team_data = {}
+    teams = Team().get_all()
+    # serialize Team data
+    i = 0
+    for team in teams:
+        i += 1
+        team_obj = {}
+        team_obj['team_name'] = team.name
+        if team.boundary:
+            team_obj['campaign'] = team.boundary.campaign.name
+        team_data['team' + str(i)] = team_obj
+    return jsonify(team_data)
 
 
 @campaign_manager.route('/submit_campaign_data_to_json', methods=['POST'])
