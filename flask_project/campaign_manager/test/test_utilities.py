@@ -4,6 +4,7 @@ from campaign_manager.utilities import (
     cast_element_ids_to_s
 )
 
+
 class UtilitiesTestCase(unittest.TestCase):
     """Test Utilities functions"""
 
@@ -36,7 +37,6 @@ class UtilitiesTestCase(unittest.TestCase):
         expected_elements_parameters = 'node(id:1234,5678,9123);'
         elements_parameters = cast_element_ids_to_s(elements)
         self.assertEqual(elements_parameters, expected_elements_parameters)
-
 
     def test_cast_element_ids_to_s_with_only_relation_elements(self):
         """
