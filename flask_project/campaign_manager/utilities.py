@@ -327,4 +327,3 @@ def cast_element_ids_to_s(hash_element_ids):
             elements_to_s += el_to_s
 
     return elements_to_s
-
