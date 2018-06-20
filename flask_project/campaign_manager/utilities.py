@@ -305,3 +305,26 @@ def get_coordinate_from_ip():
     response = requests.get(url)
     data = response.json()
     return data['loc']
+
+
+def cast_element_ids_to_s(hash_element_ids):
+    """ Cast a hash of element ids to a string of element ids.
+
+    :param hash_element_ids: node/relation/way ids
+    :type hash_element_ids: hash
+
+    :returns: a string of node/relation/way ids
+    :rtype: str
+    """
+    elements_to_s = str()
+    for el in ['node', 'relation', 'way']:
+        if len(hash_element_ids[el]) > 0:
+            el_to_s = '{}(id:{});'.format(
+                el,
+                ','.join(str(element)
+                         for element in hash_element_ids[el]))
+
+            elements_to_s += el_to_s
+
+    return elements_to_s
+
