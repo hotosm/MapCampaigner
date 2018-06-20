@@ -14,7 +14,8 @@ from campaign_manager.data_providers._abstract_data_provider import (
     AbstractDataProvider
 )
 from campaign_manager.utilities import (
-    load_osm_document_cached
+    load_osm_document_cached,
+    cast_element_ids_to_s
 )
 
 
@@ -107,19 +108,19 @@ class OverpassProvider(AbstractDataProvider):
             server_url = default_server_url
 
         query = self.parse_url_parameters(
-                polygon=polygon,
-                feature_key=feature_key,
-                feature_values=feature_values,
-                overpass_verbosity=overpass_verbosity,
-                response_format='json' if returns_json else 'xml',
-                date_from=date_from,
-                date_to=date_to
+            polygon=polygon,
+            feature_key=feature_key,
+            feature_values=feature_values,
+            overpass_verbosity=overpass_verbosity,
+            response_format='json' if returns_json else 'xml',
+            date_from=date_from,
+            date_to=date_to
         )
 
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
         file_path = os.path.join(config.CACHE_DIR, safe_name)
         osm_data, osm_doc_time, updating = load_osm_document_cached(
-                file_path, server_url, query, returns_json)
+            file_path, server_url, query, returns_json)
 
         if returns_json:
             regex = 'runtime error:'
@@ -130,16 +131,14 @@ class OverpassProvider(AbstractDataProvider):
             return {
                 'features': osm_data['elements'],
                 'last_update': datetime.datetime.fromtimestamp(
-                        osm_doc_time).strftime(
-                        '%Y-%m-%d %H:%M:%S'),
+                    osm_doc_time).strftime('%Y-%m-%d %H:%M:%S'),
                 'updating_status': updating
             }
         else:
             return {
                 'file': osm_data,
                 'last_update': datetime.datetime.fromtimestamp(
-                        osm_doc_time).strftime(
-                        '%Y-%m-%d %H:%M:%S'),
+                    osm_doc_time).strftime('%Y-%m-%d %H:%M:%S'),
                 'updating_status': updating
             }
 
@@ -185,6 +184,7 @@ class OverpassProvider(AbstractDataProvider):
         :type element_ids: Dict[str, list]
         """
         parameters = dict()
+        query = self.query_with_id
 
         if polygon:
             try:
@@ -196,29 +196,8 @@ class OverpassProvider(AbstractDataProvider):
             parameters['polygon'] = polygon_string
 
         if element_ids:
-            query = self.query_with_id
-            element_parameters = ''
-            if len(element_ids['node']) > 0:
-                node_parameter = 'node(id:{NODE_IDS});'
-                node_parameter = node_parameter.format(
-                    NODE_IDS=','.join(element_ids['node'])
-                )
-                element_parameters += node_parameter
-
-            if len(element_ids['way']) > 0:
-                way_parameter = 'way(id:{WAY_IDS});'
-                way_parameter = way_parameter.format(
-                    WAY_IDS=','.join(element_ids['way'])
-                )
-                element_parameters += way_parameter
-
-            if len(element_ids['relation']) > 0:
-                relation_parameter = 'relation(id:{REL_IDS});'
-                relation_parameter = relation_parameter.format(
-                    REL_IDS=','.join(element_ids['relation'])
-                )
-                element_parameters += relation_parameter
-            parameters['element_parameters'] = element_parameters
+            element_ids_to_s = cast_element_ids_to_s(element_ids)
+            parameters['element_parameters'] = element_ids_to_s
 
         elif feature_values:
             query = self.query_with_value % {
@@ -236,13 +215,13 @@ class OverpassProvider(AbstractDataProvider):
         if date_from and date_to:
             try:
                 datetime_from = datetime.datetime.utcfromtimestamp(
-                        float(date_from) / 1000.)
+                    float(date_from) / 1000.)
                 datetime_to = datetime.datetime.utcfromtimestamp(
-                        float(date_to) / 1000.)
+                    float(date_to) / 1000.)
                 date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
                 diff_query = '[diff:"{date_from}", "{date_to}"];'.format(
-                        date_from=datetime_from.strftime(date_format),
-                        date_to=datetime_to.strftime(date_format)
+                    date_from=datetime_from.strftime(date_format),
+                    date_to=datetime_to.strftime(date_format)
                 )
                 query = diff_query + query
             except ValueError as e:
@@ -255,13 +234,13 @@ class OverpassProvider(AbstractDataProvider):
         return query
 
     def get_attic_data(
-        self,
-        polygon,
-        feature_key,
-        overpass_verbosity='meta',
-        feature_values=None,
-        date_from=None,
-        date_to=None):
+            self,
+            polygon,
+            feature_key,
+            overpass_verbosity='meta',
+            feature_values=None,
+            date_from=None,
+            date_to=None):
         """Get osm data.
 
         :param polygon: list of array describing polygon area e.g.
@@ -295,11 +274,11 @@ class OverpassProvider(AbstractDataProvider):
         server_url = os.environ['ATTIC_DATA_SERVER_URL']
 
         query = self.parse_url_parameters(
-                polygon=polygon,
-                feature_key=feature_key,
-                feature_values=feature_values,
-                overpass_verbosity=overpass_verbosity,
-                response_format='json'
+            polygon=polygon,
+            feature_key=feature_key,
+            feature_values=feature_values,
+            overpass_verbosity=overpass_verbosity,
+            response_format='json'
         )
 
         safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
@@ -317,7 +296,7 @@ class OverpassProvider(AbstractDataProvider):
             safe_name = hashlib.md5(query.encode('utf-8')).hexdigest() + '.osm'
             file_path = os.path.join(config.CACHE_DIR, safe_name)
             osm_data, osm_doc_time, updating = load_osm_document_cached(
-                    file_path, server_url, query, True)
+                file_path, server_url, query, True)
 
         if osm_data:
             element_ids = {
@@ -336,17 +315,16 @@ class OverpassProvider(AbstractDataProvider):
                 element_ids=element_ids
             )
             safe_name = hashlib.md5(
-                    element_query.encode('utf-8')).hexdigest() + '.osm'
+                element_query.encode('utf-8')).hexdigest() + '.osm'
             file_path = os.path.join(config.CACHE_DIR, safe_name)
             print('Query attic data')
             osm_data, osm_doc_time, updating = load_osm_document_cached(
-                    file_path, server_url, element_query, False)
+                file_path, server_url, element_query, False)
 
             return {
                 'file': osm_data,
                 'last_update': datetime.datetime.fromtimestamp(
-                        osm_doc_time).strftime(
-                        '%Y-%m-%d %H:%M:%S'),
+                    osm_doc_time).strftime('%Y-%m-%d %H:%M:%S'),
                 'updating_status': updating
             }
 
