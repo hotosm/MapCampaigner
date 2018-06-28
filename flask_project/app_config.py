@@ -9,7 +9,7 @@ except ImportError:
 try:
     DATA_FOLDER = os.environ['DATA_FOLDER']
 except KeyError:
-    DATA_FOLDER = '/home/web/field-campaigner-data'
+    DATA_FOLDER = 'home/web/field-campaigner-data'
 
 
 class Config(object):
@@ -26,7 +26,7 @@ class Config(object):
     OSMCHA_FRONTEND_URL = 'https://osmcha.mapbox.com/'
 
     # CAMPAIGN DATA
-    campaigner_data_folder = DATA_FOLDER
+    campaigner_data_folder = "./campaign_manager/static"
 
 
 class ProductionConfig(Config):
