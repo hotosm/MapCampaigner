@@ -133,7 +133,7 @@
                                             {% for featuretype in types  %}
                                                 {% if featuretype.is_template %}
                                                 <li onclick="addSelectedType(this)">{{ featuretype.name }}<li>
-                                                <p> {{ featuretype.featureTemplate.description }} </p>    
+                                                <p> {{ featuretype.feature_template.description }} </p>    
                                                 {% endif %}
                                             {%endfor%}
                                         </ul>
@@ -437,6 +437,14 @@
 {% block after_base_js %}
     <script type="text/javascript">
 
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                showNotifications('{{ message }}', 'danger');
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         var taskStatusFillColor = {
             'READY': '#FFFFFF',
             'unassigned': '#D3D3D3',
@@ -681,12 +689,12 @@
                         $('#list-osm-users').append($('<option/>', {
                             value: value,
                             text: value
-                        }));
+                            }));
                     });
                 }
-            });
-        }
+            });    
 
+        }
 
         //------------------ BUTTONS ------------------//
 
@@ -730,20 +738,32 @@
         }
 
         function updated(response) {
-            /*
-            if($.inArray(response.display_name, {{ allowed_managers.osm_user_id | safe }}) == -1) {
-                location.href='/403';
-            }
-            */
             {% if action == 'edit' %}
                 var is_manager = $.inArray(response.display_name, managers_list);
                 if(is_manager == -1){
+                    {% if mode != "copy" %} 
                     location.href='/404';
+                    {% else %}
+                    $('#form-panel').show();
+                    $('#campaign-panel').show();
+                    $('#submit').show();
+                    {% endif %}
                 }else {
                     $('#form-panel').show();
                     $('#campaign-panel').show();
                     $('#submit').show();
                 }
+                
+                $('#form-panel').show();
+                $('#campaign-panel').show();
+                $('#submit').show();
+                if(!managers_list.includes(response.display_name)){
+                    managers_list.push(response.display_name);
+                    $('#managers-list').append(
+                            '<span class="manager">' + response.display_name
+                    );
+                }
+
             {% else %}
                 $('#form-panel').show();
                 $('#campaign-panel').show();

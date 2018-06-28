@@ -4,8 +4,11 @@ import os
 # noinspection PyUnresolvedReferences
 try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
+    OAUTH_CONSUMER_KEY = ''
+    OAUTH_SECRET = ''
 try:
     DATA_FOLDER = os.environ['DATA_FOLDER']
 except KeyError:
@@ -19,6 +22,9 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = THE_SECRET_KEY
+    OAUTH_CONSUMER_KEY = OAUTH_CONSUMER_KEY
+    OAUTH_SECRET = OAUTH_SECRET
+    MAX_AREA_SIZE = 320000000
 
     # OSMCHA ATTRIBUTES
     _OSMCHA_DOMAIN = 'https://osmcha.mapbox.com/'
