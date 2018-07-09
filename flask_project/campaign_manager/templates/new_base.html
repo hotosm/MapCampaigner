@@ -154,8 +154,8 @@
         var loginProcess = false;
 
         var auth = osmAuth({
-            oauth_secret: '{{ oauth_secret }}',
-            oauth_consumer_key: '{{ oauth_consumer_key }}',
+            oauth_secret: '{{ oauth_param("oauth_secret") }}',
+            oauth_consumer_key: '{{ oauth_param("oauth_consumer_key") }}',
             auto: true,
             landing: window.location.origin + '/land',
             loading: function () {
@@ -230,8 +230,6 @@
                     id: u.getAttribute('id'),
                     count: changesets.getAttribute('count'),
                 };
-
-                // FIND A WAY TO SHIFT THIS FUNCTION WHEN USER LOGS IN FOR THE FIRST TIME
                 var user = {};
                 user['username'] = o.display_name;
                 var url = '/add_osm_user'
@@ -304,7 +302,7 @@
 
         $('#create_campaign').click(function () {
             if (auth.authenticated()) {
-                location.href = '/create';
+                $('.wrapper').show();
             } else {
                 showAuthAlert();
             }

@@ -84,6 +84,8 @@
 
 {% endblock %}
 
+{% include 'modals/create-or-copy-campaign.html' %}
+
 {% block before_base_js %}
 
     <style type="text/css">
@@ -190,9 +192,9 @@
             maxZoom: 15
         }).addTo(map);
 
-        $('#create-campaign').click(function () {
+        $('#create_campaign').click(function () {
             if (window.isAuthenticated) {
-                location.href='/create';
+                $('.wrapper').show();
             } else {
                 showNotifications('You need to login first.', 'danger');
             }
@@ -205,7 +207,7 @@
 {% block after_base_js %}
 
     <script type="text/javascript">
-        
+
         var table = null;
         $('.dataTables_filter').addClass('pull-left');
         var mapLayers = new L.FeatureGroup();
@@ -339,6 +341,11 @@
         function openManageCampaign(event, element, campaignUUID) {
             event.stopPropagation();
             location.href= '/edit/' + campaignUUID;
+        }
+
+        function openCopyCampaign(event, element, campaignUUID) {
+            event.stopPropagation();
+            location.href= '/copy/' + campaignUUID;
         }
 
         function updated(user) {
@@ -475,7 +482,7 @@
         }
 
         function getTotalCampaigns() {
-            $('#active-campaign-number').html({{ active_campaigns }});              
+            $('#active-campaign-number').html({{ active_campaigns_count }});              
         }
 
 
@@ -516,11 +523,16 @@
                 if(user == '{{managers.osm_user_id}}'){
                 action_button = '<button type="button" href="#" class="campaign-list btn"'+
                                                 'onclick="openManageCampaign(event, this, \''+'{{ campaign.uuid }}'+'\')">'+
-                                                '<span class="pull-left">Manage</span>'+
+                                                '<span class="pull-left">{{ authority }}</span>'+
                                 '</button>'
                 }                
                 {% endfor %}
-
+                {% if authority == "Copy" %}
+                                action_button = '<button type="button" href="#" class="campaign-list btn"'+
+                                                'onclick="openCopyCampaign(event, this, \''+'{{ campaign.uuid }}'+'\')">'+
+                                                '<span class="pull-left">{{ authority }}</span>'+
+                                '</button>'
+                {% endif %}
                 {% for manager in campaign.users %}
                     participants.push('{{ manager.osm_user_id }}')
                 {% endfor %}
@@ -574,7 +586,7 @@
                                             tags+
                                         '</div>'+
                                         '<div class="campaign-description ellipsis multiline">'+
-                                            '{{ campaign.description }}'+
+                                            `{{ campaign.description }}`+
                                         '</div>'+
                                     '</div>'+
                                     '<div class="col-xs-4 campaign-thumbnail">'+
@@ -604,7 +616,7 @@
 
                 // Add campaign layer
                 
-                var campaignLayer = L.geoJson({{ geometry[loop.index0]|safe }}, {
+                var campaignLayer = L.geoJson({{ geometries[loop.index0]|safe }}, {
                     onEachFeature: function (feature, layer) {
                         // Check if feature is a polygon
                         if (feature.geometry.type === 'Polygon') {
