@@ -366,13 +366,7 @@
 
         // Feature layer group
         var featureGroups = {};
-
-        var campaign_types = [];
-        {% if campaign.feature_types %}
-            {% for type in campaign.feature_types %}
-            campaign_types.push('{{ type.name }}');
-            {% endfor %}
-        {% endif %}
+        var campaign_types = {{ campaign_types | safe}};
         var start_date = "{{ start_date }}";
         var end_date = "{{ end_date }}";
         // var remote_projects = {{ remote_projects|safe }};

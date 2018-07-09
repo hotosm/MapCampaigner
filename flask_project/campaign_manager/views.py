@@ -44,9 +44,10 @@ from campaign_manager.data_providers.tasking_manager import \
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.campaign_serializer import (
     campaign_data,
-    get_campaign_function,
+    get_campaign_functions,
     get_campaign_geometry,
-    get_campaign_type,
+    get_campaign_feature_types,
+    get_selected_functions_in_string,
     get_new_campaign_context,
     get_campaign_context,
     get_campaign_form
@@ -67,25 +68,9 @@ from campaign_manager.utilities import (
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
+from campaign_manager.context_processor import inject_oauth_param
 
-
-@campaign_manager.context_processor
-def utility_processor():
-    """Runs before the Template is rendered and injects Oauth param value.
-    :return: function providing OAuth parameter.
-    :rtype: dict"""
-    def oauth_param(oauth_param):
-        """Returns the OAuth parameter.
-        :param oauth_param: Required secret paramter for the OSM OAuth.
-        :type oauth_param: str
-        :return: secret OAuth parameter.
-        :rtype: str
-        """
-        context = dict(
-            oauth_consumer_key=Config.OAUTH_CONSUMER_KEY,
-            oauth_secret=Config.OAUTH_SECRET)
-        return context[oauth_param]
-    return dict(oauth_param=oauth_param)
+inject_oauth_param = campaign_manager.context_processor(inject_oauth_param)
 
 
 @campaign_manager.route('/add_osm_user', methods=['POST'])
@@ -213,7 +198,7 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """
     campaign_ui = ''
     campaign_obj = Campaign().get_by_uuid(uuid)
-    functions = get_campaign_function(campaign_obj.functions)
+    functions = get_campaign_functions(campaign_obj.functions)
     additional_data = clean_argument(request.args)
     insight_function = functions[insight_function_id]
     SelectedFunction = getattr(
@@ -500,8 +485,15 @@ def get_campaign(uuid):
         context['campaign'] = campaign_obj
         context['map_provider'] = map_provider()
         functions = campaign_obj.functions
-        context['selected_functions'] = get_campaign_function(functions)
+        functions = get_campaign_functions(functions)
+        context['selected_functions'] = get_selected_functions_in_string(
+            campaign_obj,
+            functions)
+        context['campaign_types'] = get_campaign_feature_types(
+            campaign_obj.feature_types
+            )
         context['geometry'] = get_campaign_geometry(campaign_obj)
+        context['remote_projects'] = campaign_obj.remote_projects
         # Start date
         try:
             start_date = campaign_obj.start_date
@@ -779,6 +771,7 @@ def save_new_campaign():
     # removes existing flash message from flask session
     _session.pop('_flashes', None)
     form = CampaignForm(request.form)
+    print(form.data)
     try:
         if form.validate_on_submit() and request.method == 'POST':
             data = form.data
@@ -797,7 +790,8 @@ def save_new_campaign():
                 create_on=datetime.now(),
                 uuid=data['uuid'],
                 version=2,
-                map_type=data['map_type'])
+                map_type=data['map_type'],
+                remote_projects=data['remote_projects'])
             created_campaign.create()
             created_campaign.save_feature_types(data)
             created_campaign.save_geometry(data)
@@ -874,7 +868,7 @@ def save_copied_campaign(uuid):
                 url_for(
                     'campaign_manager.get_campaign',
                     uuid=campaign_copy.uuid)
-                    )
+                )
     except Exception as e:
         session.rollback()
         try:

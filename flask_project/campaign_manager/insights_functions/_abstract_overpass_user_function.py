@@ -59,18 +59,12 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
 
             try:
                 features = self.feature.split('=')
+                coordinates = self.campaign.get_task_boundary_coordinates()
                 if len(features) == 0:
                     return []
                 elif len(features) == 2:
                     feature_key = features[0]
                     feature_values = features[1].split(',')
-                    coordinates = session.query(
-                        TaskBoundary.coordinates.ST_AsGeoJSON()
-                        ).filter(
-                        TaskBoundary.campaign_id == self.campaign.id
-                        ).first()
-                    coordinates = ast.literal_eval(coordinates[0])
-                    coordinates = coordinates['coordinates'][0]
                     overpass_data = OverpassProvider().get_attic_data(
                         polygon=coordinates,
                         overpass_verbosity='meta',
@@ -81,13 +75,6 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
                     )
                 else:
                     feature_key = features[0]
-                    coordinates = session.query(
-                        TaskBoundary.coordinates.ST_AsGeoJSON()
-                        ).filter(
-                        TaskBoundary.campaign_id == self.campaign.id
-                        ).first()
-                    coordinates = ast.literal_eval(coordinates[0])
-                    coordinates = coordinates['coordinates'][0]
                     overpass_data = OverpassProvider().get_attic_data(
                         polygon=coordinates,
                         overpass_verbosity='meta',

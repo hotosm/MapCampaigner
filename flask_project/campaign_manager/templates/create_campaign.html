@@ -1098,9 +1098,11 @@
             });
 
             $(".submit-button").click(function () {
+                $('#form-panel').LoadingOverlay("show", {image: "/campaign_manager/static/resources/loading-spinner.gif"});
                 if (!$('.submit-button').hasClass('disabled')) {
                     $("#campaign-form").submit();
                 }
+                $('.submit-button').addClass('disabled');
             });
 
             $('#campaign-form input').addClass('form-control');
