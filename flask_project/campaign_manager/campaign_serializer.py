@@ -12,7 +12,11 @@ from campaign_manager.models.models import (
     FeatureType,
     Team
 )
-from campaign_manager.utilities import map_provider, get_types
+from campaign_manager.utilities import (
+    get_types,
+    map_provider,
+    get_allowed_managers
+)
 
 
 def campaign_data():
@@ -62,7 +66,7 @@ def get_selected_functions():
     return funct_dict
 
 
-def get_campaign_function(functions):
+def get_campaign_functions(functions):
     """Serializer for campaign functions.
     :param functions: Function model objects having insight functions for the
             campaign.
@@ -73,21 +77,29 @@ def get_campaign_function(functions):
     function_dict = {}
     i = 1
     for function in functions:
-        function_dict['function-' + str(i)] = {}
+        key = 'function-' + str(i)
+        function_dict[key] = {}
         if(function.name == "FeatureAttributeCompleteness"):
-            function_name = "Feature completeness"
+            function_name = (
+                "Feature completeness for " +
+                function.types.name)
         elif(function.name == "CountFeature"):
-            function_name = "No. of feature in group"
+            function_name = (
+                "No. of feature in group for " +
+                function.types.name)
         elif(function.name == "MapperEngagement"):
             function_name = "Length of mapper engagement"
-        function_dict['function-' + str(i)]['name'] = function_name
-        function_dict['function-' + str(i)]['function'] = function.name
-        function_dict['function-' + str(i)]['feature'] = function.feature
-        function_dict['function-' + str(i)]['type'] = function.types.name
-        function_dict['function-' + str(i)]['attributes'] = {}
-        for tag in function.types.attributes:
-            tag_name = tag.attribute_name
-            function_dict['function-' + str(i)]['attributes'][tag_name] = []
+        function_dict[key]['name'] = function_name
+        function_dict[key]['function'] = function.name
+        function_dict[key]['feature'] = function.feature
+        function_dict[key]['type'] = function.types.name
+        function_dict[key]['attributes'] = {}
+        for attribute in function.attributes:
+            name = attribute.name
+            function_dict[key]['attributes'][name] = []
+            for val in attribute.value:
+                function_dict[key]['attributes'][name].append(val)
+
         i += 1
     return function_dict
 
@@ -118,7 +130,7 @@ def get_campaign_geometry(campaign):
     return geomtery_dict
 
 
-def get_campaign_type(campaign_obj):
+def get_campaign_types(campaign_obj):
     """Serializer for campaign feature types.
     :param campaign: Campaign model object to extract feature type for the
            campaign.
@@ -132,8 +144,8 @@ def get_campaign_type(campaign_obj):
         campaign_types[feature_type.name]["type"] = feature_type.name
         campaign_types[feature_type.name]["feature"] = feature_type.feature
         campaign_types[feature_type.name]["tags"] = {}
-        for x in feature_type.attributes:
-            campaign_types[feature_type.name]['tags'][x.attribute_name] = []
+        for x in feature_type.tags:
+            campaign_types[feature_type.name]['tags'][x.name] = []
     return campaign_types
 
 
@@ -174,9 +186,9 @@ def get_campaign_form(campaign_obj):
     from campaign_manager.forms.campaign import CampaignForm
     form = CampaignForm()
     form.campaign_managers.data = campaign_obj.get_managers()
-    form.types.data = get_campaign_type(campaign_obj)
+    form.types.data = get_campaign_types(campaign_obj)
     form.geometry.data = json.dumps(get_campaign_geometry(campaign_obj))
-    form.selected_functions.data = json.dumps(get_campaign_function(
+    form.selected_functions.data = json.dumps(get_campaign_functions(
         campaign_obj.functions))
     form.name.data = campaign_obj.name
     form.remote_projects.data = campaign_obj.remote_projects
@@ -211,3 +223,52 @@ def get_new_campaign_context():
     context['teams'] = teams
     context['link_to_omk'] = False
     return context
+
+
+def get_campaign_feature_types(feature_types):
+    """ Serializes the campaign features to render campaign details.
+    :param feature_types: List of campaign FeatureType objects.
+    :type feature_types: Object
+    :return: Campaign features in serialized form.
+    :rtype: Dict
+    """
+    type_dict = {}
+    i = 1
+    for feature_type in feature_types:
+        type_dict['type-' + str(i)] = {}
+        type_dict['type-' + str(i)]['feature'] = feature_type.feature
+        type_dict['type-' + str(i)]['type'] = feature_type.name
+        type_dict['type-' + str(i)]['tags'] = {}
+        for tag in feature_type.tags:
+            type_dict['type-' + str(i)]['tags'][tag.name] = []
+        i += 1
+    return type_dict
+
+
+def get_selected_functions_in_string(campaign_obj, functions):
+    """ Get selected function in string to obtain overpass data based on
+    selected campaign function.
+    :param functions: Serialized campaign functions and attributes.
+    :type functions: dict
+    :return: Get selected function in string
+    :rtype: str
+    """
+    for key, value in functions.items():
+        try:
+            SelectedFunction = getattr(
+                insights_functions, value['function'])
+            additional_data = {}
+            if 'type' in value:
+                additional_data['type'] = value['type']
+            selected_function = SelectedFunction(
+                campaign_obj,
+                feature=value['feature'],
+                required_attributes=value['attributes'],
+                additional_data=additional_data)
+            value['type_required'] = \
+                ('%s' % selected_function.type_required).lower()
+            value['manager_only'] = selected_function.manager_only
+            value['name'] = selected_function.name()
+        except AttributeError:
+            value = None
+    return json.dumps(functions).replace('None', 'null')

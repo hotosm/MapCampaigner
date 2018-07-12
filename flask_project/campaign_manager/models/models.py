@@ -22,6 +22,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import and_, or_
 from sqlalchemy.sql.expression import true
 from geoalchemy2 import Geometry
@@ -74,8 +75,9 @@ featureTypeAssociations = Table(
     Column(
         'feature_id',
         Integer,
-        ForeignKey('attribute.id'),
-        primary_key=True),
+        ForeignKey('tag.id'),
+        primary_key=True
+        ),
     Column(
         'type_id',
         Integer,
@@ -108,6 +110,21 @@ functionCampaignAssociations = Table(
         Integer,
         ForeignKey('function.id')))
 
+functionAttributeAssociations = Table(
+    'functionAttributeAssociations',
+    Base.metadata,
+    Column(
+        'function_id',
+        Integer,
+        ForeignKey('function.id')
+        ),
+    Column(
+        'attribute_id',
+        Integer,
+        ForeignKey('attribute.id')
+        )
+    )
+
 
 class User(Base):
 
@@ -119,10 +136,10 @@ class User(Base):
         primary_key=True,
         autoincrement=True)
     osm_user_id = Column(
-        String(20),
+        String(100),
         unique=True,
         nullable=False)
-    email = Column(String(40))
+    email = Column(String(100))
     campaign_creator = relationship(
         'Campaign',
         back_populates='creator',
@@ -235,7 +252,7 @@ class Campaign(Base):
         back_populates='campaign',
         lazy=True)
     name = Column(
-        String(20),
+        String(100),
         unique=True,
         nullable=False)
     description = Column(String(200))
@@ -253,8 +270,8 @@ class Campaign(Base):
         default=False)
     version = Column(Integer)
     uuid = Column(String(100))
-    remote_projects = Column(String(30))
-    map_type = Column(String(20))
+    remote_projects = Column(ARRAY(String(100)))
+    map_type = Column(String(100))
     thumbnail = Column(String(100))
 
     def __init__(self, **kwargs):
@@ -303,9 +320,38 @@ class Campaign(Base):
                 date >= Campaign.end_date)).all()
 
     def get_participants(self):
-        """ Returns the total number of particpants in the
+        """ Returns the total number of managers in the
         campaign."""
         return len(self.users)
+
+    def get_task_boundary_coordinates(self):
+        """ Returns the coordinates of the TaskBoundary. """
+        coordinates = self.get_task_boundary_as_geoJSON()
+        coordinates = ast.literal_eval(coordinates[0])
+        coordinates = coordinates['coordinates'][0]
+        return coordinates
+
+    def get_participant_count(uuid):
+        """ Returns the participant count for the campaign. """
+        participants = []
+        campaign = Campaign().get_by_uuid(uuid)
+        # add all managers to the participant count
+        for manager in campaign.users:
+            participant.append(manager)
+        # add all team members to the participant count
+        for task_boundary in campaign.task_boundaries:
+            for team_member in taskboundary.teams.users:
+                participant.append(team_member)
+        return len(set(participant))
+
+    def update_participants_count(self, participants_count, campaign_type):
+        """ Updates the participant count of individual campaign feature. """
+        feature_type = session.query(FeatureType).filter(
+            FeatureType.campaigns.any(
+                Campaign.id == self.id)
+            ).first()
+        feature_type.participant_count += participants_count
+        session.commit()
 
     def get_task_boundary(self):
         """ Returns the task_boundary of the campaign. """
@@ -332,9 +378,9 @@ class Campaign(Base):
         session.commit()
 
     def save_feature_types(self, data):
-        """ Creates a new feature type and assigns it to campaign object.
         """
-        # pre-processing featureTypes and feature-attributes
+            Creates or updates the campaign object in the database.
+        """
         data_types = ast.literal_eval(data['types'])
         for _type in data_types:
             type_dict = data_types[_type]
@@ -342,14 +388,16 @@ class Campaign(Base):
             feature = type_dict['feature']
             featureType = FeatureType(
                 feature=feature,
-                name=name)
+                name=name,
+                participant_count=0
+                )
             featureType.create()
-            # commit attributes for the feature to the database
             for _tag in type_dict['tags']:
-                attribute = Attribute(
-                    attribute_name=_tag)
-                attribute.create()
-                featureType.attributes.append(attribute)
+                tag = Tag(
+                    name=_tag
+                    )
+                tag.create()
+                featureType.tags.append(tag)
             session.commit()
             self.feature_types.append(featureType)
         session.commit()
@@ -364,7 +412,6 @@ class Campaign(Base):
     def save_geometry(self, data):
         """ Creates a new geomtery object and assigns it to campaign.
         """
-        # pre-processing geometry to obtain campaign geometry and taskboundary
         data_geometry = ast.literal_eval(data['geometry'])
         geom = data_geometry['features'][0]['geometry']
         geom_obj = from_shape(asShape(geom), srid=4326)
@@ -397,21 +444,34 @@ class Campaign(Base):
             taskboundary.delete()
 
     def save_insight_functions(self, data):
-        """ Creates a new insight function for the campaign.
         """
-        # pre-processing selected_function to obtain functions for the campaign
+        Creates or updates the campaign object in the database.
+        """
         data_function_selected = ast.literal_eval(data['selected_functions'])
         for function in data_function_selected:
             name = data_function_selected[function]['function']
             feature = data_function_selected[function]['feature']
             selected_type = data_function_selected[function]['type']
-            feature_type = FeatureType()
-            _type = feature_type.get_feature_type_by_name(selected_type)
+            _type = FeatureType().get_feature_type_by_name(selected_type)
             selected_function = Function(
                 name=name,
                 feature=feature,
-                type_id=_type.id)
+                type_id=_type.id
+                )
             selected_function.create()
+            for attr in data_function_selected[function]['attributes']:
+                name = attr
+                value = []
+                arr = data_function_selected[function]['attributes'][attr]
+                for val in arr:
+                    value.append(val)
+                attribute = Attribute(
+                    name=name,
+                    value=value
+                    )
+                attribute.create()
+                selected_function.attributes.append(attribute)
+            session.commit()
             self.functions.append(selected_function)
         session.commit()
 
@@ -423,7 +483,6 @@ class Campaign(Base):
 
     def save_managers(self, data):
         """ Assign users as campaign managers. """
-        # pre-processing managers to obtain campaign managers
         user = User()
         managers = self.get_managers()
         for manager in data['campaign_managers']:
@@ -501,7 +560,6 @@ class Campaign(Base):
     def delete(self):
         """ Deletes the campaign from the database. """
         session.delete(self)
-        session.commit()
 
 
 class Chat(Base):
@@ -589,7 +647,7 @@ class FeatureTemplate(Base):
         primary_key=True,
         autoincrement=True)
     name = Column(
-        String(20),
+        String(100),
         nullable=False)
     description = Column(String(200))
     featureType_id = Column(
@@ -613,9 +671,11 @@ class FeatureType(Base):
         primary_key=True,
         autoincrement=True)
     feature = Column(
-        String(20),
+        String(100),
         nullable=False)
-    name = Column(String(20))
+    name = Column(String(100))
+    participant_count = Column(
+        Integer)
     is_template = Column(
         BOOLEAN(),
         default=False)
@@ -631,8 +691,8 @@ class FeatureType(Base):
         secondary=typeCampaignAssociations,
         lazy='subquery',
         back_populates='feature_types')
-    attributes = relationship(
-        'Attribute',
+    tags = relationship(
+        'Tag',
         secondary=featureTypeAssociations,
         lazy='subquery',
         back_populates='feature_types')
@@ -661,24 +721,25 @@ class FeatureType(Base):
         session.delete(self)
 
 
-class Attribute(Base):
+class Tag(Base):
 
-    __tablename__ = 'attribute'
+    __tablename__ = 'tag'
 
     id = Column(
         'id',
         Integer,
         primary_key=True,
         autoincrement=True)
-    attribute_name = Column(String(20))
+    name = Column(String(100))
     feature_types = relationship(
         'FeatureType',
         secondary=featureTypeAssociations,
         lazy='subquery',
-        back_populates='attributes')
+        back_populates='tags'
+        )
 
     def __init__(self, **kwargs):
-        super(Attribute, self).__init__(**kwargs)
+        super(Tag, self).__init__(**kwargs)
 
     def create(self):
         """ Creates and saves the current model to DB. """
@@ -736,7 +797,7 @@ class Team(Base):
         primary_key=True,
         autoincrement=True)
     name = Column(
-        String(20),
+        String(100),
         nullable=False)
     boundary_id = Column(
         Integer,
@@ -785,6 +846,12 @@ class Function(Base):
         Integer,
         ForeignKey('featureType.id'),
         nullable=False)
+    attributes = relationship(
+        'Attribute',
+        secondary=functionAttributeAssociations,
+        lazy='subquery',
+        back_populates='functions'
+        )
     types = relationship(
         'FeatureType',
         back_populates='function')
@@ -805,3 +872,31 @@ class Function(Base):
     def delete(self):
         """ Adds the object in the delete queue. """
         session.delete(self)
+
+
+class Attribute(Base):
+
+    __tablename__ = 'attribute'
+
+    id = Column(
+        'id',
+        Integer,
+        primary_key=True,
+        autoincrement=True
+        )
+    name = Column(String(100))
+    value = Column(ARRAY(String(100)))
+    functions = relationship(
+        'Function',
+        secondary=functionAttributeAssociations,
+        lazy='subquery',
+        back_populates='attributes'
+        )
+
+    def __init__(self, **kwargs):
+        super(Attribute, self).__init__(**kwargs)
+
+    def create(self):
+        """ Creates and saves the current model to DB """
+        session.add(self)
+        session.commit()

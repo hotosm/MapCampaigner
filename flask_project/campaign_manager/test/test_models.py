@@ -25,6 +25,7 @@ def create_session(engine):
 
 
 engine_test = db_setUp()
+Base.metadata.drop_all(engine_test)
 Base.metadata.create_all(engine_test)
 session = create_session(engine_test)
 
@@ -194,14 +195,14 @@ class TestCampaign(TestCase):
 """Tests for Table: FeatureType"""
 
 
-def get_mock_attributes(feature_type_object):
-    attribute1 = Attribute(attribute_name="attribute1")
-    attribute2 = Attribute(attribute_name="attribute2")
+def get_mock_tags(feature_type_object):
+    attribute1 = Tag(name="attribute1")
+    attribute2 = Tag(name="attribute2")
     session.add(attribute1)
     session.add(attribute2)
     session.commit()
-    feature_type_object.attributes.append(attribute1)
-    feature_type_object.attributes.append(attribute2)
+    feature_type_object.tags.append(attribute1)
+    feature_type_object.tags.append(attribute2)
     session.commit()
 
 
@@ -212,7 +213,7 @@ def get_mock_featureType(feature, name):
         )
     session.add(mock_feature_type)
     session.commit()
-    get_mock_attributes(mock_feature_type)
+    get_mock_tags(mock_feature_type)
     return mock_feature_type
 
 
@@ -237,8 +238,8 @@ class TestFeatureType(TestCase):
 
     def test_03_attributes(self):
         mock_feature_type = session.query(FeatureType).first()
-        attributes_obj = mock_feature_type.attributes
-        attributes = [x.attribute_name for x in attributes_obj]
+        attributes_obj = mock_feature_type.tags
+        attributes = [x.name for x in attributes_obj]
         attribute_check = (attributes == ["attribute1", "attribute2"])
         self.assertTrue(attribute_check)
 
@@ -270,7 +271,7 @@ def get_mock_template_featureType(name, feature, is_template):
         )
     session.add(featureType)
     session.commit()
-    get_mock_attributes(featureType)
+    get_mock_tags(featureType)
     return featureType
 
 
@@ -284,7 +285,7 @@ class TestFeatureTemplate(TestCase):
     def test_01_is_template(self):
         featureType = get_mock_template_featureType(
             "feature",
-            "feature_nane",
+            "feature_name",
             True
             )
         self.assertTrue(featureType.is_template)
