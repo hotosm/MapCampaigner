@@ -285,6 +285,10 @@ class Campaign(Base):
     def save(self):
         session.commit()
 
+    def get_first(self):
+        """ Returns the first campaign in the DB. """
+        return session.query(Campaign).first()
+
     def get_by_uuid(self, uuid):
         """ Returns the campaign object based on the uuid. """
         return session.query(Campaign).filter(Campaign.uuid == uuid).first()

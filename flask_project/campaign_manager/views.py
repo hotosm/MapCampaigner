@@ -15,6 +15,7 @@ from urllib import request as urllibrequest
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup
 from sqlalchemy.sql.expression import true
+from flask_debugtoolbar_lineprofilerpanel.profile import line_profile
 from geoalchemy2.shape import from_shape
 from shapely.geometry import asShape
 from flask import (
@@ -70,10 +71,12 @@ from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.context_processor import inject_oauth_param
 
+
 inject_oauth_param = campaign_manager.context_processor(inject_oauth_param)
 
 
 @campaign_manager.route('/add_osm_user', methods=['POST'])
+@line_profile
 def add_osm_user():
     """Adds a new user to DB.
     :return: confirmation of new user registeration.
@@ -91,6 +94,7 @@ def add_osm_user():
 
 
 @campaign_manager.route('/')
+@line_profile
 def home():
     """Home page view.
     On this page a summary campaign manager view will be shown with all active
@@ -103,6 +107,7 @@ def home():
 
 
 @campaign_manager.route('/all')
+@line_profile
 def home_all():
     """Home page view.
     On this page a summary campaign manager view will be shown
@@ -116,6 +121,7 @@ def home_all():
 
 
 @campaign_manager.route('/inactive')
+@line_profile
 def home_inactive():
     """Home page view.
     On this page a summary campaign manager view will be shown
@@ -130,6 +136,7 @@ def home_inactive():
 
 
 @campaign_manager.route('/copy')
+@line_profile
 def copy():
     """Home page view.
     On this page a summary campaign manager view will be shown with all active
@@ -159,6 +166,7 @@ def clean_argument(args):
 
 
 @campaign_manager.route('/check_email/<username>', methods=['GET'])
+@line_profile
 def check_user_email(username):
     """Checks user's email field.
     :param username: osm username provided by the OAuth.
@@ -174,6 +182,7 @@ def check_user_email(username):
 
 
 @campaign_manager.route('/register_email', methods=['POST'])
+@line_profile
 def register_user_email():
     """Adds user's email in DB.
     """
@@ -193,6 +202,7 @@ def register_user_email():
 
 
 @campaign_manager.route('/campaign/<uuid>/<insight_function_id>')
+@line_profile
 def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
@@ -226,6 +236,7 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')
+@line_profile
 def get_osmcha_errors_function(uuid):
     try:
         campaign = Campaign.get(uuid)
@@ -239,6 +250,7 @@ def get_osmcha_errors_function(uuid):
 
 
 @campaign_manager.route('/campaign/osmcha_errors_data/<uuid>')
+@line_profile
 def get_osmcha_errors_data(uuid):
     try:
         campaign = Campaign.get(uuid)
@@ -268,6 +280,7 @@ def check_geojson_is_polygon(geojson):
 
 
 @campaign_manager.route('/campaign/<uuid>/boundary-upload-success')
+@line_profile
 def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
@@ -322,6 +335,7 @@ def campaign_boundary_upload_chunk_success(uuid):
 
 
 @campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
+@line_profile
 def campaign_coverage_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
@@ -413,6 +427,7 @@ def upload_chunk(_file, filename):
 @campaign_manager.route(
     '/campaign/<uuid>/coverage-upload-chunk',
     methods=['POST'])
+@line_profile
 def campaign_coverage_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -446,6 +461,7 @@ def campaign_coverage_upload_chunk(uuid):
 @campaign_manager.route(
     '/campaign/<uuid>/boundary-upload-chunk',
     methods=['POST'])
+@line_profile
 def campaign_boundary_upload_chunk(uuid):
     from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
@@ -476,6 +492,7 @@ def campaign_boundary_upload_chunk(uuid):
 
 
 @campaign_manager.route('/campaign/<uuid>')
+@line_profile
 def get_campaign(uuid):
     """Get campaign details.
     """
@@ -516,10 +533,12 @@ def get_campaign(uuid):
         return render_template(
             'campaign_detail.html', **context)
     except Exception as e:
+        print(e)
         abort(404)
 
 
 @campaign_manager.route('/participate')
+@line_profile
 def participate():
     from flask import url_for, redirect
     """Action from participate button, return nearest/recent/active campaign.
@@ -565,6 +584,7 @@ def participate():
 
 
 @campaign_manager.route('/generate_josm', methods=['POST'])
+@line_profile
 def generate_josm():
     """Get overpass xml data from ids store it to temporary folder."""
     error_features = request.values.get('error_features', None)
@@ -587,6 +607,7 @@ def generate_josm():
 
 
 @campaign_manager.route('/download_josm/<uuid>/<file_name>')
+@line_profile
 def download_josm(uuid, file_name):
     """Download josm file."""
     campaign_obj = Campaign().get_by_uuid(uuid)
@@ -601,6 +622,7 @@ def download_josm(uuid, file_name):
 
 
 @campaign_manager.route('/generate_kml', methods=['POST'])
+@line_profile
 def generate_kml():
     """Generate KML file from geojson."""
     features = request.values.get('location', None)
@@ -652,10 +674,10 @@ def generate_kml():
 
 
 @campaign_manager.route('/download_kml/<uuid>/<file_name>')
+@line_profile
 def download_kml(uuid, file_name):
     """Download campaign as a kml file"""
     campaign_obj = Campaign().get_by_uuid(uuid)
-
     file_path = os.path.join(
         config.CACHE_DIR,
         file_name
@@ -753,6 +775,7 @@ def find_attribution(map_url):
 
 
 @campaign_manager.route('/campaign/new', methods=['GET'])
+@line_profile
 def create_campaign():
     """ Get form for creating new campaign """
     from campaign_manager.forms.campaign import CampaignForm
@@ -763,6 +786,7 @@ def create_campaign():
 
 
 @campaign_manager.route('/campaign', methods=['POST'])
+@line_profile
 def save_new_campaign():
     """ Saves new campaign to the DB """
     import uuid
@@ -813,6 +837,7 @@ def save_new_campaign():
 
 
 @campaign_manager.route('/copy/<uuid>', methods=['GET'])
+@line_profile
 def copy_campaign(uuid):
     """Gets the detail for copying campaign.
     """
@@ -834,6 +859,7 @@ def copy_campaign(uuid):
 
 
 @campaign_manager.route('/copy/<uuid>', methods=['POST'])
+@line_profile
 def save_copied_campaign(uuid):
     """ Creates a new object in DB for the copied campaign """
     import uuid as _uuid
@@ -888,6 +914,7 @@ def save_copied_campaign(uuid):
 
 
 @campaign_manager.route('/edit/<uuid>', methods=['GET'])
+@line_profile
 def edit_campaign(uuid):
     from flask import url_for, redirect
     """Gets the campaign detail for edit campaign.
@@ -907,6 +934,7 @@ def edit_campaign(uuid):
 
 
 @campaign_manager.route('/edit/<uuid>', methods=['POST'])
+@line_profile
 def save_edited_campaign(uuid):
     """ Saves the Updated campaign in DB """
     from flask import url_for, redirect

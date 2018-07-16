@@ -4,11 +4,12 @@ import os
 # noinspection PyUnresolvedReferences
 try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
+    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, SENTRY_DSN
 except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
+    SENTRY_DSN = ''
 try:
     DATA_FOLDER = os.environ['DATA_FOLDER']
 except KeyError:
@@ -24,6 +25,7 @@ class Config(object):
     SECRET_KEY = THE_SECRET_KEY
     OAUTH_CONSUMER_KEY = OAUTH_CONSUMER_KEY
     OAUTH_SECRET = OAUTH_SECRET
+    SENTRY_DSN = SENTRY_DSN
     MAX_AREA_SIZE = 320000000
 
     # OSMCHA ATTRIBUTES
