@@ -7,9 +7,9 @@ import shutil
 import requests
 from geoalchemy2.shape import from_shape
 from shapely.geometry import asShape
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from sqlalchemy import (
-    create_engine,
     Column,
     Integer,
     String,
@@ -20,26 +20,13 @@ from sqlalchemy import (
     DateTime,
     BOOLEAN
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import relationship
 from sqlalchemy import and_, or_
 from sqlalchemy.sql.expression import true
 from geoalchemy2 import Geometry
 
+from campaign_manager.sqlalchemy_session import session, Base, engine
 from app_config import Config
-
-
-db_location = os.environ['DATABASE_URL']
-engine = create_engine(db_location, echo=True)
-
-
-Base = declarative_base()
-
-Session = sessionmaker(bind=engine)
-Session.configure(bind=engine)
-session = Session()
-
 
 adminAssociations = Table(
     'adminAssociations',
@@ -562,8 +549,9 @@ class Campaign(Base):
         session.commit()
 
     def delete(self):
-        """ Deletes the campaign from the database. """
+        """ Deletes the Campaign from the DB """
         session.delete(self)
+        session.commit()
 
 
 class Chat(Base):
@@ -664,6 +652,20 @@ class FeatureTemplate(Base):
     def __init__(self, **kwargs):
         super(FeatureTemplate, self).__init__(**kwargs)
 
+    def create(self):
+        """ Creates a new template object and Saves it in DB """
+        session.add(self)
+        session.commit()
+
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(FeatureTemplate).first()
+
+    def delete(self):
+        """Deletes the template object from DB """
+        session.delete(self)
+        session.commit()
+
 
 class FeatureType(Base):
 
@@ -719,6 +721,21 @@ class FeatureType(Base):
         return session.query(FeatureType).filter(
             FeatureType.name == name
             ).order_by(FeatureType.id.desc()).first()
+
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(FeatureType).first()
+
+    def add_tags(self, tag_list):
+        """ Adds attribute to the feature type """
+        for tag in tag_list:
+            self.tags.append(tag)
+        session.commit()
+
+    def delete(self):
+        """ Deletes the feature object from the DB """
+        session.delete(self)
+        session.commit()
 
     def delete(self):
         """ Adds the object in the delete queue. """
@@ -786,9 +803,14 @@ class TaskBoundary(Base):
         session.add(self)
         session.commit()
 
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(TaskBoundary).first()
+
     def delete(self):
-        """ Adds the object in the delete queue. """
+        """ Deletes the boundary object from the DB """
         session.delete(self)
+        session.commit()
 
 
 class Team(Base):
@@ -824,13 +846,33 @@ class Team(Base):
         session.add(self)
         session.commit()
 
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(Team).first()
+
     def get_all(self):
         """ Returns all the teams registered in field campaigner. """
         return session.query(Team).all()
 
+    def update(self, team_dto):
+        """ TO BE DISCUSSED
+        creates a new team in the DB with new name
+
+        if 'name' in team_dto:
+            new_team = Team(
+                name=team_dto['name'],
+                boundary_id=self.boundary_id
+                )
+            new_team.create()
+        """
+        if 'name' in team_dto:
+            self.name = team_dto['name']
+        session.commit()
+
     def delete(self):
-        """ Adds the object in the delete queue. """
+        """ Deletes the object from DB """
         session.delete(self)
+        session.commit()
 
 
 class Function(Base):
@@ -873,6 +915,10 @@ class Function(Base):
         session.add(self)
         session.commit()
 
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(Function).first()
+
     def delete(self):
         """ Adds the object in the delete queue. """
         session.delete(self)
@@ -903,4 +949,13 @@ class Attribute(Base):
     def create(self):
         """ Creates and saves the current model to DB """
         session.add(self)
+        session.commit()
+
+    def get_first(self):
+        """ Returns the first object from the DB """
+        return session.query(Function).first()
+
+    def delete(self):
+        """ Deletes the object from DB """
+        session.delete(self)
         session.commit()
