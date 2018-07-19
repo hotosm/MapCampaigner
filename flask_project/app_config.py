@@ -27,6 +27,7 @@ class Config(object):
     OAUTH_SECRET = OAUTH_SECRET
     SENTRY_DSN = SENTRY_DSN
     MAX_AREA_SIZE = 320000000
+    DB_LOCATION = os.environ['DATABASE_URL']
 
     # OSMCHA ATTRIBUTES
     _OSMCHA_DOMAIN = 'https://osmcha.mapbox.com/'
@@ -55,3 +56,14 @@ class DevelopmentConfig(Config):
     """
     DEVELOPMENT = True
     DEBUG = True
+
+
+class TestingConfig(Config):
+    """Testing environment.
+    """
+    DEBUG = True
+    TESTING = True
+    WTF_CSRF_ENABLED = True
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
+    DB_LOCATION = os.environ['TESTDATABASE_URL']
+    DRIVER_PATH = os.path.abspath('./campaign_manager/test/chromedriver')

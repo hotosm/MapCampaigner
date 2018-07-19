@@ -123,7 +123,7 @@
         <div class="modal-dialog">
 
             <!-- Modal content-->
-            <div class="modal-content">
+            <div class="modal-content" id="login-message">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                         &times;
@@ -336,7 +336,7 @@
                         '<form action="/register_email" method="POST">'+
                             '<input id="user" name="user" type="hidden" value="'+user+'">'+
                             '<input id="email_value" name="email_value" placeholder="Enter your email address" />'+
-                            '<input type="submit" style="margin-left: 10px;"></button>'+
+                            '<input type="submit" id="submit-email" style="margin-left: 10px;"></button>'+
                             '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
                         '</form>'+
                     '</div>'

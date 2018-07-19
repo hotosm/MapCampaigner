@@ -795,7 +795,6 @@ def save_new_campaign():
     # removes existing flash message from flask session
     _session.pop('_flashes', None)
     form = CampaignForm(request.form)
-    print(form.data)
     try:
         if form.validate_on_submit() and request.method == 'POST':
             data = form.data
