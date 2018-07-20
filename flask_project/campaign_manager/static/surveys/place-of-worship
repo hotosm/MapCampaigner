@@ -1,0 +1,30 @@
+feature: amenity
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+tags:
+    - name
+    - building:
+        - church
+        - cathedral
+        - mosque
+        - synagogue
+        - temple
+    - amenity: 
+        - place_of_worship
+    - religion:
+        - buddhist
+        - christian
+        - jewish
+        - hindu
+        - muslim
+        - sikh
+        - taoist
+    - denomination:
+        - catholic
+        - orthodox
+        - protestant
+        - sunni
+        - shia
+        - sufi

@@ -1,0 +1,9 @@
+feature: shop
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+tags:
+    - shop:
+        - supermarket
+    - name

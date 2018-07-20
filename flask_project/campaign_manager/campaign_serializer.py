@@ -229,9 +229,14 @@ def get_new_campaign_context():
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = Config.MAX_AREA_SIZE
     context['uuid'] = uuid.uuid4().hex
-    context['types'] = featureTypes
+    context['types'] = {}
     context['teams'] = teams
     context['link_to_omk'] = False
+    try:
+        context['types'] = json.dumps(
+            get_types()).replace('True', 'true').replace('False', 'false')
+    except ValueError:
+        pass
     return context
 
 

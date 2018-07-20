@@ -28,6 +28,7 @@ from geoalchemy2 import Geometry
 from campaign_manager.sqlalchemy_session import session, Base, engine
 from app_config import Config
 
+
 adminAssociations = Table(
     'adminAssociations',
     Base.metadata,
@@ -528,7 +529,7 @@ class Campaign(Base):
         safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
         data_folder = os.path.join(
             Config.campaigner_data_folder,
-            'campaign')
+            'static/campaign')
         thumbnail_dir = os.path.join(
             data_folder,
             'thumbnail')

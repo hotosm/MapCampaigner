@@ -1,0 +1,25 @@
+feature: building
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+tags:
+    - building:
+        - 'yes'
+    - name
+    - building:levels
+    - "building:material":
+        - brick
+        - cement_block
+        - concrete
+        - glass
+        - loam
+        - metal
+        - plaster
+        - wood
+    - "building:roof":
+        - tiles
+        - concrete
+        - metal
+        - wood
+        - plastic
