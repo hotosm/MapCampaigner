@@ -53,10 +53,9 @@ class AbstractOverpassUserFunction(AbstractInsightsFunction):
             start_date = calendar.timegm(datetime.datetime.strptime(
                     s_date, '%Y-%m-%d').timetuple()) * 1000
             e_date = self.campaign.end_date
-            e_date = str(s_date)
+            e_date = str(e_date)
             end_date = calendar.timegm(datetime.datetime.strptime(
                     e_date, '%Y-%m-%d').timetuple()) * 1000
-
             try:
                 features = self.feature.split('=')
                 coordinates = self.campaign.get_task_boundary_coordinates()

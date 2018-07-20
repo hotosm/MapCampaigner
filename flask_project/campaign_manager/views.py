@@ -51,7 +51,8 @@ from campaign_manager.campaign_serializer import (
     get_selected_functions_in_string,
     get_new_campaign_context,
     get_campaign_context,
-    get_campaign_form
+    get_campaign_form,
+    render_insights_function
 )
 from campaign_manager.models.campaign import Campaign
 from campaign_manager.models.models import (
@@ -206,46 +207,30 @@ def register_user_email():
 def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
-    campaign_ui = ''
     campaign_obj = Campaign().get_by_uuid(uuid)
     functions = get_campaign_functions(campaign_obj.functions)
     additional_data = clean_argument(request.args)
-    insight_function = functions[insight_function_id]
-    SelectedFunction = getattr(
-        insights_functions, insight_function['function'])
-    additional_data['function_id'] = insight_function_id
-    if 'type' in insight_function:
-        additional_data['type'] = insight_function['type']
-    selected_function = SelectedFunction(
-        campaign_obj,
-        feature=insight_function['feature'],
-        required_attributes=insight_function['attributes'],
-        additional_data=additional_data)
-    # render UI
-    context = {
-        'selected_function_name': (insight_function['name'] +
-                                   insight_function['type']),
-        'icon': "list",
-        'widget': selected_function.get_ui_html()
-    }
-    campaign_ui += render_template(
-        'campaign_widget/insight_template.html',
-        **context
-    )
-    return Response(campaign_ui)
+    rendered_html = render_insights_function(
+        campaign=campaign_obj,
+        insight_function_id=insight_function_id,
+        additional_data=additional_data,
+        functions=functions)
+
+    return Response(rendered_html)
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')
 @line_profile
 def get_osmcha_errors_function(uuid):
     try:
-        campaign = Campaign.get(uuid)
-        rendered_html = campaign.render_insights_function(
+        campaign = Campaign().get_by(uuid)
+        rendered_html = render_insights_function(
+            campaign=campaign,
             insight_function_id='total-osmcha-errors',
             insight_function_name='OsmchaChangesets',
             additional_data=clean_argument(request.args))
         return Response(rendered_html)
-    except Campaign.DoesNotExist:
+    except Exception as e:
         abort(404)
 
 
@@ -253,7 +238,7 @@ def get_osmcha_errors_function(uuid):
 @line_profile
 def get_osmcha_errors_data(uuid):
     try:
-        campaign = Campaign.get(uuid)
+        campaign = Campaign().get_by(uuid)
         page_size = request.args.get('page_size', None)
         page = request.args.get('page', None)
         osmcha_changeset = OsmchaChangesets(campaign=campaign)
@@ -266,7 +251,7 @@ def get_osmcha_errors_data(uuid):
         osmcha_changeset.run()
         data = osmcha_changeset.get_function_data()
         return jsonify(data)
-    except Campaign.DoesNotExist:
+    except Exception as e:
         abort(404)
 
 
@@ -284,7 +269,6 @@ def check_geojson_is_polygon(geojson):
 def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
-    from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
     # validate boundary
@@ -325,7 +309,7 @@ def campaign_boundary_upload_chunk_success(uuid):
             'success': True,
             'data': geojson,
         }))
-    except Campaign.DoesNotExist:
+    except Exception as e:
         abort(404)
     except ShapefileProvider.MultiPolygonFound as e:
         return Response(json.dumps({
@@ -345,7 +329,7 @@ def campaign_coverage_upload_chunk_success(uuid):
     )
     # validate coverage
     try:
-        campaign = Campaign.get(uuid)
+        campaign = Campaign().get_by(uuid)
         coverage_function = UploadCoverage(campaign)
         coverage = coverage_function.get_function_raw_data()
         if not coverage:
@@ -383,7 +367,7 @@ def campaign_coverage_upload_chunk_success(uuid):
             'data': campaign.coverage,
             'files': coverage_function.get_coverage_files()
         }))
-    except Campaign.DoesNotExist:
+    except Exception as e:
         abort(404)
 
 
