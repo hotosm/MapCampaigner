@@ -32,10 +32,6 @@
                     <div><i class="fa fa-globe"></i><span>&nbsp;&nbsp;Campaign AOI</span>
                         <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
                 </div>
-                <div class="panel panel-default panel-header cc-nav disabled" data-step="3">
-                    <div><i class="fa fa-map"></i><span>&nbsp;&nbsp;Remote Mapping</span>
-                        <span class="cc-nav-icon pull-right" style="display: none"><i class="fa fa-check"></i></span></div>
-                </div>
                 <div class="panel-header-info panel-section">ADVANCED</div>
                 <div class="panel panel-default panel-header cc-nav disabled" data-step="4">
                     <div><p><i class="fa fa-cogs" aria-hidden="true"></i><span>&nbsp;&nbsp;Advanced Mode</span></div>
@@ -287,98 +283,9 @@
                             <div class="col-lg-6">
                                 <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
                             </div>
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-next pull-right"><span class="btn-step-next">NEXT </span><span class="btn-icon-next"> > </span></button>
-                            </div>
                         </div>
                     </fieldset>
 
-                    <fieldset id="fieldset-3" data-fieldset-step="3">
-                        <div class="row">
-                            <!-- /.col-lg-6 (nested) -->
-                            <div class="col-lg-12">
-                                <div class="row" style="margin-bottom: 20px;">
-                                    <div class="col-lg-9">
-                                        <label>Remote Map</label>
-                                        <div id="remote-map"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 20px !important;">
-                                    <label>Remote Projects</label>
-                                    <div class="row">
-                                        <div class="col-lg-9">
-                                            <div id="list-added-projects">
-                                                <div id="empty-list-remote-project">
-                                                    -
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group" data-error="">
-                                    <label>Search Project</label>
-
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-lg-3">
-                                                <input type="text" id="sp-text-search" placeholder="Text Search" class="form-control"/>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <select class="form-control" id="sp-mapper-level">
-                                                    <option value="" disabled selected>Mapper Level</option>
-                                                    <option value="BEGINNER">
-                                                        Beginner
-                                                    </option>
-                                                    <option value="INTERMEDIATE">
-                                                        Intermediate
-                                                    </option>
-                                                    <option value="ADVANCED">
-                                                        Advanced
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <select class="form-control" id="sp-mapping-types">
-                                                    <option value="" disabled selected>Mapping Types</option>
-                                                    <option value="ROADS">
-                                                        Roads
-                                                    </option>
-                                                    <option value="BUILDINGS">
-                                                        Buildings
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row" style="margin-top: 10px;">
-                                            <div class="col-lg-3">
-                                                <input type="text" id="sp-organisation-tag" placeholder="Organisation Tag" class="form-control"/>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <input type="text" id="sp-campaign-tag" placeholder="Campaign Tag" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-default" id="search-projects-button" style="margin-top: 10px;">
-                                            <i class="fa fa-search" aria-hidden="true"></i> Search
-                                        </button>
-                                    </div>
-
-                                    <div>
-                                        <div class="row">
-                                            <div class="col-lg-9">
-                                                <div id="list-projects" style="margin-top: 20px;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="cc-buttons">
-                                <button type="button" class="btn btn-prev pull-left"><span class="btn-icon-prev"> < </span><span class="btn-step-prev">PREV </span></button>
-                        </div>
-                    </fieldset>
 
                     <fieldset id="fieldset-4" data-fieldset-step="4">
                         <div class="row">
@@ -497,7 +404,6 @@
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="/static/js/create/map.js"></script>
-    <script type="text/javascript" src="/static/js/create/remote_mapping.js"></script>
     <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
     <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
@@ -1164,11 +1070,6 @@
 
             if (!auth.authenticated() || !$("#uploader").val()) {
                 window.location.replace("/not-logged-in.html");
-            }
-
-            $('#remote_projects').html('');
-            for (var key in addedLayers) {
-                $('#remote_projects').append('<option selected="selected" value="' + key + '">' + key + '</option>')
             }
 
             $('#campaign_status').val('Start');
