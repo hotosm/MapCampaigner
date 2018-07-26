@@ -4,6 +4,7 @@ import json
 
 import campaign_manager.insights_functions as insights_functions
 
+from flask import render_template
 from flask_debugtoolbar_lineprofilerpanel.profile import line_profile
 
 from app_config import Config
@@ -240,6 +241,7 @@ def get_new_campaign_context():
     return context
 
 
+@line_profile
 def get_campaign_feature_types(feature_types):
     """ Serializes the campaign features to render campaign details.
     :param feature_types: List of campaign FeatureType objects.
@@ -260,6 +262,7 @@ def get_campaign_feature_types(feature_types):
     return type_dict
 
 
+@line_profile
 def get_selected_functions_in_string(campaign_obj, functions):
     """ Get selected function in string to obtain overpass data based on
     selected campaign function.
@@ -287,3 +290,66 @@ def get_selected_functions_in_string(campaign_obj, functions):
         except AttributeError:
             value = None
     return json.dumps(functions).replace('None', 'null')
+
+
+@line_profile
+def render_insights_function(
+            campaign,
+            insight_function_id,
+            functions,
+            additional_data={},
+            insight_function_name=None):
+        """Get rendered UI from insight_function
+
+        :param insight_function_id: name of insight function
+        :type insight_function_id: str
+
+        :param additional_data: additional data that needed
+        :type additional_data:dict
+
+        :param insight_function_name: If there's only insight function name
+        :type insight_function_name: str
+
+        :return: rendered UI from insight function
+        :rtype: str
+        """
+        campaign_ui = ''
+        try:
+            if insight_function_name:
+                SelectedFunction = getattr(
+                    insights_functions, insight_function_name)
+                additional_data['function_name'] = insight_function_name
+                additional_data['function_id'] = insight_function_id
+                selected_function = SelectedFunction(
+                    campaign,
+                    feature=None,
+                    required_attributes=None,
+                    additional_data=additional_data
+                )
+            else:
+                insight_function = functions[insight_function_id]
+                SelectedFunction = getattr(
+                    insights_functions, insight_function['function'])
+                additional_data['function_id'] = insight_function_id
+                if 'type' in insight_function:
+                    additional_data['type'] = insight_function['type']
+                selected_function = SelectedFunction(
+                    campaign,
+                    feature=insight_function['feature'],
+                    required_attributes=insight_function['attributes'],
+                    additional_data=additional_data
+                )
+        except (AttributeError, KeyError) as e:
+            return campaign_ui
+
+        # render UI
+        context = {
+            'selected_function_name': selected_function.name().split('-')[0],
+            'icon': selected_function.icon,
+            'widget': selected_function.get_ui_html()
+        }
+        campaign_ui += render_template(
+            'campaign_widget/insight_template.html',
+            **context
+        )
+        return campaign_ui

@@ -316,11 +316,29 @@ class Campaign(Base):
         campaign."""
         return len(self.users)
 
+    def swap_coordinates(self, coordinates):
+        """ Swap coordinate lat and lon for overpass
+
+        :param coordinates: this could be list of coordinates or
+            single coordinate
+        :type coordinates: list
+        """
+        correct_coordinate = []
+        for coordinate in coordinates:
+            if isinstance(coordinate[0], float):
+                correct_coordinate.append(
+                    [coordinate[1], coordinate[0]]
+                )
+            else:
+                correct_coordinate.extend(self.swap_coordinates(coordinate))
+        return correct_coordinate
+
     def get_task_boundary_coordinates(self):
         """ Returns the coordinates of the TaskBoundary. """
         coordinates = self.get_task_boundary_as_geoJSON()
         coordinates = ast.literal_eval(coordinates[0])
         coordinates = coordinates['coordinates'][0]
+        coordinates = self.swap_coordinates(coordinates)
         return coordinates
 
     def get_participant_count(uuid):
