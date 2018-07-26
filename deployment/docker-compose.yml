@@ -2,6 +2,26 @@ version: '2'
 
 services:
 
+    db:
+      container_name: osmreporter_db
+      image: kartoza/postgis:9.6-2.4
+      environment:
+        - ALLOW_IP_RANGE=0.0.0.0/0
+        - POSTGRES_USER=docker
+        - POSTGRES_PASS=docker
+      ports:
+        - 4000:5432
+
+    db-test:
+      container_name: osmreporter_db_test
+      image: kartoza/postgis:9.6-2.4
+      environment:
+        - ALLOW_IP_RANGE=0.0.0.0/0
+        - POSTGRES_USER=docker
+        - POSTGRES_PASS=docker
+      ports:
+        - 4001:5432
+
     # https://hub.docker.com/_/nginx/
     nginx:
       build:
