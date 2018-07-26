@@ -121,14 +121,6 @@ generate-geojson:
 	@echo "------------------------------------------------------------------"
 	@docker exec -it $(PROJECT_ID)_web /bin/bash -c "python manage.py generate_geometry"
 
-dbshell:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Shelling in in production database"
-	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)_db psql -U docker -h localhost gis
-
-
 migrate:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -142,3 +134,43 @@ update-migrations:
 	@echo "Running db make migrations"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run web python manage.py db migrate
+
+# ----------------------------------------------------------------------------
+#    F L A S K    C O M M A N D S
+# ----------------------------------------------------------------------------
+db:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running web database in production mode"
+	@echo "------------------------------------------------------------------"
+	docker-compose -p $(PROJECT_ID) up --no-recreate -d db
+	docker-compose -p $(PROJECT_ID) up --no-recreate -d db-test
+
+dbshell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)_db psql -U docker -h localhost gis
+
+
+build-virtualenv: db
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Build virtualenv"
+	@echo "------------------------------------------------------------------"
+	( \
+       virtualenv -p python3 venv; \
+       source venv/bin/activate; \
+       cd docker; \
+       pip install -r requirements.txt; \
+       pip install -r requirements-dev.txt; \
+       export TESTDATABASE_URL="postgres://docker:docker@localhost:4001/gis"; \
+       export DATABASE_URL="postgres://docker:docker@localhost:4000/gis"; \
+       export APP_SETTINGS="app_config.DevelopmentConfig"; \
+       export SECRET_KEY="SECRET_KEY"; \
+       cd ../../flask_project; \
+       python generate_model.py; \
+    )
+
+
