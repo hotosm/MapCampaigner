@@ -245,7 +245,7 @@
                         <div class="row form-body">
                             <div class="col-lg-8 area-table">
                                 <div class="area-table-title row">
-                                    <label>Label and Assign Campaign Areas (Optional)</label>
+                                    <label>Label and Assign Campaign Areas (Required)</label>
                                     <div class="information">
                                         If using teams for your campaign, label each area and assign a team. Mark as incomplete or complete.
                                     </div>
@@ -920,6 +920,23 @@
             }
             if (error_format_before) {
             }
+
+            // check area/team
+            inputs = $('.area-table-list .row input[type="text"]');
+            inputs.each(function() {
+                if (this.value.length === 0) {
+                    input_name = this.name.split('_')[0];
+                    showNotifications(input_name + ' must not be empty.', 'danger');
+                    valid = false;
+                }
+            });
+
+            // check status
+            if ($('.area-table-list .row select').val() === 'unassigned') {
+                showNotifications('status must not be unassigned.', 'danger');
+                valid = false;
+            }
+
 
             return valid;
         }
