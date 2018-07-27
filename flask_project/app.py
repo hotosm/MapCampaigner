@@ -1,12 +1,8 @@
 import os
 import flask_debugtoolbar
-from flask import Flask
 from raven.contrib.flask import Sentry
 from flask_profiler import Profiler
 
-from app_config import Config
-
-from campaign_manager.context_processor import inject_oauth_param
 from campaign_manager import campaign_manager
 from campaign_manager.views import not_found_page, forbidden_page
 from campaign_manager.context_processor import inject_oauth_param

@@ -24,6 +24,41 @@ make build
 make run
 ```
 
+### How to build development environment of field-campaigner
+
+#### Preparing
+Go to /field-campaigner/dlask_project
+```
+copy secret.py.template to secret.py
+fill the keys in secret.py as you wish
+```
+
+#### For running the server
+Go to /field-campaigner/deployment
+```
+make run-development
+open http://0.0.0.0:5000/
+```
+
+#### For setup project on pycharm
+Skip "For running the server step"
+```
+make build-virtualenv
+open pycharm
+open field_campaigner project
+right click flask_project -> mark directory as Source Root
+
+open file -> setting -> project -> project interpreter
+on the top-right, click gear icon -> add local
+go and click /field-campaigner/deployment/venv/bin/python
+
+open run -> edit configurations -> click + icon -> python
+on the right, in script, set /field-campaigner/flask_project/runserver.py (search the file)
+on environment variables, add APP_SETTINGS = app_config.DevelopmentConfig
+OK
+and run using run button under run tab
+```
+
 For testing, please for in the .modules file, and edit .modules file to your repo.
 
 ### User Interface
@@ -63,9 +98,9 @@ See LICENSE.md file.
 Built by [Kartoza](http://kartoza.com/): 
 
 @cchristelis
-@ann26
 @meomancer
 @dimasciput
+@ann26
 @MariaSolovyeva
 
 Based on previous osm-reporter work by: 
