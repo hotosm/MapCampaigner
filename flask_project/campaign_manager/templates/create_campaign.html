@@ -455,6 +455,7 @@
             $('#campaign-inactive').show();
         }
 
+
     </script>
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
@@ -504,6 +505,8 @@
 
     <script type="text/javascript">
         typesOptions = '{{ form.types_options }}';
+        console.log('typeOptions');
+        console.log(types);
         var initialLoad = true;
         var selectedFunctions = [];
         var types = {{ types|safe }};

@@ -33,6 +33,15 @@ class ProductionConfig(Config):
     """Production environment.
     """
     DEBUG = False
+    AWS_BUCKET = 'fieldcampaigner-data-production'
+
+
+class AWSProductionConfig(Config):
+    """
+    AWS Production environment in HOTOSM AWS account.
+    """
+    DEBUG = False
+    AWS_BUCKET = 'hotosm-fieldcampaigner-data-production'
 
 
 class StagingConfig(Config):
@@ -40,6 +49,16 @@ class StagingConfig(Config):
     """
     DEVELOPMENT = True
     DEBUG = True
+    AWS_BUCKET = 'fieldcampaigner-data-staging'
+
+
+class AWSStagingConfig(Config):
+    """
+    AWS Staging environment in HOTOSM AWS account.
+    """
+    DEVELOPMENT = True
+    DEBUG = True
+    AWS_BUCKET = 'hotosm-fieldcampaigner-data-staging'
 
 
 class DevelopmentConfig(Config):
@@ -47,3 +66,22 @@ class DevelopmentConfig(Config):
     """
     DEVELOPMENT = True
     DEBUG = True
+    AWS_BUCKET = 'fieldcampaigner-data'
+
+
+class TestingConfig(Config):
+    """
+    Testing environment.
+    """
+    TESTING = True
+    DEBUG = True
+    AWS_BUCKET = 'fieldcampaigner-data-test'
+
+
+class AWSTestingConfig(Config):
+    """
+    AWS Testing environment in HOTOSM AWS account.
+    """
+    TESTING = True
+    DEBUG = True
+    AWS_BUCKET = 'hotosm-fieldcampaigner-data-test'

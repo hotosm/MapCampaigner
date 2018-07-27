@@ -19,6 +19,8 @@ from reporter.exceptions import (
     OverpassBadRequestException,
     OverpassDoesNotReturnData
 )
+from campaign_manager.aws import S3Data
+from campaign_manager.models.survey import Survey
 
 
 def module_path(*args):
@@ -56,12 +58,7 @@ def get_osm_user():
 
 
 def get_allowed_managers():
-    allowed_manager_path = os.path.join(
-        Config.campaigner_data_folder, 'managers.txt')
-    if not os.path.exists(allowed_manager_path):
-        return None
-    with open(allowed_manager_path) as f:
-        content = f.readlines()
+    content = S3Data().fetch('managers.txt').split(" ")
     managers = [x.strip() for x in content]
     managers.sort()
     return managers
@@ -73,23 +70,10 @@ def get_types():
     :return: json of survey of type
     :rtype: dict
     """
-    survey_folder = os.path.join(
-        Config.campaigner_data_folder,
-        'surveys'
-    )
     surveys = {}
-    if os.path.exists(survey_folder):
-        for filename in os.listdir(survey_folder):
-            if '.gitkeep' in filename:
-                continue
-
-            # check the json for each file
-            survey_path = os.path.join(
-                survey_folder,
-                filename
-            )
-            survey = get_survey_json(survey_path)
-            surveys[filename] = survey
+    for filename in S3Data().list('surveys'):
+        survey = get_survey_json(filename)
+        surveys[filename] = survey
     return surveys
 
 
@@ -245,21 +229,7 @@ def get_survey_json(survey_file):
     :return: json of survey of type
     :rtype: dict
     """
-    surveys = {}
-    if os.path.isfile(survey_file):
-        surveys = yaml.load(open(survey_file, 'r'))
-        if isinstance(surveys, str):
-            raise yaml.YAMLError
-
-        tags = {}
-        if 'tags' in surveys:
-            for tag in surveys['tags']:
-                if isinstance(tag, str):
-                    tags[tag] = []
-                else:
-                    tags.update(tag)
-        surveys['tags'] = tags
-    return surveys
+    return Survey.find_by_name(survey_file).data
 
 
 def parse_json_string(json_string):

@@ -1,0 +1,4 @@
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]
+  then bash ./.travis/run_tests_on_pr
+else bash ./.travis/run_tests_on_non_pr
+fi
