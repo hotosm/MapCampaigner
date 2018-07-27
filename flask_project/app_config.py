@@ -8,8 +8,10 @@ except ImportError:
     THE_SECRET_KEY = os.environ['SECRET_KEY']
 try:
     DATA_FOLDER = os.environ['DATA_FOLDER']
+    # AWS_BUCKET = os.environ['AWS_BUCKET']
 except KeyError:
     DATA_FOLDER = '/home/web/field-campaigner-data'
+    
 
 
 class Config(object):
@@ -27,6 +29,7 @@ class Config(object):
 
     # CAMPAIGN DATA
     campaigner_data_folder = DATA_FOLDER
+    AWS_BUCKET = 'fieldcampaigner-data'
 
 
 class ProductionConfig(Config):

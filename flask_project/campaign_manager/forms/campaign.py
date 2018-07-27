@@ -17,7 +17,7 @@ from wtforms.validators import DataRequired, Optional, ValidationError
 from urllib.parse import urlparse
 from campaign_manager.utilities import get_types
 from campaign_manager.views import valid_map_list
-
+from campaign_manager.models.survey import Survey
 
 class ManagerSelectMultipleField(SelectMultipleField):
     def pre_validate(self, form):
@@ -79,7 +79,7 @@ class CampaignForm(FlaskForm):
     )
     types_options = SelectField(
         u'Types of campaign',
-        choices=[(key, key) for key, value in sorted(get_types().items())],
+        choices=Survey.to_form(),
         validators=[Optional()]
     )
     types = HiddenField(u'Types that selected for this campaign')

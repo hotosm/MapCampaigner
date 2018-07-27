@@ -51,10 +51,8 @@ class UploadCoverage(AbstractInsightsFunction):
         :return: data from provider
         :rtype: dict
         """
-        coverage_folder = self.campaign.get_coverage_folder()
-        shapefile_file = "%s/%s.shp" % (
-            coverage_folder, self.campaign.uuid
-        )
+        shapefile_file = '{}/{}.shp'.format(
+            self.get_coverage_folder(),self.campaign.uuid)
         return ShapefileProvider().get_data(
             shapefile_file
         )
@@ -71,9 +69,7 @@ class UploadCoverage(AbstractInsightsFunction):
 
     def delete_coverage_files(self):
         """Delete coverage files"""
-        coverage_folder = self.campaign.get_coverage_folder()
-        if os.path.exists(coverage_folder):
-            shutil.rmtree(coverage_folder)
+        S3Data().delete_folder(self.campaign.get_coverage_folder())
 
     def get_coverage_files(self):
         """ Get coverage files
@@ -82,9 +78,8 @@ class UploadCoverage(AbstractInsightsFunction):
         """
         coverage_folder = self.campaign.get_coverage_folder()
         output_files = []
-        for root, dirs, files in os.walk(coverage_folder):
-            for file in files:
-                output_files.append(file)
+        for file in S3Data().list(coverage_folder):
+            output_files.append(file)
         return output_files
 
     def post_process_data(self, data):

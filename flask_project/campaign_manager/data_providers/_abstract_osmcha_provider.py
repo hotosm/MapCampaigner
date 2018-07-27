@@ -66,7 +66,6 @@ class AbstractOsmchaProvider(AbstractDataProvider):
                 params=payload,
                 timeout=60,
             )
-            print(request.url)
             data = request.json()
         except HTTPError as e:
             raise e
