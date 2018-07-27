@@ -6,12 +6,20 @@ try:
     from secret import SECRET_KEY as THE_SECRET_KEY  # noqa
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET, SENTRY_DSN
 except ImportError as e:
-    THE_SECRET_KEY = ''
+    THE_SECRET_KEY = 'RANDOM'
     OAUTH_CONSUMER_KEY = ''
     OAUTH_SECRET = ''
     SENTRY_DSN = ''
 
-DATABASEURL = 'postgres://docker:docker@localhost:4000/gis'
+try:
+    DATABASEURL = os.environ['DATABASE_URL']
+except KeyError:
+    DATABASEURL = 'postgres://docker:docker@localhost:4000/gis'
+
+try:
+    TESTDATABASEURL = os.environ['TESTDATABASE_URL']
+except KeyError:
+    TESTDATABASEURL = 'postgres://docker:docker@localhost:4001/gis'
 
 
 class Config(object):
@@ -33,8 +41,10 @@ class Config(object):
     OSMCHA_FRONTEND_URL = 'https://osmcha.mapbox.com/'
 
     # OVERPASS ATTRIBUTES
-    ATTIC_DATA_SERVER_URL = 'http://ec2-54-172-198-122.compute-1.amazonaws.com/api/interpreter'
-    DEFAULT_OVERPASS_URL = 'http://exports-prod.hotosm.org:6080/api/interpreter'
+    ATTIC_DATA_SERVER_URL = 'http://ec2-54-172-198-122.' \
+                            'compute-1.amazonaws.com/api/interpreter'
+    DEFAULT_OVERPASS_URL = 'http://exports-prod.hotosm.org:6080' \
+                           '/api/interpreter'
 
     # CAMPAIGN DATA
     campaigner_data_folder = "./campaign_manager/static"
@@ -67,5 +77,5 @@ class TestingConfig(Config):
     TESTING = True
     WTF_CSRF_ENABLED = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
-    DB_LOCATION = 'postgres://docker:docker@localhost:4001/gis'
+    DB_LOCATION = TESTDATABASEURL
     DRIVER_PATH = os.path.abspath('./campaign_manager/test/chromedriver')
