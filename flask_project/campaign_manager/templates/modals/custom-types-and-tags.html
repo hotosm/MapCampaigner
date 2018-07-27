@@ -239,6 +239,7 @@
             }
             $('#custom-types-tags').modal('toggle');
             var customType = customTypeToTypeFormat();
+            selectedSurveys[customType['custom_type_name']] = customType['custom_type_value'];
             types[customType['custom_type_name']] = customType['custom_type_value'];
             addTypes(customType['custom_type_name'])
         }

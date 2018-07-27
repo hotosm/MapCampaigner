@@ -28,6 +28,9 @@ from campaign_manager.utilities import (
     parse_json_string,
     simplify_polygon
 )
+from campaign_manager.aws import (
+    S3Data
+)
 
 
 class Campaign(JsonModel):
@@ -57,9 +60,14 @@ class Campaign(JsonModel):
     def __init__(self, uuid=None):
         if uuid:
             self.uuid = uuid
-            self.json_path = Campaign.get_json_file(uuid)
-            self.edited_at = time.ctime(os.path.getmtime(self.json_path))
-            self.geojson_path = Campaign.get_geojson_file(uuid)
+            # self.json_path = Campaign.get_json_file(uuid)
+            self.json_path = 'campaign/{}.json'.format(uuid)
+            
+            # self.geojson_path = Campaign.get_geojson_file(uuid)
+            self.geojson_path = 'campaign/{}.geojson'.format(uuid)
+            
+            # self.edited_at = time.ctime(os.path.getmtime(self.json_path))
+            
             self.parse_json_file()
 
     def save(self, uploader=None, save_to_git=True):
@@ -231,8 +239,11 @@ class Campaign(JsonModel):
         # campaign data
         if self.json_path:
             try:
-                _file = open(self.json_path, 'r')
-                content = _file.read()
+                # _file = open(self.json_path, 'r')
+                # content = _file.read()
+
+                content = S3Data().fetch(self.json_path)
+                
                 content_json = parse_json_string(content)
                 Campaign.validate(content_json, self.uuid)
                 self._content_json = content_json
@@ -247,8 +258,10 @@ class Campaign(JsonModel):
         # geometry data
         if self.geojson_path:
             try:
-                _file = open(self.geojson_path, 'r', encoding='utf-8')
-                content = _file.read()
+                # _file = open(self.geojson_path, 'r', encoding='utf-8')
+                # content = _file.read()
+
+                content = S3Data().fetch(self.geojson_path)
                 geometry = parse_json_string(content)
                 self.geometry = geometry
                 self._content_json['geometry'] = geometry
@@ -571,30 +584,15 @@ class Campaign(JsonModel):
             Campaign.parse_campaign_data(data, uploader)
         )
 
-        # save updated campaign to json
-        json_path = os.path.join(
-            Campaign.get_json_folder(), '%s.json' % campaign_data['uuid']
-        )
-        _file = open(json_path, 'w+')
-        _file.write(json_str)
-        _file.close()
+        campaign_key = 'campaign/{}.json'.format(campaign_data['uuid'])
+        campaign_body = json_str
+        S3Data().create(campaign_key, campaign_body)
 
-        # save geometry campaign to geojson
-        geojson_path = os.path.join(
-            Campaign.get_json_folder(),
-            '%s.geojson' % campaign_data['uuid']
-        )
-        _file = open(geojson_path, 'w+')
-        _file.write(json.dumps(parse_json_string(geometry)))
-        _file.close()
 
-        # create commit as git
-        try:
-            save_with_git(
-                'Create campaign - %s' % data['uuid']
-            )
-        except Exception as e:
-            print(e)
+        geocampaign_key = 'campaign/{}.geojson'.format(campaign_data['uuid'])
+        geocampaign_body = json.dumps(parse_json_string(geometry))
+        S3Data().create(geocampaign_key, geocampaign_body)
+
 
     @staticmethod
     def all(campaign_status=None, **kwargs):
@@ -608,39 +606,38 @@ class Campaign(JsonModel):
         """
         sort_list = []
         campaigns = []
-        for root, dirs, files in os.walk(Campaign.get_json_folder()):
-            for file in files:
-                try:
-                    campaign_uuid, extension = os.path.splitext(file)
-                    if extension != '.json':
-                        continue
-                    campaign = Campaign.get(campaign_uuid)
+        for campaign in S3Data().list('campaign'):
+        # for root, dirs, files in os.walk(Campaign.get_json_folder()):
+        #     for file in files:
+            try:
+                campaign_uuid, extension = campaign.split('.')
+                if extension != 'json':
+                    continue
+                campaign = Campaign.get(campaign_uuid)
+                if campaign_status == 'all':
+                    allowed = True
+                elif campaign_status == campaign.get_current_status():
+                    allowed = True
+                else:
+                    allowed = False
+                if allowed:
+                    sort_object = campaign.name
 
-                    if campaign_status == 'all':
-                        allowed = True
-                    elif campaign_status == campaign.get_current_status():
-                        allowed = True
-                    else:
-                        allowed = False
+                    if 'sort_by' in kwargs:
+                        if kwargs['sort_by'][0] == 'recent':
+                            sort_object = int(
+                                datetime.today().strftime('%s')
+                            ) - int(
+                                datetime.strptime(
+                                    campaign.edited_at,
+                                    "%a %b %d %H:%M:%S %Y"
+                                ).strftime('%s'))
 
-                    if allowed:
-                        sort_object = campaign.name
-
-                        if 'sort_by' in kwargs:
-                            if kwargs['sort_by'][0] == 'recent':
-                                sort_object = int(
-                                    datetime.today().strftime('%s')
-                                ) - int(
-                                    datetime.strptime(
-                                        campaign.edited_at,
-                                        "%a %b %d %H:%M:%S %Y"
-                                    ).strftime('%s'))
-
-                        position = bisect.bisect(sort_list, sort_object)
-                        bisect.insort(sort_list, sort_object)
-                        campaigns.insert(position, campaign)
-                except Campaign.DoesNotExist:
-                    pass
+                    position = bisect.bisect(sort_list, sort_object)
+                    bisect.insort(sort_list, sort_object)
+                    campaigns.insert(position, campaign)
+            except Campaign.DoesNotExist:
+                pass
 
         if 'per_page' in kwargs:
             per_page = int(kwargs['per_page'][0])
