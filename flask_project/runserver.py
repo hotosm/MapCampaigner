@@ -1,3 +1,3 @@
-from app import osm_app
+from app import osm_app, socketio
 
-osm_app.run(host='0.0.0.0')
+socketio.run(osm_app)

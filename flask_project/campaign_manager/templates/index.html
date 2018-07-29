@@ -482,7 +482,7 @@
         }
 
         function getTotalCampaigns() {
-            $('#active-campaign-number').html({{ active_campaigns_count }});              
+            $('#active-campaign-number').html({{ active_campaigns_count }});
         }
 
 
@@ -533,6 +533,7 @@
                                                 '<span class="pull-left">{{ authority }}</span>'+
                                 '</button>'
                 {% endif %}
+
                 {% for manager in campaign.users %}
                     participants.push('{{ manager.osm_user_id }}')
                 {% endfor %}

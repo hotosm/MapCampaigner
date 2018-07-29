@@ -10,3 +10,4 @@ campaign_manager = Blueprint(
 
 from campaign_manager import api
 from campaign_manager import views
+from campaign_manager import admin_views
