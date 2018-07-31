@@ -1,6 +1,7 @@
 var types_value = {};
 var typesOptions = '';
 
+var selectedSurveys = [];
 function rerenderFunction() {
     // Also render insights function
     var function_form_content = $('#insight-function .function-form').html().trim();
@@ -14,7 +15,8 @@ function rerenderFunction() {
     var insightsRendered = [];
     $.each(types_value, function (key, value) {
         var type = value['type'];
-        var survey = types[type];
+        // var survey = types[type];
+        var survey = selectedSurveys[type];
         var feature = survey['feature'];
         var tags = survey['tags'];
         if (tags[feature]) {
@@ -32,7 +34,7 @@ function rerenderFunction() {
             }
         });
 
-        var default_insights = types[type]['insights'];
+        var default_insights = selectedSurveys[type]['insights'];
         $.each(default_insights, function (insight_index, insight) {
             if ($.inArray(oneTimeFunctions, insightsRendered) === -1) {
                 insightsRendered.push(insight);
@@ -55,6 +57,7 @@ function getTypesSelectionValue() {
     var types_value = {};
     $.each(getSelectedTypes(), function (index, addedType) {
         if (addedType) {
+            console.log(addedType);
             var $wrapper = $('#typesTagsContainer').children().eq(index);
             var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
             var tags = [];
@@ -63,9 +66,10 @@ function getTypesSelectionValue() {
                 tags.push($.trim(tag));
             });
 
+            console.log(selectedSurveys[addedType]);
             types_value['type-' + (index + 1)] = {
                 type: addedType,
-                feature: types[addedType]['feature'],
+                feature: selectedSurveys[addedType].feature,
                 tags: tags
             }
         }
@@ -84,13 +88,20 @@ function getSelectedTypes() {
     return uniqueNames
 }
 function addMultipleTypes(typeList) {
+    console.log(typeList);
     $.each(typeList, function (index, type) {
         var selected_type = type['type'];
+        console.log(type);
+        
+        selectedSurveys[selected_type] = type;
+        console.log(selectedSurveys);
         addTypes(selected_type);
+
     });
 }
 
 function addTypes(value) {
+    console.log(value);
     var row = $("<div/>");
     row.addClass("row");
 
@@ -135,8 +146,47 @@ function onTypesChange() {
     $('.types-required-message').hide();
 
     var selected_type = this.value;
-
     var row = $(this).parent().parent();
+    var selected_tags;
+    if (typeof selected_types_data !== 'undefined') {
+        $.each(selected_types_data, function (index, type) {
+            if (type['type'] == selected_type) {
+                selected_tags = type['tags'];
+                if (!types[type['type']]) {
+                    addCustomType(type);
+                    type['tags'] = undefined;
+                }
+            }
+        });
+    }
+
+    if (selected_type in selectedSurveys) {
+        console.log(selected_type);
+        console.log(selectedSurveys[selected_type].tags);
+        // displayTags(row, selected_type, selectedSurveys[selected_type].tags);
+    } else {
+        $.ajax({
+            url: '/surveys/' + selected_type,
+            success: function(response) {
+                response = $.parseJSON(response);
+                if ('tags' in response) {
+                    selectedSurveys[selected_type] = response;
+                    displayTags(row, selected_type, response.tags);
+                }
+            }
+        });
+    }    
+
+    if (typeof types !== 'undefined') {
+        if (types[selected_type]) {
+            displayTags(row, selected_type, types[selected_type]['tags']);
+        }
+    }
+    $('#insight-function .function-form').html('');
+}
+
+function displayTags(row, selected_type, tags) {
+    
 
     var row_tags = row.children('.row-tags');
 
@@ -153,66 +203,48 @@ function onTypesChange() {
     var div = $("<div />");
     div.addClass("row-tags-wrapper");
 
-    var selected_tags;
-    if (typeof selected_types_data !== 'undefined') {
-        $.each(selected_types_data, function (index, type) {
-            if (type['type'] == selected_type) {
-                selected_tags = type['tags'];
-                if (!types[type['type']]) {
-                    addCustomType(type);
-                    type['tags'] = undefined;
-                }
-            }
-        });
+    var key_tags;
+    var key_tags_default = Object.keys(tags);
+
+    if (typeof selected_tags != 'undefined') {
+        key_tags = Object.keys(selected_tags);
+    } else {
+        key_tags = Object.keys(tags);
     }
-
-    if (typeof types !== 'undefined') {
-        if (types[selected_type]) {
-            var key_tags;
-            var tags = types[selected_type]['tags'];
-            var key_tags_default = Object.keys(tags);
-
-            if (typeof selected_tags != 'undefined') {
-                key_tags = Object.keys(selected_tags);
-            } else {
-                key_tags = Object.keys(tags);
-            }
-            for (var j = 0; j < key_tags.length; j++) {
-                var tag_string = key_tags[j];
-                if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
-                }
-                div.append(
-                    '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + tag_string + ' </span>');
-            }
-
-            var select_tag = $("<span />");
-            select_tag.addClass('select-tag');
-            var span_select = $("<ul />");
-            span_select.addClass('additional-key-tags');
-            for (var j = 0; j < key_tags_default.length; j++) {
-                var tag_string = key_tags_default[j];
-                if (tags[tag_string] && tags[tag_string].length > 0) {
-                    tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
-                }
-                span_select.append('<li onclick="addTag(this)">' + tag_string + '</li>')
-            }
-            select_tag.html(span_select);
-
-            div.append('<div class="btn btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
-                '<i class="fa fa-plus" style="font-size: 8pt"></i> Add' + select_tag.html() +
-                '</div>' +
-                '</span>');
-            column.html(div);
-
-            // append to parent
-            row.prepend('<div class="row-tags">' +
-                '<button class="btn btn-remove-type btn-sm"' +
-                'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
-                '<i class="fa fa-minus"></i></button></div>');
+    for (var j = 0; j < key_tags.length; j++) {
+        var tag_string = key_tags[j];
+        if (tags[tag_string] && tags[tag_string].length > 0) {
+            tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
         }
+        div.append(
+            '<span class="key-tags" style="display: inline-block">' + '<i class="fa fa-times remove-tags" onclick="removeIndividualTag(this, \'' + tag_string + '\')" aria-hidden="true"></i>' + tag_string + ' </span>');
     }
-    $('#insight-function .function-form').html('');
+
+    var select_tag = $("<span />");
+    select_tag.addClass('select-tag');
+    var span_select = $("<ul />");
+    span_select.addClass('additional-key-tags');
+    for (var j = 0; j < key_tags_default.length; j++) {
+        var tag_string = key_tags_default[j];
+        if (tags[tag_string] && tags[tag_string].length > 0) {
+            tag_string += '<span>: ' + tags[tag_string].join(', ') + '</span>';
+        }
+        span_select.append('<li onclick="addTag(this)">' + tag_string + '</li>')
+    }
+    select_tag.html(span_select);
+
+    div.append('<div class="btn btn-add-tag" type="button" style="margin-left: 5px;" onclick="onAddTags(this)" onblur="onAddTagsFInish(this)">' +
+        '<i class="fa fa-plus" style="font-size: 8pt"></i> Add' + select_tag.html() +
+        '</div>' +
+        '</span>');
+    column.html(div);
+
+    // append to parent
+    row.prepend('<div class="row-tags">' +
+        '<button class="btn btn-remove-type btn-sm"' +
+        'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
+        '<i class="fa fa-minus"></i></button></div>');
+
 }
 
 function onAddTags(element) {

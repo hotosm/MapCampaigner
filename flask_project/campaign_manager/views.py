@@ -37,6 +37,7 @@ from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.models.survey import Survey
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
 
@@ -692,16 +693,22 @@ def find_attribution(map_url):
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])
 def create_campaign():
+    from datetime import datetime
+    print('create_campaign')
+    print(datetime.now().time())
+
     import uuid
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
-    if not os.path.exists(Campaign.get_json_folder()):
-        return Response('DATA_SOURCE not found or not valid.')
+    # we dont need this anymore
+    # if not os.path.exists(Campaign.get_json_folder()):
+    #     return Response('DATA_SOURCE not found or not valid.')
 
     # Get managers
+
     managers = get_allowed_managers()
 
     # If there is no managers
@@ -736,18 +743,21 @@ def create_campaign():
     context['allowed_managers'] = managers
     context['url'] = '/create'
     context['action'] = 'create'
-    context['campaigns'] = Campaign.all()
+    # why do need all the campaigns to display the create campaign's form?
+    # context['campaigns'] = Campaign.all()
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE
-    context['uuid'] = uuid.uuid4().hex
+    # context['uuid'] = uuid.uuid4().hex
     context['types'] = {}
-    context['link_to_omk'] = False
-    try:
-        context['types'] = json.dumps(
-            get_types()).replace('True', 'true').replace('False', 'false')
-    except ValueError:
-        pass
+    # context['link_to_omk'] = False
+    # try:
+    #     context['types'] = json.dumps(
+    #         get_types()).replace('True', 'true').replace('False', 'false')
+    # except ValueError:
+    #     pass
+    print('end create_campaign')
+    print(datetime.now().time())    
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -771,6 +781,7 @@ def edit_campaign(uuid):
             form.name.data = campaign.name
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
+            print(campaign.types)
             form.types.data = campaign.types
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
@@ -810,11 +821,11 @@ def edit_campaign(uuid):
     context['types'] = {}
     context['campaign_creator'] = campaign.campaign_creator
     context['link_to_omk'] = campaign.link_to_omk
-    try:
-        context['types'] = json.dumps(
-            get_types()).replace('True', 'true').replace('False', 'false')
-    except ValueError:
-        pass
+    # try:
+    #     context['types'] = json.dumps(
+    #         get_types()).replace('True', 'true').replace('False', 'false')
+    # except ValueError:
+    #     pass
     return render_template(
         'create_campaign.html', form=form, **context)
 
@@ -970,6 +981,13 @@ def thumbnail(image):
     if not os.path.exists(map_image):
         return send_file('./campaign_manager/static/img/no_map.png')
     return send_file(map_image)
+
+
+@campaign_manager.route('/surveys/<survey_name>')
+def survey_data(survey_name):
+    survey = Survey.find_by_name(survey_name)
+    return json.dumps(
+        survey.data).replace('True', 'true').replace('False', 'false')
 
 
 def not_found_page(error):
