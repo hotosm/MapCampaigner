@@ -37,6 +37,7 @@ from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.models.survey import Survey
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
 
@@ -692,14 +693,16 @@ def find_attribution(map_url):
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])
 def create_campaign():
+    from datetime import datetime
+    print('create_campaign')
+    print(datetime.now().time())
+
     import uuid
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
-    if not os.path.exists(Campaign.get_json_folder()):
-        return Response('DATA_SOURCE not found or not valid.')
 
     # Get managers
     managers = get_allowed_managers()
@@ -771,6 +774,7 @@ def edit_campaign(uuid):
             form.name.data = campaign.name
             form.campaign_managers.data = campaign.campaign_managers
             form.remote_projects.data = campaign.remote_projects
+            print(campaign.types)
             form.types.data = campaign.types
             form.description.data = campaign.description
             form.geometry.data = json.dumps(campaign.geometry)
@@ -970,6 +974,13 @@ def thumbnail(image):
     if not os.path.exists(map_image):
         return send_file('./campaign_manager/static/img/no_map.png')
     return send_file(map_image)
+
+
+@campaign_manager.route('/surveys/<survey_name>')
+def survey_data(survey_name):
+    survey = Survey.find_by_name(survey_name)
+    return json.dumps(
+        survey.data).replace('True', 'true').replace('False', 'false')
 
 
 def not_found_page(error):
