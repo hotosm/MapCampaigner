@@ -1,0 +1,283 @@
+<!-- Modal -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="../../static/libs/jquery/jquery.min.js"></script>
+
+<style>
+	
+	.team-wrapper{
+		position: absolute;
+		width: 98.9vw;
+		z-index: 9999;
+		display: none;
+	}
+
+	.team-overlay{
+		width: 100%;
+		height: 100vh;
+		background-color:black;
+		opacity: 0.6;
+		position : fixed;
+		top:0px;
+		left: 0px;
+	}
+
+	.team-modal-header{
+		border-bottom: .5px solid lightgrey;
+		font-size: 1.286em;
+	}
+
+	.team-modal-desc, .team-modal-header{
+		padding-left: 20px;
+	}
+
+	.team-modal-desc{
+		font-size: 0.929em;
+	}
+
+	.team-modal-content{
+		position: absolute;
+		top:-650px;
+		margin-bottom: 100px;
+		z-index: 999;
+		margin-left: 30vw;
+		width: 40vw;
+		height: 550px;
+		border-radius: 2px;
+		color: #494646;
+		background: #F7F7F7;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
+	}
+
+	.team-modal-select{
+		margin-top: 50px;
+		display: flex;
+		justify-content: space-around;
+	}
+
+	.btn-orange-team{
+		cursor: pointer;
+		color: white;
+		background: #FC6525;
+		border: 0;
+		border-radius: 2px;
+		position: absolute;
+		right: 10px;
+		bottom: 10px;
+	}
+
+	.btn-orange-team:hover{
+		background-color: #ff8440 !important;
+	}
+
+	.team-modal-create{
+		display: flex;
+		justify-content: center;
+	}
+
+	input{
+		width: 500px;
+	}
+
+	.selected-members{
+		margin-bottom: 10px;
+		padding: 2px;
+	}
+
+	.team-member{
+		height: 150px !important;
+    	padding: 5px 8px;
+    	border-radius: 6px;
+    	margin-right: 5px;
+    	background-color: #F1F1F1;
+    	border: 1px solid #C6C6C6;
+	}
+
+	.remove-member{
+		cursor: pointer;
+    	padding-right: 8px;
+	}
+
+</style>
+
+<div class="team-wrapper">
+	<div class="team-modal-content">
+		<div class="team-modal-header">
+			<p> + Select Team for Campaign</p>
+		</div>
+		<div class="team-modal-desc">
+			<h5>Choose from a pre-existing team or form a new team for the campaign.</h5>
+		</div>
+		<div class="team-modal-select" style="display: flex; justify-content: flex-start; flex-wrap: wrap; width: 500px; overflow-y: scroll;">
+			<!-- name of all the pre-existing teams with their respective campaigns-->
+		</div>
+		<button class="create-team btn btn-default btn-orange-team">Create New Team</button>
+		<div class="team-modal-create">
+			<div class="team-modal-form">
+				<h5>Enter the name of the team: </h5>
+				<input type="text" name="team-name" placeholder="enter team name" class="team-name">
+				<h5>Select team member</h5>
+				<div class="selected-members"></div>
+				<div style="display: flex; flex-direction: column;">
+					<input type="text" name="team-member-search" placeholder="search for osm user" style="margin-bottom:5px;" id="search-osm-user">
+					<button class="search-osm-user btn btn-default"><i class="fa fa-search" aria-hidden="true"></i> Search
+                    </button>
+				</div>	
+				<div class="osm-user-list-container" style="height: 100px; display: none; margin-top: 10px;">
+					<div style="display: flex; flex-direction: column;">
+						<select id="list-osm-team-users" multiple></select>
+						<button class="add-team-member btn btn-default">Add Member</button>
+					</div>
+				</div>
+				<button class="register-team btn btn-default btn-orange-team">Register Team</button>
+			</div>
+		</div>
+	</div>
+	<div class="team-overlay"></div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		$('.team-modal-form').hide();
+		getRegisteredTeams();
+		
+		$('.team-overlay').click(function(){
+			$('.team-member-list').hide();
+			$('.team-wrapper').hide();
+		});
+
+		$('.create-team').click(function(){
+			$('.team-modal-select').hide(500);
+			setTimeout(function(){ $('.team-modal-form').show(500); 
+									$('.create-team').hide();}, 500);
+		});
+
+		$('.search-osm-user').click(function(){
+			var textInput = $('#search-osm-user').val();
+            var url = '/search_osm/' + textInput;
+            $.ajax({
+                url: url,
+                success: function(data){
+                	var dataObj = JSON.parse(data);
+                	if(dataObj.length > 0){
+                		$('.osm-user-list-container').show("slow");
+                	}
+                	$('#list-osm-team-users').html('');
+                	$.each(dataObj, function (index, value) {
+                		$('#list-osm-team-users').append($('<option/>', {
+                            value: value,
+                            text: value
+                        }));
+                    });
+                }
+            });
+		});
+
+		var teamMemeber = [];
+		$('.add-team-member').click(function(){
+			var listOsmUsers = [];
+            $('#list-osm-team-users :selected').each(function (i, selected) {
+                listOsmUsers[i] = $(selected).text();
+            });
+            $('.error-managers').hide();
+            for (var i = 0; i < listOsmUsers.length; i++) {
+                if ($.inArray(listOsmUsers[i], managers_list) === -1) {
+                    teamMemeber.push(listOsmUsers[i]);
+                    $('.selected-members').append(
+                            '<span class="team-member">' + listOsmUsers[i] +
+                            '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + listOsmUsers[i] + '\')" aria-hidden="true"></i></span>'
+                    )
+                }
+            }
+		});
+
+		function removeManager(e, manager) {
+            var index = teamMemeber.indexOf(manager);
+            if (index > -1) {
+                teamMemeber.splice(index, 1);
+            }
+            $(e).parent().remove();
+        }
+
+        $('.register-team').click(function(){
+        	var team_name = $('.team-name').val();
+        	var team_obj = {};
+        	team_obj['team_name'] = team_name;
+        	team_obj['members'] = teamMemeber;
+        	$.ajax({
+        		type:"POST",
+        		url: "/register_team",
+        		data: JSON.stringify(team_obj, null, '\t'),
+        		contentType: 'application/json;charset=UTF-8',
+        		success: function(result){
+        			getRegisteredTeams();
+        			$('.team-modal-form').hide();
+        			$('.team-modal-select').show();
+        		}
+        	});
+        });
+
+        function getRegisteredTeams(){
+        	var url = "/get_registered_teams";
+        	$.ajax({
+        		url: url,
+        		success: function(data){ 
+        			$('.team-modal-select').html("");
+        			Object.keys(data).forEach(function(key){
+        				$('.team-modal-select').append(
+        					'<div>'+
+        					'<ul style="list-style:none;">'+
+        					'<li>'+
+        					'<h4>'+ data[key]['team_name'] + '</h4>'+
+        					'</li>'+
+        					'<li> - participated in: '+ data[key]['campaign']+'</li>'+
+        					'<li>'+
+        					'<div style="display:flex; justify-content:space-between">'+
+        					'<button onclick="viewTeam(this)" class="btn btn-default '+data[key]["team_name"]+'">'+'Members'+ '</button>'+
+        					'<button onclick="setTeam(this)" class="btn btn-default '+data[key]["team_name"]+'">'+'Select'+ '</button>'+
+        					'</div>'+
+        					'</li>'+
+        					'<li>'+
+        					'<div style="display:none; width:100px; overflow-y:scroll;" class="team-member-list">'+
+        					'</div>'+
+        					'</li>'+
+        					'</ul>'+
+        					'</div>'
+        					);
+        			});
+        		}
+        	});
+        }
+
+	});
+
+    function setTeam(element){
+    	team = element.className;
+    	team = team.replace('btn btn-default ','');
+    	var el = document.getElementsByClassName('team_name');
+        $(el).val(team);
+        var layerId = $('.layerId').val();
+        updateGeometryString(el, 'team',layerId);
+        $('.team-member-list').hide();
+        $('.team-wrapper').hide();
+    }
+
+    function viewTeam(element){
+    	$('.team-member-list').show();
+    	team = element.className;
+    	team = team.replace('btn btn-default ','');
+    	var url = '/get_team/' + team;
+    	$.ajax({
+                url: url,
+                success: function(dataObj){
+                	//var dataObj = JSON.parse(data);
+                	console.log(dataObj)
+                	$('.team-member-list').html('');
+                	for(i=0;i<dataObj['members'].length;i++){
+                		$('.team-member-list').append(
+                			'<p>'+dataObj['members'][i]+'</p>');
+                	}
+                }
+         });
+    }
+
+</script>
