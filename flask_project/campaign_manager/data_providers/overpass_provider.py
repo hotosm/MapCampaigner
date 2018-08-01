@@ -4,7 +4,7 @@ import hashlib
 import os
 import re
 
-from urllib.parse import quote
+from app_config import Config
 
 from reporter import config
 from reporter.exceptions import OverpassTimeoutException
@@ -98,8 +98,8 @@ class OverpassProvider(AbstractDataProvider):
         :returns: A dict from retrieved OSM dataset.
         :rtype: dict
         """
-        default_server_url = os.environ['DEFAULT_OVERPASS_URL']
-        attic_data_server_url = os.environ['ATTIC_DATA_SERVER_URL']
+        default_server_url = Config().DEFAULT_OVERPASS_URL
+        attic_data_server_url = Config().ATTIC_DATA_SERVER_URL
 
         if need_attic_data:
             server_url = attic_data_server_url
@@ -292,7 +292,7 @@ class OverpassProvider(AbstractDataProvider):
         :rtype: dict
         """
 
-        server_url = os.environ['ATTIC_DATA_SERVER_URL']
+        server_url = Config().ATTIC_DATA_SERVER_URL
 
         query = self.parse_url_parameters(
                 polygon=polygon,

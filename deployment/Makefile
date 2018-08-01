@@ -173,4 +173,17 @@ build-virtualenv: db
        python generate_model.py; \
     )
 
+run-development:build-virtualenv
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Build virtualenv"
+	@echo "------------------------------------------------------------------"
+	( \
+       source venv/bin/activate; \
+       cd ../flask_project;  \
+       export APP_SETTINGS="app_config.DevelopmentConfig"; \
+       python3 runserver.py; \
+    )
+
+
 
