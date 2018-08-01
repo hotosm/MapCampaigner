@@ -128,7 +128,9 @@
                             <div class="row">
                                 <div class="form-body form-group col-lg-4" style="margin-top: 10px">
                                     <input id="btn-add" type="button" value="+ Choose a template" onclick="addTypes()">
-                                    <input id="btn-add" type="button" value="+ Add custom tags" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                    <input id="btn-add" type="button" value="+ Add custom type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
+                                    <input id="btn-add" type="button" value="Edit custom types in yaml"
+                                           style="margin-top: 10px" data-format="all-yaml" data-toggle="modal" data-target="#custom-types-tags">
                                 </div>
                             </div>
                             <!-- Managers -->
@@ -457,6 +459,7 @@
 
     <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.0/js-yaml.min.js"></script>
     <script type="text/javascript" src="/static/js/create/map.js"></script>
     <script type="text/javascript" src="/static/js/create/remote_mapping.js"></script>
     <script type="text/javascript" src="/static/js/create/types_tags.js"></script>

@@ -35,8 +35,6 @@ function assignCampaignJsonToForm(json) {
     // check remote projects
     if (jQuery.type(json['remote_projects']) === "array") {
         $('#list-added-projects').each(function (index, element) {
-            console.log($(element));
-            console.log($(element).find('.btn-danger'));
             $(element).find('.btn-danger').click();
         });
         $.each(json['remote_projects'], function (index, remote_project_id) {

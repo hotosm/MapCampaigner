@@ -242,6 +242,9 @@ function addTag(wrapper) {
 function removeTags(event, type) {
     $(event).parent().parent().remove();
     $('#insight-function .function-form').html('');
+    if (types[type]['custom']) {
+        delete types[type];
+    }
 }
 
 function removeIndividualTag(event, type) {
