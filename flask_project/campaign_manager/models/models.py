@@ -10,6 +10,7 @@ from shapely.geometry import asShape
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from sqlalchemy import (
+    create_engine,
     Column,
     Integer,
     String,
@@ -110,8 +111,20 @@ functionAttributeAssociations = Table(
         'attribute_id',
         Integer,
         ForeignKey('attribute.id')
-        )
-    )
+        ))
+
+
+reminderRecipientAssociations = Table(
+    'reminderRecipientAssociations',
+    Base.metadata,
+    Column(
+        'reminder_id',
+        Integer,
+        ForeignKey('reminder.id')),
+    Column(
+        'recipient_id',
+        Integer,
+        ForeignKey('recipient.id')))
 
 
 class User(Base):
@@ -160,6 +173,14 @@ class User(Base):
         secondary=teamUserAssociations,
         lazy='subquery',
         back_populates='users')
+    recipient = relationship(
+        'Recipient',
+        back_populates='user',
+        lazy=True)
+    reminder_sender = relationship(
+        'Reminder',
+        back_populates='sender',
+        lazy=True)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -232,6 +253,10 @@ class Campaign(Base):
         lazy=True)
     notification = relationship(
         'Notification',
+        back_populates='campaign',
+        lazy=True)
+    reminders = relationship(
+        'Reminder',
         back_populates='campaign',
         lazy=True)
     geometry = Column(Geometry('POLYGON'))
@@ -444,6 +469,10 @@ class Campaign(Base):
             name=team,
             boundary_id=taskboundary.id)
         team_obj.create()
+        team_user = User().get_by_osm_id(team)
+        if not team_user:
+            team_user = User(osm_user_id=team)
+            team_user.create()
 
     def delete_taskboundaries(self):
         """ Deletes the geometry from the DB. """
@@ -614,6 +643,17 @@ class Chat(Base):
     def __init__(self, **kwargs):
         super(Chat, self).__init__(**kwargs)
 
+    def create(self):
+        """Adds the chat object in DB. """
+        session.add(self)
+        session.commit()
+
+    def get_participant_chat(self, sender, receiver):
+        """Returns the chat between sender and reciever."""
+        return session.query(Chat).filter(and_(
+            Chat.sender_id == sender.id,
+            Chat.receiver_id == receiver.id)).all()
+
 
 class Notification(Base):
 
@@ -646,6 +686,86 @@ class Notification(Base):
 
     def __init__(self, **kwargs):
         super(Notification, self).__init__(**kwargs)
+
+
+class Reminder(Base):
+
+    __tablename__ = 'reminder'
+
+    id = Column(
+        'id',
+        Integer,
+        primary_key=True,
+        autoincrement=True)
+    message = Column(
+        String(400),
+        nullable=False)
+    is_delivered = Column(
+        BOOLEAN,
+        default=False)
+    campaign_id = Column(
+        Integer,
+        ForeignKey('campaign.id'),
+        nullable=False)
+    campaign = relationship(
+        'Campaign',
+        back_populates='reminders')
+    sender_id = Column(
+        Integer,
+        ForeignKey('user.id'),
+        nullable=False)
+    sender = relationship(
+        'User',
+        back_populates='reminder_sender')
+    time = Column(
+        DateTime,
+        nullable=False)
+    recipients = relationship(
+        'Recipient',
+        secondary=reminderRecipientAssociations,
+        lazy='subquery',
+        back_populates='reminders')
+
+    def __init__(self, **kwargs):
+        super(Reminder, self).__init__(**kwargs)
+
+    def create(self):
+        """Creates a new Reminder."""
+        session.add(self)
+        session.commit()
+
+    def get_all(self):
+        """Returns all the reminders in the DB."""
+        return session.query(Reminder).all()
+
+
+class Recipient(Base):
+
+    __tablename__ = 'recipient'
+
+    id = Column(
+        'id',
+        Integer,
+        primary_key=True,
+        autoincrement=True)
+    is_delivered = Column(
+        BOOLEAN,
+        default=False)
+    user_id = Column(
+        Integer,
+        ForeignKey('user.id'),
+        nullable=False)
+    user = relationship(
+        'User',
+        back_populates='recipient')
+    reminders = relationship(
+        'Reminder',
+        secondary=reminderRecipientAssociations,
+        lazy='subquery',
+        back_populates='recipients')
+
+    def __init__(self, **kwargs):
+        super(Recipient, self).__init__(**kwargs)
 
 
 class FeatureTemplate(Base):

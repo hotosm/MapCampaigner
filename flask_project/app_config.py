@@ -34,6 +34,7 @@ class Config(object):
     SENTRY_DSN = SENTRY_DSN
     MAX_AREA_SIZE = 320000000
     DB_LOCATION = DATABASEURL
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
     # OSMCHA ATTRIBUTES
     _OSMCHA_DOMAIN = 'https://osmcha.mapbox.com/'
