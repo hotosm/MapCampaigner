@@ -5,3 +5,4 @@ pep8
 nosexcover
 nose
 selenium
+awscli

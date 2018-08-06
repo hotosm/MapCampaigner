@@ -2,9 +2,6 @@ flask
 flask-wtf
 raven
 cherrypy
-psycopg2
-Flask-SQLAlchemy
-Flask-Migrate
 flask-admin
 pyshp
 beautifulsoup4
