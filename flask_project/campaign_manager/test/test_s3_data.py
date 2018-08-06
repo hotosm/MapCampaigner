@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 from campaign_manager.aws import S3Data
 
@@ -11,7 +12,12 @@ class TestS3Data(TestCase):
         """
         The AWS bucket should be configured properly.
         """
-        self.assertEqual(self.s3_data.bucket, 'fieldcampaigner-data-test')
+        if os.environ.get('ON_TRAVIS', 'false') == 'true':
+            self.assertEqual(self.s3_data.bucket,
+                'hotosm-fieldcampaigner-data-test')
+        else:
+            self.assertEqual(self.s3_data.bucket,
+                'fieldcampaigner-data-test')
 
     def test_fetch_campaign_json_file(self):
         """
