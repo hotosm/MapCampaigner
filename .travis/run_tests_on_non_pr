@@ -1,0 +1,3 @@
+cd flask_project &&
+nosetests campaign_manager &&
+nosetests reporter

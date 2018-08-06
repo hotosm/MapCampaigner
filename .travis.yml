@@ -13,30 +13,23 @@ compiler: clang
 
 python:
   - '3.6'
-  - '3.5'
-  - '3.4'
 
 env:
   global:
     - ON_TRAVIS=true
     - SECRET_KEY='tT\xd7\xb06\xf7\x9b\xff\x0fZL\xca\xca\x11\xefM\xacr\xfb\xdf\xca\x9b'
-    - APP_SETTINGS=app_config.DevelopmentConfig
-    - DATABASE_URL=localhost
+    - APP_SETTINGS=app_config.AWSTestingConfig
+    - ATTIC_DATA_SERVER_URL='http://overpass-api.de/api/interpreter'
+    - DEFAULT_OVERPASS_URL='http://exports-prod.hotosm.org:6080/api/interpreter'
 
 matrix:
   fast_finish: true
   include:
     - python: '3.6'
       env: TRAVIS_CONFIG=PYTHON3
-    - python: '3.5'
-      env: TRAVIS_CONFIG=PYTHON3
-    - python: '3.4'
-      env: TRAVIS_CONFIG=PYTHON3
 
   exclude:
     - python: '3.6'
-    - python: '3.5'
-    - python: '3.4'
 
 git:
   depth: 30
@@ -48,11 +41,31 @@ install:
   - pip install -r deployment/docker/requirements.txt
   - pip install -r deployment/docker/requirements-dev.txt
 
-before_script:
-
 script:
-  - cd deployment && make pep8
-  - nosetests ../flask_project
+  - bash ./.travis/pep8
+  - bash ./.travis/run_tests
+
+deploy:
+  - provider: elasticbeanstalk
+    skip_cleanup: true
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    region: "us-west-2"
+    app: "field-campaigner"
+    env: "staging"
+    bucket_name: hotosm-fieldcampaigner-develop-deployments
+    on:
+      branch: develop
+  - provider: elasticbeanstalk
+    skip_cleanup: true
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    region: "us-west-2"
+    app: "field-campaigner"
+    env: "production"
+    bucket_name: hotosm-fieldcampaigner-master-deployments
+    on:
+      branch: master      
 
 after_script:
   - coveralls

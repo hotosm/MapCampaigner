@@ -37,6 +37,7 @@ from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
 from campaign_manager.models.campaign import Campaign
+from campaign_manager.models.survey import Survey
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
 
@@ -51,8 +52,12 @@ from reporter.static_files import static_file
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
-    OAUTH_CONSUMER_KEY = ''
-    OAUTH_SECRET = ''
+    try:
+        OAUTH_CONSUMER_KEY = os.environ['OAUTH_CONSUMER_KEY']
+        OAUTH_SECRET = os.environ['OAUTH_SECRET']
+    except KeyError:
+        OAUTH_CONSUMER_KEY = ''
+        OAUTH_SECRET = ''
 
 MAX_AREA_SIZE = 320000000
 
@@ -698,8 +703,6 @@ def create_campaign():
     from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
-    if not os.path.exists(Campaign.get_json_folder()):
-        return Response('DATA_SOURCE not found or not valid.')
 
     # Get managers
     managers = get_allowed_managers()
@@ -970,6 +973,13 @@ def thumbnail(image):
     if not os.path.exists(map_image):
         return send_file('./campaign_manager/static/img/no_map.png')
     return send_file(map_image)
+
+
+@campaign_manager.route('/surveys/<survey_name>')
+def survey_data(survey_name):
+    survey = Survey.find_by_name(survey_name)
+    return json.dumps(
+        survey.data).replace('True', 'true').replace('False', 'false')
 
 
 def not_found_page(error):
