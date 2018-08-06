@@ -1,0 +1,49 @@
+<div class="map-side-list-attributes">
+  <div class="checked-attributes">
+    {% for attribute in feature_completeness['attributes'] %}
+      <span>{{ attribute }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="map-side-list">  
+  <div class="insight-title">Attribute Completeness</div>                 
+  <div style="text-align:right">
+    {{ feature_completeness['features_completed'] }}/{{ feature_completeness['features_collected'] }} ({{ feature_completeness['percentage'] }}%)
+  </div>
+  <div class="progress side-panel-progress">
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{ feature_completeness['percentage'] }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ feature_completeness['percentage'] }}%;">
+      <span class="sr-only">{{ feature_completeness['percentage'] }}% Complete</span>
+    </div>
+  </div>
+</div>
+                    
+<div class="map-side-list">  
+  <div class="insight-title">{{ feature_completeness['type_name'] }} by type</div>
+  <div class="row piechart-wrapper">
+    <canvas id="canvas-piechart"></canvas>
+  </div>                    
+</div>
+
+<div class="map-side-list" style="border:none">
+  <div class="insight-title">Features Checked</div>
+  <div class="type-insight-text">{{ feature_completeness['features_collected'] }}</div>
+</div>
+
+<script type="text/javascript">
+  function loadPieChart() {
+    data = {{ count_feature['piechart'] | safe }}
+    ctx = document.getElementById("canvas-piechart")
+    var myDoughnutChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+          legend: {
+            display: false
+          }
+        }
+      });
+    }
+
+    loadPieChart();
+</script>
