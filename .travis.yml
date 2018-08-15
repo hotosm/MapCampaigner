@@ -1,7 +1,7 @@
 # Common to all builds in the build matrixs
 os: linux
 language: python # This lets us use newer python versions from virtualenv
-sudo: false
+sudo: required
 cache:
   apt: true
   pip: true
@@ -13,6 +13,9 @@ compiler: clang
 
 python:
   - '3.6'
+
+services:
+  - docker
 
 env:
   global:
@@ -66,6 +69,9 @@ deploy:
     bucket_name: hotosm-fieldcampaigner-master-deployments
     on:
       branch: master      
+
+after_deploy:
+  - python ./.travis/deploy_lambda_functions.py
 
 after_script:
   - coveralls
