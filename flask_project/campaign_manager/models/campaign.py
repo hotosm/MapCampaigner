@@ -129,7 +129,7 @@ class Campaign(JsonModel):
 
         safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
 
-        image_path = 'thumbnail/{}'.format(safe_name)
+        image_path = 'campaigns/{}/thumbnail.png'.format(self.uuid)
 
         request = requests.get(url, stream=True)
         if request.status_code == 200:
@@ -546,11 +546,8 @@ class Campaign(JsonModel):
         """
         sort_list = []
         campaigns = []
-        for campaign in S3Data().list('campaign'):
+        for campaign_uuid in S3Data().list('campaigns'):
             try:
-                campaign_uuid, extension = campaign.split('.')
-                if extension != 'json':
-                    continue
                 campaign = Campaign.get(campaign_uuid)
                 if campaign_status == 'all':
                     allowed = True
@@ -686,7 +683,7 @@ class Campaign(JsonModel):
         :return: path of json or none if not found
         :rtype: str
         """
-        return 'campaign/{}.json'.format(uuid)
+        return 'campaigns/{}/campaign.json'.format(uuid)
 
     @staticmethod
     def get_geojson_file(uuid):
@@ -697,7 +694,7 @@ class Campaign(JsonModel):
         :return: path of json or none if not found
         :rtype: str
         """
-        return 'campaign/{}.geojson'.format(uuid)
+        return 'campaigns/{}/campaign.geojson'.format(uuid)
 
     @staticmethod
     def validate(data, uuid):

@@ -23,7 +23,7 @@ class TestS3Data(TestCase):
         """
         It should return a json file from a campaign uuid.
         """
-        campaign_json_file = 'campaign/{}.json'.format(self.uuid)
+        campaign_json_file = 'campaigns/{}/campaign.json'.format(self.uuid)
         json = self.s3_data.fetch(campaign_json_file)
         self.assertEqual(json['uuid'], self.uuid)
 
@@ -31,7 +31,7 @@ class TestS3Data(TestCase):
         """
         It should return nothing when fetching an unknown campaign json file.
         """
-        campaign_json_file = 'campaign/unknown.json'
+        campaign_json_file = 'campaigns/unknown/campaign.json'
         json = self.s3_data.fetch(campaign_json_file)
         self.assertEqual(json, [])
 
@@ -39,7 +39,8 @@ class TestS3Data(TestCase):
         """
         It should return a geojson file from a campaign uuid.
         """
-        campaign_geojson_file = 'campaign/{}.geojson'.format(self.uuid)
+        campaign_geojson_file = 'campaigns/{uuid}/campaign.geojson'.format(
+            uuid=self.uuid)
         geojson = self.s3_data.fetch(campaign_geojson_file)
         self.assertEqual(geojson['type'], 'FeatureCollection')
 
@@ -63,10 +64,12 @@ class TestS3Data(TestCase):
         """
         It should return True or False wether the file is json/geojson or not.
         """
-        campaign_json_file = 'campaign/{}.json'.format(self.uuid)
+        campaign_json_file = 'campaigns/{uuid}/campaign.json'.format(
+            uuid=self.uuid)
         self.assertTrue(self.s3_data.is_json(campaign_json_file))
 
-        campaign_geojson_file = 'campaign/{}.geojson'.format(self.uuid)
+        campaign_geojson_file = 'campaigns/{uuid}/campaign.geojson'.format(
+            uuid=self.uuid)
         self.assertTrue(self.s3_data.is_json(campaign_geojson_file))
 
         survey_file = 'surveys/buildings'
@@ -74,12 +77,11 @@ class TestS3Data(TestCase):
 
     def test_list_campaigns(self):
         """
-        It should return a list of keys starting with the prefix 'campain'.
+        It should return one campaign
         """
-        campaigns = self.s3_data.list('campaign')
-        self.assertEqual(len(campaigns), 2)
-        self.assertEqual(campaigns[0], '{}.geojson'.format(self.uuid))
-        self.assertEqual(campaigns[1], '{}.json'.format(self.uuid))
+        campaigns = self.s3_data.list('campaigns')
+        self.assertEqual(len(campaigns), 1)
+        self.assertEqual(campaigns[0], self.uuid)
 
     def test_list_surveys(self):
         """
@@ -87,7 +89,7 @@ class TestS3Data(TestCase):
         """
         surveys = self.s3_data.list('surveys')
         self.assertEqual(len(surveys), 7)
-        self.assertEqual(surveys[0], 'buildings')
+        self.assertEqual('buildings' in surveys, True)
 
     def test_list_nothing(self):
         """
@@ -110,11 +112,11 @@ class TestS3Data(TestCase):
         """
         campaign_body = '{"campaign_creator": "pierrealixt"}'
         self.s3_data.create(
-            'campaign/test_campaign.json',
+            'campaigns/test_campaign/campaign.json',
             campaign_body)
-        content = self.s3_data.fetch('campaign/test_campaign.json')
+        content = self.s3_data.fetch('campaigns/test_campaign/campaign.json')
         self.assertEqual(content['campaign_creator'], 'pierrealixt')
-        self.s3_data.delete('campaign/test_campaign.json')
+        self.s3_data.delete('campaigns/test_campaign/campaign.json')
 
     def test_delete_coverage_folder(self):
         """
@@ -135,5 +137,5 @@ class TestS3Data(TestCase):
         """
         from datetime import datetime
         last_modified = self.s3_data.get_last_modified_date(
-            'campaign/{}.json'.format(self.uuid))
+            'campaigns/{}/campaign.json'.format(self.uuid))
         self.assertTrue(isinstance(last_modified, datetime))
