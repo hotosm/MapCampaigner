@@ -9,7 +9,7 @@ class TestSurvey(TestCase):
         It should initialize a 'buildings' Survey object.
         """
         survey = Survey('buildings')
-        self.assertEquals(survey.data['tags']['building'], ['yes'])
+        self.assertEqual(survey.data['tags']['building'], ['yes'])
 
     def test_all(self):
         """
@@ -17,18 +17,18 @@ class TestSurvey(TestCase):
         """
         surveys = Survey.all()
         self.assertEqual(len(surveys), 7)
-        self.assertEqual(surveys[0], 'buildings')
+        self.assertEqual('buildings' in surveys, True)
 
     def test_unknown_survey(self):
         """
         It should return an empty array.
         """
         survey = Survey.find_by_name('unknown')
-        self.assertEquals(survey.data, [])
+        self.assertEqual(survey.data, [])
 
     def test_survey_features(self):
         """
         It should return survey's features.
         """
         survey = Survey.find_by_name('buildings')
-        self.assertEquals(survey.feature, 'building')
+        self.assertEqual(survey.feature, 'building')
