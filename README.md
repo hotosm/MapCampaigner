@@ -1,6 +1,6 @@
 # MapCampaigner
 
-MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in or select a campaign to offer remote mapping support. The result – improved data collection standards and project management.
+MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.
 
 Join the development: 
 
