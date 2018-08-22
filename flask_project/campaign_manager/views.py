@@ -120,15 +120,16 @@ def clean_argument(args):
 def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
-    try:
-        campaign = Campaign.get(uuid)
-        rendered_html = campaign.render_insights_function(
-            insight_function_id,
-            additional_data=clean_argument(request.args)
-        )
-        return Response(rendered_html)
-    except Campaign.DoesNotExist:
-        abort(404)
+    return Response("", 200)
+    # try:
+    #     campaign = Campaign.get(uuid)
+    #     rendered_html = campaign.render_insights_function(
+    #         insight_function_id,
+    #         additional_data=clean_argument(request.args)
+    #     )
+    #     return Response(rendered_html)
+    # except Campaign.DoesNotExist:
+    #     abort(404)
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')
@@ -387,19 +388,28 @@ def campaign_boundary_upload_chunk(uuid):
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     from campaign_manager.models.campaign import Campaign
+    from campaign_manager.aws import S3Data
     """Get campaign details.
     """
-    try:
-        campaign = Campaign.get(uuid)
-        context = campaign.to_dict()
-        context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
-        context['oauth_secret'] = OAUTH_SECRET
-        context['map_provider'] = map_provider()
-        context['geometry'] = json.dumps(campaign.geometry)
-        context['selected_functions'] = \
-            campaign.get_selected_functions_in_string()
 
-        # Start date
+    campaign = Campaign.get(uuid)
+    context = campaign.to_dict()
+    context['s3_campaign_url'] = S3Data().url(uuid)
+
+    context['types'] = list(map(lambda type:
+        type[1]['type'],
+        context['types'].items()))
+
+    context['start_date'] = datetime.strptime(
+        context['start_date'], '%Y-%m-%d').strftime('%d %b %Y')
+    context['end_date'] = datetime.strptime(
+        context['end_date'], '%Y-%m-%d').strftime('%d %b %Y')
+    context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
+    context['oauth_secret'] = OAUTH_SECRET
+    context['map_provider'] = map_provider()
+    context['participants'] = len(campaign.campaign_managers)
+    if campaign.map_type != '':
+        context['attribution'] = find_attribution(campaign.map_type)
         try:
             start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
             context['start_date_date'] = start_date.strftime('%d %b')
@@ -420,17 +430,7 @@ def get_campaign(uuid):
             context['end_date_date'] = '-'
             context['end_date_year'] = '-'
 
-        # Participant
-        context['participants'] = len(campaign.campaign_managers)
-
-        # Map attribution
-        if campaign.map_type != '':
-            context['attribution'] = find_attribution(campaign.map_type)
-
-        return render_template(
-            'campaign_detail.html', **context)
-    except Campaign.DoesNotExist:
-        abort(404)
+    return render_template('campaign_detail.html', **context)
 
 
 @campaign_manager.route('/participate')
@@ -724,6 +724,7 @@ def create_campaign():
             abort(403)
 
         Campaign.create(data, form.uploader.data)
+        Campaign.compute(data["uuid"])
 
         return redirect(
             url_for(
@@ -739,7 +740,6 @@ def create_campaign():
     context['allowed_managers'] = managers
     context['url'] = '/create'
     context['action'] = 'create'
-    context['campaigns'] = Campaign.all()
     context['functions'] = get_selected_functions()
     context['title'] = 'Create Campaign'
     context['maximum_area_size'] = MAX_AREA_SIZE

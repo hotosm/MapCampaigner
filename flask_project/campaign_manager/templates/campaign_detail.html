@@ -26,8 +26,8 @@
         <div class="col-lg-7">
             <h3 class="detail-campaign-name">{{ name }}</h3>
             {% if types %}
-                {% for type, value in types.items() %}
-                    <label class="detail-tag"> {{ value.type }} </label>
+                {% for type in types %}
+                    <label class="detail-tag"> {{ type }} </label>
                 {% endfor %}
             {% endif %}
             <p>
@@ -121,141 +121,39 @@
         </div>
     </div>
 
-    <div class="panel panel-default detail-panel-information">
-        <div class="panel-body summary-stats">
-            <div class="row">
-                <div class="col-lg-4 single-summary-stat">
-                    <div class="summary-stat-title">
-                        Features Collected
-                    </div>
-                    <div class="summary-stat-desc">
-                        <span id="features-collected"><span class="grey-italic">...</span></span>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 single-summary-stat">
-                    <div class="summary-stat-title">
-                        Users Engaged
-                    </div>
-                    <div class="summary-stat-desc">
-                        <span id="contributors"><span class="grey-italic">...</span></span>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 single-summary-stat">
-                    <div class="summary-stat-title">
-                        Areas Covered
-                    </div>
-                    <div class="summary-stat-desc">
-                        <span id="areas-covered"><span class="grey-italic">...</span></span>
-                    </div>
-                </div>
+    <div class='row' id='campaign-computing-status'>
+        <div class='col-lg-12'>
+            <div class='alert alert-warning'>
+                <p>The campaign is still computing, please come back later.</p>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default detail-panel-information">
-                <div class="panel-body">
-                    <div class="row side-panel-wrapper">
-                        <div class="col-lg-3 map-side-panel">
-                        </div>
-                        <div class="col-lg-9">
-                            <div id="campaign-map-detail"></div>
-                        </div>
-                    </div>
-
-                    <div class="insight-function-panel">
-                        <div class="tab-content insight-content">
-                        </div>
-                    </div>
-                </div>
+    <div class='row' id="campaign-feature-details" style="display:none">
+      <div class='col-lg-12'>
+        <div class='panel panel-default detail-panel-information'>
+          <div class='panel-body'>
+            <div class="type-title">
+            <i class="glyphicon glyphicon-info-sign"></i>
+            Feature details
             </div>
-        </div>
-    </div>
-
-    <div class="advance-insights-wrapper">
-    <div class="advance-insights" style="display: block;">
-            <div class="row" id="user-engagement-panel">
-                <div class="col-lg-12">
-                    <div class="panel panel-default detail-panel-insights">
-                        <div class="panel-heading"><i class="fa fa-user" aria-hidden="true"></i> Users Engagement</div>
-                        <div class="panel-body" style="padding-bottom: 0;padding-top: 0;">
-                            <div class="user-engagement-loading"><span class="grey-italic">Loading data...</span></div>
-                            <div class="row" id="user-engagement-wrapper">
-                                <div class="col-lg-4 type-1" style="min-height: 250px;">
-                                    <div class="insight-title" style="margin-bottom: 20px;">
-                                        Users Engaged
-                                    </div>
-                                    <div class="completeness">
-                                        <div class="type-insight-text" id="total-users-engaged">
-                                            0
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 type-2">
-                                    <div class="insight-title" style="margin-bottom: 20px;">
-                                        Contributions Frequency
-                                    </div>
-                                    <div class="chart-legend" id="frequency-legend"></div>
-                                    <canvas id="user-frequency">
-                                    </canvas>
-                                </div>
-                                <div class="col-lg-4 type-3">
-                                    <div class="insight-title" style="margin-bottom: 20px;">
-                                        Contributions Amount
-                                    </div>
-                                    <div class="chart-legend" id="contribution-legend"></div>
-                                    <canvas id="contribution-amount">
-                                    </canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class='row side-panel-wrapper'>
+              <div class='col-lg-4 map-side-panel'>
+                <select class="select-types feature-select form-control">
+                {% for type in types %}
+                  <option value='{{ type }}'>{{ type }}</option>
+                {% endfor %}
+                </select>
+                <div class="content-wrapper"></div>
+              </div>
+              <div class='col-lg-8'>
+                <div class='map-wrapper'></div>
+              </div>
             </div>
-        </div>
-        <div class="advance-insights" style="display: block;">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default detail-panel-insights">
-                        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-lg-12" style="padding-left: 20px; padding-right: 20px;">
-                                    <div class="advance-insight-title">Total Errors</div>
-                                    <div id="total-feature-completeness-errors">
-                                        0
-                                    </div>
-                                    <input id="exclude-warning" type="checkbox" style="margin-bottom: 20px;"/> Exclude Warning
-                                    <table id="feature-completeness-error-table" class="display feature-list-table" width="100%">
-                                    </table>
-                                    <div style="padding-bottom: 20px;">
-                                        <button class="btn btn-info btn-manage" id="download-xml" style="display: inline-block;">Download JOSM File</button>
-                                    </div>
-                                    <iframe id="download_xml_frame" style="display:none;"></iframe>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="advance-insights">
-        <div class="row">
             <div class="col-lg-12">
-                <div class="panel panel-default detail-panel-insights">
-                    <div class="panel-heading">
-                    </div>
-                    <div class="panel-body">
-                    </div>
-                </div>
-            </div>
+              <div class="errors-wrapper"></div>
+          </div>
         </div>
+      </div>
     </div>
 
 {% endblock %}
@@ -269,521 +167,88 @@
 {% block after_base_js %}
 
     <script type="text/javascript">
+    function main() {
+      var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
+      var types = {{ types|safe }};
+      var activeType = types[0];
+      
+      loadType(activeType, s3CampaignUrl);
 
-        //------------------ EVENT ------------------//
+      // calculateCampaignProgress();
 
-        var renderInsights;
+      
+      $('.feature-select').on('change', function() {
+        activeType = this.value;
+        loadType(activeType, s3CampaignUrl);
+      });      
 
-        function loginSuccess(user) {
-            location.href='/campaign/{{ uuid }}';
+    }
+
+    function loadType(activeType, s3CampaignUrl) {
+      console.log(activeType);
+      activeType = activeType.replace(' ', '_')
+      var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
+
+      $.get(typeUrl + 'content.html', function(data) {
+            $('#campaign-feature-details').show();
+            $('#campaign-computing-status').hide();
+            $('.content-wrapper').html(data);        
+      });
+
+      $.get(typeUrl + 'map.html', function(data) {
+        $('.map-wrapper').html(data)
+      });
+
+      $.get(typeUrl + 'errors.html', function(data) {
+        $('.errors-wrapper').html(data)
+      });        
+    }
+
+    function calculateCampaignProgress() {
+      var start_date = "{{ start_date }}";
+      var end_date = "{{ end_date }}";
+
+
+        var $campaignStatus = $('.detail-campaign-status');
+        var $campaignStatusLabel = $('.detail-campaign-status label');
+
+        if (start_date === 'None' || end_date === 'None') {
+            $('.detail-campaign-status label').html('-');
+            return;
         }
 
-        function updated(user) {
-            renderInsightFunctionsTypes(user.display_name);
-            var managers = {{ campaign_managers | safe }};
-            // Shows manage button if current user is one of the manager
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.btn-manage').show();
+        start_date = moment(start_date, 'YYYY-MM-DD', true);
+        end_date = moment(end_date, 'YYYY-MM-DD', true);
+        var campaign_range = end_date.diff(start_date, 'days') + 1; // Include start
+        if (campaign_range < 0) {
+            $campaignStatusLabel.html('-');
+            return;
+        }
+
+        var remaining_days = end_date.diff(moment(), 'days') + 1;
+        var progress = 0;
+        if (remaining_days <= 0) {
+            progress = 100;
+            if($campaignStatusLabel.text() == 'Inactive') {
+                $campaignStatus.removeClass('running');
+                $campaignStatus.addClass('finished');
+                $campaignStatusLabel.html('Finished');
+            }
+        } else {
+            progress = 100 - (remaining_days / campaign_range * 100);
+            if(progress < 0){
+                progress = 0
             }
         }
-
-        function logout() {
-            auth.logout();
-            location.href='/campaign/{{ uuid }}';
-        }
-
-        function login() {
-            auth.authenticate(function () {
-                location.href='/campaign/{{ uuid }}';
-            })
-        }
-
-        function loginError() {
-            renderInsightFunctionsTypes('');
-        }
-
-        function logoutSuccess() {
-            location.href='/campaign/{{ uuid }}';
-        }
-
-        if(!auth.authenticated()) {
-            waitForFunctions();
-        }
-
-        function waitForFunctions(){
-            if(!$.isFunction(renderInsights)) {
-                setTimeout(waitForFunctions, 100);
-                return;
-            }
-            renderInsights();
-        }
-
-        $(function () {
-
-            calculateCampaignProgress();
-
-            // Check share button
-            if (isMobile.Android()) {
-            } else if (isMobile.iOS()) {
-                $('#btn-omk-link').addClass('disabled');
-            } else {
-                $('#btn-omk-link').addClass('disabled');
-                $('#btn-mapsme-link').addClass('disabled');
-            }
+        $('#campaign-progress').css({
+            'width': progress + '%'
         });
+    }
 
-        var currentStatus = capitalizeFirstLetter(
-             $('.detail-campaign-status label').text()
-        );
+    function getTypeUrl(activeType, s3CampaignUrl) {
+      return s3CampaignUrl + '/render/' + activeType + '/';      
+    }    
 
-         $('.detail-campaign-status label').html(
-                currentStatus.replace('-',' ')
-         );
-
-        var uuid = '{{ uuid }}';
-        var managers = {{ campaign_managers|safe }};
-        var selected_functions = {{ selected_functions | safe }};
-        var total_features_collected = 0;
-
-        var feature_type_collected = [];
-        var feature_type_collected_count = 0;
-
-        // Feature layer group
-        var featureGroups = {};
-
-        var campaign_types = null;
-        {% if types %}
-            campaign_types = {{ types | safe }};
-        {% endif %}
-        var start_date = "{{ start_date }}";
-        var end_date = "{{ end_date }}";
-        var remote_projects = {{ remote_projects|safe }};
-        var remoteLayers = {};
-        var taskStatusFillColor = {
-            'READY': '#FFFFFF',
-            'unassigned': '#D3D3D3',
-            'MAPPED': '#FFE4B5',
-            'INVALIDATED': '#D3D3D3',
-            'VALIDATED': '#B0DE5C',
-            'complete': '#B0DE5C',
-            'incomplete': '#FFE4B5',
-            'BADIMAGERY': '#d2a29e'
-        };
-
-        var featureCompleteness = [];
-        var featureData = {};
-        var mapperEngagementTotal = {};
-        var mapperEngagementFrequency = [];
-        var contributors = [];
-
-        // KML
-        var pointsForKML = [];
-
-        var isFirstActiveRemote = true;
-
-        function renderRemoteProjects() {
-
-            if (remote_projects.length === 0) {
-                return;
-            }
-
-            $('.map-side-panel').append(
-                '<div class="map-side-list map-side-type" id="type-remote-projects">' +
-                '<div class="row">' +
-                '<div class="col-lg-12">' +
-                '<div class="pull-left map-side-list-name">' +
-                'Remote Projects' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '<div id="remote-projects-summaries" class="side-panel-summaries"></div>' +
-                '</div>'
-            );
-
-
-            for (var i = 0; i < remote_projects.length; i++) {
-
-                var url = '/project-detail?projectId=' + remote_projects[i];
-                $.ajax({
-                    url: url,
-                    success: function (data) {
-                        try {
-                            data = JSON.parse(data);
-                        } catch (e) {
-                            return;
-                        }
-                        var layerGroup = L.geoJSON([data['tasks']], {
-                            style: function (feature) {
-                                if (typeof taskStatusFillColor[feature.properties.taskStatus] !== 'undefined') {
-                                    return {
-                                        weight: 2,
-                                        color: "#999",
-                                        opacity: 1,
-                                        fillColor: taskStatusFillColor[feature.properties.taskStatus],
-                                        fillOpacity: 0.8
-                                    }
-                                }
-                                return feature.properties && feature.properties.style;
-                            },
-                            onEachFeature: function (feature, layer) {
-                                totalArea++;
-                                if (feature.properties.taskStatus === 'VALIDATED') {
-                                    totalAreaCovered++;
-                                }
-                                var popupContent = feature.properties.taskStatus;
-                                layer.bindPopup(popupContent);
-                            }
-                        });
-                        var active = '';
-                        if(isFirstActiveRemote) {
-                            active = 'active';
-                            layerGroup.addTo(map);
-                            isFirstActiveRemote = false;
-                        }
-
-                        remoteLayers[data['projectId']] = layerGroup;
-
-                        $('#remote-projects-summaries').append(
-                            '<div class="row summary single-row remote-project-list '+active+'" style="font-size:9pt;" onclick="pointProjectMap(event, this, ' + data['projectId'] + ')">' +
-                            '<div class="col-lg-12" style="padding-top: 0 !important;">' +
-                            '<div class="pull-left">' +
-                            '<a target="_blank" href="http://tm3.hotosm.org/project/' + data['projectId'] + '" style="word-wrap:break-word;">' +
-                            '#' + data['projectId'] + ' ' + data['projectInfo']['name'] +
-                            '</a>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>'
-                        );
-                    }
-                });
-            }
-        }
-
-        function pointProjectMap(event, element, projectId) {
-            var layer = remoteLayers[projectId];
-            if($(element).hasClass('active')) {
-
-            } else {
-                $.each(remoteLayers, function (key, addedLayer) {
-                    map.removeLayer(addedLayer);
-                });
-                map.addLayer(layer);
-                $('#type-remote-projects').find('.remote-project-list').removeClass('active');
-                $(element).addClass('active');
-            }
-            map.fitBounds(layer.getBounds());
-        }
-
-        function toggleProjectMap(el, projectId) {
-            var layer = remoteLayers[projectId];
-            if($(el).hasClass('active')) {
-                map.removeLayer(layer);
-                $(el).removeClass('active');
-            } else {
-                map.addLayer(layer);
-                $(el).addClass('active');
-            }
-        }
-
-        var useDefault = L.Control.extend({
-
-            options: {
-                position: 'topright'
-            },
-
-            onAdd: function (map) {
-                var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-                container.type = 'button';
-                container.title = 'switch to default map';
-                container.value = 'use default map';
-                container.onclick = function () {
-                    chooseDefault();
-                };
-
-                return container;
-            }
-        });
-
-        var useCustom = L.Control.extend({
-            options: {
-                position: 'topright'
-            },
-
-            onAdd: function (map) {
-                var container = L.DomUtil.create('input', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-                container.type = 'button';
-                container.title = 'switch to custom map';
-                container.value = 'use custom map';
-                container.onclick = function () {
-                    chooseCustom();
-                };
-
-                return container;
-            }
-        });
-
-        function chooseDefault() {
-            custom_map.removeFrom(map);
-            default_map = L.tileLayer('{{ map_provider }}', {
-                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-                'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 20
-            }).addTo(map);
-            document.getElementById('map-custom').classList.add('hide');
-            document.getElementById('map-default').classList.add('show');
-            document.getElementById('map-custom').classList.remove('show');
-            map.removeControl(switchMap);
-            map.addControl(switchCustom)
-        }
-
-        function chooseCustom() {
-            default_map.removeFrom(map);
-            custom_map.addTo(map);
-            document.getElementById('map-custom').classList.add('show');
-            document.getElementById('map-default').classList.remove('show');
-            document.getElementById('map-default').classList.add('hide');
-            map.removeControl(switchCustom);
-            map.addControl(switchMap)
-        }
-
-        var drawnItems = new L.FeatureGroup();
-        var map = L.map('campaign-map-detail').setView([0, 0], 1);
-        var map_type = '{{ map_type }}';
-        var attribution = '{{ attribution|safe }}';
-        if (!map_type) {
-            L.tileLayer('{{ map_provider }}', {
-                attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-                'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
-                maxZoom: 20
-            }).addTo(map);
-        }
-        else {
-            var default_map;
-            var custom_map = L.tileLayer(map_type, {
-                attribution: attribution,
-                maxZoom: 20
-            }).addTo(map);
-            var switchMap = new useDefault();
-            var switchCustom = new useCustom();
-            map.addControl(switchMap);
-        }
-
-        {% if geometry %}
-            var totalArea = 0;
-            var totalAreaCovered = 0;
-            drawnItems = L.geoJSON(
-                $.parseJSON('{{ geometry|safe }}'), {
-                    style: function (feature) {
-                        var status = 'unassigned';
-
-                        if ('status' in feature.properties) {
-                            status = feature.properties['status'];
-                        } else if ('date' in feature.properties) {
-                            var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
-                            var remainingDays = layerDate.diff(moment(), 'days') + 1;
-                            if (remainingDays <= 0) {
-                                status='complete';
-                            } else {
-                                status='incomplete';
-                            }
-                            feature.properties['status'] = status;
-                        }
-
-                        if (typeof taskStatusFillColor[status] !== 'undefined') {
-                            return {
-                                weight: 2,
-                                color: "#999",
-                                opacity: 1,
-                                fillColor: taskStatusFillColor[status],
-                                fillOpacity: 0.8
-                            }
-                        }
-                        return feature.properties && feature.properties.style;
-                    },
-                    onEachFeature: function (feature, layer) {
-                        var area = feature.properties.area || '-';
-                        var team = feature.properties.team || '-';
-                        var status = capitalizeFirstLetter(feature.properties.status) || 'Unassigned';
-                        if(feature.properties.status === 'complete') {
-                            totalAreaCovered++;
-                        }
-                        totalArea++;
-                        layer.bindPopup(
-                            '<h4>Area</h4>'+
-                            '<div class="layer-popup">' +
-                                '<div class="layer-popup-area">' +
-                                    '<b>Area</b> &nbsp;&nbsp;: ' + area +
-                                '</div>'+
-                                '<div class="layer-popup-team">' +
-                                    '<b>Team</b> &nbsp;: ' + team +
-                                '</div>'+
-                                '<div class="layer-popup-team">' +
-                                    '<b>Status</b> : ' + status +
-                                '</div>'+
-                            '</div>'
-                        )
-                    }
-                });
-            map.addLayer(drawnItems);
-            map.fitBounds(drawnItems.getBounds());
-            $('#areas-covered').html(Math.round(totalAreaCovered/totalArea * 100) + ' %');
-        {% endif %}
-
-        function highlightFeature(e) {
-            var layer    = e.target;
-
-            layer.setStyle({
-                weight: 3,
-                dashArray: '3',
-                fillOpacity: 1
-            });
-
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                layer.bringToFront();
-            }
-            coverage_info.update(layer.feature.properties);
-        }
-        function resetHighlight(e) {
-            coverage_layer.resetStyle(e.target);
-            coverage_info.update();
-        }
-        function zoomToFeature(e) {
-            map.fitBounds(e.target.getBounds());
-        }
-
-        var completenessPallete = {
-            '100':'#00840d',
-            '75':'#faff00',
-            '50':'#ffe500',
-            '25':'#FD9A08',
-            '0':'#ff0000'
-        };
-
-        var legend = L.control({position: 'bottomleft'});
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<span><b>Completeness</b></span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['100'] +'"></i> <span>100%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['75'] +'"></i> <span>75%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['50'] +'"></i> <span>50%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['25'] +'"></i> <span>25%</span><br/>';
-            div.innerHTML += '<i style="background-color: '+ completenessPallete['0'] +'"></i> <span>0%</span><br/>';
-        return div;
-        };
-        legend.addTo(map);
-
-        function shareTweet(uuid) {
-            var host = window.location.origin;
-            var windowReference = window.open('', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-            windowReference.location = 'https://twitter.com/intent/tweet?text=Check out this campaign! %23MapCampaigner %0A' +
-                    host + '/campaign/' + uuid;
-        }
-
-        function shareFacebook() {
-            var url = 'https://www.facebook.com/sharer/sharer.php?';
-            url += 'u='+document.URL;
-            url += '&amp;src=sdkpreparse&';
-            url += '&quote=Check+out+this+campaign+!';
-
-            window.open(url,'popup','width=600,height=500');
-            return false;
-        }
-
-        // Apps
-        var isMobile = {
-            Android: function () {
-                return /Android/i.test(navigator.userAgent);
-            },
-            iOS: function () {
-                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            },
-            any: function () {
-                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
-            }
-        };
-
-        var formLink = {
-            "OpenMapKit": {
-                Windows: '',
-                Android: 'https://play.google.com/store/apps/details?id=org.redcross.openmapkit',
-                BlackBerry: '',
-                iOS: ''
-            },
-            "Maps.me": {
-                Windows: '',
-                Android: 'https://play.google.com/store/apps/details?id=com.mapswithme.maps.pro',
-                BlackBerry: '',
-                iOS: {
-                    'app': '/download_kml/{{ uuid }}',
-                    'store': 'https://itunes.apple.com/app/id510623322'
-                }
-            }
-        };
-
-        function openOtherDataCollectonForm(element, app) {
-            var appUrl = '';
-
-            if(app==="Maps.me") {
-                if(pointsForKML.length === 0) {
-                    showNotifications('Features are still being downloaded', 'danger');
-                    return;
-                } else {
-                    clearNotification();
-                }
-                var data = {};
-
-                var downloadUrl = '/generate_kml';
-                data['location'] = JSON.stringify(pointsForKML);
-                data['uuid'] = '{{ uuid }}';
-
-                data['campaign_name'] = '{{ name }}';
-
-                $.ajax({
-                    type: 'POST',
-                    url: downloadUrl,
-                    data: data,
-                    success: function (data) {
-                        var dataDict = JSON.parse(data);
-                        if('file_name' in dataDict) {
-                            document.getElementById('download_xml_frame').src = '/download_kml/'+uuid+'/'+dataDict['file_name'];
-                        }
-                    }
-                });
-                return;
-            }
-
-            if (isMobile.Android()) {
-                appUrl = formLink[app]['Android'];
-                if(appUrl) {
-                    location.replace(appUrl, '_blank');
-                }
-            } else if (isMobile.iOS()) {
-                appUrl = formLink[app]['iOS'];
-                if(appUrl) {
-                    location.replace(formLink[app]['iOS']['app']);
-                    setTimeout(function() {
-                        if (!document.webkitHidden) {
-                            location.replace(formLink[app]['iOS']['store']);
-                        }
-                    }, 50);
-                }
-            }
-
-            if(!appUrl) {
-                showNotifications(app + ' is not available in your current device', 'danger');
-            }
-        }
-
-        $('#area-covered-button').click(function (e) {
-            $('html, body').animate({
-                scrollTop: $("#user-engagement-panel").offset().top
-            }, 1000);
-        });
-
+    main();
     </script>
-
-    <script src="/static/js/detail/insight_functions.js"></script>
-
 {% endblock %}

@@ -717,6 +717,25 @@ class Campaign(JsonModel):
         return True
 
     @staticmethod
+    def compute(campaign_uuid):
+        """
+        Invoke the compute lambda function.
+        """
+        import boto3
+        from app import osm_app
+        aws_lambda = boto3.client('lambda')
+
+        function_name = "{env}_compute_campaign".format(
+            env=osm_app.config['ENV'])
+
+        payload = json.dumps({"campaign_uuid": campaign_uuid})
+
+        aws_lambda.invoke(
+            FunctionName=function_name,
+            InvocationType="Event",
+            Payload=payload)
+
+    @staticmethod
     class DoesNotExist(Exception):
         def __init__(self):
             self.message = "Campaign doesn't exist"
