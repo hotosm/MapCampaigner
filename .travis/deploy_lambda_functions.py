@@ -27,7 +27,6 @@ CONFIG = {
 }
 
 def install_dependencies(path):
-    print('install_dependencies')
     requirements_path = '{path}/requirements.txt'.format(
         path=path)
     dependencies_path = '{path}/dependencies'.format(
@@ -53,9 +52,6 @@ def install_dependencies(path):
                 dependencies_path=dependencies_path,
                 requirements_path=requirements_path)
         os.system(command)
-        # os.system('pip install -r {requirements_path} -t {dependencies_path}'.format(
-        #     requirements_path=requirements_path,
-        #     dependencies_path=dependencies_path))
 
 def zip_files(path, function_name):
     zip_path = '{path}/{function_name}.zip'.format(

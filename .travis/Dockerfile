@@ -1,5 +1,7 @@
-FROM amazonlinux:latest
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
-CMD ["pip", "install", "-r", "requirements.txt", "-t", "/dependencies"]
+FROM amazonlinux
+RUN amazon-linux-extras install -y python3 && \
+    pip3 install --user && \
+    pip3 install --upgrade pip
+CMD ["pip3", "install", "-r", "requirements.txt", "-t", "/dependencies"]
 
 
