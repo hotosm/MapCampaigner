@@ -47,7 +47,7 @@
                 radius: 5,
                 fillColor: feature.properties.completeness_color,
                 color: feature.properties.completeness_color,
-                weight: 1,
+                weight: 5,
                 opacity: 1,
                 fillOpacity: 0.8
                 });
@@ -63,7 +63,36 @@
   }
 
   function onEachFeature(feature, layer) {
-    content = `${feature.properties.completeness_pct}`
+    link = `<a href="https://www.openstreetmap.org/${feature.properties.type}/${feature.id}" target="_blank">https://www.openstreetmap.org/${feature.properties.type}/${feature.id}</a>`;
+    content = `${link}<br />`;
+
+    type = `<b>type</b> : ${feature.properties.type}`;
+    content += `${type}<br />`;
+
+    if (feature.properties.errors !== null) {
+      errors = `<div style='color:red'><b>errors</b> : ${feature.properties.errors}</div>`;
+      content += errors;
+    }
+
+    if (feature.properties.warnings !== null) {
+      warnings = `<div style='color:orange'><b>warnings</b> : ${feature.properties.warnings}</div>`
+      content += warnings;
+    }    
+
+    tags = []
+    for (var tag in feature.properties.tags) {
+      tag_to_s = `<b>${tag}</b> : ${feature.properties.tags[tag]}`
+      tags.push(tag_to_s)
+    }
+    tags = tags.join('<br />')
+  
+    content += `${tags}<br />`;
+    
+    percentage = `<b>completeness</b> : ${feature.properties.completeness_pct}`;
+
+    content += percentage;
+
+    
     layer.bindPopup(content);
   } 
 
