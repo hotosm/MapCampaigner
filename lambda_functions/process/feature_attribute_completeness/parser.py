@@ -136,9 +136,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
     def build_error_warning(self, type, content):
         payload = {
             'status': type,
-            'name': 'https://www.openstreetmap.org/{type}/{id}'.format(
-                type=self.element['type'],
-                id=self.element['id']),
+            'type': self.element['type'],
+            'id': self.element['id'],
             'date': self.element['timestamp'],
             'comment': content
         }
@@ -174,17 +173,16 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "id": self.element['id'],
         }
-        print(feature)
         self.geojson_file_manager.write(json.dumps(feature))
 
     def set_color_completeness(self):
         if self.completeness_pct == 100:
-            return '#00840d'
+            return '#00840d';
         if self.completeness_pct >= 75:
-            return '#faff00'
+            return '#faff00';
         if self.completeness_pct >= 50:
-            return '#ffe500'
+            return '#ffe500';
         if self.completeness_pct >= 25:
-            return '#FD9A08'
+            return '#FD9A08';
         if self.completeness_pct >= 0:
-            return '#ff0000'
+            return '#ff0000';
