@@ -1,3 +1,4 @@
+import os
 import json
 from dependencies import yaml
 import boto3
@@ -12,7 +13,7 @@ class S3Data(object):
         Initialize the s3 client.
         """
         self.s3 = boto3.client('s3')
-        self.bucket = 'fieldcampaigner-data'
+        self.bucket = os.environ['S3_BUCKET']
 
     def fetch(self, key):
         """
