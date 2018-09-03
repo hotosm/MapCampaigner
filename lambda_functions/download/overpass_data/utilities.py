@@ -151,6 +151,17 @@ def date_to_dict(start_date, end_date):
     }
 
 
+def split_feature_key_values(feature):
+    if '=' not in feature:
+        feature = '{}='.format(feature)
+    key, values = feature.split('=')
+    if len(values) == 0:
+        values = []
+    else:
+        values = values.split(',')
+    return key, values
+
+
 def split_polygon(polygon):
     """Split polygon array to string.
 
