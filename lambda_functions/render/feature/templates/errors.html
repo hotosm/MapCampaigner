@@ -13,34 +13,10 @@
     </tbody>
   </table>
 </div>
-
-<!-- <table id='feature-attribute-completeness-errors-table'>
-  <thead>
-    <tr>
-      <th>Status</th>
-      <th>Name</th>
-      <th>Date</th>
-      <th>Comment</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for error in errors %}
-    <tr>
-      <td>{{ error['status'] }}</td>
-      <td><a href="{{ error['name'] }}" target="_blank">{{ error['name'] }}</td>
-      <td>{{ error['date'] }}</td>
-      <td>{{ error['comment'] }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table> -->
-
 <script type="text/javascript">
-  
-
-
   function renderErrorsWarnings() {
     var dataTable = $('#table_id').DataTable({
+      "lengthChange": false,
       columns: [
         {"data": "status"},
         {"data": "name"},
@@ -59,9 +35,26 @@
         success: function(data) {
           totalErrors += data.length;
           $('#total-feature-completeness-errors').html(totalErrors);
-          dataTable.rows.add(data).draw();
+          for (var i = 0; i < data.length; i++) {
+            data[i]['name'] = buildLink(data[i].id, data[i].type);
+            data[i].comment = buildComment(data[i].status, data[i].comment);
+            dataTable.row.add(data[i]).draw();
+          }
         }
       });
+    }
+  }
+
+
+  function buildLink(id, type) {
+    return `<a href="https://www.openstreetmap.org/${type}/${id}" target="_blank">${type}:${id}</a>`
+  }
+
+  function buildComment(status, comment) {
+    if (status === 'error') {
+      return `<div class="error-completeness">Errors: ${comment}</div>`
+    } else if (status === 'warning') {
+      return `<div class="warning-completeness">Warnings: ${comment}</div>`
     }
   }
 
