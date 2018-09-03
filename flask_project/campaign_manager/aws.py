@@ -149,3 +149,9 @@ class S3Data(object):
             Bucket=self.bucket,
             Key=key)
         return obj['LastModified']
+
+    def url(self, uuid):
+        return \
+        'https://s3-us-west-2.amazonaws.com/{bucket}/campaigns/{uuid}'.format(
+            bucket=self.bucket,
+            uuid=uuid)
