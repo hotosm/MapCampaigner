@@ -165,6 +165,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 "coordinates": coordinates
             },
             "properties": {
+                "type": self.element['type'],
                 "tags": self.tags,
                 "errors": self.errors_to_s,
                 "warnings": self.warnings_to_s,
@@ -173,6 +174,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "id": self.element['id'],
         }
+        print(feature)
         self.geojson_file_manager.write(json.dumps(feature))
 
     def set_color_completeness(self):
