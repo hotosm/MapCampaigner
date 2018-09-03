@@ -2,7 +2,7 @@
 <script type="text/javascript">
 
   var map = createMap();
-
+  addLegend(map);
   setTitleLayer(map);
   setViewFromCampaign(map);
   renderMap(map);
@@ -10,6 +10,21 @@
 
   function createMap() {
     return L.map('campaign-map-detail').setView([0, 0], 1);
+  }
+
+  function addLegend(map) {
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'legend');
+      div.innerHTML += '<span><b>Completeness</b></span><br/>';
+      div.innerHTML += '<i style="background-color:#00840d"></i> <span>100%</span><br/>';
+      div.innerHTML += '<i style="background-color:#faff00"></i> <span>75%</span><br/>';
+      div.innerHTML += '<i style="background-color:#ffe500"></i> <span>50%</span><br/>';
+      div.innerHTML += '<i style="background-color:#FD9A08"></i> <span>25%</span><br/>';
+      div.innerHTML += '<i style="background-color:#ff0000"></i> <span>0%</span><br/>';
+      return div;
+    };
+    legend.addTo(map);    
   }
     
   function setTitleLayer(map) {
