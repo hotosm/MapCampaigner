@@ -17,7 +17,7 @@ class CountFeatureParser(xml.sax.ContentHandler):
         return
 
     def endDocument(self):
-        print(self.count)
+        return
 
     def startElement(self, name, attrs):
         if name == 'tag':
