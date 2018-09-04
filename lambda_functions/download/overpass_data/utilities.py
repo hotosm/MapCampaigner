@@ -47,15 +47,15 @@ def invoke_process_feature_completeness(uuid, feature):
         payload=payload)
 
 
-def invoke_download_attic_data(payload):
-    aws_lambda = boto3.client('lambda')
-    function_name_with_env = '{env}_download_attic_data'.format(
-        env=os.environ['ENV'])
+def invoke_process_mapper_engagement(uuid, feature):
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'feature': feature    
+    })
 
-    aws_lambda.invoke(
-        FunctionName=function_name_with_env,
-        InvocationType='Event',
-        Payload=payload)
+    invoke_process_function(
+        function_name='process_mapper_engagement',
+        payload=payload)
 
 
 def format_query(parameters):

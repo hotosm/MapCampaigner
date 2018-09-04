@@ -10,7 +10,7 @@ from utilities import (
     build_payload,
     invoke_process_feature_completeness,
     invoke_process_count_feature,
-    invoke_download_attic_data
+    invoke_process_mapper_engagement
 )
 import logging
 
@@ -37,6 +37,7 @@ def lambda_handler(event, context):
 
     invoke_process_feature_completeness(uuid, feature)
     invoke_process_count_feature(uuid, feature)
+    invoke_process_mapper_engagement(uuid, feature)
 
     # date = date_to_dict(campaign.start_date, campaign.end_date)
     # invoke_download_attic_data(
