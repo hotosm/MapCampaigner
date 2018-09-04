@@ -129,32 +129,73 @@
         </div>
     </div>
     <div class='row' id="campaign-feature-details" style="display:none">
-      <div class='col-lg-12'>
-        <div class='panel panel-default detail-panel-information'>
-          <div class='panel-body'>
-            <div class="type-title">
-            <i class="glyphicon glyphicon-info-sign"></i>
-            Feature details
+        <div class='col-lg-12'>
+            <div class='panel panel-default detail-panel-information'>
+                <div class='panel-body'>
+                    <div class="type-title">
+                        <i class="glyphicon glyphicon-info-sign"></i>
+                        Feature details
+                    </div>
+                    <div class='row side-panel-wrapper'>
+                        <div class='col-lg-4 map-side-panel'>
+                            <select class="select-types feature-select form-control">
+                            {% for type in types %}
+                                <option value='{{ type }}'>{{ type }}</option>
+                            {% endfor %}
+                            </select>
+                            <div class="content-wrapper"></div>
+                        </div>
+                    <div class='col-lg-8'>
+                        <div class='map-wrapper'></div>
+                    </div>
+
+                    </div>
+                </div>
             </div>
-            <div class='row side-panel-wrapper'>
-              <div class='col-lg-4 map-side-panel'>
-                <select class="select-types feature-select form-control">
-                {% for type in types %}
-                  <option value='{{ type }}'>{{ type }}</option>
-                {% endfor %}
-                </select>
-                <div class="content-wrapper"></div>
-              </div>
-              <div class='col-lg-8'>
-                <div class='map-wrapper'></div>
-              </div>
-            </div>
-            <div class="col-lg-12">
-              <div class="errors-wrapper"></div>
-          </div>
         </div>
-      </div>
+        <div class="col-lg-12">
+            <div class='panel panel-default detail-panel-insights'>
+                <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
+                <div class='panel-body'>
+                    <div class="errors-wrapper"></div>
+                </div>
+            </div>
+        </div>
     </div>
+    <div class='row' id="user-engagement-panel">
+        <div class='col-lg-12'>
+            <div class='panel panel-default detail-panel-insights'>
+                <div class='panel-heading'>
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    Users Engagement
+                </div>
+                <div class='panel-body' style="padding-bottom: 0;padding-top: 0;">
+                    <div class='row' id='user-engagement-wrapper'>
+                        <div class='col-lg-4 type-1' style="min-height: 250px;">
+                            <div class="insight-title" style="margin-bottom: 20px;">Users Engaged</div>
+                            <div class="completeness">
+                                <div class="type-insight-text" id="total-users-engaged"></div>
+                            </div>                            
+                        </div>
+                        <div class='col-lg-4 type-2'>
+                            <div class="insight-title" style="margin-bottom: 20px;">Contributions Frequency</div>
+                            <div class='chart-legend' id='frequency-legend'></div>
+                            <canvas id="user-frequency"></canvas>
+                            
+                        </div>
+                        <div class='col-lg-4'>
+                            <div class="insight-title" style="margin-bottom: 20px;">Contributions Amount</div>
+                            <div class='chart-legend' id='contribution-legend' style='margin-top:100px'></div>
+                            <canvas id="contribution-amount"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 {% endblock %}
 
@@ -170,6 +211,7 @@
     function main() {
       var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
       var types = {{ types|safe }};
+      loadMapperEngagement(types, s3CampaignUrl);
       var activeType = types[0];
       
       loadType(activeType, s3CampaignUrl);
@@ -246,7 +288,262 @@
 
     function getTypeUrl(activeType, s3CampaignUrl) {
       return s3CampaignUrl + '/render/' + activeType + '/';      
-    }    
+    }
+
+    function loadMapperEngagement(types, s3CampaignUrl) {
+        var contributions = [];
+        var ajaxRequests = [];
+        for (var i = 0; i < types.length; i++) {
+            var type_id = types[i].replace(' ', '_');
+            typeUrl = getTypeUrl(type_id, s3CampaignUrl);
+            
+            ajaxRequests.push($.ajax({
+                url: typeUrl + 'mapper_engagement.json',
+                success: function(data) {
+                    contributions = contributions.concat($.parseJSON(data));
+                },
+                error: function() {
+                    return;
+                }
+            }));
+        }
+
+        $.when(ajaxRequests).then( function(){
+            
+            updateMapperEngagementTotal(contributions)
+        });           
+    }
+
+function updateMapperEngagementTotal(contributors) {
+          var start_date = "{{ start_date }}";
+      var end_date = "{{ end_date }}";
+
+    $('.user-engagement-loading').hide();
+    $('#user-engagement-wrapper').show();
+
+    if(contributors.length > 0) {
+        $('#total-users-engaged').html(contributors.length);
+        $('#contributors').html(contributors.length);
+    } else {
+        $('#user-engagement-wrapper').html('<div class="no-data" style="padding-top: 20px;"> No users contribution </div>');
+        $('#user-engagement-wrapper').css({
+            height: '80px'
+        });
+        $('#total-users-engaged').html(0);
+        $('#contributors').html(0);
+        return;
+    }
+
+    var chartDateOption = {
+        maintainAspectRatio: true,
+        elements: {
+            line: {
+                tension: 0.000001
+            }
+        },
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        'day': 'DD/MM',
+                        'week': 'DD/MM',
+                        'month': 'MM/YY',
+                        'quarter': 'MM/YY',
+                        'year': 'YY'
+                    }
+                }
+            }]
+        },
+        plugins: {
+            filler: {
+                propagate: false
+            }
+        },
+        legend: {
+            display: false
+        },
+        legendCallback: function(chart) {
+            var text = [];
+                text.push('<div>');
+                text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid '+ chart.data.datasets[0].borderColor +'"></i><span>' + chart.data.datasets[0].label + '</span>');
+                text.push('</div>');
+                return text.join("");
+        }
+    };
+
+    var frequencyOption = {
+        maintainAspectRatio: true,
+        elements: {
+            line: {
+                tension: 0.000001
+            }
+        },
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        'day': 'DD/MM',
+                        'week': 'DD/MM',
+                        'month': 'MM/YY',
+                        'quarter': 'MM/YY',
+                        'year': 'YY'
+                    }
+                }
+            }]
+        },
+        plugins: {
+            filler: {
+                propagate: false
+            }
+        },
+        legend: {
+            display: false
+        },
+        legendCallback: function(chart) {
+            var text = [];
+                text.push('<div>');
+                for (var i=0; i<chart.data.datasets.length; i++) {
+                    text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
+                }
+                text.push('</div>');
+                return text.join("");
+        }
+    };
+
+    // Clean up data
+    var cleanedContributor = {};
+    var contributionsAmount = {};
+
+    $.each(contributors, function (index, contributor) {
+        var contributorId = contributor.name.replace(/\s+/g, '_');
+        if(contributorId in cleanedContributor) {
+            cleanedContributor[contributorId]['ways'] += contributor['ways'];
+            cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
+            var timeline = JSON.parse(contributor.timeline);
+            cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
+        } else {
+            cleanedContributor[contributorId] = contributor;
+            try {
+                cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline);
+            } catch(e) {
+                cleanedContributor[contributorId]['timeline'] =  contributor.timeline;
+            }
+        }
+    });
+
+    var allFrequencyDatasets = [];
+    var allLabels = [];
+    var color = Chart.helpers.color;
+
+    $.each(cleanedContributor, function (key, contributor) {
+
+        var frequencyDatasets = {
+                label: contributor.name,
+                borderColor : '#' + intToRGB(hashCode(contributor.name)),
+                backgroundColor : color('#' + intToRGB(hashCode(contributor.name))).alpha(0.1).rgbString(),
+                data: []
+            };
+
+        for(var i=0; i<contributor.timeline.length; i++) {
+            var pair = contributor.timeline[i];
+            var dateString = pair[0];
+            var date = moment.utc(dateString, "YYYY-MM-DD");
+            pair[0] = date.valueOf();
+            contributor.timeline[i] = pair;
+
+            if($.inArray(date, allLabels) === -1) {
+                allLabels.push(date);
+                frequencyDatasets.data.push({
+                    x:date,
+                    y:pair[1]
+                })
+            }
+
+            var timeStamp = (date.unix()).toString();
+            var isContributionDateExist = contributionsAmount[timeStamp]  !== undefined;
+            if(isContributionDateExist) {
+                contributionsAmount[timeStamp] += pair[1];
+            } else {
+                contributionsAmount[timeStamp] = pair[1];
+            }
+        }
+
+        if($.inArray(start_date,allLabels) === -1){
+            allLabels.push(start_date);
+        }
+
+        if($.inArray(end_date,allLabels) === -1){
+            allLabels.push(end_date);
+        }
+
+        allFrequencyDatasets.push(frequencyDatasets);
+    });
+
+    allLabels = sortDate(allLabels);
+
+    var frequencyDatasets = new Chart($('#user-frequency'), {
+        type: 'line',
+        options: frequencyOption,
+        data: {
+            labels: allLabels,
+            datasets: allFrequencyDatasets
+        }
+    });
+
+    $('#frequency-legend').html(frequencyDatasets.generateLegend());
+
+    contributionsAmount = sortObject(contributionsAmount);
+    var contributionCtx = $('#contribution-amount');
+    var contributionDatasets = {
+            labels: allLabels,
+            datasets: [{
+                label: 'Contributors',
+                borderColor : '#82afb8',
+                backgroundColor : color('#82afb8').alpha(0.1).rgbString(),
+                data: []
+            }]
+        };
+
+    $.each(contributionsAmount, function (key, value) {
+        var date = moment.unix(key);
+        contributionDatasets.datasets[0].data.push({
+                    x:date,
+                    y:value
+                });
+    });
+
+    var contribution_chart = new Chart(contributionCtx, {
+        type: 'line',
+        data: contributionDatasets,
+        options: chartDateOption
+    });
+
+    $('#contribution-legend').html(contribution_chart.generateLegend());
+    $('#contribution-legend').css('margin-top', $('#frequency-legend').height() + 'px')
+
+}
+function sortDate(dateArray) {
+    if(dateArray.length <= 1) {
+        return dateArray;
+    }
+
+    var pivot = dateArray[0];
+
+    var left = [];
+    var right = [];
+
+    for (var i=1; i < dateArray.length; i++) {
+        dateArray[i] < pivot ? left.push(dateArray[i]) : right.push(dateArray[i]);
+    }
+
+    return sortDate(left).concat(pivot, sortDate(right))
+}
+function sortObject(o) {
+    return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
+}
+
 
     main();
     </script>
