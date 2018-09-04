@@ -724,6 +724,7 @@ def create_campaign():
             abort(403)
 
         Campaign.create(data, form.uploader.data)
+        Campaign.generate_static_map()
         Campaign.compute(data["uuid"])
 
         return redirect(
