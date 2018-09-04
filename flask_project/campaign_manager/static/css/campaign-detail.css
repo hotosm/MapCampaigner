@@ -568,10 +568,11 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 
 .type-insight-text {
     color: #4794b2;
-    font-size: 35pt;
+    font-size: 65pt;
     font-weight: lighter;
     text-align: center;
-    /*padding-top: 20px;*/
+    margin-bottom: 20px;
+    padding-top: 75px;
 }
 
 .update-status {
