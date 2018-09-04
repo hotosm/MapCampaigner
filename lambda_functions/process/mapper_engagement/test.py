@@ -14,8 +14,8 @@ class TestCase(unittest.TestCase):
   
     def test_run(self):
         event = {
-            'campaign_uuid': '09a4f0ebb7964189bfc8a5ba8dba2b43',
-            'attic_filename': 'shop=supermarket.xml'
+           'campaign_uuid': '09a4f0ebb7964189bfc8a5ba8dba2b43', 
+           'feature': 'amenity=cafe'
         }
         lambda_handler(event, {})
 

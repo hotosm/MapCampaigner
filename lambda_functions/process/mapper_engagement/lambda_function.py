@@ -1,27 +1,42 @@
+import sys
+sys.path.insert(0, "dependencies")
+import calendar
+import datetime
 import json
 from utilities import (
     fetch_campaign,
-    fetch_osm_data,
-    osm_object_contributions
+    campaign_path,
+    download_overpass_file,
+    osm_object_contributions,
+    fetch_type,
+    save_data
 )
 from aws import S3Data
 
 
 def lambda_handler(event, context):
-    feature = event['attic_filename'].replace('.xml', '')
+    uuid = event['campaign_uuid']
+    feature = event['feature']
+
+
+    campaign = fetch_campaign(campaign_path(uuid))
+    download_overpass_file(uuid, feature)
+    xml_file = open('/tmp/{feature}.xml'.format(feature=feature), 'r')
     feature_key = feature.split('=')[0]
 
-    campaign_path = 'campaigns/{uuid}'.format(
-        uuid=event['campaign_uuid'])
-    campaign = fetch_campaign(campaign_path)
-    print(campaign)
-    osm_data = fetch_osm_data(campaign_path, event['attic_filename'])
-    
     tag_name = feature_key
-    start_date = campaign['start_date']
-    end_date = campaign['end_date']
+    start_date = calendar.timegm(datetime.datetime.strptime(
+            campaign['start_date'], '%Y-%m-%d').timetuple()) * 1000
+    end_date = calendar.timegm(datetime.datetime.strptime(
+            campaign['end_date'], '%Y-%m-%d').timetuple()) * 1000
+
     sorted_user_list = osm_object_contributions(
-        osm_data,
+        xml_file,
         tag_name,
         start_date,
-        end_date)    
+        end_date)
+
+    type_name = fetch_type(feature, campaign['selected_functions'])
+    type_id = type_name.replace(' ', '_')
+
+    save_data(uuid, type_id, sorted_user_list)

@@ -1,7 +1,8 @@
 import os
-from dependencies import json
 import boto3
-import yaml
+import json
+from dependencies import yaml
+
 
 class S3Data(object):
     """
@@ -65,6 +66,24 @@ class S3Data(object):
         if key.split('.')[-1] in ['json', 'geojson']:
             return True
         return False
+
+    def download_file(self, key, feature, destination):
+        with open('/{destination}/{feature}.xml'.format(
+            feature=feature,
+            destination=destination), 'wb') as data:
+                self.s3.download_fileobj(
+                    Bucket=self.bucket, 
+                    Key=key, 
+                    Fileobj=data)
+
+    def upload_file(self, key, body):        
+        self.s3.upload_fileobj(
+            Fileobj=body, 
+            Bucket=self.bucket, 
+            Key=key,
+            ExtraArgs={
+                'ACL': 'public-read'
+            })
 
     def create(self, key, body):
         """
