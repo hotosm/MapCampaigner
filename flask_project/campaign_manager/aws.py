@@ -174,3 +174,6 @@ class S3Data(object):
         return '{bucket_url}/campaigns/{uuid}'.format(
             bucket_url=self.bucket_url(),
             uuid=uuid)
+
+    def thumbnail_url(self, uuid):
+        return "{url}/thumbnail.png".format(url=self.url(uuid))
