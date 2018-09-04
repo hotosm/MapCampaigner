@@ -406,8 +406,8 @@ def get_campaign(uuid):
     context['participants'] = len(campaign.campaign_managers)
     if campaign.map_type != '':
         context['attribution'] = find_attribution(campaign.map_type)
-    
-   # Start date
+
+    # Start date
     try:
         start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
         context['start_date_date'] = start_date.strftime('%d %b')
