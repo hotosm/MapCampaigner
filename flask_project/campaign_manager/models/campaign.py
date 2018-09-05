@@ -534,6 +534,9 @@ class Campaign(JsonModel):
         geocampaign_body = json.dumps(parse_json_string(geometry))
         S3Data().create(geocampaign_key, geocampaign_body)
 
+        campaign = Campaign(data['uuid'])
+        campaign.generate_static_map()
+
     @staticmethod
     def all(campaign_status=None, **kwargs):
         """Get all campaigns
