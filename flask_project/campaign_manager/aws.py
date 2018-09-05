@@ -50,6 +50,8 @@ class S3Data(object):
         """
         if self.is_json(key):
             return json.loads(raw_content)
+        elif self.is_txt(key):
+            return raw_content.decode('utf-8')
         else:
             return yaml.load(raw_content)
 
@@ -64,6 +66,20 @@ class S3Data(object):
         :rtype: boolean
         """
         if key.split('.')[-1] in ['json', 'geojson']:
+            return True
+        return False
+
+    def is_txt(self, key):
+        """
+        Check if the key has a yaml extension.
+
+        :param key: path + filename
+        :type key: string
+
+        :returns: True or False
+        :rtype: boolean
+        """
+        if key.split('.')[-1] in ['txt']:
             return True
         return False
 
