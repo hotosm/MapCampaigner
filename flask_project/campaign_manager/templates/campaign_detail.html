@@ -21,85 +21,76 @@
 
 
 {% block content %}
-
-    <div class="row">
-        <div class="col-lg-7">
-            <h3 class="detail-campaign-name">{{ name }}</h3>
-            {% if types %}
-                {% for type in types %}
-                    <label class="detail-tag"> {{ type }} </label>
-                {% endfor %}
-            {% endif %}
-            <p>
-                {% if description %}
-                    {{ description }}
-                {% else %}
-                    <span class="grey-italic">No description</span>
-                {% endif %}
-            </p>
-            <div class="row">
-            <div class="col-lg-6 detail-button-wrapper participate-button" style="margin-top: 20px">
-                <span class="btn btn-label"><strong>Participate</strong></span>
-                <div class="btn-group btn-share-group" role="group" aria-label="...">
-                    {% if link_to_omk %}
-                        <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-                    {% endif %}
-                    <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+    <div class="row header-panel">
+        <div class="col-lg-12">
+            <div class='row'>
+                <div class='col-lg-10'>
+                    <h3 class="detail-campaign-name">
+                        {{ name }}
+                        <span title="Edit" class="button-manage">
+                        <i class="glyphicon glyphicon-edit" onclick="location.href='/edit/{{ uuid }}'"></i>
+                        </span>
+                    </h3>
                 </div>
-            </div>
-            <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
-                <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
-                    <span class="btn btn-default unclickable" >Share</span>
-                    <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
-                    <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
-                </div>
-            </div>
-            </div>
-        </div>
-        <div class="col-lg-5">
-            <div class="panel panel-default detail-panel-information">
-                <div class="panel-body">
+                <div class='col-lg-2 text-right'>
                     <div class="detail-campaign-status {{ current_status }}">
-                        <i class="fa fa-circle" aria-hidden="true"></i> <label>{{ current_status }}</label>
+                    <i class="fa fa-circle" aria-hidden="true"></i> 
+                    <label>{{ current_status }}</label>
                     </div>
-                    <div class="detail-campaign-timeline">
-                        <span class="pull-left">
-                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Started</span> : {{ start_date_date }} {{ start_date_year }}
-                        </span>
-                        <span class="pull-right">
-                            <i class="fa fa-calendar-o" aria-hidden="true"></i> <span class="grey-italic">Ends</span> : {{ end_date_date }} {{ end_date_year }}
-                        </span>
-                    </div>
-                    <div class="detail-progress">
-                        <div class="progress">
-                            <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="detail-creator-info">
+                </div>
+            
+                <div class='col-lg-12'>
+                {% if types %}
+                    {% for type in types %}
+                        <label class="detail-tag"> {{ type }} </label>
+                    {% endfor %}
+                {% endif %}
+                </div>
+                <div class='col-lg-12'>
+                    <div class='detail-creator-info'>
                         <p>
-                            <span class="grey-italic">Campaign Manager : </span>
-                            <span class="text-muted">
-                                {% if campaign_managers %}
-                                    {% for campaign_manager in campaign_managers %}
-                                        <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
-                                        {% if campaign_manager != campaign_managers[-1] %}
-                                            ,
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </span>
+                            <span>Started</span> : {{ start_date_date }} {{ start_date_year }}
                         </p>
                         <p>
-                            <span class="grey-italic">Creator : </span>
+                            <span>Ends</span> : {{ end_date_date }} {{ end_date_year }}                    
+                        </p>
+                    </div>
+                </div>                
+                <div class='col-lg-12'>
+                    <p>
+                    {% if description %}
+                        {{ description }}
+                    {% else %}
+                        <span>No description</span>
+                    {% endif %}
+                    </p>
+                </div>
+                <div class='col-lg-12'>
+                    <div class="detail-creator-info">
+                        <p>
+                            <span>Campaign Manager : </span>
+                            <span class="text-muted">
+                            {% if campaign_managers %}
+                            {% for campaign_manager in campaign_managers %}
+                                <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
+                                {% if campaign_manager != campaign_managers[-1] %}
+                                    ,
+                                {% endif %}
+                            {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                            </span>
+                        </p>
+
+                        <p>
+                            <span>Creator : </span>
                             <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">
                             {{ campaign_creator }}
                             </a>
                         </p>
                         <p>
-                            <span class="grey-italic">Map:</span>
+                            <span>Map:</span>
                             {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
                                 <span id="map-default" style="display: none">
                                 Default
@@ -113,8 +104,21 @@
                             {% endif %}
                         </p>
                     </div>
-                    <div class="button-manage">
-                        <button class="btn btn-info btn-manage" onclick="location.href='/edit/{{ uuid }}'">Manage</button>
+                </div>
+                <div class="col-lg-6 detail-button-wrapper participate-button" style="margin-top: 20px">
+                    <span class="btn btn-label"><strong>Participate</strong></span>
+                    <div class="btn-group btn-share-group" role="group" aria-label="...">
+                        {% if link_to_omk %}
+                            <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+                        {% endif %}
+                        <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                    </div>
+                </div>
+                <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
+                    <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
+                        <span class="btn btn-default unclickable" >Share</span>
+                        <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+                        <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
                     </div>
                 </div>
             </div>
@@ -129,6 +133,40 @@
         </div>
     </div>
     <div class='row' id="campaign-feature-details" style="display:none">
+        <div class='col-lg-12'>
+            <div class="panel panel-default detail-panel-information">
+                <div class="panel-body summary-stats">
+                    <div class="row">
+                        <div class="col-lg-4 single-summary-stat">
+                            <div class="summary-stat-title">
+                                Features Collected
+                            </div>
+                            <div class="summary-stat-desc">
+                                <span id="features-collected"><span class="grey-italic">...</span></span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 single-summary-stat">
+                            <div class="summary-stat-title">
+                                Users Engaged
+                            </div>
+                            <div class="summary-stat-desc">
+                                <span id="contributors"><span class="grey-italic">...</span></span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 single-summary-stat">
+                            <div class="summary-stat-title">
+                                Areas Covered
+                            </div>
+                            <div class="summary-stat-desc">
+                                <span id="areas-covered"><span class="grey-italic">...</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class='col-lg-12'>
             <div class='panel panel-default detail-panel-information'>
                 <div class='panel-body'>
@@ -243,9 +281,6 @@
       var activeType = types[0];
       
       loadType(activeType, s3CampaignUrl);
-
-      calculateCampaignProgress();
-
       
       $('.feature-select').on('change', function() {
         activeType = this.value;
@@ -273,55 +308,11 @@
       });        
     }
 
-    function calculateCampaignProgress() {
-        var start_date = "{{ start_date }}";
-        var end_date = "{{ end_date }}";
-
-
-        var $campaignStatus = $('.detail-campaign-status');
-        var $campaignStatusLabel = $('.detail-campaign-status label');
-
-        if (start_date === 'None' || end_date === 'None') {
-            $('.detail-campaign-status label').html('-');
-            return;
-        }
-
-        start_date = moment(start_date, 'YYYY-MM-DD', true);
-        end_date = moment(end_date, 'YYYY-MM-DD', true);
-        var campaign_range = end_date.diff(start_date, 'days') + 1;
-        
-        // Include start
-        if (campaign_range < 0) {
-            $campaignStatusLabel.html('-');
-            return;
-        }
-
-        var remaining_days = end_date.diff(moment(), 'days') + 1;
-        
-        var progress = 0;
-        if (remaining_days <= 0) {
-            progress = 100;
-            if($campaignStatusLabel.text() == 'Inactive') {
-                $campaignStatus.removeClass('running');
-                $campaignStatus.addClass('finished');
-                $campaignStatusLabel.html('Finished');
-            }
-        } else {
-            progress = 100 - (remaining_days / campaign_range * 100);
-            if(progress < 0){
-                progress = 0
-            }
-        }
-        $('#campaign-progress').css({
-            'width': progress + '%'
-        });
-    }
-
     function getTypeUrl(activeType, s3CampaignUrl) {
       return s3CampaignUrl + '/render/' + activeType + '/';      
     }
 
-    function buildMapperEngagementAjaxRequests(types, s3CampaignUrl) {
+    function buildAjaxRequests(types, s3CampaignUrl, insight) {
         var ajaxRequests = [];
 
         for (var i = 0; i < types.length; i++) {
@@ -329,21 +320,34 @@
             typeUrl = getTypeUrl(type_id, s3CampaignUrl);
             
             ajaxRequests.push($.ajax({
-                url: typeUrl + 'mapper_engagement.json',
+                url: typeUrl + insight + '.json',
                 dataType: 'json'
             }));
         }
         return ajaxRequests;       
     }    
 
+    function countFeaturesCollected(types, s3CampaignUrl) {
+        var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
+        $.when.apply($, requests).then(function(){
+            var total = 0;
+            for (var i = 0; i < arguments.length; i++) {
+                total += arguments[i][0].features_collected;
+            }
+            $('#features-collected').html(total);
+            
+        }); 
+    }
     function loadMapperEngagement(types, s3CampaignUrl) {
-        var requests = buildMapperEngagementAjaxRequests(types, s3CampaignUrl);
+        
+        var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
         $.when.apply($, requests).then(function(){
             var contributions = [];
             for (var i = 0; i < arguments.length; i++) {
                 contributions = contributions.concat(arguments[i][0]);
             }
-            updateMapperEngagementTotal(contributions)
+            updateMapperEngagementTotal(contributions);
+            countFeaturesCollected(types, s3CampaignUrl);
         });           
     }
 
