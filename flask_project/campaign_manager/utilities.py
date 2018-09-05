@@ -58,7 +58,8 @@ def get_osm_user():
 
 
 def get_allowed_managers():
-    content = S3Data().fetch('managers.txt').split(" ")
+    content = S3Data().fetch('managers.txt').split("\n")
+    print(content)
     managers = [x.strip() for x in content]
     managers.sort()
     return managers
