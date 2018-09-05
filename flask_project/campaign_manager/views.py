@@ -400,35 +400,33 @@ def get_campaign(uuid):
         type[1]['type'],
         context['types'].items()))
 
-    context['start_date'] = datetime.strptime(
-        context['start_date'], '%Y-%m-%d').strftime('%d %b %Y')
-    context['end_date'] = datetime.strptime(
-        context['end_date'], '%Y-%m-%d').strftime('%d %b %Y')
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
     context['participants'] = len(campaign.campaign_managers)
     if campaign.map_type != '':
         context['attribution'] = find_attribution(campaign.map_type)
-        try:
-            start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
-            context['start_date_date'] = start_date.strftime('%d %b')
-            context['start_date_year'] = start_date.strftime('%Y')
-        except TypeError:
-            context['start_date_date'] = '-'
-            context['start_date_year'] = '-'
-        context['current_status'] = campaign.get_current_status()
-        if context['current_status'] == 'active':
-            context['current_status'] = 'running'
 
-        # End date
-        try:
-            end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
-            context['end_date_date'] = end_date.strftime('%d %b')
-            context['end_date_year'] = end_date.strftime('%Y')
-        except TypeError:
-            context['end_date_date'] = '-'
-            context['end_date_year'] = '-'
+    # Start date
+    try:
+        start_date = datetime.strptime(campaign.start_date, '%Y-%m-%d')
+        context['start_date_date'] = start_date.strftime('%d %b')
+        context['start_date_year'] = start_date.strftime('%Y')
+    except TypeError:
+        context['start_date_date'] = '-'
+        context['start_date_year'] = '-'
+    context['current_status'] = campaign.get_current_status()
+    if context['current_status'] == 'active':
+        context['current_status'] = 'running'
+
+    # End date
+    try:
+        end_date = datetime.strptime(campaign.end_date, '%Y-%m-%d')
+        context['end_date_date'] = end_date.strftime('%d %b')
+        context['end_date_year'] = end_date.strftime('%Y')
+    except TypeError:
+        context['end_date_date'] = '-'
+        context['end_date_year'] = '-'
 
     return render_template('campaign_detail.html', **context)
 
