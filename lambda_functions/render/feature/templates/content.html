@@ -1,14 +1,14 @@
-<div class="map-side-list-attributes">
+<div class="map-side-list map-side-list-attributes">
   <div class="checked-attributes">
-    {% for attribute in feature_completeness['attributes'] %}
+    {% for attribute in feature_completeness['checked_attributes'] %}
       <span>{{ attribute }}</span>
     {% endfor %}
   </div>
 </div>
 
-<div class="map-side-list">  
+<div class="map-side-list map-side-list-attr-compl">  
   <div class="insight-title">Attribute Completeness</div>                 
-  <div style="text-align:right">
+  <div class="attr-compl-info">
     {{ feature_completeness['features_completed'] }}/{{ feature_completeness['features_collected'] }} ({{ feature_completeness['percentage'] }}%)
   </div>
   <div class="progress side-panel-progress">
@@ -18,14 +18,14 @@
   </div>
 </div>
 
-<div class="map-side-list">
+<div class="map-side-list map-side-list-attr-features-checked">
   <div class="insight-title">Features Checked</div>
-  <div class="type-insight-text">{{ feature_completeness['features_collected'] }}</div>
+  <div class="type-insight-text-small">{{ feature_completeness['features_collected'] }}</div>
 </div>
                     
-<div class="map-side-list" style="border:none">  
+<div class="map-side-list map-side-list-count-feature">  
   <div class="insight-title">{{ feature_completeness['type_name'] }} by type</div>
-  <div class="row piechart-wrapper">
+  <div class="piechart-wrapper">
     <canvas id="canvas-piechart"></canvas>
   </div>                    
 </div>
