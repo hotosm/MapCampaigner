@@ -462,6 +462,12 @@ class Campaign(JsonModel):
                 data['end_date'] = data['end_date'].strftime('%Y-%m-%d')
         except AttributeError:
             pass
+        try:
+            if type(data['edited_at']) is datetime:
+                data['edited_at'] = data['edited_at'].strftime('%Y-%m-%d')
+        except AttributeError:
+            pass
+
         json_str = json.dumps(data)
         return json_str
 
@@ -533,6 +539,9 @@ class Campaign(JsonModel):
         geocampaign_key = Campaign.get_geojson_file(campaign_data['uuid'])
         geocampaign_body = json.dumps(parse_json_string(geometry))
         S3Data().create(geocampaign_key, geocampaign_body)
+
+        campaign = Campaign(data['uuid'])
+        campaign.generate_static_map()
 
     @staticmethod
     def all(campaign_status=None, **kwargs):
