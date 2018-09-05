@@ -269,19 +269,38 @@
     overflow-x: hidden;
 }
 
-.map-side-list-attributes {
-    min-height: 30px;
-    border-bottom: 1px solid #cdcdcd;
-    background-color: #f6f6f6;
-
-}
 
 .map-side-list {
-    height: 150px;
+    /*height: 150px;*/
     border-bottom: 1px solid #cdcdcd;
     background-color: #f6f6f6;    
 }
 
+.map-side-list-attributes {
+    height: auto;
+    padding: 5px;
+}
+
+.map-side-list-attr-compl {
+    height: 100px;
+    padding: 0 30px;
+}
+
+.attr-compl-info {
+    text-align: right;
+    font-weight: bold;
+    font-size: 13pt;    
+}
+
+.map-side-list-attr-features-checked {
+    height: 120px;
+    padding: 0 30px;
+}
+
+.map-side-list-count-feature {
+    border:none;
+    height: 200px;
+}
 
 .map-side-list.active {
     background-color: #ffffff;
@@ -355,6 +374,7 @@
 .feature-select {
     height: 50px;
     width: 100%;
+    font-size: 18pt;
 }
 
 @media (max-width: 1215px) {
@@ -573,6 +593,14 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     text-align: center;
     margin-bottom: 20px;
     padding-top: 75px;
+}
+
+.type-insight-text-small {
+    color: #4794b2;
+    font-size: 35pt;
+    font-weight: lighter;
+    text-align: center;
+    padding-top: 10px;    
 }
 
 .update-status {
