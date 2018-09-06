@@ -290,7 +290,7 @@
     }
 
     function loadType(activeType, s3CampaignUrl) {
-      activeType = activeType.replace(' ', '_')
+      activeType = activeType.replace(/ /g, '_')
       var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
 
       $.get(typeUrl + 'content.html', function(data) {
@@ -316,7 +316,7 @@
         var ajaxRequests = [];
 
         for (var i = 0; i < types.length; i++) {
-            var type_id = types[i].replace(' ', '_');
+            var type_id = types[i].replace(/ /g, '_');
             typeUrl = getTypeUrl(type_id, s3CampaignUrl);
             
             ajaxRequests.push($.ajax({
