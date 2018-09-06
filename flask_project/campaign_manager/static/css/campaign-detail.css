@@ -43,12 +43,22 @@
 
 .detail-campaign-status {
     font-size: 12pt;
+    padding-top: 25px;
+}
+
+.detail-campaign-status label {
+    text-transform: capitalize;
 }
 
 .detail-campaign-timeline {
     padding-top: 15px;
     font-weight: lighter;
     font-size: 11pt;
+}
+
+.detail-creator-info p {
+    display: inline;
+    margin-right: 10px;
 }
 
 .detail-creator-info a {
@@ -129,8 +139,9 @@
 }
 
 .button-manage {
-    float: right;
-    padding-top: 10px;
+    padding-left: 10px;
+    font-size: 14pt;
+    cursor: pointer;
 }
 
 .unclickable, .unclickable:active  {
@@ -837,4 +848,8 @@ tr.odd {
 
 .sorting_1 a{
     color: #fc6525 !important;
+}
+
+.header-panel {
+    margin-bottom: 20px;
 }
