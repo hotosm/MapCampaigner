@@ -704,7 +704,7 @@ def create_campaign():
 
     # Get managers
     managers = get_allowed_managers()
-    print(managers)
+
     # If there is no managers
     if not managers:
         abort(403)
