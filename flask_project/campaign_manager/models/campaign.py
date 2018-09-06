@@ -463,8 +463,9 @@ class Campaign(JsonModel):
         except AttributeError:
             pass
         try:
-            if type(data['edited_at']) is datetime:
-                data['edited_at'] = data['edited_at'].strftime('%Y-%m-%d')
+            if 'edited_at' in data:
+                if type(data['edited_at']) is datetime:
+                    data['edited_at'] = data['edited_at'].strftime('%Y-%m-%d')
         except AttributeError:
             pass
 
