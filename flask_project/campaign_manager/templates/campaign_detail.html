@@ -161,8 +161,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class='row' id="user-engagement-panel">
+    
         <div class='col-lg-12'>
             <div class='panel panel-default detail-panel-insights'>
                 <div class='panel-heading'>
@@ -322,25 +321,28 @@
       return s3CampaignUrl + '/render/' + activeType + '/';      
     }
 
-    function loadMapperEngagement(types, s3CampaignUrl) {
-        var contributions = [];
+    function buildMapperEngagementAjaxRequests(types, s3CampaignUrl) {
         var ajaxRequests = [];
+
         for (var i = 0; i < types.length; i++) {
             var type_id = types[i].replace(' ', '_');
             typeUrl = getTypeUrl(type_id, s3CampaignUrl);
             
             ajaxRequests.push($.ajax({
                 url: typeUrl + 'mapper_engagement.json',
-                success: function(data) {
-                    contributions = contributions.concat($.parseJSON(data));
-                },
-                error: function() {
-                    return;
-                }
+                dataType: 'json'
             }));
         }
+        return ajaxRequests;       
+    }    
 
-        $.when(ajaxRequests).then( function(){
+    function loadMapperEngagement(types, s3CampaignUrl) {
+        var requests = buildMapperEngagementAjaxRequests(types, s3CampaignUrl);
+        $.when.apply($, requests).then(function(){
+            var contributions = [];
+            for (var i = 0; i < arguments.length; i++) {
+                contributions = contributions.concat(arguments[i][0]);
+            }
             updateMapperEngagementTotal(contributions)
         });           
     }
