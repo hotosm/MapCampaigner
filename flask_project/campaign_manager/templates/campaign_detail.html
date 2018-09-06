@@ -290,7 +290,7 @@
     }
 
     function loadType(activeType, s3CampaignUrl) {
-      activeType = activeType.replace(' ', '_')
+      activeType = activeType.replace(/ /g, '_')
       var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
 
       $.get(typeUrl + 'content.html', function(data) {
@@ -316,7 +316,7 @@
         var ajaxRequests = [];
 
         for (var i = 0; i < types.length; i++) {
-            var type_id = types[i].replace(' ', '_');
+            var type_id = types[i].replace(/ /g, '_');
             typeUrl = getTypeUrl(type_id, s3CampaignUrl);
             
             ajaxRequests.push($.ajax({
@@ -331,8 +331,13 @@
         var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
         $.when.apply($, requests).then(function(){
             var total = 0;
-            for (var i = 0; i < arguments.length; i++) {
-                total += arguments[i][0].features_collected;
+            if (requests.length == 1) {
+                total = arguments[0].features_collected
+            } else {
+
+                for (var i = 0; i < arguments.length; i++) {
+                    total += arguments[i][0].features_collected;
+                }
             }
             $('#features-collected').html(total);
             
@@ -342,13 +347,21 @@
         
         var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
         $.when.apply($, requests).then(function(){
-            var contributions = [];
-            for (var i = 0; i < arguments.length; i++) {
-                contributions = contributions.concat(arguments[i][0]);
+            var contributors = [];
+            if (requests.length == 1) {
+                contributors = arguments[0]
+            } else {
+                for (var i = 0; i < arguments.length; i++) {
+                    contributors = contributors.concat(arguments[i][0]);
+                }
             }
-            updateMapperEngagementTotal(contributions);
+            updateMapperEngagementTotal(contributors);
+        });
+
+        $.when().then(function() {
             countFeaturesCollected(types, s3CampaignUrl);
-        });           
+        });
+
     }
 
     function updateMapperEngagementTotal(contributors) {
