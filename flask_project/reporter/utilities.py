@@ -128,7 +128,7 @@ def split_polygon(polygon):
 
     if len(polygon) < 3:
         raise ValueError(
-                'At least 3 lat/lon float value pairs must be provided')
+            'At least 3 lat/lon float value pairs must be provided')
 
     polygon_string = ''
 
