@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2017-07-28T06:03:02Z"/>
+
+<action type="modify">
+<old>
+  <node id="1679594950" lat="-6.9939044" lon="110.4111907" version="2" timestamp="2012-08-27T14:14:00Z" changeset="12879026" uid="778220" user="visana"/>
+</old>
+<new>
+  <node id="1679594950" lat="-6.9936694" lon="110.4111997" version="4" timestamp="2015-04-17T18:09:49Z" changeset="30291863" uid="2771265" user="peka kota"/>
+</new>
+</action>
+<action type="modify">
+<old>
+  <node id="1679594954" lat="-6.9927117" lon="110.4112979" version="2" timestamp="2012-08-27T14:14:00Z" changeset="12879026" uid="778220" user="visana"/>
+</old>
+<new>
+  <node id="1679594954" lat="-6.9926023" lon="110.4111496" version="3" timestamp="2015-04-17T17:32:28Z" changeset="30291292" uid="2771265" user="peka kota"/>
+</new>
+</action>
+<action type="modify">
+<old>
+  <node id="1679594956" lat="-6.9940961" lon="110.4107400" version="2" timestamp="2012-08-27T14:14:00Z" changeset="12879026" uid="778220" user="visana"/>
+</old>
+<new>
+  <node id="1679594956" lat="-6.9941288" lon="110.4108449" version="3" timestamp="2015-04-17T17:32:28Z" changeset="30291292" uid="2771265" user="peka kota"/>
+</new>
+</action>
+<action type="modify">
+<old>
+  <node id="1679594962" lat="-6.9953953" lon="110.4083368" version="2" timestamp="2012-08-27T14:14:00Z" changeset="12879026" uid="778220" user="visana"/>
+</old>
+<new>
+  <node id="1679594962" lat="-6.9953287" lon="110.4082793" version="3" timestamp="2015-04-17T18:09:49Z" changeset="30291863" uid="2771265" user="peka kota"/>
+</new>
+</action>
+<action type="modify">
+<old>
+  <node id="1679594964" lat="-6.9953569" lon="110.4092359" version="2" timestamp="2012-08-27T14:14:00Z" changeset="12879026" uid="778220" user="visana"/>
+</old>
+<new>
+  <node id="1679594964" lat="-6.9952522" lon="110.4091880" version="3" timestamp="2015-04-17T18:09:49Z" changeset="30291863" uid="2771265" user="peka kota"/>
+</new>
+</action>
+<action type="delete">
+<old>
+  <node id="1883564943" lat="-6.9935627" lon="110.4088341" version="6" timestamp="2014-08-24T11:32:18Z" changeset="24976231" uid="2285600" user="adiwhy">
+    <tag k="amenity" v="hospital"/>
+    <tag k="emergency" v="yes"/>
+    <tag k="name" v="RS Kariadi"/>
+  </node>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="1883577399" lat="-6.9969362" lon="110.4052416" version="2" timestamp="2012-08-26T10:41:09Z" changeset="12863219" uid="778220" user="visana">
+    <tag k="amenity" v="hospital"/>
+    <tag k="name" v="William Booth (Mata)"/>
+  </node>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255015" lat="-7.0008575" lon="110.4282054" version="1" timestamp="2013-07-28T12:16:18Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255022" lat="-7.0010465" lon="110.4278299" version="1" timestamp="2013-07-28T12:16:18Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255028" lat="-7.0015789" lon="110.4282697" version="1" timestamp="2013-07-28T12:16:18Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255030" lat="-7.0011823" lon="110.4281759" version="1" timestamp="2013-07-28T12:16:18Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255032" lat="-7.0014671" lon="110.4277574" version="1" timestamp="2013-07-28T12:16:18Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255039" lat="-7.0009533" lon="110.4288893" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255042" lat="-7.0015603" lon="110.4281249" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255043" lat="-7.0010412" lon="110.4277977" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255044" lat="-7.0010864" lon="110.4281383" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255045" lat="-7.0008921" lon="110.4283770" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255050" lat="-7.0010731" lon="110.4283529" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255056" lat="-7.0008708" lon="110.4283448" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255057" lat="-7.0011956" lon="110.4283100" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255067" lat="-7.0013207" lon="110.4277977" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255068" lat="-7.0014458" lon="110.4276233" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255072" lat="-7.0011663" lon="110.4283206" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255075" lat="-7.0011450" lon="110.4281677" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255076" lat="-7.0013606" lon="110.4281114" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255077" lat="-7.0011423" lon="110.4288625" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="delete">
+<old>
+  <node id="2399255080" lat="-7.0010305" lon="110.4276716" version="1" timestamp="2013-07-28T12:16:19Z" changeset="17124557" uid="16011" user="indomapper"/>
+</old>
+</action>
+<action type="create">
+  <node id="3311723658" lat="-6.9932260" lon="110.4303684" version="1" timestamp="2015-01-26T09:47:21Z" changeset="28414262" uid="2604882" user="hangtuahh">
+    <tag k="amenity" v="hospital"/>
+    <tag k="name" v="RS. Plan And Mosque"/>
+  </node>
+</action>
+<action type="create">
+  <node id="3415702725" lat="-7.0012053" lon="110.4283872" version="1" timestamp="2015-03-24T11:18:17Z" changeset="29700877" uid="2773117" user="osyaviva">
+    <tag k="amenity" v="hospital"/>
+    <tag k="name" v="Rumah Sakit Roemani Muhammadiyah"/>
+  </node>
+</action>
+<action type="create">
+  <node id="3461840225" lat="-6.9929328" lon="110.4111562" version="1" timestamp="2015-04-17T17:32:18Z" changeset="30291292" uid="2771265" user="peka kota"/>
+</action>
+<action type="create">
+  <node id="3461840366" lat="-6.9932486" lon="110.4111810" version="1" timestamp="2015-04-17T17:32:20Z" changeset="30291292" uid="2771265" user="peka kota"/>
+</action>
+<action type="create">
+  <node id="3461892578" lat="-6.9953001" lon="110.4087554" version="1" timestamp="2015-04-17T18:09:11Z" changeset="30291863" uid="2771265" user="peka kota"/>
+</action>
+<action type="create">
+  <node id="3461892581" lat="-6.9954099" lon="110.4092628" version="1" timestamp="2015-04-17T18:09:11Z" changeset="30291863" uid="2771265" user="peka kota"/>
+</action>
+<action type="create">
+  <node id="3467933026" lat="-7.0006666" lon="110.3932054" version="2" timestamp="2017-07-19T13:04:01Z" changeset="50403535" uid="2771282" user="b-ghost"/>
+</action>
+<action type="create">
+  <node id="3467933037" lat="-7.0006901" lon="110.3933120" version="2" timestamp="2017-07-19T13:04:01Z" changeset="50403535" uid="2771282" user="b-ghost"/>
+</action>
+<action type="create">
+  <node id="3467933265" lat="-7.0008543" lon="110.3931662" version="2" timestamp="2017-07-19T13:04:01Z" changeset="50403535" uid="2771282" user="b-ghost"/>
+</action>
+<action type="create">
+  <node id="3467933273" lat="-7.0008679" lon="110.3932786" version="2" timestamp="2017-07-19T13:04:01Z" changeset="50403535" uid="2771282" user="b-ghost"/>
+</action>
+<action type="create">
+  <node id="4978801325" lat="-6.9870661" lon="110.4077286" version="1" timestamp="2017-07-19T06:55:20Z" changeset="50396775" uid="3497166" user="Risti Ambar">
+    <tag k="amenity" v="hospital"/>
+    <tag k="name" v="Rumah Sakit Bhakti Wira Tamtama"/>
+  </node>
+</action>
+<action type="create">
+  <node id="4993747821" lat="-6.9968986" lon="110.4054302" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747822" lat="-6.9967816" lon="110.4053834" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747823" lat="-6.9966464" lon="110.4051537" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747824" lat="-6.9966827" lon="110.4049931" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747825" lat="-6.9968341" lon="110.4048569" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747826" lat="-6.9969208" lon="110.4048041" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747827" lat="-6.9970641" lon="110.4045764" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747828" lat="-6.9973780" lon="110.4046676" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747829" lat="-6.9973692" lon="110.4047578" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747830" lat="-6.9975247" lon="110.4047653" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747831" lat="-6.9975247" lon="110.4048167" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747832" lat="-6.9975922" lon="110.4048197" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747833" lat="-6.9975670" lon="110.4051520" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747834" lat="-6.9973986" lon="110.4051452" version="1" timestamp="2017-07-26T03:10:44Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747835" lat="-6.9971190" lon="110.4052940" version="1" timestamp="2017-07-26T03:10:45Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993747836" lat="-6.9970205" lon="110.4054026" version="1" timestamp="2017-07-26T03:10:45Z" changeset="50574583" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993861229" lat="-6.9756366" lon="110.3944613" version="1" timestamp="2017-07-26T05:04:02Z" changeset="50575582" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993861230" lat="-6.9757055" lon="110.3944713" version="1" timestamp="2017-07-26T05:04:02Z" changeset="50575582" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993861231" lat="-6.9757032" lon="110.3945345" version="1" timestamp="2017-07-26T05:04:02Z" changeset="50575582" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="create">
+  <node id="4993861232" lat="-6.9756313" lon="110.3945252" version="1" timestamp="2017-07-26T05:04:02Z" changeset="50575582" uid="6052553" user="lek_dodok"/>
+</action>
+<action type="modify">
+<old>
+  <way id="155565070" version="3" timestamp="2012-08-26T10:30:22Z" changeset="12863219" uid="778220" user="visana">
+    <nd ref="1679594960"/>
+    <nd ref="1679594949"/>
+    <nd ref="1679594958"/>
+    <nd ref="1679594946"/>
+    <nd ref="1679594962"/>
+    <nd ref="1679594964"/>
+    <nd ref="1679594943"/>
+    <nd ref="1679594945"/>
+    <nd ref="1679594956"/>
+    <nd ref="1679594950"/>
+    <nd ref="1679594954"/>
+    <nd ref="1679594944"/>
+    <nd ref="1679594947"/>
+    <nd ref="1679594941"/>
+    <nd ref="1679594948"/>
+    <nd ref="1679594951"/>
+    <nd ref="1679594942"/>
+    <nd ref="1679594960"/>
+    <tag k="building" v="yes"/>
+    <tag k="amenity" v="hospital"/>
+    <tag k="emergency" v="yes"/>
+    <tag k="name" v="RSUP Dr. Kariadi"/>
+  </way>
+</old>
+<new>
+  <way id="155565070" version="6" timestamp="2016-04-27T04:53:03Z" changeset="38909439" uid="2679746" user="Hanif Al Husaini">
+    <nd ref="1679594960"/>
+    <nd ref="1679594949"/>
+    <nd ref="1679594958"/>
+    <nd ref="1679594946"/>
+    <nd ref="1679594962"/>
+    <nd ref="3461892578"/>
+    <nd ref="1679594964"/>
+    <nd ref="3461892581"/>
+    <nd ref="1679594943"/>
+    <nd ref="1679594945"/>
+    <nd ref="1679594956"/>
+    <nd ref="1679594950"/>
+    <nd ref="3461840366"/>
+    <nd ref="3461840225"/>
+    <nd ref="1679594954"/>
+    <nd ref="1679594944"/>
+    <nd ref="1679594947"/>
+    <nd ref="1679594941"/>
+    <nd ref="1679594948"/>
+    <nd ref="1679594951"/>
+    <nd ref="1679594942"/>
+    <nd ref="1679594960"/>
+    <tag k="amenity" v="hospital"/>
+    <tag k="emergency" v="yes"/>
+    <tag k="name" v="RSUP Dr. Kariadi"/>
+  </way>
+</new>
+</action>
+<action type="delete">
+<old>
+  <way id="231559428" version="1" timestamp="2013-07-28T12:16:20Z" changeset="17124557" uid="16011" user="indomapper">
+    <nd ref="2399255045"/>
+    <nd ref="2399255050"/>
+    <nd ref="2399255077"/>
+    <nd ref="2399255039"/>
+    <nd ref="2399255045"/>
+    <tag k="amenity" v="hospital"/>
+  </way>
+</old>
+</action>
+<action type="delete">
+<old>
+  <way id="231559432" version="1" timestamp="2013-07-28T12:16:20Z" changeset="17124557" uid="16011" user="indomapper">
+    <nd ref="2399255015"/>
+    <nd ref="2399255075"/>
+    <nd ref="2399255072"/>
+    <nd ref="2399255056"/>
+    <nd ref="2399255015"/>
+    <tag k="amenity" v="hospital"/>
+  </way>
+</old>
+</action>
+<action type="delete">
+<old>
+  <way id="231559433" version="1" timestamp="2013-07-28T12:16:20Z" changeset="17124557" uid="16011" user="indomapper">
+    <nd ref="2399255080"/>
+    <nd ref="2399255043"/>
+    <nd ref="2399255032"/>
+    <nd ref="2399255068"/>
+    <nd ref="2399255080"/>
+    <tag k="amenity" v="hospital"/>
+  </way>
+</old>
+</action>
+<action type="delete">
+<old>
+  <way id="231559436" version="1" timestamp="2013-07-28T12:16:20Z" changeset="17124557" uid="16011" user="indomapper">
+    <nd ref="2399255030"/>
+    <nd ref="2399255057"/>
+    <nd ref="2399255028"/>
+    <nd ref="2399255042"/>
+    <nd ref="2399255030"/>
+    <tag k="amenity" v="hospital"/>
+  </way>
+</old>
+</action>
+<action type="delete">
+<old>
+  <way id="231559440" version="1" timestamp="2013-07-28T12:16:20Z" changeset="17124557" uid="16011" user="indomapper">
+    <nd ref="2399255022"/>
+    <nd ref="2399255067"/>
+    <nd ref="2399255076"/>
+    <nd ref="2399255044"/>
+    <nd ref="2399255022"/>
+    <tag k="amenity" v="hospital"/>
+  </way>
+</old>
+</action>
+<action type="create">
+  <way id="339572638" version="2" timestamp="2017-07-19T13:04:01Z" changeset="50403535" uid="2771282" user="b-ghost">
+    <nd ref="3467933037"/>
+    <nd ref="3467933273"/>
+    <nd ref="3467933265"/>
+    <nd ref="3467933026"/>
+    <nd ref="3467933037"/>
+    <tag k="amenity" v="clinic"/>
+    <tag k="building" v="yes"/>
+  </way>
+</action>
+<action type="create">
+  <way id="510331904" version="1" timestamp="2017-07-26T03:10:45Z" changeset="50574583" uid="6052553" user="lek_dodok">
+    <nd ref="4993747821"/>
+    <nd ref="4993747822"/>
+    <nd ref="4993747823"/>
+    <nd ref="4993747824"/>
+    <nd ref="4993747825"/>
+    <nd ref="4993747826"/>
+    <nd ref="4993747827"/>
+    <nd ref="4993747828"/>
+    <nd ref="4993747829"/>
+    <nd ref="4993747830"/>
+    <nd ref="4993747831"/>
+    <nd ref="4993747832"/>
+    <nd ref="4993747833"/>
+    <nd ref="4993747834"/>
+    <nd ref="4993747835"/>
+    <nd ref="4993747836"/>
+    <nd ref="4993747821"/>
+    <tag k="amenity" v="hospital"/>
+    <tag k="emergency" v="yes"/>
+    <tag k="name" v="William Booth"/>
+  </way>
+</action>
+<action type="create">
+  <way id="510349080" version="1" timestamp="2017-07-26T05:04:02Z" changeset="50575582" uid="6052553" user="lek_dodok">
+    <nd ref="4993861229"/>
+    <nd ref="4993861230"/>
+    <nd ref="4993861231"/>
+    <nd ref="4993861232"/>
+    <nd ref="4993861229"/>
+    <tag k="amenity" v="clinic"/>
+    <tag k="building" v="yes"/>
+  </way>
+</action>
+
+</osm>

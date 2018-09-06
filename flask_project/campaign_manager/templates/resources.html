@@ -1,0 +1,67 @@
+<script src="static/libs/showdown.min.js"></script>
+
+{% extends 'new_base.html' %}
+
+{% block header_content %}
+    <div class="home-header"><h1>RESOURCES</h1></div>
+{% endblock %}
+
+{% block content %}
+    <style>
+    .page-title {
+        font-weight: 600;
+        margin-top: 40px;
+    }
+
+    .home-header {
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .page-content {
+        font-size: 12pt;
+        width: 85%;
+        margin: auto;
+    }
+
+    #gettingstartedcreatingacampaign {
+        padding-bottom: 25px;
+    }
+
+    h1 {
+        font-weight: 700;
+    }
+
+    h2 {
+        padding-top: 20px;
+        font-weight: 600;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    strong {
+        font-size: 30px;
+        font-weight: 600;
+    }
+
+    p {
+        padding-bottom: 5px;
+    }
+    </style>
+
+    <div id="page-wrapper" class="panel-custom" style="background-color: white;">
+        <div style="vertical-align: middle !important;">
+        <div class="row">
+            <div class="page-content">
+                <script src="static/js/converter.js"></script>
+                <div id="markdown-content"></div>
+            </div>
+        </div>
+        </div>
+        
+    </div>
+
+{% endblock %}
+

@@ -1,0 +1,99 @@
+<div class="osmch-error">
+    <div class="total-osmcha-errors">{{ data.total }}</div>
+    {% if data.data|length > 0 %}
+    <table class="feature-list-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Comment</th>
+            <th>Reasons</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data.data %}
+            <tr>
+                <td>
+                    <a href="{{ data.osmcha_url }}changesets/{{ row['ChangeSetId'] }}" target="_blank">{{ row['ChangeSetId'] }}</a>
+                </td>
+                <td>
+                    {{ row['Comment'] }}
+                </td>
+                <td>
+                    {{ row['Reasons'] }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-muted text-pagination">
+        Page {{ data.current_page }} of {{ data.max_page|int + 1 }}
+    </p>
+    <ul class="pager">
+        {% if data.current_page > 1 %}
+            <li>
+                {% if function_id == 'total-osmcha-errors' %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/osmcha_errors/{{ data.uuid }}?page={{ data.previous_page }}">
+                {% else %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.previous_page }}">
+                {% endif %}
+                    ← Previous
+                </a>
+            </li>
+        {% endif %}
+        {% if data.current_page|int < data.max_page|int + 1 %}
+            <li>
+                {% if function_id == 'total-osmcha-errors' %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/osmcha_errors/{{ data.uuid }}?page={{ data.next_page }}">
+                {% else %}
+                    <a class="pager-button" data-function-id="{{ function_id }}" href="/campaign/{{ data.uuid }}/{{ function_id }}?page={{ data.next_page }}">
+                {% endif %}
+                    Next →
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+    {% else %}
+     <div class="no-data">
+        No data
+    </div>
+    {% endif %}
+</div>
+<style type="text/css">
+    .text-pagination {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+</style>
+<script>
+    var function_id = "{{ function_id }}";
+    var $wrapper = $('#{{ function_id }}');
+    $(document).ready(function () {
+        $wrapper.find('.feature-list-table').DataTable({
+            "filter": false,
+            "pageLength": 15,
+            "paging": false,
+            "searching": false,
+            "destroy": true,
+            "info": false,
+            "rowReorder": {
+                selector: 'td:nth-child(2)'
+            },
+            responsive: true
+        });
+        $wrapper.find('.dataTables_wrapper').show();
+        $wrapper.find(".pager-button").click(function (event) {
+            var _function_id = $(this).data('function-id');
+            var $content = $('#' + _function_id);
+            event.preventDefault();
+            $content.LoadingOverlay("show", {image: "/static/resources/loading-spinner.gif"});
+            $.ajax({
+                url: $(event.target).attr('href'),
+                success: function (data) {
+                    $content.LoadingOverlay('hide');
+                    $content.html(data);
+                }
+            });
+        })
+    });
+</script>

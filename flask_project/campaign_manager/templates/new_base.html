@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta property="og:image" content="/static/img/hot-logo-2.png" />
+
+    <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/static/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="/static/libs/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link href="/static/libs/leaflet/css/leaflet.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/css/map-campaigner.css" rel="stylesheet">
+
+    <!-- Datepicker CSS -->
+    <link rel="stylesheet" href="/static/css/datepicker.min.css" type="text/css">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css"/>
+
+    <!-- Leaflet Search CSS -->
+    <link href="/static/css/leaflet-search/leaflet-search.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery -->
+    <script src="/static/libs/jquery/jquery.min.js"></script>
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+<body id="wrap">
+
+    <div id="wrapper">
+
+        {% include 'campaign_widget/navigation.html' %}
+
+        {% block header_content %}{% endblock %}
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12" id="first-row">
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/libs/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Leaflet JavaScript -->
+    <script src="/static/libs/leaflet/js/leaflet.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/static/js/map-campaigner.js"></script>
+
+    <!-- jQuery Loading Overlay -->
+    <script src="/static/libs/jquery-loading-overlay/loadingoverlay.js"></script>
+
+    <!-- OsmAuth JavaScript -->
+    <script type="text/javascript" src="/static/libs/osmauth.js"></script>
+
+    <!-- Leaflet Color Markers -->
+    <script type="text/javascript" src="/static/libs/leaflet-color-markers/leaflet-color-markers.js"></script>
+
+    <!-- Datepicker JavaScript -->
+    <script type="text/javascript" src="/static/js/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/js/datepicker.en.js"></script>
+
+    <!-- DataTables Javascript -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/rowreorder/1.2.0/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/datetime-moment.js"></script>
+
+    <!-- Moment Javascript -->
+    <script type="text/javascript" src="/static/libs/moment.js"></script>
+
+    <script type="text/javascript" src="/static/libs/chartjs/Chart.bundle.min.js"></script>
+
+    <!-- Leaflet Search -->
+    <script type="text/javascript" src="/static/libs/leaflet-search.js"></script>
+
+    <!-- Javascript Cookie -->
+    <script type="text/javascript" src="/static/libs/js.cookie-2.1.4.min.js"></script>
+
+    <script src="/static/libs/jquery-file-upload/jquery.ui.widget.js"></script>
+    <script src="/static/libs/jquery-file-upload/jquery.fileupload.js"></script>
+
+    <!-- Modal -->
+    <div id="auth-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Login Required</h4>
+                </div>
+                <div class="modal-body" style="padding-top: 25px; padding-bottom: 30px;">
+                    <p>Sign in using an OpenStreetMap account is required to to create a campaign. Only authorized campaign managers are able to create and edit campaigns. Please review the Manager resources and register your OSM username to become a manager.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal" onclick="login()">Login
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% block before_base_js %}
+    {% endblock %}
+
+    <script type="text/javascript">
+        var locationMarker = null;
+        var loginProcess = false;
+
+        var auth = osmAuth({
+            oauth_secret: '{{ oauth_secret }}',
+            oauth_consumer_key: '{{ oauth_consumer_key }}',
+            auto: true,
+            landing: window.location.origin + '/land',
+            loading: function () {
+                showLoading();
+            },
+            done: function () {
+                hideLoading();
+            },
+            url: 'https://www.openstreetmap.org'
+        });
+
+        $(document).ready(function () {
+            $('#login-menu').click(function () {
+                login();
+            });
+            $('#logout-menu').click(function () {
+                logout();
+            });
+        });
+
+        function login() {
+            loginProcess = true;
+            auth.authenticate(function () {
+                update();
+            })
+        }
+
+        function logout() {
+            auth.logout();
+            logoutSuccess();
+            update();
+        }
+
+        function update() {
+            window.isAuthenticated = auth.authenticated();
+            if (auth.authenticated()) {
+                if(typeof this.map !== 'undefined') {
+                    showDetails(map);
+                } else {
+                    showDetails();
+                }
+            } else {
+                if(typeof this.map !== 'undefined') {
+                    hideDetails(map);
+                } else {
+                    hideDetails();
+                }
+            }
+        }
+
+        function showDetails(map) {
+            $('#login-menu').hide();
+            $('#logout-menu').show();
+
+            var that = this;
+            auth.xhr({
+                method: 'GET',
+                path: '/api/0.6/user/details'
+            }, function (err, res) {
+                if (err) {
+                    $('#info').html('error! try clearing your browser cache');
+                    hideLoading();
+                    loginError();
+                    return;
+                }
+                var u = res.getElementsByTagName('user')[0];
+                var changesets = res.getElementsByTagName('changesets')[0];
+                var location = res.getElementsByTagName('home')[0];
+
+                var o = {
+                    display_name: u.getAttribute('display_name'),
+                    id: u.getAttribute('id'),
+                    count: changesets.getAttribute('count'),
+                };
+
+
+                $('#profile-name').html(o.display_name);
+
+                if (typeof location !== 'undefined') {
+                    var long = location.getAttribute('lon');
+                    var lat = location.getAttribute('lat');
+                    var zoom = location.getAttribute('zoom');
+                    o['lon'] = long;
+                    o['lat'] = lat;
+                    if (map) {
+                        that.locationMarker = L.marker([lat, long], {icon: userIcon}).addTo(map);
+                        map.setView([lat, long], 8);
+                        that.locationMarker.bindPopup("Your location from osm");
+                    }
+                }
+
+                if(loginProcess) {
+                    loginSuccess(o);
+                    loginProcess = false;
+                }
+
+                updated(o);
+
+            }, this);
+        }
+        function hideDetails(map) {
+            $('#login-menu').show();
+            $('#logout-menu').hide();
+
+            $('#profile-name').html('<i class="fa fa-user fa-fw profile-icon"></i>');
+
+            if (map) {
+                if (this.locationMarker) {
+                    map.removeLayer(this.locationMarker);
+                    map.setView([0, 0], 1);
+                }
+            }
+            loginError();
+        }
+
+        update();
+
+        function loginSuccess(user) {
+        }
+
+        function loginError() {
+        }
+
+        function logoutSuccess() {
+        }
+
+        function updated(object) {
+            // Called after finished getting details of a user
+        }
+
+        $('#create_campaign').click(function () {
+            if (auth.authenticated()) {
+                location.href = '/create';
+            } else {
+                showAuthAlert();
+            }
+        });
+
+        function showAuthAlert() {
+            $('#auth-modal').modal('show');
+        }
+
+    </script>
+
+    {% block after_base_js %}
+    {% endblock %}
+
+</body>
+<footer class="footer-basic-centered">
+
+    <p class="footer-company-motto">
+    </p>
+
+    <div class="footer-company-name">
+        <div style="float:left;padding-left: 20px;"> Built by <a href="/about" target="_blank"> HOT & Partners </a>  </div>
+        <div style="float:right;padding-right: 20px;"> <a href="https://github.com/hotosm/field-campaigner"> Contribute on GitHub </a> </div>
+    </div>
+
+</footer>
+</html>

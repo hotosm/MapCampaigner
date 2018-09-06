@@ -1,0 +1,93 @@
+version: '2'
+
+services:
+
+    # https://hub.docker.com/_/nginx/
+    nginx:
+      build:
+        context: docker
+        dockerfile: Dockerfile.nginx
+      container_name: nginx
+      volumes:
+        - ./campaigner_simple.nginx.conf:/etc/nginx/conf.d/default.conf
+      command: nginx -g 'daemon off;'
+      ports:
+        - 80:80
+        - 443:443
+      depends_on:
+        - web
+      networks:
+        - code-network
+
+    web:
+      #image: kartoza/osm-reporter
+      build:
+        context: docker
+        dockerfile: Dockerfile
+      hostname: web
+      container_name: osmreporter_web
+      environment:
+        - PGUSER=docker
+        - PGPASSWORD=docker
+        - PGHOST=db
+        - APP_SETTINGS=app_config.ProductionConfig
+        - DATABASE_URL=postgresql://db/gis
+        - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://ec2-54-172-198-122.compute-1.amazonaws.com/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
+      ports:
+        - "64000:8080"
+      volumes:
+        - ../flask_project:/home/web/osm_reporter
+        - ${CAMPAIGN_DATA}:/home/web/field-campaigner-data
+      restart: on-failure:5
+      user: root
+      networks:
+          - code-network
+
+    dev:
+      build:
+        context: docker
+        dockerfile: Dockerfile.dev
+      hostname: devweb
+      container_name: osmreporter_devweb
+      environment:
+        - PGUSER=docker
+        - PGPASSWORD=docker
+        - PGHOST=db
+        - APP_SETTINGS=app_config.DevelopmentConfig
+        - DATABASE_URL=postgresql://db/gis
+        - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
+      ports:
+        - "64002:5000"
+      volumes:
+        - ../flask_project:/home/web/osm_reporter
+        - ${CAMPAIGN_DATA}:/home/web/field-campaigner-data
+
+    test:
+      build:
+        context: docker
+        dockerfile: Dockerfile.test
+      hostname: testweb
+      container_name: osmreporter_testweb
+      environment:
+        - PGUSER=docker
+        - PGPASSWORD=docker
+        - PGHOST=db
+        - APP_SETTINGS=app_config.DevelopmentConfig
+        - DATABASE_URL=postgresql://db/gis
+        - DATA_FOLDER=/home/web/field-campaigner-data
+        - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter
+        - DEFAULT_OVERPASS_URL=http://exports-prod.hotosm.org:6080/api/interpreter
+      ports:
+        - "64001:8080"
+      volumes:
+        - ../flask_project:/home/web/osm_reporter
+
+networks:
+  code-network:
+    driver: bridge
+  database-network:
+    driver: bridge

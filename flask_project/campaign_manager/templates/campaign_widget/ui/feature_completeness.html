@@ -1,0 +1,237 @@
+
+<div class="insight-title">Attribute Completeness</div>
+<div class="completness">
+    <div class="total-features">{{ data.total }}</div>
+    {% if data.total == 0 %}
+    <h3 class="progress-bar-indicator">n/a</h3>
+    {% else %}
+    <h3 class="progress-bar-indicator">{{ data.complete }}/{{ data.total }} ({{ data.percentage }} %)</h3>
+    {% endif %}
+    <div class="progress-bar-wrapper">
+        <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
+    </div>
+    {% if not feature_type %}
+        <div class="table-insight-view">
+            <div class="see-detail" onclick="see_completeness_details(this)"><i class="fa fa-caret-up" aria-hidden="true"></i> hide incomplete features list</div>
+            <table class="feature-list-table" style="width: 100%">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in data.data %}
+                    {% if row['error'] == 'True' %}
+                        <tr>
+                            <td>
+                                <a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}">
+                                    {{ row['type'] }} :
+                                    {% if 'tags' in row %}
+                                        {% if row['tags']['name'] %}
+                                            {{ row['tags']['name'] }} ({{ row['id'] }})
+                                        {% else %}
+                                            {{ row['id'] }}
+                                        {% endif %}
+                                    {% else %}
+                                        {{ row['id'] }}
+                                    {% endif %}
+                                </a>
+                                {% if row['type'] == 'relation' %}
+                                    <span class="show-members">
+                                        <i class="fa fa-arrow-circle-down" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>
+                                    </span>
+                                    <div class="relation-member">
+                                        Members :
+                                        <ul>
+                                            {% for member in row['members'] %}
+                                                <li>
+                                                    <a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">
+                                                        {{ member['type'] }} : {{ member['ref'] }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ row['type'] }}
+                            </td>
+                            <td>
+                                {% if row['warning_message'] %}
+                                    <div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>
+                                {% endif %}
+                                {% if row['error_message'] %}
+                                    <div class="error-completeness">Error: {{ row['error_message'] }}</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if not feature_type %}
+    <div class="footer">
+        Data updated at {{ data['last_update'] }}.
+        {% if data['updating'] %}
+            <br>
+            Currently updating.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<div class="insight-summaries">
+     <div class="row summary multiple-row">
+        <div class="col-lg-12">
+            <div class="pull-left">
+                Attribute completeness
+            </div>
+            <div class="pull-right">
+                {% if data.total == 0 %}
+                    n/a
+                {% else %}
+                    {{ data.percentage }} %
+                {% endif %}
+            </div>
+            <div class="summary-content">
+                <div class="progress side-panel-progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ data.percentage }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ data.percentage }}%;">
+                        <span class="sr-only">{{ data.percentage }}% Complete</span>
+                    </div>
+                </div>
+            </div>
+            <div class="checked-attributes">
+                {% for data in data.attributes %}
+                <span>{{ data }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).tooltip({
+        selector: "[data-toggle=tooltip]",
+        container: "body"
+    });
+    var tab_id = '{{ function_id }}';
+    var $wrapper = $('#' + tab_id);
+    {% if not feature_type %}
+    var dataTable = $wrapper.find('.feature-list-table').DataTable({
+        "bSortClasses": false,
+        "aLengthMenu": [5, 10, 25, 50, "All"],
+        "iDisplayLength": 5,
+        "rowReorder": {
+            selector: 'td:nth-child(2)'
+        },
+        "responsive": true
+    });
+    {% endif %}
+    $wrapper.find('.feature-list-table').show();
+    function see_completeness_details(event) {
+        var $featureListTable = $(event).next().find('.feature-list-table');
+
+        if (!$featureListTable.is(":visible")) {
+            $(event).html('<i class="fa fa-caret-up" aria-hidden="true"></i> hide incomplete features list');
+            $featureListTable.parent().show();
+        } else {
+            $(event).html('<i class="fa fa-caret-down" aria-hidden="true"></i> show incomplete features list');
+            $featureListTable.parent().hide();
+        }
+    }
+    $('.show-members').unbind('click').click(function (e) {
+        if ($(this).children().hasClass('fa-arrow-circle-down')) {
+            $(this).siblings('.relation-member').show();
+            $(this).children().removeClass('fa-arrow-circle-down');
+            $(this).children().addClass('fa-arrow-circle-up');
+            $(this).children().attr('data-original-title', 'Hide members');
+        } else {
+            $(this).siblings('.relation-member').hide();
+            $(this).children().removeClass('fa-arrow-circle-up');
+            $(this).children().addClass('fa-arrow-circle-down');
+            $(this).children().attr('data-original-title', 'Show members');
+
+        }
+    });
+
+    function showMembers(element) {
+        if ($(element).hasClass('fa-arrow-circle-down')) {
+            $(element).parent().siblings('.relation-member').show();
+            $(element).removeClass('fa-arrow-circle-down');
+            $(element).addClass('fa-arrow-circle-up');
+            $(element).attr('data-original-title', 'Hide members');
+        } else {
+            $(element).parent().siblings('.relation-member').hide();
+            $(element).removeClass('fa-arrow-circle-up');
+            $(element).addClass('fa-arrow-circle-down');
+            $(element).attr('data-original-title', 'Show members');
+
+        }
+    }
+
+    featureCompletenessData = [];
+
+    {% for row in data.data %}
+        var _featureCompleteness = [];
+        {% if row['error'] == 'True' %}
+
+            {% if row['warning'] == 'True' %}
+                _featureCompleteness.push('warning');
+            {% else %}
+                _featureCompleteness.push('error');
+            {% endif %}
+
+            _featureCompleteness.push(
+                '<a target="_blank" href="http://www.openstreetmap.org/{{ row['type'] }}/{{ row['id'] }}" data-id="{{ row['id'] }}" data-type="{{ row['type'] }}">'+
+                    '{{ row['type'] }} :'+
+                    '{{ row['id'] }}'+
+                '</a>'
+                {% if row['type'] == 'relation' %}
+                    +'<span class="show-members">'+
+                        ' <i class="fa fa-arrow-circle-down" onclick="showMembers(this)" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-original-title="Show members"></i>'+
+                    '</span>'+
+                    '<div class="relation-member">'+
+                        'Members :'+
+                        '<ul>'+
+                        {% for member in row['members'] %}
+                            '<li>'+
+                                '<a target="_blank" href="http://www.openstreetmap.org/{{ member['type'] }}/{{ member['ref'] }}">'+
+                                        '{{ member['type'] }} : {{ member['ref'] }}'+
+                                '</a>'+
+                            '</li>'+
+                        {% endfor %}
+                        '</ul>'+
+                    '</div>'
+                {% endif %}
+            );
+
+            _featureCompleteness.push('{{ row['timestamp'] }}');
+            _featureCompleteness.push(
+                {% if row['warning_message'] %}
+                        '<div class="warning-completeness">Warning: {{ row['warning_message'] }}</div>'+
+                {% endif %}
+                {% if row['error_message'] %}
+                        '<div class="error-completeness">Error: {{ row['error_message'] }}</div>'+
+                {% endif %}
+                        ''
+            );
+            featureCompletenessData.push(_featureCompleteness);
+        {% endif %}
+    {% endfor %}
+
+    {% if feature_type %}
+        featureData['{{ feature_type }}'] = [];
+        {% for data in data['raw_data'] %}
+            featureData['{{ feature_type }}'].push({{ data | safe}});
+        {% endfor %}
+    {% endif %}
+
+
+    featureCompleteness = featureCompletenessData;
+
+</script>

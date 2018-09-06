@@ -1,0 +1,81 @@
+<div class="upload-fieldpaper-wrapper">
+    <input id="fieldpaper-id" type="file" name="filename" hidden/>
+    <button type="button" class="btn btn-outline btn-primary btn-lg btn-upload-fieldpaper" id="upload-fieldpaper">
+        Upload GeoJSON File
+    </button>
+
+</div>
+
+<script>
+    $('#upload-fieldpaper').click(uploadFieldpaper);
+    $('#fieldpaper-id').change(handleFileSelect);
+
+    function uploadFieldpaper(el) {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Great success! All the File APIs are supported.
+        } else {
+          alert('The File APIs are not fully supported in this browser.');
+          return;
+        }
+
+        $('#fieldpaper-id').click();
+    }
+    
+    function handleFileSelect(evt) {
+        var files = evt.target.files;
+        var output = [];
+        if(files.length <= 0) {
+            return;
+        }
+
+        var uploadedFile = files[0];
+
+        // Check filename
+        if(uploadedFile.name.indexOf('.geojson') === -1) {
+            alert('Wrong format');
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var geojsonFeature = JSON.parse(reader.result);
+            geojsonFeature = geojsonFeature['features'];
+            drawnItems.clearLayers();
+            var geojsonLayer = L.geoJSON(geojsonFeature, {
+                style: function (feature) {
+                    return {
+                        weight: 2,
+                        color: "#999",
+                        opacity: 1,
+                        fillColor: '#D3D3D3',
+                        fillOpacity: 0.8
+                    }
+                },
+                onEachFeature: onEachFeature
+            });
+            campaignMap.fitBounds(drawnItems.getBounds());
+            stringfyGeometry();
+            getAreaSize();
+        };
+
+        reader.readAsText(uploadedFile);
+    }
+
+    function onEachFeature(feature, featureLayer) {
+        featureLayer.bindPopup(
+            '<div class="layer-popup">' +
+                '<div class="layer-popup-area">' +
+                    'Area &nbsp;&nbsp;: -'+
+                '</div>'+
+                '<div class="layer-popup-team">' +
+                    'Team &nbsp;: -'+
+                '</div>'+
+                '<div class="layer-popup-team">' +
+                    'Status : Unassigned'+
+                '</div>'+
+            '</div>'
+        );
+        drawnItems.addLayer(featureLayer);
+    }
+
+</script>

@@ -1,0 +1,75 @@
+{% extends 'new_base.html' %}
+
+{% block header_content %}
+    <div class="home-header"><h1 style="font-weight: 700">ABOUT</h1></div>
+{% endblock %}
+
+{% block content %}
+    <style>
+    .page-title {
+        font-weight: 600;
+        margin-top: 40px;
+    }
+    .page-content {
+        font-size: 12pt;
+    }
+    .home-header {
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .main-page {
+        width: 85%;
+        margin: auto;
+    }
+
+
+    </style>
+
+    <div id="page-wrapper" class="panel-custom" style="background-color: white;">
+        <div class="main-page" style="vertical-align: middle !important;">
+        <div class="row">
+            <h2 class="page-title">What is the Map Campaigner?</h2>
+            <div class="page-content">
+                <p>
+                    The OSM Campaign Manager project aims to bring field data collectors and campaign managers together on a single platform. Campaign managers are able to set up specific campaign types to evaluate the progress of field campaigns. Remote mapping projects can also be connected to campaigns. 
+                </p>
+                <p>
+                    Field data collectors are encouraged to participate in a campaign close to them. Each campaign has pre-defined features which are needed for data collection which are established by Campaign Managers. This sets a clearly defined set of data requirements for field teams to collect relevant, comprehensive data. The ‘attribute completeness’ of these features can be monitored by Campaign Mangers and field data collectors can easily tag missing information to incomplete features. 
+                </p>
+                <p>
+                    The Area of Interest (AOI) can be defined easily by selecting a boundary on the map, or by uploading a Shapefile or GeoJSON file. Campaign managers have the ability to assign data collection areas to field teams and monitor the progress within an AOI by marking an area as ‘unassigned’, ‘incomplete’ or ‘complete’.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="page-title">Joining a Map Campaign project</h2>
+            <div class="page-content">
+                <p>
+                    If you are considering joining a local data collection project and notice that the project may have assigned teams to specific sections of the collection area (AOI), please contact the Campaign Manager for more information on how to get involved. You can do this by clicking on the OSM username of the Campaign Managers and then contact them through their OSM profile.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="page-title">Where can I contribute to the development of this project?</h2>
+            <div class="page-content">
+                <p>
+                    You can find this project on <a href="https://github.com/hotosm/field-campaigner">Github</a> where the project was developed. You can <a href="https://github.com/hotosm/field-campaigner#field-campaigner">read more</a> about how to contribute or run your own version of the tool.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="page-title">Who built this project?</h2>
+            <div class="page-content">
+                <p>
+                    This project was created by the Humanitarian OpenStreetMap Team and Kartoza in response to the need for improved data collection management and data quality control within the field.
+                </p>
+                <p>
+                    <a href="https://www.hotosm.org">Humanitarian OpenStreetMap Team</a> applies the principles of open source and open data sharing for humanitarian response and economic development. <a href="http://www.kartoza.com">Kartoza</a> are a Free and Open Source GIS (FOSSGIS) Service provider working to solve geospatial problems.
+                </p>
+                <p><a href="https://www.hotosm.org"> <img src="/static/img/hot-logo.svg" style="height: 25px;"/> </a> <a href="http://www.kartoza.com"><img src="/static/img/kartoza-logo.png" style="padding-left: 10px;"/></a></p>
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
