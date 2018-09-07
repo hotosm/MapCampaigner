@@ -8,6 +8,7 @@ from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.mapper_engagement import \
     MapperEngagement
 from campaign_manager.utilities import get_coordinate_from_ip
+from campaign_manager.aws import S3Data
 
 api = Api(campaign_manager)
 
@@ -20,9 +21,12 @@ class CampaignList(Resource):
         """
         return Campaign.all(campaign_status=campaign_status, **args)
 
-    def get(self, campaign_status):
+    # def get(self, campaign_status):
+    def get(self):
         """Get all campaigns.
         """
+        return S3Data().list('campaigns')
+
         args = request.args
         campaigns = self.get_all_campaign(campaign_status, args)
         campaigns_json = []
@@ -177,7 +181,10 @@ class CampaignContributors(Resource):
 # Setup the Api resource routing here
 api.add_resource(
         CampaignList,
-        '/campaigns/<string:campaign_status>')
+        '/campaigns')
+# api.add_resource(
+#         CampaignList,
+#         '/campaigns/<string:campaign_status>')
 api.add_resource(
         CampaignTagList,
         '/campaigns/<string:tag>')
