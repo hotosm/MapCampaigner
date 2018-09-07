@@ -584,11 +584,7 @@
 
         function getCampaigns(url, user, limit) {
             limit = null;
-            var bucketUrl = "https://s3-us-west-2.amazonaws.com/fieldcampaigner-data/campaigns/";
-            
-
-            console.log('getCampaigns');
-            console.log(url);
+            var bucketUrl = "{{ bucket_url }}/campaigns/";
 
             $.ajax({
                 url: url,
