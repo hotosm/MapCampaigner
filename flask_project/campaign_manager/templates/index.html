@@ -584,10 +584,11 @@
 
         function getCampaigns(url, user, limit) {
             limit = null;
+            url = null;
             var bucketUrl = "{{ bucket_url }}/campaigns/";
 
             $.ajax({
-                url: url,
+                url: "/campaigns",
                 success: function(response) {
                     const requests = response.map(function(campaign) {
                         return $.ajax({
