@@ -1,6 +1,6 @@
 <div class="col-lg-12">
   <div id="total-feature-completeness-errors"></div>
-  <table id="table_id" class="display">
+  <table id="errors" class="table">
     <thead>
       <tr>
         <th>Status</th>
@@ -12,37 +12,85 @@
     <tbody>
     </tbody>
   </table>
+  <span class='previous-page'>Previous page</span>
+  <span class='current-page'></span>
+  <span class='next-page'>Next page</span>
+  
 </div>
 <script type="text/javascript">
   function renderErrorsWarnings() {
-    var dataTable = $('#table_id').DataTable({
-      "lengthChange": false,
-      columns: [
-        {"data": "status"},
-        {"data": "name"},
-        {"data": "date"},
-        {"data": "comment"}
-      ]
-    });
+    
     var errorsFilesCount = {{ feature_completeness['errors_files_count']}};
     var totalErrors = 0;
 
     for (var i = 1; i <= errorsFilesCount; i++) {
       var errorsUrl = "{{ url | safe }}" + '/errors_' + i + '.json';
-      $.ajax({
+      var requests = [];
+      requests.push($.ajax({
         url: errorsUrl,
-        dataType: 'json',
-        success: function(data) {
-          totalErrors += data.length;
-          $('#total-feature-completeness-errors').html(totalErrors);
-          for (var i = 0; i < data.length; i++) {
-            data[i]['name'] = buildLink(data[i].id, data[i].type);
-            data[i].comment = buildComment(data[i].status, data[i].comment);
-            dataTable.row.add(data[i]).draw();
-          }
-        }
-      });
+        dataType: 'json'
+      }));
     }
+    $.when.apply($, requests).then(function() {
+      var data = []
+      if (requests.length == 1) {
+        data = arguments[0];
+      } else {
+        for (var i = 0; i < arguments.length; i++) {
+          data.concat(arguments[i][0]);
+        }
+      }
+      $('#total-feature-completeness-errors').html(data.length);
+      var chunkSize = 10;
+      var chunkI = 0;
+      var totalChunks = Math.round(data.length / 10);
+      pagination = Array(totalChunks);
+      for (var i = 0; i < data.length; i++) {
+        data[i]['name'] = buildLink(data[i].id, data[i].type);
+        data[i].comment = buildComment(data[i].status, data[i].comment);
+
+        if (Array.isArray(pagination[chunkI]) === false)
+          pagination[chunkI] = [];
+        pagination[chunkI].push(data[i]);
+        if (pagination[chunkI].length === chunkSize) {
+          chunkI++;
+        }
+      }
+      currentPage = 1;
+      renderPage(pagination[currentPage]);
+    });
+
+    function renderPage(data) {
+      $('#errors tbody').html('');
+      $('.current-page').html(`Page ${currentPage}/${pagination.length}`);
+      for (var i = 0; i < data.length; i++) {
+        var dataRow = data[i];
+        var row = `
+        <tr>
+          <td>${dataRow.status}</td>
+          <td>${dataRow.name}</td>
+          <td>${dataRow.date}</td>
+          <td>${dataRow.comment}</td>
+        </tr>`;
+        $('#errors tbody').append(row);
+      }
+      
+
+    }
+
+    $('.next-page').click(function() {
+      currentPage += 1;
+      if (currentPage === pagination.length) {
+        currentPage = 1;
+      }
+      renderPage(pagination[currentPage]);
+    });
+    $('.previous-page').click(function() {
+      currentPage -= 1;
+      if (currentPage === 0)
+        currentPage = 1;
+      renderPage(pagination[currentPage]);
+    });    
   }
 
 
