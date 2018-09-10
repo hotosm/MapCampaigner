@@ -96,12 +96,11 @@ class Campaign(JsonModel):
         Download static map from http://staticmap.openstreetmap.de with marker,
         then save it thumbnail folder
         """
-        try:
-            from secret import MAPBOX_TOKEN
+        if 'MAPBOX_TOKEN' in os.environ:
             url = 'https://api.mapbox.com/styles/v1/hot/' \
                   'cj7hdldfv4d2e2qp37cm09tl8/static/geojson({overlay})/' \
                   'auto/{width}x{height}?' \
-                  'access_token=' + MAPBOX_TOKEN
+                  'access_token=' + os.environ['MAPBOX_TOKEN']
             if len(self.geometry['features']) > 1:
                 geometry = {
                     'type': 'Feature',
@@ -119,15 +118,13 @@ class Campaign(JsonModel):
                 height=300
             )
 
-        except ImportError:
-            url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
-                  'center=0.0,0.0&zoom=1&size=512x512&maptype=mapnik'
+        else:
             polygon = self.get_union_polygons()
-            marker_url = '&markers=%s,%s,lightblue' % (
-                polygon.centroid.y, polygon.centroid.x)
-            url = url + marker_url
-
-        safe_name = hashlib.md5(url.encode('utf-8')).hexdigest() + '.png'
+            url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
+                  'center={y},{x}&zoom=10&size=512x300&maptype=mapnik' \
+                  '&markers={y},{x},lightblue'.format(
+                    y=polygon.centroid.y,
+                    x=polygon.centroid.x)
 
         image_path = 'campaigns/{}/thumbnail.png'.format(self.uuid)
 
@@ -136,7 +133,7 @@ class Campaign(JsonModel):
             request.raw.decode_content = True
             from io import BytesIO
             S3Data().create(image_path, BytesIO(request.content))
-        self.thumbnail = safe_name
+        self.thumbnail = S3Data().thumbnail_url(self.uuid)
 
     def update_participants_count(self, participants_count, campaign_type):
         """ Update paricipants count.
@@ -540,6 +537,9 @@ class Campaign(JsonModel):
         geocampaign_key = Campaign.get_geojson_file(campaign_data['uuid'])
         geocampaign_body = json.dumps(parse_json_string(geometry))
         S3Data().create(geocampaign_key, geocampaign_body)
+
+        campaign = Campaign(data['uuid'])
+        campaign.generate_static_map()
 
     @staticmethod
     def all(campaign_status=None, **kwargs):
