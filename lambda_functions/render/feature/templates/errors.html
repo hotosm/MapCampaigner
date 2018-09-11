@@ -28,7 +28,8 @@
       var requests = [];
       requests.push($.ajax({
         url: errorsUrl,
-        dataType: 'json'
+        dataType: 'json',
+        cache: false
       }));
     }
     $.when.apply($, requests).then(function() {
