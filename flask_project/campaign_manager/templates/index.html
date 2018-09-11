@@ -597,15 +597,19 @@
                         });
                     });
                     $.when.apply($, requests).then(function(){
-                        for (var i = 0; i < arguments.length; i++) {
-                            campaign = arguments[i][0];
+                        if (requests.length === 1) {
+                            campaign = arguments[0];
                             card = buildCampaignCard(campaign, user);
-                            $('.card-wrapper').append(card);
-                            totalActiveCampaigns = $('.active-campaign').length;
-                            $('#active-campaign-number').html(totalActiveCampaigns);
+                            $('.card-wrapper').append(card);                            
+                        } else {
+                            for (var i = 0; i < arguments.length; i++) {
+                                campaign = arguments[i][0];
+                                card = buildCampaignCard(campaign, user);
+                                $('.card-wrapper').append(card);
+                            }
                         }
-                            
-
+                        totalActiveCampaigns = $('.active-campaign').length;
+                        $('#active-campaign-number').html(totalActiveCampaigns);
                     });
                 }
             });
