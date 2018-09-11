@@ -245,73 +245,82 @@
 {% block after_base_js %}
 
     <script type="text/javascript">
-        function loginSuccess(user) {
+    function loginSuccess(user) {
+        location.href='/campaign/{{ uuid }}';
+    }
+
+    function updated(user) {
+        var managers = {{ campaign_managers | safe }};
+        if ($.inArray(user.display_name, managers) > -1) {
+            $('.btn-manage').show();
+        }
+    }
+
+    function logout() {
+        auth.logout();
+        location.href='/campaign/{{ uuid }}';
+    }
+
+    function login() {
+        auth.authenticate(function () {
             location.href='/campaign/{{ uuid }}';
-        }
+        });
+    }
 
-        function updated(user) {
-            var managers = {{ campaign_managers | safe }};
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.btn-manage').show();
-            }
-        }
+    function loginError() {
+        renderInsightFunctionsTypes('');
+    }
 
-        function logout() {
-            auth.logout();
-            location.href='/campaign/{{ uuid }}';
-        }
-
-        function login() {
-            auth.authenticate(function () {
-                location.href='/campaign/{{ uuid }}';
-            })
-        }
-
-        function loginError() {
-            renderInsightFunctionsTypes('');
-        }
-
-        function logoutSuccess() {
-            location.href='/campaign/{{ uuid }}';
-        }    
+    function logoutSuccess() {
+        location.href='/campaign/{{ uuid }}';
+    }
+     
     function main() {
-      var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
-      var types = {{ types|safe }};
+        var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
+        var types = {{ types|safe }};
 
-      // loadMapperEngagement(types, s3CampaignUrl);
-      countFeaturesCollected(types, s3CampaignUrl);
-      var activeType = types[0];
+        // loadMapperEngagement(types, s3CampaignUrl);
+        countFeaturesCollected(types, s3CampaignUrl);
+        var activeType = types[0];
       
-      loadType(activeType, s3CampaignUrl);
-      
-      $('.feature-select').on('change', function() {
-        activeType = this.value;
         loadType(activeType, s3CampaignUrl);
-      });      
-
+      
+        $('.feature-select').on('change', function() {
+            activeType = this.value;
+            loadType(activeType, s3CampaignUrl);
+        });
     }
 
     function loadType(activeType, s3CampaignUrl) {
-      activeType = activeType.replace(/ /g, '_')
-      var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
+        activeType = activeType.replace(/ /g, '_')
+        var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
 
-      $.get(typeUrl + 'content.html', function(data) {
+        $.get({
+            url: typeUrl + 'content.html',
+            cache: false
+        }).then(function(data) {
             $('#campaign-feature-details').show();
             $('#campaign-computing-status').hide();
             $('.content-wrapper').html(data);        
-      });
+        });
 
-      $.get(typeUrl + 'map.html', function(data) {
-        $('.map-wrapper').html(data)
-      });
+      $.get({
+            url: typeUrl + 'map.html', 
+            cache: false
+        }).then(function(data) {
+            $('.map-wrapper').html(data)
+        });
 
-      $.get(typeUrl + 'errors.html', function(data) {
-        $('.errors-wrapper').html(data)
-      });
+      $.get({
+            url: typeUrl + 'errors.html',
+            cache: false
+        }).then(function(data) {
+            $('.errors-wrapper').html(data)
+        });
     }
 
     function getTypeUrl(activeType, s3CampaignUrl) {
-      return s3CampaignUrl + '/render/' + activeType + '/';      
+        return s3CampaignUrl + '/render/' + activeType + '/';      
     }
 
     function buildAjaxRequests(types, s3CampaignUrl, insight) {
@@ -323,7 +332,8 @@
             
             ajaxRequests.push($.ajax({
                 url: typeUrl + insight + '.json',
-                dataType: 'json'
+                dataType: 'json',
+                cache: false
             }));
         }
         return ajaxRequests;       
