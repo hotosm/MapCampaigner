@@ -48,6 +48,7 @@ from campaign_manager.utilities import (
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
+from campaign_manager.aws import S3Data
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -72,8 +73,11 @@ def home():
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        map_provider=map_provider()
+        map_provider=map_provider(),
+        bucket_url=S3Data().bucket_url()
     )
+
+    print(S3Data().bucket_url())
 
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)

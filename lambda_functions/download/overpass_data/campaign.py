@@ -1,6 +1,7 @@
 import json
 import os
 from dependencies.shapely import geometry
+from dependencies.shapely import ops
 from json_model import JsonModel
 from utilities import (
     parse_json_string,
@@ -67,7 +68,7 @@ class Campaign(JsonModel):
             for feature in self.geometry['features']:
                 polygons.append(geometry.Polygon(
                     feature['geometry']['coordinates'][0]))
-            cascaded_polygons = cascaded_union(polygons)
+            cascaded_polygons = ops.cascaded_union(polygons)
             simplify = True
         else:
             cascaded_polygons = geometry.Polygon(

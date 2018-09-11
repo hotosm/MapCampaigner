@@ -166,8 +166,14 @@ class S3Data(object):
             Key=key)
         return obj['LastModified']
 
+    def bucket_url(self):
+        return 'https://s3-us-west-2.amazonaws.com/{bucket}'.format(
+            bucket=self.bucket)
+
     def url(self, uuid):
-        return \
-        'https://s3-us-west-2.amazonaws.com/{bucket}/campaigns/{uuid}'.format(
-            bucket=self.bucket,
+        return '{bucket_url}/campaigns/{uuid}'.format(
+            bucket_url=self.bucket_url(),
             uuid=uuid)
+
+    def thumbnail_url(self, uuid):
+        return "{url}/thumbnail.png".format(url=self.url(uuid))

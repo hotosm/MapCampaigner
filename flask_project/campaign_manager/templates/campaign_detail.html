@@ -277,7 +277,9 @@
     function main() {
       var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
       var types = {{ types|safe }};
-      loadMapperEngagement(types, s3CampaignUrl);
+
+      // loadMapperEngagement(types, s3CampaignUrl);
+      countFeaturesCollected(types, s3CampaignUrl);
       var activeType = types[0];
       
       loadType(activeType, s3CampaignUrl);
@@ -305,7 +307,7 @@
 
       $.get(typeUrl + 'errors.html', function(data) {
         $('.errors-wrapper').html(data)
-      });        
+      });
     }
 
     function getTypeUrl(activeType, s3CampaignUrl) {
@@ -317,7 +319,7 @@
 
         for (var i = 0; i < types.length; i++) {
             var type_id = types[i].replace(/ /g, '_');
-            typeUrl = getTypeUrl(type_id, s3CampaignUrl);
+            var typeUrl = getTypeUrl(type_id, s3CampaignUrl);
             
             ajaxRequests.push($.ajax({
                 url: typeUrl + insight + '.json',
@@ -340,11 +342,9 @@
                 }
             }
             $('#features-collected').html(total);
-            
         }); 
     }
     function loadMapperEngagement(types, s3CampaignUrl) {
-        
         var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
         $.when.apply($, requests).then(function(){
             var contributors = [];
@@ -357,11 +357,6 @@
             }
             updateMapperEngagementTotal(contributors);
         });
-
-        $.when().then(function() {
-            countFeaturesCollected(types, s3CampaignUrl);
-        });
-
     }
 
     function updateMapperEngagementTotal(contributors) {
@@ -415,8 +410,8 @@
             },
             legendCallback: function(chart) {
                 var text = [];
-                    text.push('<div>');
-                    text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid '+ chart.data.datasets[0].borderColor +'"></i><span>' + chart.data.datasets[0].label + '</span>');
+                text.push('<div>');
+                text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid '+ chart.data.datasets[0].borderColor +'"></i><span>' + chart.data.datasets[0].label + '</span>');
                     text.push('</div>');
                     return text.join("");
             }
@@ -453,12 +448,12 @@
             },
             legendCallback: function(chart) {
                 var text = [];
-                    text.push('<div>');
-                    for (var i=0; i<chart.data.datasets.length; i++) {
-                        text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
-                    }
-                    text.push('</div>');
-                    return text.join("");
+                text.push('<div>');
+                for (var i=0; i<chart.data.datasets.length; i++) {
+                    text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
+                }
+                text.push('</div>');
+                return text.join("");
             }
         };
 
@@ -547,14 +542,14 @@
         contributionsAmount = sortObject(contributionsAmount);
         var contributionCtx = $('#contribution-amount');
         var contributionDatasets = {
-                labels: allLabels,
-                datasets: [{
-                    label: 'Contributors',
-                    borderColor : '#82afb8',
-                    backgroundColor : color('#82afb8').alpha(0.1).rgbString(),
-                    data: []
-                }]
-            };
+            labels: allLabels,
+            datasets: [{
+                label: 'Contributors',
+                borderColor : '#82afb8',
+                backgroundColor : color('#82afb8').alpha(0.1).rgbString(),
+                data: []
+            }]
+        };
 
         $.each(contributionsAmount, function (key, value) {
             var date = moment.unix(key);
