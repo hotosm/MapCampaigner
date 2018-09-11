@@ -160,7 +160,8 @@ def create_function(path, function_name):
         '--handler lambda_function.lambda_handler',
         '--environment Variables={env_variables}',
         '--code {code}',
-        '--memory-size 512'
+        '--memory-size 512',
+        '--timeout 300'
     ]).format(
         function_name=function_name,
         function_name_with_env=function_name_with_env,
