@@ -142,6 +142,7 @@
     padding-left: 10px;
     font-size: 14pt;
     cursor: pointer;
+    display: none;
 }
 
 .unclickable, .unclickable:active  {
