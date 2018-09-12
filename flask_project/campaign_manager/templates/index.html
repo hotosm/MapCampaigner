@@ -60,7 +60,7 @@
                     </table>
                 </div>
 
-            <div class="col-md-2 no-padding metroUIform" style="text-align: center">
+<!--             <div class="col-md-2 no-padding metroUIform" style="text-align: center">
                 <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
                     Sort By Name
                 </button>
@@ -71,7 +71,7 @@
                     <option value="name">Sort By Name</option>
                     <option value="date">Sort By Date</option>
                 </select>
-            </div>
+            </div> -->
         </div>
 
         <div class="row">
@@ -599,6 +599,15 @@
                 ${Math.round(progress)}%`
         }
 
+        function buildRequests(response, bucketUrl, file) {
+            return response.map(function(campaign) {
+                return $.ajax({
+                    url: bucketUrl + campaign + '/' + file,
+                    dataType: 'json'
+                });
+            });
+        }
+
         function getCampaigns(user) {
             showLoading();
             var bucketUrl = "{{ bucket_url }}/campaigns/";
@@ -606,30 +615,76 @@
             $.ajax({
                 url: "/campaigns",
                 success: function(response) {
-                    const requests = response.map(function(campaign) {
-                        return $.ajax({
-                            url: bucketUrl + campaign + "/campaign.json",
-                            dataType: 'json'
-                        });
-                    });
-                    $.when.apply($, requests).then(function(){
-                        if (requests.length === 1) {
-                            campaign = arguments[0];
-                            card = buildCampaignCard(campaign, user);
-                            $('.card-wrapper').append(card);                            
+                    const campaignRequests = buildRequests(response, bucketUrl, 'campaign.json');
+
+                    $.when.apply($, campaignRequests).then(function(){
+                        if (campaignRequests.length === 1) {
+                            var campaign = arguments[0];
+                            addCampaign(campaign, user);
+                            fetchGeometry(campaign, bucketUrl);
                         } else {
                             for (var i = 0; i < arguments.length; i++) {
-                                campaign = arguments[i][0];
-                                card = buildCampaignCard(campaign, user);
-                                $('.card-wrapper').append(card);
+                                var campaign = arguments[i][0];
+                                addCampaign(campaign, user);
+                                fetchGeometry(campaign, bucketUrl);
                             }
                         }
                         totalActiveCampaigns = $('.active-campaign').length;
                         $('#active-campaign-number').html(totalActiveCampaigns);
                         hideLoading();
+                        setSearch();
                     });
                 }
             });
+
+        }
+
+        function addCampaign(campaign, user) {
+            card = buildCampaignCard(campaign, user);
+            $('.card-wrapper').append(card);
+        }
+
+        function fetchGeometry(campaign, bucketUrl) {
+            $.ajax({
+                url: bucketUrl + campaign.uuid + '/campaign.geojson',
+                dataType: 'json',
+                async: false,
+                success: function(geometry) {
+                    setMarkerToMap(campaign, geometry);
+                }
+            });      
+        }
+
+        function setMarkerToMap(campaign, geometry) {
+            var campaignLayer = L.geoJson(geometry, {
+                onEachFeature: function (feature, layer) {
+                    if (feature.geometry.type === 'Polygon') {
+                        layer.setStyle({
+                            'weight': 0.3,
+                            'fillOpacity': 0.2,
+                            'color': '#FF5722'
+                        });
+                    }
+                }
+            }).addTo(mapLayers);
+
+            var bounds = campaignLayer.getBounds();
+            var center = bounds.getCenter();
+
+            var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+            marker.bindPopup(
+                `<div class="campaign-marker">
+                    <a href="/campaign/${campaign.uuid}">${campaign.name}</a>
+                </div>`
+            );
+
+        }
+
+        function setSearch() {
+            var options = {
+                valueNames: ['campaign-name', 'campaign-start-date']
+            }
+            var campaignList = new List('campaign-list', options);
         }
 
         function getCampaignsOld(url, user, limit) {
