@@ -797,7 +797,7 @@ def edit_campaign(uuid):
                 data.pop('csrf_token')
                 data.pop('submit')
                 campaign.update_data(data, form.uploader.data)
-                Campaign.compute(data["uuid"])
+                Campaign.compute(campaign.uuid)
 
                 return redirect(
                     url_for('campaign_manager.get_campaign',
