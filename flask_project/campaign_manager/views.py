@@ -727,6 +727,8 @@ def create_campaign():
 
         Campaign.create(data, form.uploader.data)
         Campaign.compute(data["uuid"])
+        campaign = Campaign(data['uuid'])
+        campaign.save()
 
         return redirect(
             url_for(
