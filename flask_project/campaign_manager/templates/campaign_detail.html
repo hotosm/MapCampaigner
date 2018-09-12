@@ -251,8 +251,10 @@
 
     function updated(user) {
         var managers = {{ campaign_managers | safe }};
-        if ($.inArray(user.display_name, managers) > -1) {
-            $('.btn-manage').show();
+        if (typeof(user) !== 'undefined') {
+            if ($.inArray(user.display_name, managers) > -1) {
+                $('.button-manage').show();
+            }
         }
     }
 
@@ -268,7 +270,7 @@
     }
 
     function loginError() {
-        renderInsightFunctionsTypes('');
+        location.href='/campaign/{{ uuid }}';
     }
 
     function logoutSuccess() {
@@ -276,6 +278,7 @@
     }
      
     function main() {
+        updated();
         var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
         var types = {{ types|safe }};
 

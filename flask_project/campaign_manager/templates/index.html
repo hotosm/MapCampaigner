@@ -44,7 +44,7 @@
                             <td id="showing-div" class="home-option">Showing:</td>
                             <td class="home-option no-padding">
                                 <select class="flat-select" id="campaigns-select">
-                                    <option value="nearest">nearest</option>
+                                    <!-- <option value="nearest">nearest</option> -->
                                     <option value="all">all</option>
                                     <option value="inactive">inactive</option>
                                 </select>
@@ -347,48 +347,65 @@
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
-            var url = "/campaigns";
+            // var url = "/campaigns";
 
-            if(user['lon'] && user['lat']) {
-                userLocation = {
-                    'lat': user['lat'],
-                    'lon': user['lon']
-                }
-                url = "/nearest_campaigns";
-            }
+            // if(user['lon'] && user['lat']) {
+            //     userLocation = {
+            //         'lat': user['lat'],
+            //         'lon': user['lon']
+            //     }
+            //     url = "/nearest_campaigns";
+            // }
             clearMap();
-            clearTable();
-            getTotalCampaigns();
-            {% if not all %}
-                var limitPage = Cookies.get('limit_page');
-                if(limitPage) {
-                    $('#limit-page').val(Cookies.get('limit_page'));
-                } else {
-                    limitPage = $('#limit-page').val();
-                    Cookies.set('limit_page', limitPage);
-                }
-                $('#campaigns-select').val("nearest");
-                getCampaigns(url, currentUser, limitPage);
-                $('.nearest-option').show();
-            {% else %}
-                getCampaigns(url, currentUser);
-                $('#campaigns-select').val("all");
-            {% endif %}
+            // clearTable();
+            // getTotalCampaigns();
+            clearCampaigns();
+            getCampaigns(currentUser);
+            $('#campaigns-select').val("all");
+            // {% if not all %}
+            //     var limitPage = Cookies.get('limit_page');
+            //     if(limitPage) {
+            //         $('#limit-page').val(Cookies.get('limit_page'));
+            //     } else {
+            //         limitPage = $('#limit-page').val();
+            //         Cookies.set('limit_page', limitPage);
+            //     }
+            //     $('#campaigns-select').val("nearest");
+            //     getCampaigns(url, currentUser, limitPage);
+            //     $('.nearest-option').show();
+            // {% else %}
+            //     getCampaigns(url, currentUser);
+            //     $('#campaigns-select').val("all");
+            // {% endif %}
         }
+
+        function clearCampaigns() {
+            $('.card-wrapper').html('');
+            $('.active-campaign-number').html('');
+        }
+
 
         $('.remove-tag').click(function () {
             location.href='/'
         });
 
         function logoutSuccess() {
-            clearMap();
-            clearTable();
-            userLocation = {};
+            // clearMap();
+            // clearTable();
+            clearCampaigns();
+            getCampaigns(null);
+            
+            // userLocation = {};
+        }
+
+        function clearManageButtons() {
+            $('.manage-campaign-button').hide();
         }
 
         if(!auth.authenticated()) {
-            getBrowserLocation();
-            getTotalCampaigns();
+            // getBrowserLocation();
+            // getTotalCampaigns();
+            getCampaigns(null, null, null)
         }
 
         function loginError() {
@@ -510,7 +527,7 @@
         function buildCampaignCard(campaign, user) {
             return `
                 <li class="col-lg-6 ${campaignStatus(campaign)}-campaign">
-                <div class="campaign-card panel" onclick="openCampaign(event, this, ${campaign.uuid})">
+                <div class="campaign-card panel" onclick="openCampaign(event, this, '${campaign.uuid}')">
                     <div class="panel-heading">
                         <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
                             <div class="campaign-name ellipsis multiline">${campaign.name}</div>
@@ -554,7 +571,7 @@
         function actionCampaignButton(campaign, user) {
             if($.inArray(user, campaign.campaign_managers)>-1) {
                 return `
-                    <button type="button" href="#" class="campaign-list btn" onclick="openManageCampaign(event, this, ${campaign.uuid})">
+                    <button type="button" href="#" class="manage-campaign-button campaign-list btn" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
                         <span class="pull-left">Manage</span>
                     </button>`;
             } else {
@@ -582,9 +599,8 @@
                 ${Math.round(progress)}%`
         }
 
-        function getCampaigns(url, user, limit) {
-            limit = null;
-            url = null;
+        function getCampaigns(user) {
+            showLoading();
             var bucketUrl = "{{ bucket_url }}/campaigns/";
 
             $.ajax({
@@ -610,6 +626,7 @@
                         }
                         totalActiveCampaigns = $('.active-campaign').length;
                         $('#active-campaign-number').html(totalActiveCampaigns);
+                        hideLoading();
                     });
                 }
             });
