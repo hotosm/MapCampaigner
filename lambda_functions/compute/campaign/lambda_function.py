@@ -1,6 +1,7 @@
 import boto3
 import json
 import os
+from aws import S3Data
 
 
 def invoke_download_features(payload):
@@ -13,9 +14,33 @@ def invoke_download_features(payload):
         InvocationType='RequestResponse',
         Payload=payload)
 
+def remove_data(uuid):
+    raw_data_key = "campaigns/{uuid}/raw_data/overpass".format(
+        uuid=uuid)
+
+    for file in S3Data().list(raw_data_key):
+        file_key = "{raw_data_key}/{file}".format(
+            raw_data_key=raw_data_key,
+            file=file)
+        S3Data().delete(file_key)  
+
+    render_key = "campaigns/{uuid}/render".format(
+        uuid=uuid)
+    
+    for feature in S3Data().list(render_key):
+        render_feature_key = "{render_key}/{feature}".format(
+            render_key=render_key,
+            feature=feature)
+        for file in S3Data().list(render_feature_key):
+            file_key = "{render_feature_key}/{file}".format(
+                render_feature_key=render_feature_key,
+                file=file)
+            S3Data().delete(file_key)
+
 
 def lambda_handler(event, context):
     uuid = event['campaign_uuid']
     payload = json.dumps({'campaign_uuid': uuid})
     
+    remove_data(uuid)
     invoke_download_features(payload)

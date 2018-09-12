@@ -44,7 +44,7 @@
                             <td id="showing-div" class="home-option">Showing:</td>
                             <td class="home-option no-padding">
                                 <select class="flat-select" id="campaigns-select">
-                                    <option value="nearest">nearest</option>
+                                    <!-- <option value="nearest">nearest</option> -->
                                     <option value="all">all</option>
                                     <option value="inactive">inactive</option>
                                 </select>
@@ -60,7 +60,7 @@
                     </table>
                 </div>
 
-            <div class="col-md-2 no-padding metroUIform" style="text-align: center">
+<!--             <div class="col-md-2 no-padding metroUIform" style="text-align: center">
                 <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
                     Sort By Name
                 </button>
@@ -71,7 +71,7 @@
                     <option value="name">Sort By Name</option>
                     <option value="date">Sort By Date</option>
                 </select>
-            </div>
+            </div> -->
         </div>
 
         <div class="row">
@@ -347,48 +347,65 @@
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
-            var url = "/campaigns";
+            // var url = "/campaigns";
 
-            if(user['lon'] && user['lat']) {
-                userLocation = {
-                    'lat': user['lat'],
-                    'lon': user['lon']
-                }
-                url = "/nearest_campaigns";
-            }
+            // if(user['lon'] && user['lat']) {
+            //     userLocation = {
+            //         'lat': user['lat'],
+            //         'lon': user['lon']
+            //     }
+            //     url = "/nearest_campaigns";
+            // }
             clearMap();
-            clearTable();
-            getTotalCampaigns();
-            {% if not all %}
-                var limitPage = Cookies.get('limit_page');
-                if(limitPage) {
-                    $('#limit-page').val(Cookies.get('limit_page'));
-                } else {
-                    limitPage = $('#limit-page').val();
-                    Cookies.set('limit_page', limitPage);
-                }
-                $('#campaigns-select').val("nearest");
-                getCampaigns(url, currentUser, limitPage);
-                $('.nearest-option').show();
-            {% else %}
-                getCampaigns(url, currentUser);
-                $('#campaigns-select').val("all");
-            {% endif %}
+            // clearTable();
+            // getTotalCampaigns();
+            clearCampaigns();
+            getCampaigns(currentUser);
+            $('#campaigns-select').val("all");
+            // {% if not all %}
+            //     var limitPage = Cookies.get('limit_page');
+            //     if(limitPage) {
+            //         $('#limit-page').val(Cookies.get('limit_page'));
+            //     } else {
+            //         limitPage = $('#limit-page').val();
+            //         Cookies.set('limit_page', limitPage);
+            //     }
+            //     $('#campaigns-select').val("nearest");
+            //     getCampaigns(url, currentUser, limitPage);
+            //     $('.nearest-option').show();
+            // {% else %}
+            //     getCampaigns(url, currentUser);
+            //     $('#campaigns-select').val("all");
+            // {% endif %}
         }
+
+        function clearCampaigns() {
+            $('.card-wrapper').html('');
+            $('.active-campaign-number').html('');
+        }
+
 
         $('.remove-tag').click(function () {
             location.href='/'
         });
 
         function logoutSuccess() {
-            clearMap();
-            clearTable();
-            userLocation = {};
+            // clearMap();
+            // clearTable();
+            clearCampaigns();
+            getCampaigns(null);
+            
+            // userLocation = {};
+        }
+
+        function clearManageButtons() {
+            $('.manage-campaign-button').hide();
         }
 
         if(!auth.authenticated()) {
-            getBrowserLocation();
-            getTotalCampaigns();
+            // getBrowserLocation();
+            // getTotalCampaigns();
+            getCampaigns(null, null, null)
         }
 
         function loginError() {
@@ -510,7 +527,7 @@
         function buildCampaignCard(campaign, user) {
             return `
                 <li class="col-lg-6 ${campaignStatus(campaign)}-campaign">
-                <div class="campaign-card panel" onclick="openCampaign(event, this, ${campaign.uuid})">
+                <div class="campaign-card panel" onclick="openCampaign(event, this, '${campaign.uuid}')">
                     <div class="panel-heading">
                         <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
                             <div class="campaign-name ellipsis multiline">${campaign.name}</div>
@@ -554,7 +571,7 @@
         function actionCampaignButton(campaign, user) {
             if($.inArray(user, campaign.campaign_managers)>-1) {
                 return `
-                    <button type="button" href="#" class="campaign-list btn" onclick="openManageCampaign(event, this, ${campaign.uuid})">
+                    <button type="button" href="#" class="manage-campaign-button campaign-list btn" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
                         <span class="pull-left">Manage</span>
                     </button>`;
             } else {
@@ -582,37 +599,92 @@
                 ${Math.round(progress)}%`
         }
 
-        function getCampaigns(url, user, limit) {
-            limit = null;
-            url = null;
+        function buildRequests(response, bucketUrl, file) {
+            return response.map(function(campaign) {
+                return $.ajax({
+                    url: bucketUrl + campaign + '/' + file,
+                    dataType: 'json'
+                });
+            });
+        }
+
+        function getCampaigns(user) {
+            showLoading();
             var bucketUrl = "{{ bucket_url }}/campaigns/";
 
             $.ajax({
                 url: "/campaigns",
                 success: function(response) {
-                    const requests = response.map(function(campaign) {
-                        return $.ajax({
-                            url: bucketUrl + campaign + "/campaign.json",
-                            dataType: 'json'
-                        });
-                    });
-                    $.when.apply($, requests).then(function(){
-                        if (requests.length === 1) {
-                            campaign = arguments[0];
-                            card = buildCampaignCard(campaign, user);
-                            $('.card-wrapper').append(card);                            
+                    const campaignRequests = buildRequests(response, bucketUrl, 'campaign.json');
+
+                    $.when.apply($, campaignRequests).then(function(){
+                        if (campaignRequests.length === 1) {
+                            var campaign = arguments[0];
+                            addCampaign(campaign, user);
+                            fetchGeometry(campaign, bucketUrl);
                         } else {
                             for (var i = 0; i < arguments.length; i++) {
-                                campaign = arguments[i][0];
-                                card = buildCampaignCard(campaign, user);
-                                $('.card-wrapper').append(card);
+                                var campaign = arguments[i][0];
+                                addCampaign(campaign, user);
+                                fetchGeometry(campaign, bucketUrl);
                             }
                         }
                         totalActiveCampaigns = $('.active-campaign').length;
                         $('#active-campaign-number').html(totalActiveCampaigns);
+                        hideLoading();
+                        setSearch();
                     });
                 }
             });
+
+        }
+
+        function addCampaign(campaign, user) {
+            card = buildCampaignCard(campaign, user);
+            $('.card-wrapper').append(card);
+        }
+
+        function fetchGeometry(campaign, bucketUrl) {
+            $.ajax({
+                url: bucketUrl + campaign.uuid + '/campaign.geojson',
+                dataType: 'json',
+                async: false,
+                success: function(geometry) {
+                    setMarkerToMap(campaign, geometry);
+                }
+            });      
+        }
+
+        function setMarkerToMap(campaign, geometry) {
+            var campaignLayer = L.geoJson(geometry, {
+                onEachFeature: function (feature, layer) {
+                    if (feature.geometry.type === 'Polygon') {
+                        layer.setStyle({
+                            'weight': 0.3,
+                            'fillOpacity': 0.2,
+                            'color': '#FF5722'
+                        });
+                    }
+                }
+            }).addTo(mapLayers);
+
+            var bounds = campaignLayer.getBounds();
+            var center = bounds.getCenter();
+
+            var marker = L.marker(center, {icon: orangeIcon}).addTo(mapMarkers);
+            marker.bindPopup(
+                `<div class="campaign-marker">
+                    <a href="/campaign/${campaign.uuid}">${campaign.name}</a>
+                </div>`
+            );
+
+        }
+
+        function setSearch() {
+            var options = {
+                valueNames: ['campaign-name', 'campaign-start-date']
+            }
+            var campaignList = new List('campaign-list', options);
         }
 
         function getCampaignsOld(url, user, limit) {
