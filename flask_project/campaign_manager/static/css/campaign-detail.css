@@ -267,20 +267,26 @@
 }
 
 #campaign-map-detail {
-    height: 500px;
+    min-height: 500px;
     margin-top: 4px;
     margin-left: -15px;
+    border: 1px solid #cdcdcd;
+    border-width: 1px 1px 1px 0;
 }
 
 .map-side-panel {
     background-color: #eae8e8;
     margin-top: 4px;
-    height: 500px;
+    /*height: 500px;*/
+    height: auto;
     border: 1px solid #cdcdcd;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
 
+::-moz-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  -moz-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
 
 .map-side-list {
     /*height: 150px;*/
@@ -290,12 +296,12 @@
 
 .map-side-list-attributes {
     height: auto;
-    padding: 5px;
+    padding: 10px 30px;
 }
 
 .map-side-list-attr-compl {
-    height: 100px;
-    padding: 0 30px;
+    min-height: 120px;
+    padding: 10px 30px;
 }
 
 .attr-compl-info {
@@ -305,13 +311,17 @@
 }
 
 .map-side-list-attr-features-checked {
-    height: 120px;
-    padding: 0 30px;
+    min-height: 120px;
+    padding: 10px 30px;
 }
 
 .map-side-list-count-feature {
     border:none;
-    height: 200px;
+    /*height: 200px;*/
+}
+
+.map-side-list-count-feature .insight-title {
+    padding: 10px 30px 20px 30px;
 }
 
 .map-side-list.active {
@@ -387,7 +397,34 @@
     height: 50px;
     width: 100%;
     font-size: 18pt;
+    -moz-appearance: none;
 }
+
+.feature-select button {
+    height: 100%;
+}
+
+.feature-select button.active-type {
+    width: 91%;
+    font-size: 20pt;
+    text-align: left;
+    padding-left: 30px;
+    font-weight: bold;
+}
+
+.feature-select button.dropdown-toggle {
+    width: 35px;
+}
+
+.feature-select .dropdown-menu {
+    width: 100%;
+}
+
+.feature-select .dropdown-menu>li>a {
+    cursor: pointer;
+    padding: 3px 30px;
+}
+
 
 @media (max-width: 1215px) {
 
@@ -497,10 +534,11 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 }
 
 .insight-title {
-    text-align: center;
+    text-align: left;
     font-size: 15pt;
     font-weight: bold;
     color: #565656;
+    /*padding: 10px 0;*/
 }
 
 .chart-legends {
@@ -612,7 +650,8 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
     font-size: 35pt;
     font-weight: lighter;
     text-align: center;
-    padding-top: 10px;    
+    /* meh no padding here */
+    /*padding-top: 10px;    */
 }
 
 .update-status {
