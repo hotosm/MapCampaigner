@@ -220,7 +220,7 @@ function createCoverageTable() {
             '<div class="row">'+
                 '<input type="hidden" name="layer-index" value="'+layerId+'">'+
                 '<div class="col-lg-4">'+
-                    '<input onblur="updateGeometryString(this, \'area\', '+layerId+')" id="area_name-'+layerId+'" name="area_name" placeholder="Team Name" type="text" value="'+areaName+'" class="form-control area_name">'+
+                    '<input onblur="updateGeometryString(this, \'area\', '+layerId+')" id="area_name-'+layerId+'" name="area_name" placeholder="Area Name" type="text" value="'+areaName+'" class="form-control area_name">'+
                 '</div>'+
                 '<div class="col-lg-4">'+
                     '<input onblur="updateGeometryString(this, \'team\', '+layerId+')" name="team_name" placeholder="Team Name" type="text" value="'+teamName+'" class="form-control">'+
