@@ -1,6 +1,6 @@
 <div class="col-lg-12">
   <div id="total-feature-completeness-errors"></div>
-  <table id="errors" class="table">
+  <table id="pagination-errors" class="table">
     <thead>
       <tr>
         <th>Status</th>
@@ -12,15 +12,25 @@
     <tbody>
     </tbody>
   </table>
-  <span class='previous-page'>Previous page</span>
-  <span class='current-page'></span>
-  <span class='next-page'>Next page</span>
-  
+  <div class='pagination-nav'>
+    <nav>
+      <ul class="pager" style="text-align:left">
+        <li class='previous-page'><a data-target="#">Previous</a></li>
+        <li class='current-page'></li>
+        <li class='next-page'><a data-target="#">Next</a></li>
+      </ul>
+    </nav>
+  </div>  
 </div>
 <script type="text/javascript">
   function renderErrorsWarnings() {
     
     var errorsFilesCount = {{ feature_completeness['errors_files_count']}};
+    if (errorsFilesCount === 0) {
+      hidePagination();
+      return;
+    }
+
     var totalErrors = 0;
 
     for (var i = 1; i <= errorsFilesCount; i++) {
@@ -38,62 +48,65 @@
         data = arguments[0];
       } else {
         for (var i = 0; i < arguments.length; i++) {
-          data.concat(arguments[i][0]);
+          data = data.concat(arguments[i][0]);
         }
       }
       $('#total-feature-completeness-errors').html(data.length);
-      var chunkSize = 10;
-      var chunkI = 0;
-      var totalChunks = Math.round(data.length / 10);
-      pagination = Array(totalChunks);
-      for (var i = 0; i < data.length; i++) {
-        data[i]['name'] = buildLink(data[i].id, data[i].type);
-        data[i].comment = buildComment(data[i].status, data[i].comment);
+      if (data.length > 0) {
+        var chunkSize = 10;
+        var chunkI = 0;
+        var totalChunks = Math.round(data.length / 10);
 
-        if (Array.isArray(pagination[chunkI]) === false)
-          pagination[chunkI] = [];
-        pagination[chunkI].push(data[i]);
-        if (pagination[chunkI].length === chunkSize) {
-          chunkI++;
+        pagination = Array(totalChunks);      
+        
+        for (var i = 0; i < data.length; i++) {
+          data[i] = buildData(data[i])
+
+          if (Array.isArray(pagination[chunkI]) === false)
+            pagination[chunkI] = [];
+
+          pagination[chunkI].push(data[i]);
+          
+          if (pagination[chunkI].length === chunkSize) {
+            chunkI++;
+          }
+          
+          currentPage = 0;
+          renderPage(pagination[currentPage]);
         }
+      } else {
+        hidePagination();
       }
-      currentPage = 1;
-      renderPage(pagination[currentPage]);
     });
-
-    function renderPage(data) {
-      $('#errors tbody').html('');
-      $('.current-page').html(`Page ${currentPage}/${pagination.length}`);
-      for (var i = 0; i < data.length; i++) {
-        var dataRow = data[i];
-        var row = `
-        <tr>
-          <td>${dataRow.status}</td>
-          <td>${dataRow.name}</td>
-          <td>${dataRow.date}</td>
-          <td>${dataRow.comment}</td>
-        </tr>`;
-        $('#errors tbody').append(row);
-      }
-      
-
-    }
-
-    $('.next-page').click(function() {
-      currentPage += 1;
-      if (currentPage === pagination.length) {
-        currentPage = 1;
-      }
-      renderPage(pagination[currentPage]);
-    });
-    $('.previous-page').click(function() {
-      currentPage -= 1;
-      if (currentPage === 0)
-        currentPage = 1;
-      renderPage(pagination[currentPage]);
-    });    
   }
 
+  function buildData(data) {
+    data.name = buildLink(data.id, data.type);
+    data.comment = buildComment(data.status, data.comment);
+    data.date = moment(data.date).format('YYYY-MM-DD')
+    return data;
+  }
+
+  function hidePagination() {
+    $('#pagination-errors').hide();
+    $('.pagination-nav').hide();
+  }
+
+  function renderPage(data) {
+    $('#pagination-errors tbody').html('');
+    $('.current-page').html(`${currentPage + 1}/${pagination.length}`);
+    for (var i = 0; i < data.length; i++) {
+      var dataRow = data[i];
+      var row = `
+      <tr>
+        <td>${dataRow.status}</td>
+        <td>${dataRow.name}</td>
+        <td>${dataRow.date}</td>
+        <td>${dataRow.comment}</td>
+      </tr>`;
+      $('#pagination-errors tbody').append(row);
+    }
+  }
 
   function buildLink(id, type) {
     return `<a href="https://www.openstreetmap.org/${type}/${id}" target="_blank">${type}:${id}</a>`
@@ -101,11 +114,35 @@
 
   function buildComment(status, comment) {
     if (status === 'error') {
-      return `<div class="error-completeness">Errors: ${comment}</div>`
+      return `
+        <div class="error-completeness">
+          Errors: ${comment}
+        </div>`;
     } else if (status === 'warning') {
-      return `<div class="warning-completeness">Warnings: ${comment}</div>`
+      return `
+        <div class="warning-completeness">
+          Warnings: ${comment}
+        </div>`;
     }
   }
+
+  $('.next-page').click(function() {
+    currentPage += 1;
+
+    if (currentPage === pagination.length)
+      currentPage = 0;
+
+    renderPage(pagination[currentPage]);
+  });
+
+  $('.previous-page').click(function() {
+    currentPage -= 1;
+
+    if (currentPage < 0)
+      currentPage = 0;
+
+    renderPage(pagination[currentPage]);
+  });    
 
   renderErrorsWarnings();
 </script>
