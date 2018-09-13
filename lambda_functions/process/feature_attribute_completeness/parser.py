@@ -59,11 +59,16 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
     def endElement(self, name):
         if name in ['node', 'way', 'relation']:
             if self.has_tags == True:
+                
+                if self.has_no_required_tags():
+                    return
+
                 self.features_collected += 1
                 self.check_errors_in_tags()
                 self.check_warnings_in_tags()
                 if self.element_complete:
                     self.features_completed += 1
+
         if name == 'node':
             if self.has_tags == True:            
                 self.build_feature('node')
@@ -77,6 +82,11 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             self.build_feature('way')
             self.tags = {}
 
+    def has_no_required_tags(self):
+        return len(set.intersection(
+            set(self.required_tags.keys()), 
+            set(self.tags.keys()))) == 0
+    
     def build_element(self, name, attrs):
         self.element = {
             'id': attrs.getValue("id"),
