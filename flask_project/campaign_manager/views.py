@@ -706,13 +706,6 @@ def create_campaign():
     """Get campaign details.
     """
 
-    # Get managers
-    managers = get_allowed_managers()
-
-    # If there is no managers
-    if not managers:
-        abort(403)
-
     form = CampaignForm(request.form)
     if form.validate_on_submit():
         data = form.data
@@ -721,9 +714,6 @@ def create_campaign():
         data.pop('types_options')
 
         data['uuid'] = uuid.uuid4().hex
-
-        if data['uploader'] not in managers:
-            abort(403)
 
         Campaign.create(data, form.uploader.data)
         Campaign.compute(data["uuid"])
@@ -741,7 +731,6 @@ def create_campaign():
         oauth_secret=OAUTH_SECRET,
         map_provider=map_provider()
     )
-    context['allowed_managers'] = managers
     context['url'] = '/create'
     context['action'] = 'create'
     context['functions'] = get_selected_functions()
@@ -770,8 +759,6 @@ def edit_campaign(uuid):
     try:
         campaign = Campaign.get(uuid)
         context = campaign.to_dict()
-        # Get managers
-        managers = get_allowed_managers()
 
         if request.method == 'GET':
             form = CampaignForm()
@@ -805,7 +792,6 @@ def edit_campaign(uuid):
                 )
     except Campaign.DoesNotExist:
         return Response('Campaign not found')
-    context['allowed_managers'] = managers
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
