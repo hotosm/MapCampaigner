@@ -49,10 +49,11 @@
     geometry = {{ geometry }}
     campaign_layer = L.geoJSON(geometry);
     map.addLayer(campaign_layer);
+    map.fitBounds(campaign_layer.getBounds());
     window.setTimeout(function() {
-      map.fitBounds(campaign_layer.getBounds());
+      map.invalidateSize();  
     }, 2000);
-
+    
     return map;
   }
 

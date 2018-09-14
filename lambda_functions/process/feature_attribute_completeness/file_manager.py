@@ -41,9 +41,9 @@ class FileManager(object):
         return os.stat(self.current_file()).st_size
 
     def remove_last_comma(self):
-        if self.size() > 2:
-            self.fd.seek(0, 2) # go to end of file
-            self.fd.seek(self.fd.tell() - 2, 0) # go backwards 2 bytes
+        # if self.size() > 2:
+        self.fd.seek(0, 2) # go to end of file
+        self.fd.seek(self.fd.tell() - 2, 0) # go backwards 2 bytes
 
     def write(self, data):
         if (self.size() + len(data)) >= self.SIZE_LIMIT:
