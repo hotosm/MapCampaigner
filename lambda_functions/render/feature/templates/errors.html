@@ -24,15 +24,9 @@
 </div>
 <script type="text/javascript">
   function renderErrorsWarnings() {
-    
     var errorsFilesCount = {{ feature_completeness['errors_files_count']}};
-    if (errorsFilesCount === 0) {
-      hidePagination();
-      return;
-    }
 
     var totalErrors = 0;
-
     for (var i = 1; i <= errorsFilesCount; i++) {
       var errorsUrl = "{{ url | safe }}" + '/errors_' + i + '.json';
       var requests = [];
@@ -43,7 +37,7 @@
       }));
     }
     $.when.apply($, requests).then(function() {
-      var data = []
+      data = []
       if (requests.length == 1) {
         data = arguments[0];
       } else {
@@ -52,39 +46,22 @@
         }
       }
       $('#total-feature-completeness-errors').html(data.length);
-      if (data.length > 0) {
-        var chunkSize = 10;
-        var chunkI = 0;
-        var totalChunks = Math.round(data.length / 10);
 
-        pagination = Array(totalChunks);      
-        
-        for (var i = 0; i < data.length; i++) {
-          data[i] = buildData(data[i])
-
-          if (Array.isArray(pagination[chunkI]) === false)
-            pagination[chunkI] = [];
-
-          pagination[chunkI].push(data[i]);
-          
-          if (pagination[chunkI].length === chunkSize) {
-            chunkI++;
-          }
-          
-          currentPage = 0;
-          renderPage(pagination[currentPage]);
-        }
-      } else {
-        hidePagination();
-      }
+      totalPages = Math.round(data.length / 10);
+      currentPage = 0;
+      sliceStart = 0;
+      sliceEnd = 10;
+      renderPage(data.slice(sliceStart, sliceEnd));
     });
   }
 
-  function buildData(data) {
-    data.name = buildLink(data.id, data.type);
-    data.comment = buildComment(data.status, data.comment);
-    data.date = moment(data.date).format('YYYY-MM-DD')
-    return data;
+  function buildData(data) {    
+    return {
+      status: data.status,
+      name: buildLink(data.id, data.type),
+      comment: buildComment(data.status, data.comment),
+      date: moment(data.date).format('YYYY-MM-DD')
+    }
   }
 
   function hidePagination() {
@@ -92,11 +69,12 @@
     $('.pagination-nav').hide();
   }
 
-  function renderPage(data) {
+  function renderPage(slicedData) {
     $('#pagination-errors tbody').html('');
-    $('.current-page').html(`${currentPage + 1}/${pagination.length}`);
-    for (var i = 0; i < data.length; i++) {
-      var dataRow = data[i];
+    $('.current-page').html(`${currentPage + 1}/${totalPages}`);
+    var prout = slicedData;
+    for (var i = 0; i < prout.length; i++) {
+      var dataRow = buildData(prout[i]);
       var row = `
       <tr>
         <td>${dataRow.status}</td>
@@ -128,21 +106,33 @@
 
   $('.next-page').click(function() {
     currentPage += 1;
+    sliceStart += 10;
+    sliceEnd += 10;
 
-    if (currentPage === pagination.length)
-      currentPage = 0;
+    if (currentPage === totalPages)
+      resetIndexes();
 
-    renderPage(pagination[currentPage]);
+    renderPage(data.slice(sliceStart, sliceEnd));
   });
 
   $('.previous-page').click(function() {
+    if (currentPage === 0)
+      return
     currentPage -= 1;
+    sliceStart -= 10;
+    sliceEnd -= 10;
 
     if (currentPage < 0)
-      currentPage = 0;
+      resetIndexes();
 
-    renderPage(pagination[currentPage]);
+    renderPage(data.slice(sliceStart, sliceEnd));
   });    
+
+  function resetIndexes() {
+    currentPage = 0;
+    sliceStart = 0;
+    slicedEnd = 10;
+  }
 
   renderErrorsWarnings();
 </script>
