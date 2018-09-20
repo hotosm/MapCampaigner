@@ -188,8 +188,7 @@
 
         var map = L.map('campaign-map').setView([0, 0], 2);
         L.tileLayer('{{ map_provider }}', {
-            attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and contributors, ' +
-            'under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+            attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
             maxZoom: 15
         }).addTo(map);
 

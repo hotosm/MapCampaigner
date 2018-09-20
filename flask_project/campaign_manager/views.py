@@ -77,8 +77,6 @@ def home():
         bucket_url=S3Data().bucket_url()
     )
 
-    print(S3Data().bucket_url())
-
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 
@@ -396,7 +394,11 @@ def get_campaign(uuid):
     """Get campaign details.
     """
 
-    campaign = Campaign.get(uuid)
+    try:
+        campaign = Campaign.get(uuid)
+    except:
+        abort(404)
+
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
 
