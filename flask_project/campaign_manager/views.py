@@ -77,8 +77,6 @@ def home():
         bucket_url=S3Data().bucket_url()
     )
 
-    print(S3Data().bucket_url())
-
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 

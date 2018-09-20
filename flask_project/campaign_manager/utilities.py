@@ -256,13 +256,12 @@ def parse_json_string(json_string):
 def map_provider():
     """Return map provider, if mapbox api token provided then use mapbox map.
     """
-    try:
-        from secret import MAPBOX_TOKEN
+    if 'MAPBOX_TOKEN' in os.environ:
         provider = 'https://api.mapbox.com/styles/v1/hot/' \
                    'cj7hdldfv4d2e2qp37cm09tl8/tiles/256/{z}/{x}/{y}?' \
-                   'access_token=' + MAPBOX_TOKEN
+                   'access_token=' + os.environ['MAPBOX_TOKEN']
 
-    except ImportError:
+    else:
         provider = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 
     return provider
