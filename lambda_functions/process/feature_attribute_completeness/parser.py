@@ -25,6 +25,12 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             destination=render_data_path)
         self.errors_file_manager = ErrorsFileManager(
             destination=render_data_path)
+        self.error_ids = {
+            'node': [],
+            'way': [],
+            'relation': []
+
+        }
 
     def startDocument(self):
         return
@@ -68,6 +74,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 self.check_warnings_in_tags()
                 if self.element_complete:
                     self.features_completed += 1
+                else:
+                    self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
             if self.has_tags == True:            

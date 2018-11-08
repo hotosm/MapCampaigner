@@ -10,9 +10,10 @@ from utilities import (
     fetch_required_tags,
     build_render_data_path,
     invoke_render_feature,
+    invoke_download_errors,
     compute_completeness_pct,
     save_data,
-    download_overpass_file
+    download_overpass_file,
 )
 from parser import FeatureCompletenessParser
 from aws import S3Data
@@ -59,7 +60,9 @@ def lambda_handler(event, context):
         'features_completed': parser.features_completed,
         'checked_attributes': list(required_tags.keys()),
         'geojson_files_count': parser.geojson_file_manager.count,
-        'errors_files_count': parser.errors_file_manager.count
+        'errors_files_count': parser.errors_file_manager.count,
+        'error_ids': parser.error_ids
     }
     save_data(uuid, type_id, processed_data)
+    invoke_download_errors(uuid, feature)
     invoke_render_feature(uuid, feature)
