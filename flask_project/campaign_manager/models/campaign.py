@@ -120,6 +120,7 @@ class Campaign(JsonModel):
 
         else:
             polygon = self.get_union_polygons()
+
             url = 'http://staticmap.openstreetmap.de/staticmap.php?' \
                   'center={y},{x}&zoom=10&size=512x300&maptype=mapnik' \
                   '&markers={y},{x},lightblue'.format(
@@ -510,6 +511,17 @@ class Campaign(JsonModel):
                         json_tags[tag_key] = []
                 value['tags'] = json_tags
         return types
+
+    def calculate_areas_covered(self):
+        completed_areas = 0
+        for area in self.geometry['features']:
+            if 'status' in area['properties']:
+                if area['properties']['status'] == 'complete':
+                    completed_areas += 1
+        
+        total_areas = len(self.geometry['features'])
+        return int((completed_areas / total_areas) * 100)
+
 
     @staticmethod
     def create(data, uploader):
