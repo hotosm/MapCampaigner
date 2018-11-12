@@ -12,7 +12,6 @@ def get_error_ids(uuid, feature):
 
 def download_feature_completeness_file(uuid, feature):
     feature_completeness_data_path = build_feature_completeness_path(campaign_path(uuid), feature)
-    print(feature_completeness_data_path)
     return S3Data().fetch(feature_completeness_data_path)
 
 
@@ -100,7 +99,7 @@ def save_to_s3(path, feature):
 def build_path(uuid, feature):
     return '/'.join([
         'campaigns/{uuid}',
-        'render/{feature}/errors.osm'
+        'render/{feature}/{uuid}_{feature}_errors.osm'
         ]).format(
             uuid=uuid,
             feature=feature)
