@@ -45,7 +45,24 @@
   function setViewFromCampaign(map) {
       
     geometry = {{ geometry }}
-    campaign_layer = L.geoJSON(geometry);
+    campaign_layer = L.geoJSON(geometry, {
+      onEachFeature: function(feature, layer) {
+        layer.bindPopup(`
+          <h4>Area</h4>
+          <div class="layer-group">
+            <div class="layer-popup-area">
+              <b>Area:</b> ${feature.properties.area || '-'}
+            </div>
+            <div class="layer-popup-area">
+              <b>Team:</b> ${feature.properties.team || '-'}
+            </div>
+            <div class="layer-popup-area">
+              <b>Status:</b> ${feature.properties.status || '-'}
+            </div>
+          </div>
+        `)
+      }
+    });
     map.addLayer(campaign_layer);
     map.fitBounds(campaign_layer.getBounds());
     window.setTimeout(function() {
