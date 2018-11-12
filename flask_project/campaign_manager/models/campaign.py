@@ -518,10 +518,9 @@ class Campaign(JsonModel):
             if 'status' in area['properties']:
                 if area['properties']['status'] == 'complete':
                     completed_areas += 1
-        
+
         total_areas = len(self.geometry['features'])
         return int((completed_areas / total_areas) * 100)
-
 
     @staticmethod
     def create(data, uploader):
