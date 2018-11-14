@@ -4,6 +4,17 @@ import boto3
 from aws import S3Data
 
 
+def fix_tags(broken_tags):
+    tags = {}
+    for tag in broken_tags:
+        if ':' in tag:
+            key, value = [x.strip() for x in tag.split(':')]
+            value = [x.strip() for x in value.split(',')]
+            tags[key] = value
+        else:
+            tags[tag] = broken_tags[tag]
+    return tags
+
 def download_overpass_file(uuid, type_id):
     key = build_raw_data_overpass_path(
         campaign_path=campaign_path(uuid),

@@ -15,7 +15,7 @@ def invoke_download_features(payload):
         Payload=payload)
 
 def remove_data(uuid):
-    raw_data_key = "campaigns/{uuid}/raw_data/overpass".format(
+    raw_data_key = "campaigns/{uuid}/overpass".format(
         uuid=uuid)
 
     for file in S3Data().list(raw_data_key):
@@ -27,13 +27,13 @@ def remove_data(uuid):
     render_key = "campaigns/{uuid}/render".format(
         uuid=uuid)
     
-    for feature in S3Data().list(render_key):
-        render_feature_key = "{render_key}/{feature}".format(
+    for typee in S3Data().list(render_key):
+        render_typee_key = "{render_key}/{typee}".format(
             render_key=render_key,
-            feature=feature)
-        for file in S3Data().list(render_feature_key):
-            file_key = "{render_feature_key}/{file}".format(
-                render_feature_key=render_feature_key,
+            typee=typee)
+        for file in S3Data().list(render_typee_key):
+            file_key = "{render_typee_key}/{file}".format(
+                render_typee_key=render_typee_key,
                 file=file)
             S3Data().delete(file_key)
 

@@ -164,10 +164,11 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.errors_warnings += 1
 
     def build_feature(self, osm_type):
+        # geo_type = 'Polygon'
         if osm_type == 'node':
             geo_type = 'Point'
             coordinates = [
-               float(self.element['lon']), 
+                float(self.element['lon']), 
                 float(self.element['lat'])
             ]
         elif osm_type == 'way':
@@ -175,6 +176,11 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 geo_type = 'LineString'
                 coordinates = self.element['nodes']
             elif self.element_type == 'Polygon':
+                geo_type = 'Polygon'
+                coordinates = [
+                    self.element['nodes']
+                ]
+            else:
                 geo_type = 'Polygon'
                 coordinates = [
                     self.element['nodes']

@@ -14,6 +14,7 @@ from utilities import (
     compute_completeness_pct,
     save_data,
     download_overpass_file,
+    fix_tags
 )
 from parser import FeatureCompletenessParser
 from aws import S3Data
@@ -33,8 +34,10 @@ def lambda_handler(event, context):
         if campaign['types'][type_key]['type'] == type_name:
             typee = campaign['types'][type_key]
 
-    required_tags = typee['tags']    
-
+    print(typee['tags'])
+    required_tags = fix_tags(typee['tags'])
+    print(required_tags)
+    
     render_data_path = build_render_data_path(
         campaign_path=campaign_path(uuid),
         type_id=type_id)
@@ -54,6 +57,7 @@ def lambda_handler(event, context):
         xml.sax.parse(xml_file, parser)
     except xml.sax.SAXParseException:
         print('FAIL')
+        parser.endDocument()
 
 
     processed_data = {
