@@ -410,6 +410,9 @@ def get_campaign(uuid):
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
     context['participants'] = len(campaign.campaign_managers)
+
+    context['pct_covered_areas'] = campaign.calculate_areas_covered()
+
     if campaign.map_type != '':
         context['attribution'] = find_attribution(campaign.map_type)
 
