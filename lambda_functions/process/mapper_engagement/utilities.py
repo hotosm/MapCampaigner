@@ -44,23 +44,23 @@ def is_function_and_feature(function_name, feature, seeked_feature):
         feature == seeked_feature
 
 
-def build_raw_data_overpass_path(campaign_path, feature):
+def build_raw_data_overpass_path(campaign_path, type_id):
     return '/'.join([
         '{campaign_path}',
-        'raw_data/overpass',
-        '{feature}.xml']).format(
+        'overpass',
+        '{type_id}.xml']).format(
             campaign_path=campaign_path,
-            feature=feature)
+            type_id=type_id)
 
 
-def download_overpass_file(uuid, feature):
+def download_overpass_file(uuid, type_id):
     key = build_raw_data_overpass_path(
         campaign_path=campaign_path(uuid),
-        feature=feature)
+        type_id=type_id)
 
     S3Data().download_file(
         key=key,
-        feature=feature,
+        type_id=type_id,
         destination='/tmp')
 
 

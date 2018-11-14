@@ -82,7 +82,8 @@ class S3Data(object):
         self.s3.put_object(
             Bucket=self.bucket,
             Key=key,
-            Body=body)
+            Body=body,
+            ACL='public-read')
 
     def upload_file(self, key, body):        
         self.s3.upload_fileobj(

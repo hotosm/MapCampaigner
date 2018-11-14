@@ -149,6 +149,7 @@ restaurant:
             - fast-food
         - name
         - cuisine
+    element_type: Point
 shop:
     feature: amenity
     tags:
@@ -156,6 +157,7 @@ shop:
             - shop
         - name
         - opening_hours
+    element_type: Polygon
                         </pre>
                     Put types in yaml format. The formats are:<br>
                     - Whitespace is sensitive. Each child element must be indented below its parent element.<br>
@@ -166,7 +168,8 @@ shop:
                     - <b>Tags</b> : The format is the list, put dash for every line.
                     - Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.
                     - For specific tag, add new child for that tags (for example amenity). It will check attributes is restaurant or fast-food.
-                    - Can put second type (or more) by creating new parent
+                    - Can put second type (or more) by creating new parent<br />
+                    - <b>Element type</b>: Point, Line, Polygon
                 </div>
             </div>
         </div>
@@ -291,6 +294,7 @@ shop:
                 "MapperEngagement"
             ],
             tags: typeData['tags'],
+            element_type: typeData['element_type'],
             custom: true
         };
     }
