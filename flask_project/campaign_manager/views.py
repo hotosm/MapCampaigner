@@ -695,8 +695,11 @@ def find_attribution(map_url):
     """Find map attribution."""
 
     _valid_map = valid_map_list()
-    attribution = _valid_map[map_url]
-    return attribution
+    try:
+        # map_url is not valid
+        return _valid_map[map_url]
+    except:
+        return ""
 
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])
