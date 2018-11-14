@@ -15,6 +15,23 @@ def download_overpass_file(uuid, feature):
         destination='/tmp')
 
 
+def invoke_download_errors(uuid, feature):
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'feature': feature
+    })
+
+    aws_lambda = boto3.client('lambda')
+    function_name_with_env = '{env}_{function_name}'.format(
+        env=os.environ['ENV'],
+        function_name='download_errors')
+
+    aws_lambda.invoke(
+        FunctionName=function_name_with_env,
+        InvocationType='Event',
+        Payload=payload)
+
+
 def invoke_render_feature(uuid, feature):
     payload = json.dumps({
         'campaign_uuid': uuid,
