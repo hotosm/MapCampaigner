@@ -5,7 +5,6 @@ from lambda_function import (
     lambda_handler
 )
 from utilities import (
-    feature_to_filename,
     date_to_dict,
     format_query,
     format_feature_values,
@@ -24,8 +23,8 @@ class TestCase(unittest.TestCase):
     def test_run(self):
         if os.environ.get('ON_TRAVIS', 'false') == 'false':
             event = {
-                'campaign_uuid': '76674eefa4524a6fbc20e147fe01f1fd',
-                'feature': 'building=yes'
+                'campaign_uuid': '1a828199acea46899f83cac3ab1d3f22',
+                'type': 'point_restaurant'
             }
             lambda_handler(event, {})
 

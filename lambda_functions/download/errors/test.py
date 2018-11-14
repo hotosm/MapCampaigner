@@ -16,8 +16,8 @@ class TestCase(unittest.TestCase):
 
     def test_run(self):
         event = {
-           'campaign_uuid': '63a268b9ea48400fb2c16acf242f75d6', 
-           'feature': 'restaurant'
+            'campaign_uuid': '1a828199acea46899f83cac3ab1d3f22',
+            'type': 'point_restaurant'
         }
         lambda_handler(event, {})
 

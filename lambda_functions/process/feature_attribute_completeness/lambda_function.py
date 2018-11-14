@@ -25,24 +25,30 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     logger.info('got event{}'.format(event))
     uuid = event['campaign_uuid']
-    feature = event['feature']
+    type_name = event['type']
+    type_id = type_name.replace(' ', '_')
     
     campaign = fetch_campaign(campaign_path(uuid))
-    required_tags = fetch_required_tags(feature, campaign['selected_functions'])
-    
-    type_name = fetch_type(feature, campaign['selected_functions'])
-    type_id = type_name.replace(' ', '_')
+    for type_key in campaign['types']:
+        if campaign['types'][type_key]['type'] == type_name:
+            typee = campaign['types'][type_key]
+
+    required_tags = typee['tags']    
 
     render_data_path = build_render_data_path(
         campaign_path=campaign_path(uuid),
         type_id=type_id)
 
 
-    download_overpass_file(uuid, feature)
+    download_overpass_file(uuid, type_id)
 
+    if 'element_type' in typee:
+        element_type = typee['element_type']
+    else:
+        element_type = None
 
-    xml_file = open('/tmp/{feature}.xml'.format(feature=feature), 'r')
-    parser = FeatureCompletenessParser(required_tags, render_data_path)
+    xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
+    parser = FeatureCompletenessParser(required_tags, render_data_path, element_type)
     
     try:
         xml.sax.parse(xml_file, parser)
@@ -64,5 +70,5 @@ def lambda_handler(event, context):
         'error_ids': parser.error_ids
     }
     save_data(uuid, type_id, processed_data)
-    invoke_download_errors(uuid, feature)
-    invoke_render_feature(uuid, feature)
+    invoke_download_errors(uuid, type_name)
+    invoke_render_feature(uuid, type_name)

@@ -19,25 +19,24 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     logger.info('got event{}'.format(event))
     uuid = event['campaign_uuid']
-    feature = event['feature']
-    
-    feature_key = feature.split('=')[0]
+    type_name = event['type']
+    type_id = type_name.replace(' ', '_')
     
     campaign = fetch_campaign(
         campaign_path=campaign_path(uuid))
+    for type_key in campaign['types']:
+        if campaign['types'][type_key]['type'] == type_name:
+            typee = campaign['types'][type_key]
 
-    download_overpass_file(uuid, feature)
-    xml_file = open('/tmp/{feature}.xml'.format(feature=feature), 'r')
+    download_overpass_file(uuid, type_id)
+    xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
 
-    parser = CountFeatureParser(feature)
+    parser = CountFeatureParser(typee['feature'])
 
     try:
         xml.sax.parse(xml_file, parser)
     except xml.sax.SAXParseException:
         print('FAIL')
-
-    type_name = fetch_type(feature, campaign['selected_functions'])
-    type_id = type_name.replace(' ', '_')
 
     output = {
         'type_id': type_id,

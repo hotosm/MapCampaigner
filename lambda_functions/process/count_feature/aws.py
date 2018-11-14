@@ -67,9 +67,9 @@ class S3Data(object):
             return True
         return False
 
-    def download_file(self, key, feature, destination):
-        with open('/{destination}/{feature}.xml'.format(
-            feature=feature,
+    def download_file(self, key, type_id, destination):
+        with open('/{destination}/{type_id}.xml'.format(
+            type_id=type_id,
             destination=destination), 'wb') as data:
                 self.s3.download_fileobj(
                     Bucket=self.bucket, 

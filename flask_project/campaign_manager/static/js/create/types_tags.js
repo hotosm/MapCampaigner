@@ -66,7 +66,8 @@ function getTypesSelectionValue() {
             types_value['type-' + (index + 1)] = {
                 type: addedType,
                 feature: types[addedType]['feature'],
-                tags: tags
+                tags: tags,
+                element_type: types[addedType]['element_type']
             }
         }
     });

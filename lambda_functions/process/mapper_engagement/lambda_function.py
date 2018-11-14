@@ -16,15 +16,20 @@ from aws import S3Data
 
 def lambda_handler(event, context):
     uuid = event['campaign_uuid']
-    feature = event['feature']
+    type_name = event['type']
+    type_id = type_name.replace(' ', '_')
 
 
     campaign = fetch_campaign(campaign_path(uuid))
-    download_overpass_file(uuid, feature)
-    xml_file = open('/tmp/{feature}.xml'.format(feature=feature), 'r')
-    feature_key = feature.split('=')[0]
+    for type_key in campaign['types']:
+        if campaign['types'][type_key]['type'] == type_name:
+            typee = campaign['types'][type_key]
 
-    tag_name = feature_key
+    download_overpass_file(uuid, type_id)
+
+    xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
+
+    tag_name = typee['feature'].split('=')[0]
     start_date = calendar.timegm(datetime.datetime.strptime(
             campaign['start_date'], '%Y-%m-%d').timetuple()) * 1000
     end_date = calendar.timegm(datetime.datetime.strptime(
@@ -36,7 +41,5 @@ def lambda_handler(event, context):
         start_date,
         end_date)
 
-    type_name = fetch_type(feature, campaign['selected_functions'])
-    type_id = type_name.replace(' ', '_')
 
     save_data(uuid, type_id, sorted_user_list)

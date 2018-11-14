@@ -25,10 +25,10 @@ def invoke_process_function(function_name, payload):
         Payload=payload)
 
 
-def invoke_process_count_feature(uuid, feature):
+def invoke_process_count_feature(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'feature': feature    
+        'type': type_name
     })
 
     invoke_process_function(
@@ -36,10 +36,10 @@ def invoke_process_count_feature(uuid, feature):
         payload=payload)
 
 
-def invoke_process_feature_completeness(uuid, feature):
+def invoke_process_feature_completeness(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'feature': feature    
+        'type': type_name    
     })
 
     invoke_process_function(
@@ -47,10 +47,10 @@ def invoke_process_feature_completeness(uuid, feature):
         payload=payload)
 
 
-def invoke_process_mapper_engagement(uuid, feature):
+def invoke_process_mapper_engagement(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'feature': feature    
+        'type': type_name    
     })
 
     invoke_process_function(
@@ -60,9 +60,21 @@ def invoke_process_mapper_engagement(uuid, feature):
 
 def format_query(parameters):
     if parameters['value']:
-        query = template_query_with_value()
+        if parameters['element_type'] == 'Point':
+            query = template_node_query_with_value();
+        elif parameters['element_type'] == 'Line' or \
+            parameters['element_type'] == 'Polygon':
+            query = template_way_query_with_value()
+        else:
+            query = template_query_with_value()
     else:
-        query = template_query()
+        if parameters['element_type'] == 'Point':
+            query = template_node_query()
+        elif parameters['element_type'] == 'Line' or \
+            parameters['element_type'] == 'Polygon':
+            query = template_way_query()
+        else:       
+            query = template_query()
 
     return query.format(**parameters)
 
@@ -71,25 +83,78 @@ def format_feature_values(feature_values):
     return '|'.join(feature_values)
 
 
-def build_query(polygon, feature):
-    key, values = split_feature_key_values(feature)
+def build_query(polygon, typee):
+    key, values = split_feature_key_values(typee['feature'])
+    if 'element_type' in typee:
+        element_type = typee['element_type']
+    else:
+        element_type = None
+
     parameters = {
         'polygon': split_polygon(polygon),
         'print_mode': 'meta',
         'key': key,
-        'value': format_feature_values(values)
+        'value': format_feature_values(values),
+        'element_type': element_type
     }
     return format_query(parameters)
 
-
-def build_path(uuid, feature):
+def build_query_path(uuid, type_id):
     return '/'.join([
         'campaigns/{uuid}',
-        'raw_data/overpass/{feature}.xml'
+        'overpass/{type_id}.query'
         ]).format(
             uuid=uuid,
-            feature=feature)
+            type_id=type_id)
 
+def build_path(uuid, type_id):
+    return '/'.join([
+        'campaigns/{uuid}',
+        'overpass/{type_id}.xml'
+        ]).format(
+            uuid=uuid,
+            type_id=type_id)
+
+
+def template_way_query():
+    return (
+        '[out:xml];('
+        'way["{key}"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
+
+def template_way_query_with_value():
+    return (
+        '[out:xml];('
+        'way["{key}"~"{value}"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
+
+def template_node_query_with_value():
+    return (
+        '[out:xml];('
+        'node["{key}"~"{value}"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )
+
+def template_node_query():
+    return (
+        '[out:xml];('
+        'node["{key}"]'
+        '(poly:"{polygon}");'
+        ');'
+        '(._;>;);'
+        'out {print_mode};'
+    )    
 
 def template_query():
     return (
@@ -97,8 +162,6 @@ def template_query():
         'way["{key}"]'
         '(poly:"{polygon}");'
         'node["{key}"]'
-        '(poly:"{polygon}");'
-        'relation["{key}"]'
         '(poly:"{polygon}");'
         ');'
         '(._;>;);'
@@ -113,22 +176,20 @@ def template_query_with_value():
         '(poly:"{polygon}");'
         'node["{key}"~"{value}"]'
         '(poly:"{polygon}");'
-        'relation["{key}"~"{value}"]'
-        '(poly:"{polygon}");'
         ');'
         '(._;>;);'
         'out {print_mode};'
     )
 
 
-def post_request(query, feature):
+def post_request(query, type_id):
     data = requests.post(
         url='http://exports-prod.hotosm.org:6080/api/interpreter',
         data={'data': query},
         headers={'User-Agent': 'HotOSM'},
         stream=True)
 
-    f = open('/tmp/{}.xml'.format(feature), 'w')
+    f = open('/tmp/{}.xml'.format(type_id), 'w')
     for line in data.iter_lines():
         if line:
             decoded_line = line.decode('utf-8')
@@ -136,13 +197,17 @@ def post_request(query, feature):
     f.close()
 
 
-def save_to_s3(path, feature):
-    with open('/tmp/{feature}.xml'.format(
-        feature=feature), 'rb') as data:
+def save_to_s3(path, type_id):
+    with open('/tmp/{type_id}.xml'.format(
+        type_id=type_id), 'rb') as data:
         S3Data().upload_file(
             key=path,
             body=data)
 
+def save_query(path, query):
+    S3Data().create(
+        key=path,
+        body=query)
 
 def date_to_dict(start_date, end_date):
     return {

@@ -10,10 +10,11 @@ from file_manager import (
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
-    def __init__(self, required_tags, render_data_path):
+    def __init__(self, required_tags, render_data_path, element_type):
         xml.sax.ContentHandler.__init__(self)
         self.required_tags = required_tags
-        
+        self.element_type = element_type
+
         self.is_element = False
         self.has_tags = False
         self.tags = {}
@@ -43,7 +44,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.errors_file_manager.save()
 
     def startElement(self, name, attrs):
-        if name in ['node', 'way', 'relation']:
+        if name in ['node', 'way']:
             self.build_element(name, attrs)
             self.is_element = True
             self.has_tags = False
@@ -63,7 +64,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.element['nodes'].append(self.unused_nodes[ref])
 
     def endElement(self, name):
-        if name in ['node', 'way', 'relation']:
+        if name in ['node', 'way']:
             if self.has_tags == True:
                 
                 if self.has_no_required_tags():
@@ -170,10 +171,14 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 float(self.element['lat'])
             ]
         elif osm_type == 'way':
-            geo_type = 'Polygon'
-            coordinates = [
-               self.element['nodes']
-            ]
+            if self.element_type == 'Line':
+                geo_type = 'LineString'
+                coordinates = self.element['nodes']
+            elif self.element_type == 'Polygon':
+                geo_type = 'Polygon'
+                coordinates = [
+                    self.element['nodes']
+                ]
 
         feature = {
             "type": "Feature",

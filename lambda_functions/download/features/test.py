@@ -12,7 +12,7 @@ class TestCase(unittest.TestCase):
 
     def test_run(self):
         if os.environ.get('ON_TRAVIS', 'false') == 'false':
-            event = {'campaign_uuid': '09a4f0ebb7964189bfc8a5ba8dba2b43'}
+            event = {'campaign_uuid': 'd46b448603254b0caf8c886fe71a4864'}
             lambda_handler(event, {})
 
     def test_get_unique_features(self):
