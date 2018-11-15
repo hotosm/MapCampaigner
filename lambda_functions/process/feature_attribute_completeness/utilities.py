@@ -7,7 +7,7 @@ from aws import S3Data
 def fix_tags(broken_tags):
     tags = {}
     for tag in broken_tags:
-        if ':' in tag:
+        if ': ' in tag:
             key, value = [x.strip() for x in tag.split(':')]
             value = [x.strip() for x in value.split(',')]
             tags[key] = value
