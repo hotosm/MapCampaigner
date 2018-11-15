@@ -34,9 +34,9 @@ def lambda_handler(event, context):
         if campaign['types'][type_key]['type'] == type_name:
             typee = campaign['types'][type_key]
 
-    print(typee['tags'])
+    logger.info(typee['tags'])
     required_tags = fix_tags(typee['tags'])
-    print(required_tags)
+    logger.info(required_tags)
     
     render_data_path = build_render_data_path(
         campaign_path=campaign_path(uuid),
