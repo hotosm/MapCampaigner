@@ -2,13 +2,24 @@ import unittest
 import warnings
 import os
 import json
+import xml.sax
 from lambda_function import (
     lambda_handler
 )
 from utilities import (    
     fetch_required_tags,
 )
-from parser import GeojsonFileManager
+from parser import FeatureCompletenessParser
+
+
+class TestParser(unittest.TestCase):
+    def test_parser(self):
+        feature = "amenity=kindergarten"
+        selected_functions = {"function-1": {"function": "FeatureAttributeCompleteness", "feature": "amenity=kindergarten", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Kindergarten"}, "function-2": {"function": "CountFeature", "feature": "amenity=kindergarten", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Kindergarten"}, "function-3": {"function": "MapperEngagement", "feature": "amenity=kindergarten", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Kindergarten"}, "function-4": {"function": "FeatureAttributeCompleteness", "feature": "amenity=school", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "School"}, "function-5": {"function": "CountFeature", "feature": "amenity=school", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "School"}, "function-6": {"function": "MapperEngagement", "feature": "amenity=school", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "School"}, "function-7": {"function": "FeatureAttributeCompleteness", "feature": "amenity=university", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "University"}, "function-8": {"function": "CountFeature", "feature": "amenity=university", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "University"}, "function-9": {"function": "MapperEngagement", "feature": "amenity=university", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "University"}, "function-10": {"function": "FeatureAttributeCompleteness", "feature": "amenity=college", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Non-university higher education"}, "function-11": {"function": "CountFeature", "feature": "amenity=college", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Non-university higher education"}, "function-12": {"function": "MapperEngagement", "feature": "amenity=college", "attributes": {"amenity": [], "name": [], "operator": [], "operator:type": [], "addr:full": [], "contact:phone": []}, "type": "Non-university higher education"}}
+        required_tags = fetch_required_tags(feature, selected_functions)
+        xml_file = open('test_data/{feature}.xml'.format(feature=feature), 'r')
+        parser = FeatureCompletenessParser(required_tags, "test")
+        xml.sax.parse(xml_file, parser)
 
 
 class TestFileManager(unittest.TestCase):
@@ -72,8 +83,8 @@ class TestCase(unittest.TestCase):
   
     def test_run(self):
         event = {
-           'campaign_uuid': '08c11d5fca144960bb909f02982a06f9', 
-           'feature': 'amenity'
+           'campaign_uuid': '3a656ded5dc94f7f8f50a89d2d356a73', 
+           'type': 'RELIGION'
         }
         lambda_handler(event, {})
 

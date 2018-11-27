@@ -410,6 +410,9 @@ def get_campaign(uuid):
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
     context['participants'] = len(campaign.campaign_managers)
+
+    context['pct_covered_areas'] = campaign.calculate_areas_covered()
+
     if campaign.map_type != '':
         context['attribution'] = find_attribution(campaign.map_type)
 
@@ -695,8 +698,11 @@ def find_attribution(map_url):
     """Find map attribution."""
 
     _valid_map = valid_map_list()
-    attribution = _valid_map[map_url]
-    return attribution
+    try:
+        # map_url is not valid
+        return _valid_map[map_url]
+    except:
+        return ""
 
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])

@@ -24,13 +24,22 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     logger.info('got event{}'.format(event))
     uuid = event['campaign_uuid']
-    feature = event['feature']
-    
+    type_name = event['type']
+    type_id = type_name.replace(' ', '_')
+
     campaign = fetch_campaign(campaign_path(uuid))
     geometry = fetch_campaign_geometry(campaign_path(uuid))  
     
-    type_name = fetch_type(feature, campaign['selected_functions'])
-    type_id = type_name.replace(' ', '_')
+    # type_name = fetch_type(feature, campaign['selected_functions'])
+    
+    print(type_name)
+    print(type_id)
+
+
+    for type_key in campaign['types']:
+        if campaign['types'][type_key]['type'] == type_name:
+            typee = campaign['types'][type_key]
+    print(typee)
 
     data = {}
     # feature completeness
@@ -41,6 +50,7 @@ def lambda_handler(event, context):
     data['feature_completeness'] = S3Data().fetch(feature_completeness_data_path)
 
     data['uuid'] = uuid
+    data['type_id'] = type_id
 
     template_path = build_template_path(
         campaign_path=campaign_path(uuid), 

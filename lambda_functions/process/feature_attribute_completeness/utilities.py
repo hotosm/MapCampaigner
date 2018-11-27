@@ -4,21 +4,49 @@ import boto3
 from aws import S3Data
 
 
-def download_overpass_file(uuid, feature):
+def fix_tags(broken_tags):
+    tags = {}
+    for tag in broken_tags:
+        if ': ' in tag:
+            key, value = [x.strip() for x in tag.split(':')]
+            value = [x.strip() for x in value.split(',')]
+            tags[key] = value
+        else:
+            tags[tag] = broken_tags[tag]
+    return tags
+
+def download_overpass_file(uuid, type_id):
     key = build_raw_data_overpass_path(
         campaign_path=campaign_path(uuid),
-        feature=feature)
+        type_id=type_id)
 
     S3Data().download_file(
         key=key,
-        feature=feature,
+        type_id=type_id,
         destination='/tmp')
 
 
-def invoke_render_feature(uuid, feature):
+def invoke_download_errors(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'feature': feature
+        'type': type_name
+    })
+
+    aws_lambda = boto3.client('lambda')
+    function_name_with_env = '{env}_{function_name}'.format(
+        env=os.environ['ENV'],
+        function_name='download_errors')
+
+    aws_lambda.invoke(
+        FunctionName=function_name_with_env,
+        InvocationType='Event',
+        Payload=payload)
+
+
+def invoke_render_feature(uuid, type_name):
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'type': type_name
     })
 
     aws_lambda = boto3.client('lambda')
@@ -84,13 +112,13 @@ def fetch_campaign(campaign_path):
         campaign_path=campaign_path))
 
 
-def build_raw_data_overpass_path(campaign_path, feature):
+def build_raw_data_overpass_path(campaign_path, type_id):
     return '/'.join([
         '{campaign_path}',
-        'raw_data/overpass',
-        '{feature}.xml']).format(
+        'overpass',
+        '{type_id}.xml']).format(
             campaign_path=campaign_path,
-            feature=feature)
+            type_id=type_id)
 
 
 def fetch_required_tags(seeked_feature, functions):

@@ -1,6 +1,6 @@
 import os
-import boto3
 import json
+import boto3
 from dependencies import yaml
 
 
@@ -30,6 +30,7 @@ class S3Data(object):
                 Bucket=self.bucket,
                 Key=key)
         except:
+            print('elo')
             return []
 
         raw_content = obj['Body'].read()
@@ -67,24 +68,6 @@ class S3Data(object):
             return True
         return False
 
-    def download_file(self, key, type_id, destination):
-        with open('/{destination}/{type_id}.xml'.format(
-            type_id=type_id,
-            destination=destination), 'wb') as data:
-                self.s3.download_fileobj(
-                    Bucket=self.bucket, 
-                    Key=key, 
-                    Fileobj=data)
-
-    def upload_file(self, key, body):        
-        self.s3.upload_fileobj(
-            Fileobj=body, 
-            Bucket=self.bucket, 
-            Key=key,
-            ExtraArgs={
-                'ACL': 'public-read'
-            })
-
     def create(self, key, body):
         """
         Create an object in the S3 bucket.
@@ -100,8 +83,25 @@ class S3Data(object):
         self.s3.put_object(
             Bucket=self.bucket,
             Key=key,
-            Body=body,
-            ACL='public-read')
+            Body=body)
+
+    def upload_file(self, key, body):        
+        self.s3.upload_fileobj(
+            Fileobj=body, 
+            Bucket=self.bucket, 
+            Key=key,
+            ExtraArgs={
+                'ACL': 'public-read'
+            })
+
+    def download_file(self, key, feature, destination):
+        with open('/{destination}/{feature}.json'.format(
+            feature=feature,
+            destination=destination), 'wb') as data:
+                self.s3.download_fileobj(
+                    Bucket=self.bucket, 
+                    Key=key, 
+                    Fileobj=data)
 
     def get_last_modified_date(self, key):
         obj = self.s3.get_object(

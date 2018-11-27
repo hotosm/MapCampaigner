@@ -10,10 +10,11 @@ from file_manager import (
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
-    def __init__(self, required_tags, render_data_path):
+    def __init__(self, required_tags, render_data_path, element_type):
         xml.sax.ContentHandler.__init__(self)
         self.required_tags = required_tags
-        
+        self.element_type = element_type
+
         self.is_element = False
         self.has_tags = False
         self.tags = {}
@@ -25,6 +26,12 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             destination=render_data_path)
         self.errors_file_manager = ErrorsFileManager(
             destination=render_data_path)
+        self.error_ids = {
+            'node': [],
+            'way': [],
+            'relation': []
+
+        }
 
     def startDocument(self):
         return
@@ -37,7 +44,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.errors_file_manager.save()
 
     def startElement(self, name, attrs):
-        if name in ['node', 'way', 'relation']:
+        if name in ['node', 'way']:
             self.build_element(name, attrs)
             self.is_element = True
             self.has_tags = False
@@ -57,7 +64,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.element['nodes'].append(self.unused_nodes[ref])
 
     def endElement(self, name):
-        if name in ['node', 'way', 'relation']:
+        if name in ['node', 'way']:
             if self.has_tags == True:
                 
                 if self.has_no_required_tags():
@@ -68,6 +75,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 self.check_warnings_in_tags()
                 if self.element_complete:
                     self.features_completed += 1
+                else:
+                    self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
             if self.has_tags == True:            
@@ -155,17 +164,27 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.errors_warnings += 1
 
     def build_feature(self, osm_type):
+        # geo_type = 'Polygon'
         if osm_type == 'node':
             geo_type = 'Point'
             coordinates = [
-               float(self.element['lon']), 
+                float(self.element['lon']), 
                 float(self.element['lat'])
             ]
         elif osm_type == 'way':
-            geo_type = 'Polygon'
-            coordinates = [
-               self.element['nodes']
-            ]
+            if self.element_type == 'Line':
+                geo_type = 'LineString'
+                coordinates = self.element['nodes']
+            elif self.element_type == 'Polygon':
+                geo_type = 'Polygon'
+                coordinates = [
+                    self.element['nodes']
+                ]
+            else:
+                geo_type = 'Polygon'
+                coordinates = [
+                    self.element['nodes']
+                ]
 
         feature = {
             "type": "Feature",

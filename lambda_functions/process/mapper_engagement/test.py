@@ -14,8 +14,8 @@ class TestCase(unittest.TestCase):
   
     def test_run(self):
         event = {
-           'campaign_uuid': '09a4f0ebb7964189bfc8a5ba8dba2b43', 
-           'feature': 'amenity=cafe'
+           'campaign_uuid': '6f35021df8864397903a60e0d5853920', 
+           'type': 'SHOP_AS_POLYGON'
         }
         lambda_handler(event, {})
 

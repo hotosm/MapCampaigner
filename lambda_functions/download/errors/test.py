@@ -4,13 +4,7 @@ import unittest
 from lambda_function import (
     lambda_handler
 )
-from utilities import (
-    date_to_dict,
-    format_query,
-    format_feature_values,
-    build_query,
-    post_request
-)
+# from utilities import
 
 
 class TestCase(unittest.TestCase):
@@ -21,12 +15,11 @@ class TestCase(unittest.TestCase):
             message="unclosed.*<ssl.SSLSocket.*>")
 
     def test_run(self):
-        if os.environ.get('ON_TRAVIS', 'false') == 'false':
-            event = {
-                'campaign_uuid': '1a828199acea46899f83cac3ab1d3f22',
-                'type': 'point_restaurant'
-            }
-            lambda_handler(event, {})
+        event = {
+            'campaign_uuid': '1a828199acea46899f83cac3ab1d3f22',
+            'type': 'point_restaurant'
+        }
+        lambda_handler(event, {})
 
     
 
