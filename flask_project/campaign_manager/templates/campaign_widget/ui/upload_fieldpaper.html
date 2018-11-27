@@ -21,6 +21,16 @@
         $('#fieldpaper-id').click();
     }
     
+    function isMultiPolygon(features) {
+        var isMultiPolygon = false;
+        features.forEach((feature) => {
+            type = feature['geometry']['type']
+            if (type === "MultiPolygon")
+                isMultiPolygon = true;
+        });
+        return isMultiPolygon;
+    }
+
     function handleFileSelect(evt) {
         var files = evt.target.files;
         var output = [];
@@ -40,6 +50,12 @@
         reader.onload = function (e) {
             var geojsonFeature = JSON.parse(reader.result);
             geojsonFeature = geojsonFeature['features'];
+            
+            if (isMultiPolygon(geojsonFeature)) {
+                showNotifications('MultiPolygons are not supported. Please change it to Polygon.', 'danger');
+                return;
+            }
+
             drawnItems.clearLayers();
             var geojsonLayer = L.geoJSON(geojsonFeature, {
                 style: function (feature) {
