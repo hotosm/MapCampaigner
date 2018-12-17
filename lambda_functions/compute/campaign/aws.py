@@ -49,6 +49,24 @@ class S3Data(object):
         except KeyError:
             return []
 
+    def create(self, key, body):
+        """
+        Create an object in the S3 bucket.
+
+        :param key: path + filename
+        :type key: string
+
+        :param body: content of the file
+        :type body: string
+
+        :returns:
+        """
+        self.s3.put_object(
+            Bucket=self.bucket,
+            Key=key,
+            Body=body,
+            ACL='public-read')
+
     def delete(self, key):
         """
         Delete a key in the S3 bucket.
