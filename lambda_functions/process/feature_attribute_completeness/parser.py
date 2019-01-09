@@ -21,7 +21,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.features_collected = 0 # element has tags
         self.features_completed = 0 # element has no errors
         self.errors_warnings = 0
-        self.unused_nodes = {}
         self.geojson_file_manager = GeojsonFileManager(
             destination=render_data_path)
         self.errors_file_manager = ErrorsFileManager(
@@ -32,6 +31,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'relation': []
 
         }
+        self.nodes = {}
 
     def startDocument(self):
         return
@@ -60,36 +60,50 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         if self.is_element and self.element['type'] == 'way':
             if name == 'nd':
                 ref = attrs.getValue('ref')
-                if ref in self.unused_nodes:
-                    self.element['nodes'].append(self.unused_nodes[ref])
+                if ref in self.nodes:
+                    node = self.nodes[ref]
+                    node['used'] = True
+                    coordinates = [
+                        float(node['lon']),
+                        float(node['lat'])
+                    ]
+                    self.element['nodes'].append(coordinates)
 
     def endElement(self, name):
-        if name in ['node', 'way']:
-            if self.has_tags == True:
-                
-                if self.has_no_required_tags():
-                    return
-
-                self.features_collected += 1
-                self.check_errors_in_tags()
-                self.check_warnings_in_tags()
-                if self.element_complete:
-                    self.features_completed += 1
-                else:
-                    self.error_ids[name].append(self.element['id'])
-
         if name == 'node':
-            if self.has_tags == True:            
-                self.build_feature('node')
-                self.tags = {}
-            elif self.has_tags == False:
-                self.unused_nodes[self.element['id']] = [
-                    float(self.element['lon']), 
-                    float(self.element['lat'])
-                ]
+            # save the node for later processing
+            self.element['processed_data'] = {
+                'tags': self.tags
+            }
+
+            self.nodes[self.element['id']] = self.element
+            self.tags = {}
+
         if name == 'way':
+            self.features_collected += 1
+            self.check_element('way')
             self.build_feature('way')
             self.tags = {}
+
+        if name == 'osm':
+            # end of file
+            for node in self.nodes:
+                if self.nodes[node]['used'] == False:
+                    self.element = self.nodes[node]
+                    self.tags = self.nodes[node]['processed_data']['tags']
+                    if len(self.tags) == 0 or self.has_no_required_tags():
+                        return
+                    self.features_collected += 1
+                    self.check_element('node')
+                    self.build_feature('node')
+
+    def check_element(self, name):
+        self.check_errors_in_tags()
+        self.check_warnings_in_tags()
+        if self.element_complete:
+            self.features_completed += 1
+        else:
+            self.error_ids[name].append(self.element['id'])
 
     def has_no_required_tags(self):
         return len(set.intersection(
@@ -101,7 +115,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
-            'nodes': []
+            'used': False,
+            'nodes': [],
+            'processed_data': {}
         }
         if name == 'node':
             self.element['lon'] = attrs.getValue("lon")
