@@ -23,8 +23,8 @@ class TestCase(unittest.TestCase):
     def test_run(self):
         if os.environ.get('ON_TRAVIS', 'false') == 'false':
             event = {
-                'campaign_uuid': '1a828199acea46899f83cac3ab1d3f22',
-                'type': 'point_restaurant'
+                'campaign_uuid': 'dd7b3627dc6942dc9798ea094f8c680b',
+                'type': 'Building'
             }
             lambda_handler(event, {})
 

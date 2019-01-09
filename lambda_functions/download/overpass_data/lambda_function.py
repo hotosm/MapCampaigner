@@ -12,9 +12,13 @@ from utilities import (
     build_payload,
     invoke_process_feature_completeness,
     invoke_process_count_feature,
-    invoke_process_mapper_engagement
+    invoke_process_mapper_engagement,
+    clean_aoi
 )
 import logging
+import os
+import xml.etree.cElementTree as ET
+from dependencies.shapely import geometry
 
 
 logger = logging.getLogger()
@@ -43,6 +47,8 @@ def lambda_handler(event, context):
     
     post_request(query, type_id)
 
+    clean_aoi(campaign, type_id)
+
     save_to_s3(
         path=build_path(uuid, type_id),
         type_id=type_id)
@@ -50,7 +56,3 @@ def lambda_handler(event, context):
     invoke_process_feature_completeness(uuid, type_name)
     invoke_process_count_feature(uuid, type_name)
     invoke_process_mapper_engagement(uuid, type_name)
-
-    # date = date_to_dict(campaign.start_date, campaign.end_date)
-    # invoke_download_attic_data(
-    #     payload=build_payload(uuid, feature, date))

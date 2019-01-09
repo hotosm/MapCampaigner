@@ -3,6 +3,145 @@ import json
 import boto3
 from dependencies import requests
 from aws import S3Data
+import xml.etree.cElementTree as ET
+from dependencies.shapely import geometry
+
+
+def clean_aoi(campaign, type_id):
+    """ Clean the Area of Interest: remove ways and nodes from the OSM file
+    that are outside the campaign's area.
+
+    :param campaign: the campaign
+    :type campaign: Campaign object
+
+    :param type_id: campaign's type
+    :type type_id: string
+    """
+    campaign_polygons = campaign.get_polygons()
+
+    file = open('/tmp/{}.xml'.format(type_id), 'r')
+
+    outside_polygons = find_outside_polygons(file, campaign_polygons)
+    rebuild_osm_file(file, type_id, outside_polygons)
+
+
+def rebuild_osm_file(file, type_id, outside_polygons):
+    """ Build a new OSM file without the outside nodes and ways.
+
+    :param file: the original OSM file
+    :type file: fd
+
+    :param type_id: campaign's type
+    :type type_id: string
+
+    :param outside_polygons: nodes and ways outside the campaign's areas
+    :type outside_polygons: dictionnary
+    """
+
+    # go back to the beginning of the original file
+    file.seek(0)
+
+    clean_file = open('/tmp/{}_clean.xml'.format(type_id), 'w')
+    clean_file.write('<?xml version="1.0" encoding="UTF-8"?>')
+
+    for event, elem in ET.iterparse(file, events=('start', 'end')):
+        if elem.tag == 'osm' and event == 'start':
+            version = elem.attrib['version']
+            generator = elem.attrib['generator']
+            clean_file.write(f'<osm version="{version}" generator="{generator}">')
+
+        if elem.tag == 'osm' and event == 'end':
+            clean_file.write('</osm>')
+
+        if elem.tag == 'note' and event == 'start':
+            clean_file.write(f'<note>{elem.text}</note>')
+
+        if elem.tag == 'meta' and event == 'start':
+            osm_base = elem.attrib['osm_base']
+            clean_file.write(f'<meta osm_base="{osm_base}"/>')
+
+        if elem.tag == 'node' and event == 'start':
+            # write nodes
+            if elem.attrib['id'] not in outside_polygons['nodes']:
+                el = ET.tostring(elem)
+                clean_file.write(el.decode("utf-8"))
+
+        if elem.tag == 'way' and event == 'start':
+            if elem.attrib['id'] not in outside_polygons['ways']:
+                el = ET.tostring(elem)
+                clean_file.write(el.decode("utf-8"))
+
+    os.rename('/tmp/{}.xml'.format(type_id), '/tmp/{}_orig.xml'.format(type_id))
+    os.rename('/tmp/{}_clean.xml'.format(type_id), '/tmp/{}.xml'.format(type_id))
+
+
+def find_outside_polygons(file, campaign_polygons):
+    """ Find polygons outside the campaign's area
+
+    :param file: the OSM file
+    :type file: fd
+
+    :param campaign_polygons: campaign's areas as Shapely Polygons
+    :type campaign_polygons: list of Shapely Polygon
+
+    :return out_ids: ids of nodes and ways that are outside campaign's areas.
+    :rtype: dictionary
+    """
+
+    nodes = {}
+    ways = {}
+    in_way = False
+    out_ids = {
+        'nodes': [],
+        'ways': []
+    }
+
+    for event, elem in ET.iterparse(file, events=('start', 'end')):
+        # start of a node element
+        # store its id, lon and lat
+        if elem.tag == 'node' and event == 'start':
+            nodes[elem.attrib['id']] = {
+                'id': elem.attrib['id'],
+                'lon': elem.attrib['lon'],
+                'lat': elem.attrib['lat']
+            }
+
+        # start of way element
+        if elem.tag == 'way' and event == 'start':
+            # create a new way
+            ways[elem.attrib['id']] = []
+            in_way = True
+            way_id = elem.attrib['id']
+
+        # nd element in a way element
+        if elem.tag == 'nd' and in_way == True:
+            # fetch the node
+            node = nodes[elem.attrib['ref']]
+            ways[way_id].append(node)
+
+        # end of way element
+        if elem.tag == 'way' and event == 'end':
+            in_way = False
+
+            # create a shapely polygon
+            polygon = []
+            for point in ways[way_id]:
+                polygon.append((float(point['lon']), float(point['lat'])))
+            polygon = geometry.Polygon(polygon)
+
+            # is the polygon in one of the campaign's polygons?
+            is_in = False
+            for campaign_polygon in campaign_polygons:
+                if campaign_polygon.contains(polygon):
+                    is_in = True
+
+            if not is_in:
+                node_ids = list(map(lambda x: x['id'], ways[way_id]))
+                for node_id in node_ids:
+                    out_ids['nodes'].append(node_id)
+
+                out_ids['ways'].append(way_id)
+    return out_ids
 
 
 def build_payload(uuid, feature, date):
