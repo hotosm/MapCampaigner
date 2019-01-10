@@ -129,6 +129,20 @@ class Campaign(JsonModel):
                 correct_coordinate.extend(self.swap_coordinates(coordinate))
         return correct_coordinate
 
+    def get_polygons(self):
+        """ Return campaign's area as Shapely Polygon.
+
+        :return: Polygons
+        :rtype: list
+        """
+        campaign_polygons = []
+
+        for feature in self.geometry['features']:
+            polygon = geometry.Polygon(feature['geometry']['coordinates'][0])
+            campaign_polygons.append(polygon)
+
+        return campaign_polygons
+
     @staticmethod
     def parse_types_string(types_string):
         types = parse_json_string(types_string)
