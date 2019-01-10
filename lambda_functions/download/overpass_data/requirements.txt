@@ -2,4 +2,4 @@ pyyaml==3.13
 Shapely==1.6.4.post2
 requests==2.19.1
 urllib3==1.23
-
+numpy
