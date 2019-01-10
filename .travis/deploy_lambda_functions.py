@@ -114,7 +114,8 @@ def update_function(path, function_name):
         'aws lambda update-function-code',
         '--function-name {function_name_with_env}',
         '--s3-bucket {bucket}',
-        '--s3-key lambda_zips/{function_name}.zip'
+        '--s3-key lambda_zips/{function_name}.zip',
+        '--region us-west-2'
     ]).format(
         function_name_with_env=function_name_with_env,
         function_name=function_name,
@@ -128,7 +129,8 @@ def update_function(path, function_name):
         '--function-name {function_name}',
         '--environment Variables={env_variables}',
         '--timeout 300',
-        '--memory-size 512'
+        '--memory-size 512',
+        '--region us-west-2'
     ]).format(
         function_name=function_name_with_env,
         env_variables=set_env_variables())
@@ -161,7 +163,8 @@ def create_function(path, function_name):
         '--environment Variables={env_variables}',
         '--code {code}',
         '--memory-size 512',
-        '--timeout 300'
+        '--timeout 300',
+        '--region us-west-2'
     ]).format(
         function_name=function_name,
         function_name_with_env=function_name_with_env,
