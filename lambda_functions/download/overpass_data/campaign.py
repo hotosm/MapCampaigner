@@ -2,6 +2,7 @@ import json
 import os
 from dependencies.shapely import geometry
 from dependencies.shapely import ops
+import numpy
 from json_model import JsonModel
 from utilities import (
     parse_json_string,
