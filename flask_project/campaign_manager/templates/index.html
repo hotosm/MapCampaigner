@@ -40,6 +40,7 @@
                             <td class="home-option no-padding">
                                 <select class="flat-select" id="campaigns-select">
                                     <!-- <option value="nearest">nearest</option> -->
+                                    <option value="active">active</option>
                                     <option value="all">all</option>
                                     <option value="inactive">inactive</option>
                                 </select>
@@ -248,19 +249,23 @@
 
         $('#campaigns-select').change(function () {
             var value = this.value;
-            if(value == 'all') {
+            if(value === 'all') {
                 Cookies.set('user_location_setting', 'all');
                 Cookies.set('campaign-status', 'active');
                 $('.active-campaign').show();
                 $('.inactive-campaign').show();
                 // location.href='/all'
-            } else if(value == 'nearest') {
+            } else if(value === 'active') {
+                $('.active-campaign').show();
+                $('.inactive-campaign').hide();
+            } else if(value === 'nearest') {
                 // Cookies.set('user_location_setting', 'nearest');
                 // Cookies.set('campaign-status', 'active');
                 // location.href='/'
-            } else if(value == 'inactive') {
+            } else if(value === 'inactive') {
                 // displayInactive();
                 // location.href='/';
+                $('.inactive-campaign').show();
                 $('.active-campaign').hide();
             }
         });
@@ -359,7 +364,7 @@
             // getTotalCampaigns();
             clearCampaigns();
             getCampaigns(currentUser);
-            $('#campaigns-select').val("all");
+            $('#campaigns-select').val("active");
             // {% if not all %}
             //     var limitPage = Cookies.get('limit_page');
             //     if(limitPage) {
@@ -636,6 +641,7 @@
                         }
                         totalActiveCampaigns = $('.active-campaign').length;
                         $('#active-campaign-number').html(totalActiveCampaigns);
+                        $('.inactive-campaign').hide();
                         hideLoading();
                         setSearch();
                     });
