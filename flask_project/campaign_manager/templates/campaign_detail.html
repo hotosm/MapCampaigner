@@ -103,14 +103,17 @@
                         </p>
                     </div>
                 </div>
-                <div class="col-lg-6 detail-button-wrapper participate-button" style="margin-top: 20px">
+                <div class="col-lg-2 detail-button-wrapper participate-button" style="margin-top: 20px">
                     <span class="btn btn-label"><strong>Participate</strong></span>
                     <div class="btn-group btn-share-group" role="group" aria-label="...">
                         {% if link_to_omk %}
                             <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
                         {% endif %}
-                        <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+                        <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
                     </div>
+                </div>
+                <div id="download_div" class="col-lg-4 alert alert-success">
+                    <p>Your Maps.me file is ready to download. Click <a id="download_kml" href="#">Here</a></p>
                 </div>
                 <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
                     <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
@@ -305,6 +308,7 @@
 
             loadType(activeType, s3CampaignUrl);
         });
+        $('#download_div').hide();
     }
 
     function loadType(activeType, s3CampaignUrl) {
@@ -396,6 +400,38 @@
             updateMapperEngagementTotal(contributors);
         });
     }
+
+    function openOtherDataCollectonForm(app) {
+        let campaign_points;
+        // retreive from map the points.
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.MarkerClusterGroup) {
+                campaign_points = layer.toGeoJSON()
+            }
+        });
+
+        let campaign_data = {
+            'location': JSON.stringify(campaign_points),
+            'uuid': '{{ uuid }}',
+            'campaign_name': '{{ name }}'
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/generate_kml',
+            dataType: 'json',
+            data: campaign_data,
+
+            success: function (kml_data) {
+                //$('#download_div').show()
+                let url = '/download_kml/'+campaign_data.uuid+'/' + kml_data.file_name
+                $('#download_kml').attr('href', url)
+                $('#download_kml').get(0).click();
+            }
+        });
+
+    }
+
 
     function updateMapperEngagementTotal(contributors) {
         var start_date = "{{ start_date }}";

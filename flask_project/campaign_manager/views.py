@@ -524,12 +524,13 @@ def download_josm(uuid, file_name):
 @campaign_manager.route('/generate_kml', methods=['POST'])
 def generate_kml():
     """Generate KML file from geojson."""
-    features = request.values.get('location', None)
+    geojson = request.values.get('location', None)
     uuid = request.values.get('uuid', None)
     campaign_name = request.values.get('campaign_name', None)
-    if not features or not uuid:
+
+    if not geojson or not uuid:
         abort(404)
-    features = json.loads(features)
+    features = json.loads(geojson)['features']
     kml = Kml(name=campaign_name)
 
     file_name = hashlib.md5(
@@ -537,38 +538,36 @@ def generate_kml():
         '{:%m-%d-%Y}'.format(datetime.today()).encode('utf-8')
     ).hexdigest() + '.kml'
 
-    file_path = os.path.join(
-        config.CACHE_DIR,
-        file_name
-    )
+    file_path = os.path.join(config.CACHE_DIR, file_name)
+
+    # For now, let's work only with points.
+    # TODO: include polygons in the kml file.
+    features = [f for f in features if f['geometry']['type'] == 'Point']
 
     for feature in features:
-        if feature['type'] == 'Point':
-            kml_name = ''
-            extended_data = ExtendedData()
+        tags = feature['properties']['tags']
+        extended_data = ExtendedData()
+        kml_name = ''
 
-            if 'name' in feature['tags']:
-                kml_name = feature['tags']['name']
-            elif 'amenity' in feature['tags']:
-                kml_name = feature['tags']['amenity']
+        if 'name' in tags.keys():
+            kml_name = tags['name']
+        elif 'amenity' in tags.keys():
+            kml_name = tags['amenity']
 
-            for key, value in feature['tags'].items():
-                if key != 'name':
-                    extended_data.newdata(key, value)
-
-            kml.newpoint(
-                name=kml_name,
-                extendeddata=extended_data,
-                coords=[
-                    (
-                        feature['latlon'][1],
-                        feature['latlon'][0]
-                    )
-                ]
-            )
-
+        [extended_data.newdata(k, v) for k, v in tags.items() if k != 'name']
+        kml.newpoint(
+            name=kml_name,
+            extendeddata=extended_data,
+            coords=[
+                (
+                    feature['geometry']['coordinates'][0],
+                    feature['geometry']['coordinates'][1]
+                )
+            ]
+        )
     kml.save(path=file_path)
     if kml:
+        # Save file into client storage device.
         return Response(json.dumps({'file_name': file_name}))
 
 
