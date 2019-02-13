@@ -128,7 +128,7 @@ def update_function(path, function_name):
         'aws lambda update-function-configuration',
         '--function-name {function_name}',
         '--environment Variables={env_variables}',
-        '--timeout 300',
+        '--timeout 900',
         '--memory-size 512',
         '--region us-west-2'
     ]).format(
@@ -163,7 +163,7 @@ def create_function(path, function_name):
         '--environment Variables={env_variables}',
         '--code {code}',
         '--memory-size 512',
-        '--timeout 300',
+        '--timeout 900',
         '--region us-west-2'
     ]).format(
         function_name=function_name,
