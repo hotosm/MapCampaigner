@@ -50,6 +50,8 @@ from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.aws import S3Data
 
+from xml.sax.saxutils import escape
+
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
 except ImportError:
@@ -554,7 +556,8 @@ def generate_kml():
         elif 'amenity' in tags.keys():
             kml_name = tags['amenity']
 
-        [extended_data.newdata(k, v) for k, v in tags.items() if k != 'name']
+        [extended_data.newdata(k, escape(v))
+            for k, v in tags.items() if k != 'name']
         kml.newpoint(
             name=kml_name,
             extendeddata=extended_data,
