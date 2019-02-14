@@ -103,7 +103,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="col-lg-2 detail-button-wrapper participate-button" style="margin-top: 20px">
+                <div class="col-lg-10 detail-button-wrapper participate-button" style="margin-top: 20px">
                     <span class="btn btn-label"><strong>Participate</strong></span>
                     <div class="btn-group btn-share-group" role="group" aria-label="...">
                         {% if link_to_omk %}
@@ -112,10 +112,7 @@
                         <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
                     </div>
                 </div>
-                <div id="download_div" class="col-lg-4 alert alert-success">
-                    <p>Your Maps.me file is ready to download. Click <a id="download_kml" href="#">Here</a></p>
-                </div>
-                <div class="col-lg-6 detail-button-wrapper" style="margin-top: 25px;">
+                <div class="col-lg-2 detail-button-wrapper" style="margin-top: 25px;">
                     <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
                         <span class="btn btn-default unclickable" >Share</span>
                         <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
@@ -123,6 +120,7 @@
                     </div>
                 </div>
             </div>
+            <div id="download_div" class="col-lg-12 alert"></div>
         </div>
     </div>
 
@@ -424,9 +422,13 @@
 
             success: function (kml_data) {
                 //$('#download_div').show()
-                let url = '/download_kml/'+campaign_data.uuid+'/' + kml_data.file_name
-                $('#download_kml').attr('href', url)
+                let url = '/download_kml/'+campaign_data.uuid+'/' + kml_data.file_name;
+                $('#download_div').html('Your Maps.me file is downloading. If not, click <a id="download_kml" href="' + url + '">Here</a>');
+                $('#download_div').addClass('alert-success').show();
                 $('#download_kml').get(0).click();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('#download_div').html('Error. Please contact MapCampaigner administrator').addClass('alert-danger').show();
             }
         });
 
