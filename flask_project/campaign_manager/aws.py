@@ -111,9 +111,16 @@ class S3Data(object):
                 Bucket=self.bucket,
                 Prefix=prefix)['Contents']:
                 if obj['Key'] != prefix:
-                    key = obj['Key'].replace(prefix, '')
-                    objects.append(key.split('/')[0])
-            return list(set(objects))
+                    key = obj['Key'].replace(prefix, '').split('/')[0]
+                    if key in [obj['uuid'] for obj in objects]:
+                        continue
+                    modified = obj['LastModified'].toordinal()
+
+                    # Include also last_modified to check cache.
+                    data_dict = {'uuid': key, 'modified': modified}
+                    objects.append(data_dict)
+
+            return objects
         except KeyError:
             return []
 
