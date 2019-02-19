@@ -74,8 +74,8 @@ def get_types():
     """
     surveys = {}
     for filename in S3Data().list('surveys'):
-        survey = get_survey_json(filename)
-        surveys[filename] = survey
+        survey = get_survey_json(filename['uuid'])
+        surveys[filename['uuid']] = survey
     return surveys
 
 
