@@ -17,7 +17,8 @@ class TestSurvey(TestCase):
         """
         surveys = Survey.all()
         self.assertEqual(len(surveys), 7)
-        self.assertEqual('buildings' in surveys, True)
+        ids = [s['uuid'] for s in surveys]
+        self.assertEqual('buildings' in ids, True)
 
     def test_unknown_survey(self):
         """
