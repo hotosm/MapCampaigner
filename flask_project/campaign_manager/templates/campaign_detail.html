@@ -131,6 +131,16 @@
             </div>
         </div>
     </div>
+    <div class='row' id='campaign-failure' style="display:none">
+        <div class='col-lg-12'>
+            <div class='alert alert-danger'>
+                <p>
+                    function: <b><span id="campaign-failure-function"></span></b><br />
+                    error: <b><span id="campaign-failure-error"></span></b>
+                </p>
+            </div>
+        </div>
+    </div>    
     <div class='row' id="campaign-feature-details" style="display:none">
         <div class='col-lg-12'>
             <div class="panel panel-default detail-panel-information">
@@ -288,23 +298,34 @@
         var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
         var types = {{ types|safe }};
 
-        window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
-        countFeaturesCollected(types, s3CampaignUrl);
-        var activeType = types[0];
-        $('.active-type').html(activeType);
-      
-        loadType(activeType, s3CampaignUrl);
-        
-      
-        $('.feature-select a').on('click', function(e) {
-            e.stopPropagation();
-            activeType = $(this).html();
-
+        $.get({
+            url: s3CampaignUrl + '/failure.json',
+            cache: false
+        }).done(function(data) {
+            $('#campaign-computing-status').hide();
+            $('#campaign-failure').show();
+            data = JSON.parse(data);
+            $('#campaign-failure-function').html(data["function"])
+            $('#campaign-failure-error').html(data["failure"])
+        }).fail(function() {
+            window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
+            countFeaturesCollected(types, s3CampaignUrl);
+            var activeType = types[0];
             $('.active-type').html(activeType);
-            $('.dropdown-toggle').attr('aria-expanded', false);
-            $('.feature-select').removeClass('open');
-
+          
             loadType(activeType, s3CampaignUrl);
+            
+          
+            $('.feature-select a').on('click', function(e) {
+                e.stopPropagation();
+                activeType = $(this).html();
+
+                $('.active-type').html(activeType);
+                $('.dropdown-toggle').attr('aria-expanded', false);
+                $('.feature-select').removeClass('open');
+
+                loadType(activeType, s3CampaignUrl);
+            });
         });
         $('#download_div').hide();
     }

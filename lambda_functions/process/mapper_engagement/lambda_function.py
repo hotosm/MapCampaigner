@@ -15,6 +15,15 @@ from aws import S3Data
 
 
 def lambda_handler(event, context):
+    try:
+        main(event, context)
+    except Exception as e:
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({'function': 'process_mapper_engagement', 'failure': str(e)}))
+
+
+def main(event, context):
     uuid = event['campaign_uuid']
     type_name = event['type']
     type_id = type_name.replace(' ', '_')

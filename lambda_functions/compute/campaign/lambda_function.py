@@ -2,7 +2,7 @@ import boto3
 import json
 import os
 from aws import S3Data
-
+import sys
 
 def invoke_download_features(payload):
     aws_lambda = boto3.client('lambda')
@@ -37,8 +37,19 @@ def remove_data(uuid):
                 file=file)
             S3Data().delete(file_key)
 
+    S3Data().delete(f'campaigns/{uuid}/failure.json')
+
+
 
 def lambda_handler(event, context):
+    try:
+        main(event, context)
+    except Exception as e:
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({'function': 'compute_campaign', 'failure': str(e)}))
+
+def main(event, context):
     uuid = event['campaign_uuid']
     payload = json.dumps({'campaign_uuid': uuid})
     
