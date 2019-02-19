@@ -32,19 +32,15 @@
     <div class="row" id="campaign-list">
 
         <div class="row" style="margin-bottom: 20px">
-
-            <div class="col-md-5 custom-5" id="search-campaign">
-                <!-- class="search" automagically makes an input a search field. -->
-                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
-            </div>
-
-            <div class="col-md-5" style="text-align: center; display: flex; justify-content: center;">
+            <div class="col-md-7">
+                <div class="pull-left">
                     <table class="home-option">
                         <tr class="home-option">
                             <td id="showing-div" class="home-option">Showing:</td>
                             <td class="home-option no-padding">
                                 <select class="flat-select" id="campaigns-select">
                                     <!-- <option value="nearest">nearest</option> -->
+                                    <option value="active">active</option>
                                     <option value="all">all</option>
                                     <option value="inactive">inactive</option>
                                 </select>
@@ -55,10 +51,14 @@
                             <td class="home-option nearest-option">
                                 campaigns
                             </td>
-                            <td class="home-option"><input type="checkbox" id="check-show-map" checked> show map</td>
                         </tr>
                     </table>
                 </div>
+            </div>
+            <div class="col-md-5 custom-5" id="search-campaign">
+                <!-- class="search" automagically makes an input a search field. -->
+                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
+            </div>
 
 <!--             <div class="col-md-2 no-padding metroUIform" style="text-align: center">
                 <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
@@ -249,19 +249,23 @@
 
         $('#campaigns-select').change(function () {
             var value = this.value;
-            if(value == 'all') {
+            if(value === 'all') {
                 Cookies.set('user_location_setting', 'all');
                 Cookies.set('campaign-status', 'active');
                 $('.active-campaign').show();
                 $('.inactive-campaign').show();
                 // location.href='/all'
-            } else if(value == 'nearest') {
+            } else if(value === 'active') {
+                $('.active-campaign').show();
+                $('.inactive-campaign').hide();
+            } else if(value === 'nearest') {
                 // Cookies.set('user_location_setting', 'nearest');
                 // Cookies.set('campaign-status', 'active');
                 // location.href='/'
-            } else if(value == 'inactive') {
+            } else if(value === 'inactive') {
                 // displayInactive();
                 // location.href='/';
+                $('.inactive-campaign').show();
                 $('.active-campaign').hide();
             }
         });
@@ -360,7 +364,7 @@
             // getTotalCampaigns();
             clearCampaigns();
             getCampaigns(currentUser);
-            $('#campaigns-select').val("all");
+            $('#campaigns-select').val("active");
             // {% if not all %}
             //     var limitPage = Cookies.get('limit_page');
             //     if(limitPage) {
@@ -528,9 +532,16 @@
                 <li class="col-lg-6 ${campaignStatus(campaign)}-campaign">
                 <div class="campaign-card panel" onclick="openCampaign(event, this, '${campaign.uuid}')">
                     <div class="panel-heading">
-                        <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
-                            <div class="campaign-name ellipsis multiline">${campaign.name}</div>
-                        </a>
+                    <div class="row">
+                        <div class="col-xs-11">
+                            <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
+                                <div class="campaign-name ellipsis multiline">${campaign.name}</div>
+                            </a>
+                        </div>
+                        <div class="col-xs-1">
+                            <span class="fa fa-circle ${campaignStatus(campaign)}"></span>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="campaign-start-date">started ${campaign.start_date}
@@ -613,26 +624,17 @@
 
             $.ajax({
                 url: "/campaigns",
-                success: function(response) {
-                    const campaignRequests = buildRequests(response, bucketUrl, 'campaign.json');
-
-                    $.when.apply($, campaignRequests).then(function(){
-                        if (campaignRequests.length === 1) {
-                            var campaign = arguments[0];
-                            addCampaign(campaign, user);
-                            fetchGeometry(campaign, bucketUrl);
-                        } else {
-                            for (var i = 0; i < arguments.length; i++) {
-                                var campaign = arguments[i][0];
-                                addCampaign(campaign, user);
-                                fetchGeometry(campaign, bucketUrl);
-                            }
-                        }
-                        totalActiveCampaigns = $('.active-campaign').length;
-                        $('#active-campaign-number').html(totalActiveCampaigns);
-                        hideLoading();
-                        setSearch();
+                success: function(data) {
+                    data.map(function(campaign){
+                        addCampaign(campaign, user);
+                        setMarkerToMap(campaign, campaign.geojson);
                     });
+
+                    totalActiveCampaigns = $('.active-campaign').length;
+                    $('#active-campaign-number').html(totalActiveCampaigns);
+                    $('.inactive-campaign').hide();
+                    hideLoading();
+                    setSearch();
                 }
             });
 

@@ -22,6 +22,8 @@ from reporter.exceptions import (
 from campaign_manager.aws import S3Data
 from campaign_manager.models.survey import Survey
 
+from glob import glob
+
 
 def module_path(*args):
     """Get an absolute path for a file that is relative to the root.
@@ -72,8 +74,8 @@ def get_types():
     """
     surveys = {}
     for filename in S3Data().list('surveys'):
-        survey = get_survey_json(filename)
-        surveys[filename] = survey
+        survey = get_survey_json(filename['uuid'])
+        surveys[filename['uuid']] = survey
     return surveys
 
 
@@ -274,3 +276,50 @@ def get_coordinate_from_ip():
     response = requests.get(url)
     data = response.json()
     return data['loc']
+
+
+def get_uuids_from_cache(folder_path):
+    # Get all json files from folder.
+    cache_data = glob(os.path.join(folder_path, '*.json'))
+
+    # Remove file format.
+    cache_uuids = [c.split('.json')[0] for c in cache_data]
+
+    # Remove absolute path.
+    cache_uuids = [c.split('/')[-1] for c in cache_uuids]
+
+    return cache_uuids
+
+
+def get_data_from_s3(uuid, modified):
+    s3 = S3Data()
+
+    # Make a request to get the campaign json and geojson.
+    campaign_json = s3.fetch('campaigns/{0}/campaign.json'.format(uuid))
+    geojson = s3.fetch('campaigns/{0}/campaign.geojson'.format(uuid))
+    campaign_json['geojson'] = geojson
+    campaign_json['modified'] = modified
+
+    return campaign_json
+
+
+def get_data(campaign, cache, folder_path):
+    uuid = campaign['uuid']
+    if uuid in cache:
+        # Read information from campaign.
+        uuid_path = os.path.join(folder_path, '{0}.json'.format(uuid))
+        with open(uuid_path, 'r') as f:
+            data = json.load(f)
+
+        # Check if the campaign has not been modified.
+        if (campaign['modified'] - data['modified']) == 0:
+            return data
+
+    data = get_data_from_s3(uuid, campaign['modified'])
+
+    # Save result in the cache directory.
+    file_path = os.path.join(folder_path, '{0}.json'.format(uuid))
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+
+    return data

@@ -29,6 +29,7 @@ from campaign_manager.utilities import (
     simplify_polygon
 )
 from campaign_manager.aws import S3Data
+import visvalingamwyatt as vw
 
 
 class Campaign(JsonModel):
@@ -91,27 +92,45 @@ class Campaign(JsonModel):
         geocampaign_body = json.dumps(geometry)
         S3Data().create(geocampaign_key, geocampaign_body)
 
-    def generate_static_map(self):
+    def generate_static_map_url(self, simplify):
         """
-        Download static map from http://staticmap.openstreetmap.de with marker,
-        then save it thumbnail folder
+        Generate a MapBox static map URL in production/staging.
+        Generate a OpenStreetMap static map URL in development.
+
+        :param simplify: if set to True, it will simplify the GeoJSON.
+        :type simplify: boolean
+
+        :return: HTTP URL
+        :rtype: str
         """
         if 'MAPBOX_TOKEN' in os.environ:
             url = 'https://api.mapbox.com/styles/v1/hot/' \
                   'cj7hdldfv4d2e2qp37cm09tl8/static/geojson({overlay})/' \
                   'auto/{width}x{height}?' \
                   'access_token=' + os.environ['MAPBOX_TOKEN']
+
             if len(self.geometry['features']) > 1:
                 geometry = {
                     'type': 'Feature',
                     'properties': {},
                     'geometry': mapping(self.get_union_polygons())
                 }
+
                 geometry = json.dumps(geometry, separators=(',', ':'))
+
             else:
+                feature = self.geometry['features'][0]
+                feature['properties'] = {}
+
+                if simplify:
+                    feature['geometry'] = vw.simplify_geometry(
+                        feature['geometry'],
+                        ratio=0.20)
+
                 geometry = json.dumps(
-                    self.geometry['features'][0],
+                    feature,
                     separators=(',', ':'))
+
             url = url.format(
                 overlay=geometry,
                 width=512,
@@ -127,6 +146,19 @@ class Campaign(JsonModel):
                     y=polygon.centroid.y,
                     x=polygon.centroid.x)
 
+        return url
+
+    def generate_static_map(self, simplify=False):
+        """
+        Download static map from http://staticmap.openstreetmap.de with marker,
+        then save it thumbnail folder.
+
+        :param simplify: if set to True, it will simplify the GeoJSON.
+        :type simplify: boolean
+
+        """
+        url = self.generate_static_map_url(simplify)
+
         image_path = 'campaigns/{}/thumbnail.png'.format(self.uuid)
 
         request = requests.get(url, stream=True)
@@ -134,6 +166,11 @@ class Campaign(JsonModel):
             request.raw.decode_content = True
             from io import BytesIO
             S3Data().create(image_path, BytesIO(request.content))
+        else:
+            if simplify:
+                return
+            self.generate_static_map(simplify=True)
+
         self.thumbnail = S3Data().thumbnail_url(self.uuid)
 
     def update_participants_count(self, participants_count, campaign_type):

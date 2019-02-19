@@ -24,6 +24,15 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
+    try:
+        main(event, context)
+    except Exception as e:
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({'function': 'process_feature_attribute_completeness', 'failure': str(e)}))
+
+
+def main(event, context):
     logger.info('got event{}'.format(event))
     uuid = event['campaign_uuid']
     type_name = event['type']

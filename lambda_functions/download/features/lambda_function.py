@@ -6,14 +6,21 @@ from utilities import (
     get_unique_features,
     invoke_download_overpass_data
 )
+from aws import S3Data
 
 
 def lambda_handler(event, context):
+    try:
+        main(event, context)
+    except Exception as e:
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({'function': 'download_features', 'failure': str(e)}))
+
+
+def main(event, context):
     uuid = event['campaign_uuid']
-    print(uuid)
     campaign = Campaign(uuid)
-    # features = get_unique_features(
-    #     functions=campaign._content_json['selected_functions'])
 
     for type_key in campaign.types:
         payload = json.dumps({
@@ -21,9 +28,3 @@ def lambda_handler(event, context):
             'type': campaign.types[type_key]['type']
         })
         invoke_download_overpass_data(payload)
-    # for feature in features:
-    #     payload = json.dumps({
-    #         'campaign_uuid': uuid,
-    #         'feature': feature
-    #     })
-    #     invoke_download_overpass_data(payload)

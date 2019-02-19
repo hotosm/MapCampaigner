@@ -885,6 +885,14 @@ body {
     border-bottom: none;
 }
 
+span.active {
+    color: #57c962;
+}
+
+span.inactive {
+    color: #ac3232;
+}
+
 .feature-list-table th, table.dataTable thead td {
     border-bottom: none !important;
     color: #919191;

@@ -1,14 +1,18 @@
 from flask_restful import Resource, Api
 from flask import request
 import logging
+import os
 from flask import current_app
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.mapper_engagement import \
     MapperEngagement
-from campaign_manager.utilities import get_coordinate_from_ip
+from campaign_manager.utilities import get_coordinate_from_ip, \
+    get_uuids_from_cache, get_data
 from campaign_manager.aws import S3Data
+
+from reporter import config
 
 api = Api(campaign_manager)
 
@@ -23,18 +27,22 @@ class CampaignList(Resource):
 
     # def get(self, campaign_status):
     def get(self):
-        """Get all campaigns.
-        """
-        return S3Data().list('campaigns')
+        # List all campaigns.
+        campaign_uuids = S3Data().list('campaigns')
 
-        args = request.args
-        campaigns = self.get_all_campaign(campaign_status, args)
-        campaigns_json = []
+        folder_path = os.path.join(config.CACHE_DIR, 'campaigns')
 
-        for campaign in campaigns:
-            campaigns_json.append(campaign.json())
+        # Check that folder exists. If not, create it.
+        if not os.path.isdir(folder_path):
+            os.mkdir(folder_path)
 
-        return campaigns_json
+        cached_uuids = get_uuids_from_cache(folder_path)
+
+        # Get all campaign information from either s3 or cache directory.
+        campaigns = [get_data(campaign, cached_uuids, folder_path)
+            for campaign in campaign_uuids]
+
+        return campaigns
 
 
 class CampaignNearestList(Resource):

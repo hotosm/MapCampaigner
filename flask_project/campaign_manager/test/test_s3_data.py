@@ -81,7 +81,7 @@ class TestS3Data(TestCase):
         """
         campaigns = self.s3_data.list('campaigns')
         self.assertEqual(len(campaigns), 1)
-        self.assertEqual(campaigns[0], self.uuid)
+        self.assertEqual(campaigns[0]['uuid'], self.uuid)
 
     def test_list_surveys(self):
         """
@@ -89,7 +89,8 @@ class TestS3Data(TestCase):
         """
         surveys = self.s3_data.list('surveys')
         self.assertEqual(len(surveys), 7)
-        self.assertEqual('buildings' in surveys, True)
+        ids = [s['uuid'] for s in surveys]
+        self.assertEqual('buildings' in ids, True)
 
     def test_list_nothing(self):
         """
