@@ -624,27 +624,17 @@
 
             $.ajax({
                 url: "/campaigns",
-                success: function(response) {
-                    const campaignRequests = buildRequests(response, bucketUrl, 'campaign.json');
-
-                    $.when.apply($, campaignRequests).then(function(){
-                        if (campaignRequests.length === 1) {
-                            var campaign = arguments[0];
-                            addCampaign(campaign, user);
-                            fetchGeometry(campaign, bucketUrl);
-                        } else {
-                            for (var i = 0; i < arguments.length; i++) {
-                                var campaign = arguments[i][0];
-                                addCampaign(campaign, user);
-                                fetchGeometry(campaign, bucketUrl);
-                            }
-                        }
-                        totalActiveCampaigns = $('.active-campaign').length;
-                        $('#active-campaign-number').html(totalActiveCampaigns);
-                        $('.inactive-campaign').hide();
-                        hideLoading();
-                        setSearch();
+                success: function(data) {
+                    data.map(function(campaign){
+                        addCampaign(campaign, user);
+                        setMarkerToMap(campaign, campaign.geojson);
                     });
+
+                    totalActiveCampaigns = $('.active-campaign').length;
+                    $('#active-campaign-number').html(totalActiveCampaigns);
+                    $('.inactive-campaign').hide();
+                    hideLoading();
+                    setSearch();
                 }
             });
 
