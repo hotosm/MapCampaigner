@@ -28,6 +28,10 @@ class Survey():
     @staticmethod
     def all():
         surveys = S3Data().list('surveys')
+
+        # Remove modified value when listing surveys.
+        surveys = [s['uuid'] for s in surveys]
+
         return surveys
 
     @staticmethod
