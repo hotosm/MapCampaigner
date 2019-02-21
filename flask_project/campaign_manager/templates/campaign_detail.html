@@ -221,6 +221,10 @@
                 <div class='panel-heading'>
                     <i class="fa fa-user" aria-hidden="true"></i>
                     Users Engagement
+                    <div class="pull-right participate-button">
+                        <div id="csv_div"></div>
+                        <button type="button" onclick="DownloadCsv()" class="btn btn-default"><i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                    </div>
                 </div>
                 <div class='panel-body' style="padding-bottom: 0;padding-top: 0;">
                     <div class='row' id='user-engagement-wrapper'>
@@ -328,6 +332,26 @@
             });
         });
         $('#download_div').hide();
+    }
+
+    function DownloadCsv() {
+        let types = {{ types|safe }};
+        let params = {
+            'uuid': '{{ uuid }}',
+            'campaign_url' : '{{ s3_campaign_url | safe }}',
+            'types': types.toString()
+        }
+        $.ajax({
+            type: 'GET',
+            url: '/generate_csv',
+            data: params,
+            dataType: 'json',
+            success: function (csv_data) {
+                let url = '/download_csv/'+csv_data.uuid+'/' + csv_data.file_name;
+                $('#csv_div').html('<a id="download_csv" href="' + url + '"></a>');
+                $('#download_csv').get(0).click();
+            }
+        });
     }
 
     function loadType(activeType, s3CampaignUrl) {

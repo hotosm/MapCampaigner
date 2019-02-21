@@ -323,3 +323,23 @@ def get_data(campaign, cache, folder_path):
         json.dump(data, f)
 
     return data
+
+
+def get_contribs(url, ctype):
+    req = '{0}/render/{1}/mapper_engagement.json'
+    resp = requests.get(req.format(url, ctype))
+
+    # We return nothing. At the end, we filter results.
+    if resp.status_code != 200 :
+        return None
+
+    users = resp.json()
+
+    # Create a separate list of contribution per date per user.
+    data = [[[u['name'], ctype, t[0], t[1]] for t
+            in json.loads(u['timeline'])] for u in users]
+
+    # Flatten list.
+    data = [item for sublist in data for item in sublist]
+
+    return data
