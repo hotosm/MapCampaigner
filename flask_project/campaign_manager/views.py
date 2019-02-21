@@ -533,6 +533,9 @@ def generate_csv():
 
     csv_data = [get_contribs(url, t) for t in types]
 
+    # Remove None values.
+    csv_data = [t for t in csv_data if t is not None]
+
     # Flatten again to create only a single list.
     csv_data = [item for sublist in csv_data for item in sublist]
 
