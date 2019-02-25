@@ -1,7 +1,9 @@
+import csv
 import inspect
 import json
 import os
 import hashlib
+import requests
 import shutil
 from simplekml import Kml, ExtendedData
 from datetime import datetime
@@ -44,7 +46,7 @@ from campaign_manager.insights_functions.osmcha_changesets import \
 from campaign_manager.data_providers.overpass_provider import OverpassProvider
 from reporter import config
 from campaign_manager.utilities import (
-    load_osm_document_cached
+    load_osm_document_cached, get_contribs
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
@@ -521,6 +523,48 @@ def download_josm(uuid, file_name):
             file_path,
             as_attachment=True,
             attachment_filename=campaign_name)
+
+
+@campaign_manager.route('/generate_csv', methods=['GET'])
+def generate_csv():
+    types = request.values.get('types').split(',')
+    url = request.values.get('campaign_url')
+    uuid = request.values.get('uuid')
+
+    csv_data = [get_contribs(url, t) for t in types]
+
+    # Remove None values.
+    csv_data = [t for t in csv_data if t is not None]
+
+    # Flatten again to create only a single list.
+    csv_data = [item for sublist in csv_data for item in sublist]
+
+    file_name = '{0}.csv'.format(uuid)
+    file_path = os.path.join(config.CACHE_DIR, file_name)
+
+    # Append headers.
+    headers = ['user', 'type', 'date', 'no_contribs']
+    csv_data = [headers] + csv_data
+
+    with open(file_path, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerows(csv_data)
+    resp_dict = {'file_name': file_name, 'uuid': uuid}
+
+    return Response(json.dumps(resp_dict))
+
+
+@campaign_manager.route('/download_csv/<uuid>/<file_name>')
+def download_csv(uuid, file_name):
+    file_path = os.path.join(config.CACHE_DIR, file_name)
+    if not os.path.exists(file_path):
+        abort(404)
+
+    return send_file(
+        file_path,
+        as_attachment=True,
+        attachment_filename=file_name
+    )
 
 
 @campaign_manager.route('/generate_kml', methods=['POST'])
