@@ -6,6 +6,7 @@ import os
 import threading
 import requests
 from utilities import absolute_path
+import sys
 import tempfile
 import time
 import yaml
@@ -341,5 +342,9 @@ def get_contribs(url, ctype):
 
     # Flatten list.
     data = [item for sublist in data for item in sublist]
+
+    # Fix for compatibility between python versions.
+    if sys.version_info[0] == 2:
+        data = [[unicode(t).encode('utf-8') for t in item] for item in data]
 
     return data
