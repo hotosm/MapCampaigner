@@ -626,8 +626,12 @@
                 url: "/campaigns",
                 success: function(data) {
                     data.map(function(campaign){
-                        addCampaign(campaign, user);
-                        setMarkerToMap(campaign, campaign.geojson);
+                        try {
+                            addCampaign(campaign, user);
+                            setMarkerToMap(campaign, campaign.geojson);
+                        } catch(e) {
+                            console.log('error: ' + campaign.uuid);
+                        }
                     });
 
                     totalActiveCampaigns = $('.active-campaign').length;
