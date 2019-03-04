@@ -326,12 +326,6 @@ def get_data(campaign, cache, folder_path):
     return data
 
 
-def format_row(name, ctype, date, number):
-    if not isinstance(name, str):
-        name = name.encode('utf-8')
-    return '{0},{1},{2},{3}'.format(name, ctype, date, number)
-
-
 def get_contribs(url, ctype):
     req = '{0}/render/{1}/mapper_engagement.json'
     resp = requests.get(req.format(url, ctype))
@@ -343,7 +337,7 @@ def get_contribs(url, ctype):
     users = resp.json()
 
     # Create a separate list of contribution per date per user.
-    data = [[format_row(u['name'], ctype, t[0], t[1]) for t
+    data = [[[u['name'], ctype, t[0], t[1]] for t
             in json.loads(u['timeline'])] for u in users]
 
     # Flatten list.
