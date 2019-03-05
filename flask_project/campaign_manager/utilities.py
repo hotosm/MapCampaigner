@@ -6,6 +6,7 @@ import os
 import threading
 import requests
 from utilities import absolute_path
+import sys
 import tempfile
 import time
 import yaml

@@ -546,9 +546,10 @@ def generate_csv():
     headers = ['user', 'type', 'date', 'no_contribs']
     csv_data = [headers] + csv_data
 
-    with open(file_path, 'w') as f:
+    with open(file_path, 'w', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerows(csv_data)
+
     resp_dict = {'file_name': file_name, 'uuid': uuid}
 
     return Response(json.dumps(resp_dict))
