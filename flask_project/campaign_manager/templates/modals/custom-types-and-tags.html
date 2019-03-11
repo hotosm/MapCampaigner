@@ -420,58 +420,83 @@ shop:
         }
     }
 
+    function displayError(message) {
+        $('.modal-error-message').show();
+        $('.modal-error-message').html('Error: ' + message);
+    }
+
+    function appendError(field, key) {
+        return '<p> No <b>' + field +'</b> element as child of <b>' + key + '</b><p>'
+    }
+
+    function appendRepeated(key) {
+        return '<p> Type <b>' + key +'</b> already registered <p>'
+    }
+
     function saveYamlCustomType() {
         $('.modal-required-message,.modal-error-message').hide();
-        try {
-            var data = jsyaml.load($('#yaml-input').val());
-            {# check value #}
-            var correctFormat = true;
-            $.each(data, function (key, value) {
-                if (!value['feature'] || !value['tags']) {
-                    $('.modal-error-message').show();
-                    $('.modal-error-message').html('No feature or tags as child of ' + key);
-                    correctFormat = false;
-                }
-                if (!rowElements[key] && types[key]) {
-                    $('.modal-footer .modal-required-message').show();
-                    correctFormat = false;
-                }
-                var cleanTags = {};
-                if (value['tags'] && value['feature']) {
-                    $.each(value['tags'], function (index, value) {
-                        if (jQuery.type(value) === 'string') {
-                            cleanTags[value] = []
-                        } else {
-                            var firstKey = Object.keys(value)[0];
-                            cleanTags[firstKey] = value[firstKey];
-                        }
-                    });
-                    {# tags for features #}
-                    var features = value['feature'].split('=');
-                    cleanTags[features[0]] = [];
-                    if (features[1]) {
-                        cleanTags[features[0]] = features[1].split(',');
-                    }
-                }
-                value['custom'] = true;
-                value['insights'] = [
-                    "FeatureAttributeCompleteness",
-                    "CountFeature",
-                    "MapperEngagement"
-                ];
-                value['tags'] = cleanTags;
-            });
-            if (correctFormat) {
-                $.each(data, function (key, value) {
-                    $(rowElements[key]).closest('.row').remove();
-                    types[key] = value;
-                    addTypes(key);
-                });
-                $('#custom-types-tags').modal('toggle');
-            }
-        } catch (error) {
-            $('.modal-error-message').show();
-            $('.modal-error-message').html(error.message);
+        let data = jsyaml.load($('#yaml-input').val());
+        if (typeof data === 'undefined') {
+            displayError('Empty text area'); return
         }
+
+        // Check types previously included before.
+        let data_keys = Object.keys(data);
+        let types_keys = Object.keys(types);
+
+        // Find the intersection of both arrays.
+        let message = '';
+        data_keys = data_keys.filter(key => types_keys.includes(key));
+        data_keys.forEach(function(key){
+            message += appendRepeated(key)
+        });
+        if (message !== '') {
+            displayError(message); return
+        }
+
+        let fields = ['feature', 'tags', 'element_type'];
+
+        // TODO: Include geometry checker.
+
+        // Iterate over fields to check.
+        $.each(data, function (key, value) {
+            fields.map(function(field) {
+                if (!value[field]) {
+                    message += appendError(field, key);
+                }
+            });
+        });
+        if (message !== '') {
+            displayError(message); return
+        }
+        // If all fields are ok, iterate over tags.
+        $.each(data, function (key, elements) {
+            let cleanTags = {};
+            $.each(elements['tags'], function (index, value) {
+                if ($.type(value) === 'string') {
+                    cleanTags[value] = [];
+                }
+                else {
+                    let key = Object.keys(value)[0];
+                    cleanTags[key] = value[key];
+                }
+            });
+
+            // Include additional fields.
+            elements['custom'] = true;
+            elements['insights'] = [
+                "FeatureAttributeCompleteness",
+                "CountFeature",
+                "MapperEngagement"
+            ];
+            elements['tags'] = cleanTags;
+        });
+
+        $.each(data, function (key, value) {
+            $(rowElements[key]).closest('.row').remove();
+            types[key] = value;
+            addTypes(key);
+        });
+        $('#custom-types-tags').modal('toggle');
     }
 </script>
