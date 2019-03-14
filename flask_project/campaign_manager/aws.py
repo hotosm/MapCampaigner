@@ -106,13 +106,20 @@ class S3Data(object):
         """
         prefix = '{}/'.format(prefix)
         objects = []
-        try:
-            for obj in self.s3.list_objects(
-                Bucket=self.bucket,
-                Prefix=prefix)['Contents']:
+        req_kwargs = {'Bucket': self.bucket, 'Prefix': prefix}
+
+        # Loop to get all campaigns.
+        while True:
+            try:
+                resp = self.s3.list_objects_v2(**req_kwargs)
+                contents = resp['Contents']
+            except KeyError:
+                break
+
+            for obj in contents:
                 if obj['Key'] != prefix:
                     key = obj['Key'].replace(prefix, '').split('/')[0]
-                    if key in [obj['uuid'] for obj in objects]:
+                    if key in [o['uuid'] for o in objects]:
                         continue
                     modified = obj['LastModified'].toordinal()
 
@@ -120,9 +127,15 @@ class S3Data(object):
                     data_dict = {'uuid': key, 'modified': modified}
                     objects.append(data_dict)
 
-            return objects
-        except KeyError:
-            return []
+            # Check that we are done getting data from s3.
+            if resp['IsTruncated'] is False:
+                break
+
+            # Update request with continuation token returned from response.
+            new_dict = {'ContinuationToken': resp['NextContinuationToken']}
+            req_kwargs.update(new_dict)
+
+        return objects
 
     def create(self, key, body):
         """
