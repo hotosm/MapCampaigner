@@ -122,10 +122,7 @@
                             <div id="typesTagsContainer"></div>
                             <div class="row">
                                 <div class="form-body form-group col-lg-4" style="margin-top: 10px">
-                                    <input id="btn-add" type="button" value="+ Choose a template" onclick="addTypes()">
-                                    <input id="btn-add" type="button" value="+ Add custom type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
-                                    <input id="btn-add" type="button" value="Edit custom types in yaml"
-                                           style="margin-top: 10px" data-format="all-yaml" data-toggle="modal" data-target="#custom-types-tags">
+                                    <input id="btn-add" type="button" value="+ Add type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
                                 </div>
                             </div>
                             <!-- Managers -->
@@ -306,7 +303,7 @@
         <input id="submit" style="display: none" name="submit" type="submit" value="SUBMIT/UPDATE" class="btn submit-button">
     </div>
     </div>
-    {% include 'modals/custom-types-and-tags.html' %}
+    {% include 'modals/modal_main.html' %}
 
 {% endblock %}
 
@@ -369,6 +366,7 @@
     <script type="text/javascript" src="/static/js/create/map.js"></script>
 
     <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
+    <script type="text/javascript" src="/static/js/create/modal.js"></script>
     <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
     <script type='text/template' id='_template-function-form'>
