@@ -2,7 +2,7 @@ import boto3
 import json
 import os
 from aws import S3Data
-import sys
+
 
 def invoke_download_features(payload):
     aws_lambda = boto3.client('lambda')
@@ -14,6 +14,7 @@ def invoke_download_features(payload):
         InvocationType='RequestResponse',
         Payload=payload)
 
+
 def remove_data(uuid):
     raw_data_key = "campaigns/{uuid}/overpass".format(
         uuid=uuid)
@@ -22,11 +23,11 @@ def remove_data(uuid):
         file_key = "{raw_data_key}/{file}".format(
             raw_data_key=raw_data_key,
             file=file)
-        S3Data().delete(file_key)  
+        S3Data().delete(file_key)
 
     render_key = "campaigns/{uuid}/render".format(
         uuid=uuid)
-    
+
     for typee in S3Data().list(render_key):
         render_typee_key = "{render_key}/{typee}".format(
             render_key=render_key,
@@ -40,7 +41,6 @@ def remove_data(uuid):
     S3Data().delete(f'campaigns/{uuid}/failure.json')
 
 
-
 def lambda_handler(event, context):
     try:
         main(event, context)
@@ -49,9 +49,10 @@ def lambda_handler(event, context):
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
             body=json.dumps({'function': 'compute_campaign', 'failure': str(e)}))
 
+
 def main(event, context):
     uuid = event['campaign_uuid']
     payload = json.dumps({'campaign_uuid': uuid})
-    
+
     remove_data(uuid)
     invoke_download_features(payload)

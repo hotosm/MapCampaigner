@@ -42,8 +42,8 @@ class FileManager(object):
 
     def remove_last_comma(self):
         # if self.size() > 2:
-        self.fd.seek(0, 2) # go to end of file
-        self.fd.seek(self.fd.tell() - 2, 0) # go backwards 2 bytes
+        self.fd.seek(0, 2)  # go to end of file
+        self.fd.seek(self.fd.tell() - 2, 0)  # go backwards 2 bytes
 
     def write(self, data):
         if (self.size() + len(data)) >= self.SIZE_LIMIT:
@@ -52,7 +52,7 @@ class FileManager(object):
             self.remove()
             self.count += 1
             self.open()
-        
+
         self.fd.write(data)
         self.fd.write(',\n')
 
@@ -64,13 +64,13 @@ class FileManager(object):
             with gzip.GzipFile(fileobj=temp_file, mode='wb') as gz:
                 shutil.copyfileobj(json_file, gz)
             temp_file.seek(0)
-            
+
             bucket.upload_fileobj(
                 Fileobj=temp_file,
                 Key=self.current_key(),
                 ExtraArgs={
                     "ACL": "public-read",
-                    "ContentType": "application/json", 
+                    "ContentType": "application/json",
                     "ContentEncoding": "gzip"
                 })
 
@@ -90,14 +90,14 @@ class ErrorsFileManager(FileManager):
     def write_footer(self):
         self.remove_last_comma()
         self.fd.write(']')
- 
+
 
 class GeojsonFileManager(FileManager):
     def __init__(self, destination):
         self.filename = 'geojson'
         self.extension = 'json'
         super(GeojsonFileManager, self).__init__(destination)
-    
+
     def write_header(self):
         self.fd.write('{"type": "FeatureCollection","features": [\n')
 

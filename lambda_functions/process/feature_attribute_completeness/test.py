@@ -3,12 +3,8 @@ import warnings
 import os
 import json
 import xml.sax
-from lambda_function import (
-    lambda_handler
-)
-from utilities import (    
-    fetch_required_tags,
-)
+from lambda_function import lambda_handler
+from utilities import fetch_required_tags
 from parser import FeatureCompletenessParser
 
 
@@ -41,8 +37,20 @@ class TestFileManager(unittest.TestCase):
         """
         It should create 3 geojson files.
         """
-        
-        geojson = json.dumps({"type": "Feature", "geometry": {"type": "Point", "coordinates": ["-9.1334205", "38.7135886"]}, "properties": {"popup": "self.build_popup()"}, "id": "296224622", "completeness_color": "#ff0000", "completeness_pct": "0%"})
+
+        geojson = json.dumps({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": ["-9.1334205", "38.7135886"]
+                },
+            "properties": {
+                "popup": "self.build_popup()"
+                },
+            "id": "296224622",
+            "completeness_color": "#ff0000",
+            "completeness_pct": "0%"
+            })
         geojson_file_manager = GeojsonFileManager()
         for _ in range(50000):
             geojson_file_manager.write(geojson)
@@ -53,7 +61,19 @@ class TestFileManager(unittest.TestCase):
         self.assertEqual(os.path.isfile('/tmp/geojson_3.json'), True)
 
     def test_write_geojson(self):
-        geojson = json.dumps({"type": "Feature", "geometry": {"type": "Point", "coordinates": ["-9.1334205", "38.7135886"]}, "properties": {"popup": "self.build_popup()"}, "id": "296224622", "completeness_color": "#ff0000", "completeness_pct": "0%"})
+        geojson = json.dumps({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": ["-9.1334205", "38.7135886"]
+                },
+            "properties": {
+                "popup": "self.build_popup()"
+                },
+            "id": "296224622",
+            "completeness_color": "#ff0000",
+            "completeness_pct": "0%"
+            })
         geojson_file_manager = GeojsonFileManager()
         for _ in range(50):
             geojson_file_manager.write(geojson)
@@ -79,11 +99,15 @@ class TestFileManager(unittest.TestCase):
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")   
-  
+        warnings.filterwarnings(
+            "ignore",
+            category=ResourceWarning,
+            message="unclosed.*<ssl.SSLSocket.*>"
+            )
+
     def test_run(self):
         event = {
-           'campaign_uuid': '281ccea8628a43febda42caf30bbd316', 
+           'campaign_uuid': '281ccea8628a43febda42caf30bbd316',
            'type': 'buildings'
         }
         lambda_handler(event, {})
@@ -92,30 +116,30 @@ class TestCase(unittest.TestCase):
         feature = 'amenity=cafe'
         functions = {
             "function-1": {
-            "function": "FeatureAttributeCompleteness", 
-            "feature": "amenity=cafe", 
-            "attributes": {"amenity": ["cafe"], "name": [], "cuisine": [], "operator": [], "opening_hours": []}, 
-            "type": "cafe"}, 
-        "function-2": {
-            "function": "CountFeature", "feature": "amenity=cafe", 
+            "function": "FeatureAttributeCompleteness",
+            "feature": "amenity=cafe",
             "attributes": {"amenity": ["cafe"], "name": [], "cuisine": [], "operator": [], "opening_hours": []},
-            "type": "cafe"}, 
+            "type": "cafe"},
+        "function-2": {
+            "function": "CountFeature", "feature": "amenity=cafe",
+            "attributes": {"amenity": ["cafe"], "name": [], "cuisine": [], "operator": [], "opening_hours": []},
+            "type": "cafe"},
         "function-3": {
-            "function": "MapperEngagement", "feature": "amenity=cafe", 
-            "attributes": {"amenity": ["cafe"], "name": [], "cuisine": [], "operator": [], "opening_hours": []}, 
-            "type": "cafe"}, 
+            "function": "MapperEngagement", "feature": "amenity=cafe",
+            "attributes": {"amenity": ["cafe"], "name": [], "cuisine": [], "operator": [], "opening_hours": []},
+            "type": "cafe"},
         "function-4": {
-            "function": "FeatureAttributeCompleteness", "feature": "shop=supermarket", 
-            "attributes": {"shop": ["supermarket"], "name": []}, 
-            "type": "supermarket"}, 
-        "function-5": {
-            "function": "CountFeature", "feature": "shop=supermarket", 
+            "function": "FeatureAttributeCompleteness", "feature": "shop=supermarket",
             "attributes": {"shop": ["supermarket"], "name": []},
-            "type": "supermarket"}, 
+            "type": "supermarket"},
+        "function-5": {
+            "function": "CountFeature", "feature": "shop=supermarket",
+            "attributes": {"shop": ["supermarket"], "name": []},
+            "type": "supermarket"},
         "function-6": {
-            "function": "MapperEngagement", 
-            "feature": "shop=supermarket", 
-            "attributes": {"shop": ["supermarket"], "name": []}, 
+            "function": "MapperEngagement",
+            "feature": "shop=supermarket",
+            "attributes": {"shop": ["supermarket"], "name": []},
             "type": "supermarket"}
         }
         required_tags = fetch_required_tags(feature, functions)

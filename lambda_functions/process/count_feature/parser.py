@@ -29,7 +29,5 @@ class CountFeatureParser(xml.sax.ContentHandler):
                 else:
                     self.count[value] = 0
 
-
     def endElement(self, name):
         return
-
