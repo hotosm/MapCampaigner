@@ -91,7 +91,7 @@ function addCustomType(typeData) {
 
 function modalReset() {
     rowElements = {};
-    $('#custom-types-tags .modal-title').html('+ Add custom type');
+    $('#custom-types-tags .modal-title').html('+ Add type');
     $('#btn-add-custom-type').html('Add');
     $('#custom_type_name').val('');
     $('#custom_type_feature').val('');
@@ -219,6 +219,16 @@ function ReorderTags(element) {
     return cleanTags
 }
 
+function checkGeom(geometry_type, key) {
+    // Check that the given value is within the array.
+    let geometry_types = ['Point', 'Line', 'Polygon'];
+    valid_geom = geometry_types.filter(k => k === geometry_type).length;
+    if (valid_geom === 0) {
+        return '<p><b>Element type</b> field of type <b>' + key + '</b> must be <i>Point</i>, <i>Line</i> or <i>Polygon</i></p>'
+    }
+    return ''
+}
+
 function saveYamlCustomType() {
     $('.modal-required-message,.modal-error-message').hide();
 
@@ -256,7 +266,7 @@ function saveYamlCustomType() {
         }
     }
 
-    let fields = ['feature', 'tags', 'element_type'];
+    let fields = ['feature', 'tags'];
     // TODO: Include geometry checker.
     // Iterate over fields to check.
     $.each(data, function (key, value) {
@@ -265,6 +275,13 @@ function saveYamlCustomType() {
                 message += appendError(field, key);
             }
         });
+
+        // Create element type field with blank value.
+        if (!value['element_type']) {
+            value['element_type'] = '';
+        } else {
+            message += checkGeom(value['element_type'], key);
+        }
     });
     if (message !== '') {
         displayError(message); return
