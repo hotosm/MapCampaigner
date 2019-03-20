@@ -1,0 +1,169 @@
+<!-- Modal -->
+<style>
+    #yaml-format {
+        display: none;
+    }
+
+    .modal-content {
+        background-color: #f7f7f7 !important;
+    }
+
+    .modal-required-message, .modal-error-message {
+        display: none;
+        color: #ac3232;
+    }
+
+    #modal-form label {
+        margin-bottom: 16px;
+    }
+
+    .custom-tag-row {
+        width: 100%;
+        margin-bottom: 10px;
+        height: 36px;
+    }
+
+    .select-types:disabled {
+        width: 90% !important;
+        float: left;
+    }
+
+    .edit-custom-type {
+        padding-left: 5px;
+        float: left;
+        padding-top: 4px;
+    }
+
+    .edit-custom-type i {
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .custom-help-block {
+        font-size: 9.4pt;
+        padding-left: 20px;
+    }
+
+    .help {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .modal-footer .modal-required-message {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    #custom-types-tags ul li a {
+        color: black;
+    }
+
+    #custom-types-tags ul li.disabled {
+        display: none;
+    }
+
+</style>
+
+<div id="custom-types-tags" class="modal fade" role="dialog">
+    <div id="easy-format" class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">+ Add type</h4>
+            </div>
+
+			<div class="modal-body">
+				<ul class="nav nav-tabs">
+				<li id="li-home" class="active"><a data-toggle="tab" href="#modal-home">Home</a></li>
+					<li id="li-template"><a data-toggle="tab"  href="#modal-template">Choose from template</a></li>
+					<li id="li-custom"><a data-toggle="tab"  href="#modal-custom">Custom Form</a></li>
+					<li id="li-yaml"><a data-toggle="tab"  href="#modal-yaml">Yaml editor</a></li>
+				</ul>
+
+				<div class="tab-content">
+                    <div id="modal-home" class="tab-pane fade in active">
+    					{% include 'modals/modal_home.html' %}
+                    </div>
+    				<div id="modal-template" class="tab-pane fade">
+    				</div>
+    				<div id="modal-custom" class="tab-pane fade">
+    					{% include 'modals/modal_form.html' %}
+    				</div>
+    				<div id="modal-yaml" class="tab-pane fade">
+    					{% include 'modals/modal_yaml.html' %}
+    				</div>
+				</div>
+			</div>				
+        </div>
+    </div>
+</div>
+
+<script type='text/template' id='_custom_new_tag'>
+    <% if (!is_required) { %>
+    <div class="custom-tag-row">
+        <% }else{ %>
+        <div class="custom-tag-row" id="required-custom-tag-row">
+            <% } %>
+            <div class="col-lg-10">
+                <div class="form-group">
+                    <% if (!is_required) { %>
+                    <input placeholder="New tag" type="text" class="custom-tag-input form-control">
+                    <% }else{ %>
+                    <input placeholder="New tag" type="text" class="custom-tag-input form-control" disabled>
+                    <% } %>
+                    <div class="modal-required-message">This field is required</div>
+                </div>
+            </div>
+            <% if (!is_required) { %>
+            <div class="col-lg-2">
+                <button class="btn btn-warning btn-sm btn-block" style="margin-top: 1px" type="button" onclick="removeCustomTags(this)"><i class="fa fa-minus"></i></button>
+            </div>
+            <% } %>
+        </div>
+</script>
+
+<script>
+    var rowElements = {};
+    $('#custom-types-tags').on('show.bs.modal', function (e) {
+        // Add classes and attributes.
+        $('#modal-home').addClass('active').addClass('in');
+        $('#li-home').addClass('active');
+
+        $('#li-custom').removeClass('active');
+        $('#modal-custom').removeClass('active').removeClass('in');
+
+        $('#li-yaml').removeClass('active');
+        $('#modal-yaml').removeClass('active').removeClass('in');
+
+        $('#li-template').removeClass('active');
+        $('#modal-template').removeClass('active').removeClass('in').empty();
+
+        $('#li-template').removeClass('disabled');
+        $('#li-home').removeClass('disabled');
+        $('#li-yaml').removeClass('disabled');
+
+        $('#li-template a').attr('data-toggle', 'tab');
+        $('#li-home a').attr('data-toggle', 'tab');
+        $('#li-yaml a').attr('data-toggle', 'tab');
+
+        rowElements = null;
+        var relatedTarget = e.relatedTarget;
+        var type_selected = $(relatedTarget).closest('.form-group').find('select').val();
+        modalReset();
+        if (type_selected) {
+            $('#yaml-input').val('');
+            addingCustomTypeForm(type_selected, $(relatedTarget).closest('.row'))
+            $('#custom-types-tags .modal-title').html('Edit custom type of ' + type_selected);
+        }
+    });
+
+    // Check types option.
+    $('#li-template').click(function() {
+        addTypes();
+        $('#custom-types-tags').modal('toggle');
+    });
+
+</script>
+
