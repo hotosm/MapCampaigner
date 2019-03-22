@@ -85,10 +85,10 @@ class S3Data(object):
             Body=body,
             ACL='public-read')
 
-    def upload_file(self, key, body):        
+    def upload_file(self, key, body):
         self.s3.upload_fileobj(
-            Fileobj=body, 
-            Bucket=self.bucket, 
+            Fileobj=body,
+            Bucket=self.bucket,
             Key=key,
             ExtraArgs={
                 'ACL': 'public-read'

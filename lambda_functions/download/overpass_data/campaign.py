@@ -1,7 +1,5 @@
 import json
-import os
-from dependencies.shapely import geometry
-from dependencies.shapely import ops
+from dependencies.shapely import (geometry, ops)
 import numpy
 from json_model import JsonModel
 from utilities import (

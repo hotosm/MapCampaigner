@@ -82,7 +82,7 @@ def serialize_overpass_data(uuid, feature):
     S3Data().download_file(
         key=path,
         feature=feature)
-    
+
     xml_file = open('/tmp/{feature}.xml'.format(feature=feature), 'r')
     parser = ElementParser()
     import xml.sax

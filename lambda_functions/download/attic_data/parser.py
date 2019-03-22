@@ -13,6 +13,7 @@ class ElementParser(xml.sax.ContentHandler):
             'way': [],
             'relation': []
         }
+
     def startDocument(self):
         return
 
@@ -29,7 +30,6 @@ class ElementParser(xml.sax.ContentHandler):
         elif name == 'relation':
             element_id = attrs.getValue('id')
             self.elements_ids['relation'].append(str(element_id))
-
 
     def endElement(self, name):
         return

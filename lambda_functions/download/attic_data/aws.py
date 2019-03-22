@@ -53,10 +53,10 @@ class S3Data(object):
         else:
             return yaml.load(raw_content)
 
-    def upload_file(self, key, body):        
+    def upload_file(self, key, body):
         self.s3.upload_fileobj(
-            Fileobj=body, 
-            Bucket=self.bucket, 
+            Fileobj=body,
+            Bucket=self.bucket,
             Key=key,
             ExtraArgs={
                 'ACL': 'public-read'
@@ -66,8 +66,8 @@ class S3Data(object):
         with open('/tmp/{feature}.xml'.format(
             feature=feature), 'wb') as data:
                 self.s3.download_fileobj(
-                    Bucket=self.bucket, 
-                    Key=key, 
+                    Bucket=self.bucket,
+                    Key=key,
                     Fileobj=data)
 
     def is_json(self, key):
