@@ -1,30 +1,25 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/17'
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 import bisect
-import math
 import copy
-import hashlib
-import requests
-import shutil
 import json
 import os
-import pygeoj
-import time
 
+import pygeoj
+import requests
 from flask import render_template
 from shapely import geometry as shapely_geometry
-from shapely.geometry import mapping, shape, JOIN_STYLE
+from shapely.geometry import mapping, JOIN_STYLE
 from shapely.ops import cascaded_union
 import numpy
+from area import area
 
 from app_config import Config
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.models.json_model import JsonModel
-from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
-    get_survey_json,
     parse_json_string,
     simplify_polygon
 )
@@ -312,7 +307,7 @@ class Campaign(JsonModel):
                     required_attributes=insight_function['attributes'],
                     additional_data=additional_data
                 )
-        except (AttributeError, KeyError) as e:
+        except (AttributeError, KeyError):
             return campaign_ui
 
         # render UI
@@ -345,7 +340,7 @@ class Campaign(JsonModel):
                 feature=function['feature'],
                 required_attributes=function['attributes'])
             return selected_function.metadata()
-        except AttributeError as e:
+        except AttributeError:
             return {}
 
     def get_union_polygons(self):
@@ -429,6 +424,15 @@ class Campaign(JsonModel):
             self.corrected_coordinates()
         geojson = pygeoj.load(data=geometry)
         return geojson.bbox
+
+    def get_area(self):
+        """Calculate the area of the Campaign geometry in squared meters"""
+        if not self.geometry or not self.geometry['features']:
+            return 0
+        try:
+            return area(self.geometry['features'][0]['geometry'])
+        except (KeyError, IndexError):
+            return 0
 
     def get_current_status(self):
         """ Get campaign status based on start/end date.
