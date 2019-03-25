@@ -175,6 +175,13 @@ function saveCustomType() {
         }
     });
     var $element_type = $('#custom_type_feature');
+
+    // Remove item from rowelements when editing.
+    let rowelements_keys = Object.keys(rowElements);
+    if (rowelements_keys.length === 1) {
+        ReplaceElement(rowelements_keys[0]);
+    }
+
     // save if there is no error #}
     if ($('.modal-required-message:visible').length === 0) {
         var customType = customTypeToTypeFormat();
@@ -183,7 +190,6 @@ function saveCustomType() {
         if (!rowElements[name] && types[name]) {
             $('.modal-footer .modal-required-message').show();
         } else {
-            $(rowElements[name]).remove();
             $('#custom-types-tags').modal('toggle');
             types[name] = value;
             addTypes(name)
@@ -227,6 +233,11 @@ function checkGeom(geometry_type, key) {
         return '<p><b>Element type</b> field of type <b>' + key + '</b> must be <i>Point</i>, <i>Line</i> or <i>Polygon</i></p>'
     }
     return ''
+}
+
+function ReplaceElement(key) {
+    $(rowElements[key]).remove();
+    delete types[key];
 }
 
 function saveYamlCustomType() {
@@ -300,11 +311,13 @@ function saveYamlCustomType() {
         elements['tags'] = cleanTags;
     });
 
+    // If you are editing, always remove previous one.
+    if (rowelements_keys.length === 1) {
+        ReplaceElement(rowelements_keys[0]);
+    }
+
     // include items into the DOM.
     $.each(data, function (key, value) {
-        if (rowelements_keys.includes(key)) {
-            $(rowElements[key]).remove();
-        }
         types[key] = value;
         addTypes(key);
     });

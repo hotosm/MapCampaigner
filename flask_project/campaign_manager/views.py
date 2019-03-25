@@ -542,8 +542,12 @@ def generate_csv():
     file_name = '{0}.csv'.format(uuid)
     file_path = os.path.join(config.CACHE_DIR, file_name)
 
+    # Remove repeated rows.
+    csv_data = list(set([tuple(d) for d in csv_data]))
+    csv_data.sort()
+
     # Append headers.
-    headers = ['user', 'type', 'date', 'no_contribs']
+    headers = ('user', 'type', 'date', 'no_contribs')
     csv_data = [headers] + csv_data
 
     with open(file_path, 'w', encoding='utf-8') as f:

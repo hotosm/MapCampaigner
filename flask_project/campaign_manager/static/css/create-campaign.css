@@ -487,8 +487,8 @@ input#map_type {
     margin-bottom: 5px;
     background-color: white;
     width: 100% !important;
-    margin-left: 13px;
-    margin-top: 5px;
+    margin-left: 13%;
+    margin-top: 1.5%;
 }
 
 .select-types:disabled {
@@ -509,6 +509,15 @@ input#map_type {
     color: white;
 }
 
+.edit-custom-type {
+    position:absolute;
+    margin-top: 3%;
+    margin-left: 80%;
+    z-index:1001;
+    cursor: pointer;
+    font-size: 20px;
+}
+
 .btn-remove-type {
     background-color: white;
     padding: 2px 6px;
@@ -517,8 +526,8 @@ input#map_type {
     color: #898989;
     font-size: 8pt !important;
     position:absolute;
-    margin-top: 30px;
-    margin-left: 30px;
+    margin-top: 1.5%;
+    margin-left: 2.5%;
     z-index:1001;
 }
 
