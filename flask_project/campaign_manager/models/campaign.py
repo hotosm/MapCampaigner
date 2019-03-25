@@ -555,9 +555,9 @@ class Campaign(JsonModel):
 
     def calculate_areas_covered(self):
         completed_areas = 0
-        for area in self.geometry['features']:
-            if 'status' in area['properties']:
-                if area['properties']['status'] == 'complete':
+        for feature in self.geometry['features']:
+            if 'status' in feature['properties']:
+                if feature['properties']['status'] == 'complete':
                     completed_areas += 1
 
         total_areas = len(self.geometry['features'])
