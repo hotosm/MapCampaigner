@@ -1,7 +1,4 @@
-import datetime
 import xml.sax
-import os
-import json
 
 
 class ElementParser(xml.sax.ContentHandler):

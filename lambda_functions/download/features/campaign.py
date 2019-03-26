@@ -1,5 +1,4 @@
 import json
-import os
 from json_model import JsonModel
 from utilities import parse_json_string
 from aws import S3Data

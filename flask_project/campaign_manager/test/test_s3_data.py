@@ -13,11 +13,12 @@ class TestS3Data(TestCase):
         The AWS bucket should be configured properly.
         """
         if os.environ.get('ON_TRAVIS', 'false') == 'true':
-            self.assertEqual(self.s3_data.bucket,
-                'hotosm-fieldcampaigner-data-test')
+            self.assertEqual(
+                self.s3_data.bucket,
+                'hotosm-fieldcampaigner-data-test'
+                )
         else:
-            self.assertEqual(self.s3_data.bucket,
-                'fieldcampaigner-data-test')
+            self.assertEqual(self.s3_data.bucket, 'fieldcampaigner-data-test')
 
     def test_fetch_campaign_json_file(self):
         """

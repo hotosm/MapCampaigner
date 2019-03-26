@@ -60,15 +60,16 @@ class S3Data(object):
             Key=key,
             ExtraArgs={
                 'ACL': 'public-read'
-            })
+                }
+            )
 
     def download_file(self, key, feature):
-        with open('/tmp/{feature}.xml'.format(
-            feature=feature), 'wb') as data:
-                self.s3.download_fileobj(
-                    Bucket=self.bucket,
-                    Key=key,
-                    Fileobj=data)
+        with open('/tmp/{feature}.xml'.format(feature=feature), 'wb') as data:
+            self.s3.download_fileobj(
+                Bucket=self.bucket,
+                Key=key,
+                Fileobj=data
+                )
 
     def is_json(self, key):
         """
@@ -99,4 +100,5 @@ class S3Data(object):
         self.s3.put_object(
             Bucket=self.bucket,
             Key=key,
-            Body=body)
+            Body=body
+            )
