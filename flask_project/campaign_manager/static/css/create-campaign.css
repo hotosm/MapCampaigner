@@ -526,7 +526,7 @@ input#map_type {
     color: #898989;
     font-size: 8pt !important;
     position:absolute;
-    margin-top: 1.5%;
+    margin-top: 2.5%;
     margin-left: 2.5%;
     z-index:1001;
 }

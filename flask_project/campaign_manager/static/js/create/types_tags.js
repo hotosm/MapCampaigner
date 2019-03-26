@@ -207,9 +207,10 @@ function onTypesChange() {
             column.html(div);
 
             // append to parent
-            row.prepend('<button class="btn btn-remove-type btn-sm"' +
+            row.prepend('<div class="row-tags">' +
+                '<button class="btn btn-remove-type btn-sm"' +
                 'type=button onclick="removeTags(this, \'' + selected_type + '\')">' +
-                '<i class="fa fa-minus"></i></button>');
+                '<i class="fa fa-minus"></i></button></div>');
         }
     }
     $('#insight-function .function-form').html('');
