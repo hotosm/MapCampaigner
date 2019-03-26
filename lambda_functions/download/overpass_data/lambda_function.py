@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, "dependencies")
+import json
 from campaign import Campaign
 from utilities import (
     build_query,
