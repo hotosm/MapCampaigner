@@ -21,14 +21,14 @@
         $('#fieldpaper-id').click();
     }
     
-    function isMultiPolygon(features) {
-        var isMultiPolygon = false;
+    function invalidGeometry(features) {
+        var invalidGeom = false;
         features.forEach((feature) => {
             type = feature['geometry']['type']
-            if (type === "MultiPolygon")
-                isMultiPolygon = true;
+            if ((type === "MultiPolygon") || (type === "LineString"))
+                invalidGeom = true;
         });
-        return isMultiPolygon;
+        return invalidGeom;
     }
 
     function handleFileSelect(evt) {
@@ -50,9 +50,8 @@
         reader.onload = function (e) {
             var geojsonFeature = JSON.parse(reader.result);
             geojsonFeature = geojsonFeature['features'];
-            
-            if (isMultiPolygon(geojsonFeature)) {
-                showNotifications('MultiPolygons are not supported. Please change it to Polygon.', 'danger');
+            if (invalidGeometry(geojsonFeature)) {
+                showNotifications('Geometry type not supported', 'danger');
                 return;
             }
 
