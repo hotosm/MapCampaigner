@@ -20,7 +20,25 @@
 
         $('#fieldpaper-id').click();
     }
-    
+
+    function isnull(feature) {
+        let entries = Object.entries(feature);
+
+        for (let entry of entries) {
+            if (entry[1] === null) {
+                return true;
+                break;
+            }
+
+            if (typeof entry[1] === 'object') {
+                if (isnull(entry[1])) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     function invalidGeometry(features) {
         var invalidGeom = false;
         features.forEach((feature) => {
@@ -52,6 +70,18 @@
             geojsonFeature = geojsonFeature['features'];
             if (invalidGeometry(geojsonFeature)) {
                 showNotifications('Geometry type not supported', 'danger');
+                return;
+            }
+
+            // Traverse over json elements and check for any null values.
+            let nulljson = false;
+            geojsonFeature.forEach((feature) => {
+                nulljson = isnull(feature)
+            });
+
+            // If there are some elements show notifications.
+            if (nulljson) {
+                showNotifications('GeoJson file has null values', 'danger');
                 return;
             }
 
