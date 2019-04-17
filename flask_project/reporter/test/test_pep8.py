@@ -26,7 +26,7 @@ class TestPep8(unittest.TestCase):
         elif sys.platform.startswith('win'):
             root = '../../'
             command = [
-                'pep8.exe',
+                'pycodestyle.exe',
                 '--repeat',
                 '--ignore=E121,E122,E123,E124,E125,E126,E127,E128,E402',
                 '--exclude=venv,pydev,safe_extras,keywords_dialog_base.py,'
