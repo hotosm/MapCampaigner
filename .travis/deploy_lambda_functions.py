@@ -36,11 +36,10 @@ def install_dependencies(path):
         if os.path.exists(dependencies_path):
             os.system('rm -rf {dependencies_path}'.format(
                 dependencies_path=dependencies_path))
-        
-        
+
         os.system('mkdir -p {dependencies_path}'.format(
             dependencies_path=dependencies_path))
-        
+
         os.system('touch {dependencies_path}/__init__.py'.format(
             dependencies_path=dependencies_path))
 
@@ -52,6 +51,7 @@ def install_dependencies(path):
                 dependencies_path=dependencies_path,
                 requirements_path=requirements_path)
         os.system(command)
+
 
 def zip_files(path, function_name):
     zip_path = '{path}/{function_name}.zip'.format(
@@ -65,6 +65,7 @@ def zip_files(path, function_name):
         function_name=function_name))
     return zip_path
 
+
 def copy_zip_to_s3(zip_path, function_name):
     env = set_env_from_branch()
     command = ' '.join([
@@ -76,6 +77,7 @@ def copy_zip_to_s3(zip_path, function_name):
         function_name=function_name)
     os.system(command)
 
+
 def set_env_from_branch():
     branch = os.environ.get('TRAVIS_BRANCH', None)
     if branch == 'develop':
@@ -84,6 +86,7 @@ def set_env_from_branch():
         return 'production'
     else:
         return 'local'
+
 
 def set_env_variables():
     env = set_env_from_branch()
@@ -96,13 +99,13 @@ def set_env_variables():
         s='{',
         env_vars_to_str=','.join(list_env_vars),
         e='}')
-    
+
 
 def update_function(path, function_name):
     env = set_env_from_branch()
     install_dependencies(path)
     zip_path = zip_files(path, function_name)
-    
+
     copy_zip_to_s3(zip_path, function_name)
 
     function_name_with_env = '{env}_{function_name}'.format(
@@ -120,7 +123,7 @@ def update_function(path, function_name):
         function_name_with_env=function_name_with_env,
         function_name=function_name,
         bucket=CONFIG[env]['env']['s3_bucket'])
-        
+
     os.system(command)
     print('done.')
     print('updating configuration to aws...')
@@ -134,16 +137,17 @@ def update_function(path, function_name):
     ]).format(
         function_name=function_name_with_env,
         env_variables=set_env_variables())
-    
+
     os.system(command)
     print('done.')
+
 
 def create_function(path, function_name):
     install_dependencies(path)
     env = set_env_from_branch()
     zip_path = zip_files(path, function_name)
     role = CONFIG[set_env_from_branch()]['role']
-    
+
     copy_zip_to_s3(zip_path, function_name)
 
     function_name_with_env = '{env}_{function_name}'.format(
@@ -175,20 +179,23 @@ def create_function(path, function_name):
 
 
 def get_lambda_functions_on_aws():
-    p = subprocess.Popen('aws lambda list-functions --region us-west-2', 
-        shell=True, 
-        stdout=subprocess.PIPE, 
-        stderr=subprocess.STDOUT)
+    p = subprocess.Popen(
+        'aws lambda list-functions --region us-west-2',
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+        )
 
     lambda_functions_on_aws = []
     for line in p.stdout.readlines():
         line = line.decode("utf-8").strip()
         results = re.search(
-            "\"(FunctionName)\": \"([a-zA-Z_]+)\",", 
+            "\"(FunctionName)\": \"([a-zA-Z_]+)\",",
             line.strip())
         if results:
             lambda_functions_on_aws.append(results.group(2))
     return lambda_functions_on_aws
+
 
 def deploy():
     env = set_env_from_branch()
@@ -214,6 +221,7 @@ def deploy():
                         update_function(function_path, function_name)
                     else:
                         create_function(function_path, function_name)
+
 
 def deploy_function(function_group, function):
     env = set_env_from_branch()
@@ -263,6 +271,7 @@ def main():
                     function_group=sys.argv[2],
                     function=sys.argv[3])
             install_dependencies(function_path)
+
 
 if __name__ == "__main__":
     main()

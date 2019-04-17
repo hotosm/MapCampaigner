@@ -200,17 +200,17 @@ def invoke_process_mapper_engagement(uuid, type_name):
 def format_query(parameters):
     if parameters['value']:
         if parameters['element_type'] == 'Point':
-            query = template_node_query_with_value();
-        elif parameters['element_type'] == 'Line' or \
-            parameters['element_type'] == 'Polygon':
+            query = template_node_query_with_value()
+        elif (parameters['element_type'] == 'Line' or
+            parameters['element_type'] == 'Polygon'):
             query = template_way_query_with_value()
         else:
             query = template_query_with_value()
     else:
         if parameters['element_type'] == 'Point':
             query = template_node_query()
-        elif parameters['element_type'] == 'Line' or \
-            parameters['element_type'] == 'Polygon':
+        elif (parameters['element_type'] == 'Line' or
+            parameters['element_type'] == 'Polygon'):
             query = template_way_query()
         else:
             query = template_query()

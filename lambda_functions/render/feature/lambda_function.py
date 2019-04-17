@@ -4,10 +4,8 @@ sys.path.insert(0, "dependencies")
 import json
 from aws import S3Data
 from utilities import(
-    build_processed_data_path,
     fetch_campaign,
     fetch_campaign_geometry,
-    fetch_type,
     build_feature_completeness_path,
     build_count_feature_path,
     campaign_path,
@@ -37,13 +35,11 @@ def main(event, context):
     type_id = type_name.replace(' ', '_')
 
     campaign = fetch_campaign(campaign_path(uuid))
-    geometry = fetch_campaign_geometry(campaign_path(uuid))  
-    
+    geometry = fetch_campaign_geometry(campaign_path(uuid))
     # type_name = fetch_type(feature, campaign['selected_functions'])
-    
+
     print(type_name)
     print(type_id)
-
 
     for type_key in campaign['types']:
         if campaign['types'][type_key]['type'] == type_name:
@@ -62,7 +58,7 @@ def main(event, context):
     data['type_id'] = type_id
 
     template_path = build_template_path(
-        campaign_path=campaign_path(uuid), 
+        campaign_path=campaign_path(uuid),
         type_id=type_id)
 
     # count feature
