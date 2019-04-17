@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, "dependencies")
 import json
 from aws import S3Data
-from utilities import(
+from utilities import (
     fetch_campaign,
     fetch_campaign_geometry,
     build_feature_completeness_path,
