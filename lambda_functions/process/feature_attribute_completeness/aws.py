@@ -71,10 +71,10 @@ class S3Data(object):
         with open('/{destination}/{type_id}.xml'.format(
             type_id=type_id,
             destination=destination), 'wb') as data:
-                self.s3.download_fileobj(
-                    Bucket=self.bucket,
-                    Key=key,
-                    Fileobj=data)
+            self.s3.download_fileobj(
+                Bucket=self.bucket,
+                Key=key,
+                Fileobj=data)
 
     def upload_file(self, key, body):
         self.s3.upload_fileobj(
