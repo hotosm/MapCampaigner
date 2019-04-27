@@ -34,11 +34,11 @@
                 </div>
                 <div class='col-lg-2 text-right'>
                     <div class="detail-campaign-status {{ current_status }}">
-                    <i class="fa fa-circle" aria-hidden="true"></i> 
+                    <i class="fa fa-circle" aria-hidden="true"></i>
                     <label>{{ current_status }}</label>
                     </div>
                 </div>
-            
+
                 <div class='col-lg-12'>
                 {% if types %}
                     {% for type in types %}
@@ -49,13 +49,13 @@
                 <div class='col-lg-12'>
                     <div class='detail-creator-info'>
                         <p>
-                            <span>Started</span> : {{ start_date_date }} {{ start_date_year }}
+                            <span>Started</span>: {{ start_date_date }} {{ start_date_year }}
                         </p>
                         <p>
-                            <span>Ends</span> : {{ end_date_date }} {{ end_date_year }}                    
+                            <span>Ends</span>: {{ end_date_date }} {{ end_date_year }}
                         </p>
                     </div>
-                </div>                
+                </div>
                 <div class='col-lg-12'>
                     <p>
                     {% if description %}
@@ -140,7 +140,7 @@
                 </p>
             </div>
         </div>
-    </div>    
+    </div>
     <div class='row' id="campaign-feature-details" style="display:none">
         <div class='col-lg-12'>
             <div class="panel panel-default detail-panel-information">
@@ -175,7 +175,7 @@
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
         <div class='col-lg-12'>
             <div class='panel panel-default detail-panel-insights'>
                 <div class="panel-heading">
@@ -215,7 +215,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class='col-lg-12'>
             <div class='panel panel-default detail-panel-insights'>
                 <div class='panel-heading'>
@@ -232,13 +232,13 @@
                             <div class="insight-title" style="margin-bottom: 20px;">Users Engaged</div>
                             <div class="completeness">
                                 <div class="type-insight-text" id="total-users-engaged"></div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class='col-lg-4 type-2'>
                             <div class="insight-title" style="margin-bottom: 20px;">Contributions Frequency</div>
                             <div class='chart-legend' id='frequency-legend'></div>
                             <canvas id="user-frequency"></canvas>
-                            
+
                         </div>
                         <div class='col-lg-4'>
                             <div class="insight-title" style="margin-bottom: 20px;">Contributions Amount</div>
@@ -296,7 +296,7 @@
     function logoutSuccess() {
         location.href='/campaign/{{ uuid }}';
     }
-     
+
     function main() {
         updated();
         var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
@@ -316,10 +316,10 @@
             countFeaturesCollected(types, s3CampaignUrl);
             var activeType = types[0];
             $('.active-type').html(activeType);
-          
+
             loadType(activeType, s3CampaignUrl);
-            
-          
+
+
             $('.feature-select a').on('click', function(e) {
                 e.stopPropagation();
                 activeType = $(this).html();
@@ -356,7 +356,7 @@
 
     function loadType(activeType, s3CampaignUrl) {
         activeType = activeType.replace(/ /g, '_')
-        var typeUrl = getTypeUrl(activeType, s3CampaignUrl);  
+        var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
 
         $.get({
             url: typeUrl + 'content.html',
@@ -369,7 +369,7 @@
         });
 
       $.get({
-            url: typeUrl + 'map.html', 
+            url: typeUrl + 'map.html',
             cache: false
         }).then(function(data) {
             $('.map-wrapper').html(data)
@@ -385,17 +385,17 @@
         window.setTimeout(function() {
             setMapHeight();
         }, 2000);
-        
+
     }
 
     function getTypeUrl(activeType, s3CampaignUrl) {
-        return s3CampaignUrl + '/render/' + activeType + '/';      
+        return s3CampaignUrl + '/render/' + activeType + '/';
     }
 
     function setMapHeight() {
         var height = $('.map-side-panel').height();
-        $('.map-wrapper').height(height);
-        $('#campaign-map-detail').height(height);
+        $('.map-wrapper').height(height + 3);
+        $('#campaign-map-detail').height(height + 3);
     }
 
     function buildAjaxRequests(types, s3CampaignUrl, insight) {
@@ -404,15 +404,15 @@
         for (var i = 0; i < types.length; i++) {
             var type_id = types[i].replace(/ /g, '_');
             var typeUrl = getTypeUrl(type_id, s3CampaignUrl);
-            
+
             ajaxRequests.push($.ajax({
                 url: typeUrl + insight + '.json',
                 dataType: 'json',
                 cache: false
             }));
         }
-        return ajaxRequests;       
-    }    
+        return ajaxRequests;
+    }
 
     function countFeaturesCollected(types, s3CampaignUrl) {
         var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
@@ -427,7 +427,7 @@
                 }
             }
             $('#features-collected').html(total);
-        }); 
+        });
     }
     function loadMapperEngagement(types, s3CampaignUrl) {
         var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
@@ -712,7 +712,7 @@
         return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
     }
 
-    
+
     main();
     </script>
 {% endblock %}
