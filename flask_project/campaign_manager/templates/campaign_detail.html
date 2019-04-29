@@ -370,10 +370,11 @@
 
             // Adjust font size.
             let str_token = "options: {"
-            let scale_opt = '\n          scales: { yAxes: [{ticks: {fontSize: 11}}]},\n'
+            let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
             let index_split = data.match(str_token).index + str_token.length
 
             data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
+            data = data.replace(", 'backgroundColor': ['#4286f4']", '')
 
             $('.content-wrapper').html(data);
         });

@@ -830,6 +830,7 @@ tr.odd {
 .piechart-wrapper {
     width: 90%;
     padding-left: 10px;
+    height: 500px;
 }
 
 .legend {
