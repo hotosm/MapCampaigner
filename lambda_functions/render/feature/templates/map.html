@@ -16,10 +16,9 @@
     container: 'campaign-map-detail',
     style: 'mapbox://styles/mapbox/light-v10',
     center: [0, 0],
-    zoom: 10,
-    minZoom: 10,
-    maxZoom: 17
+    zoom: 1
   });
+  map.addControl(new mapboxgl.NavigationControl());
 
   map.on('load', function() {
     map.resize();
@@ -114,7 +113,7 @@
       map.getCanvas().style.cursor = '';
       popup.remove();
     });
-    map.fitBounds(extent({{ geometry }}), {padding: 30});
+    map.fitBounds(extent({{ geometry }}), {padding: 40});
   });
 
 
@@ -138,8 +137,6 @@
 
   function displayPopup(e) {
     var feature = e.features[0];
-    console.log(feature);
-
     var link = `
       <a href="https://www.openstreetmap.org/${feature.properties.type}/${feature.properties.id}" target="_blank">
         ${feature.properties.type} / ${feature.properties.id}

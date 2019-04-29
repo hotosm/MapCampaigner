@@ -268,17 +268,16 @@
 
 #campaign-map-detail {
     margin-top: 4px;
-    margin-left: -15px;
-    margin-right: -15px;
     border: 1px solid #cdcdcd;
     border-width: 1px 1px 1px 0;
+    top: 0;
+    right: 0;
+    width: 100% !important;
+    height: 100% !important;
 }
 
-.map-wrapper, #campaign-map-detail {
-  top: 0;
-  right: 0;
-  width: 100% !important;
-  height: 100% !important;
+.map-wrapper {
+  margin-left: -15px;
 }
 
 .mapboxgl-canvas {
@@ -346,10 +345,6 @@
 .map-side-list.active {
     background-color: #ffffff;
     border-right: 2px solid #fc6525;
-}
-
-.map-side-list:hover {
-    cursor: pointer;
 }
 
 .map-side-panel {
