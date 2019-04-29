@@ -122,16 +122,10 @@
       map.on('mouseenter', layer, () => {
         map.getCanvas().style.cursor = 'pointer';
       });
-
       map.on('mouseleave', layer, () => {
         map.getCanvas().style.cursor = '';
       });
-    }
-  );
-
-  ["campaign-polygons", "campaign-lines", "campaign-points"].forEach(
-    layer => {
-      map.on('click', layer, e => displayPopup(e))
+      map.on('click', layer, e => displayPopup(e));
     }
   );
 

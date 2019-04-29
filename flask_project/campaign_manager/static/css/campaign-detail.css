@@ -288,6 +288,10 @@
   height: 100% !important;
 }
 
+.mapboxgl-popup-content {
+  max-width: 300px;
+}
+
 .mapboxgl-popup-content p {
   margin: 5px 0 !important;
 }
