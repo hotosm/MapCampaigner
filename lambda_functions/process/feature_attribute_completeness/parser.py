@@ -1,6 +1,4 @@
-import datetime
 import xml.sax
-import os
 import json
 from file_manager import (
     GeojsonFileManager,
@@ -18,8 +16,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.is_element = False
         self.has_tags = False
         self.tags = {}
-        self.features_collected = 0 # element has tags
-        self.features_completed = 0 # element has no errors
+        self.features_collected = 0  # element has tags
+        self.features_completed = 0  # element has no errors
         self.errors_warnings = 0
         self.unused_nodes = {}
         self.geojson_file_manager = GeojsonFileManager(
@@ -39,7 +37,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
     def endDocument(self):
         self.geojson_file_manager.close()
         self.geojson_file_manager.save()
-        
         self.errors_file_manager.close()
         self.errors_file_manager.save()
 
@@ -50,7 +47,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             self.has_tags = False
             self.element_complete = True
 
-        if self.is_element == True:
+        if self.is_element is True:
             if name == 'tag':
                 self.has_tags = True
                 self.tags[attrs.getValue('k')] = attrs.getValue('v')
@@ -65,8 +62,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def endElement(self, name):
         if name in ['node', 'way']:
-            if self.has_tags == True:
-                
+            if self.has_tags is True:
+
                 if self.has_no_required_tags():
                     return
 
@@ -79,12 +76,12 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
-            if self.has_tags == True:            
+            if self.has_tags is True:
                 self.build_feature('node')
                 self.tags = {}
-            elif self.has_tags == False:
+            elif self.has_tags is False:
                 self.unused_nodes[self.element['id']] = [
-                    float(self.element['lon']), 
+                    float(self.element['lon']),
                     float(self.element['lat'])
                 ]
         if name == 'way':
@@ -93,9 +90,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def has_no_required_tags(self):
         return len(set.intersection(
-            set(self.required_tags.keys()), 
+            set(self.required_tags.keys()),
             set(self.tags.keys()))) == 0
-    
+
     def build_element(self, name, attrs):
         self.element = {
             'id': attrs.getValue("id"),
@@ -126,8 +123,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             self.errors_to_s = ', '.join(errors)
             self.build_error_warning('error', self.errors_to_s)
 
-        self.completeness_pct = int(100 - \
-            (len(errors) / len(self.required_tags) * 100))
+        self.completeness_pct = int(
+            100 - (len(errors) / len(self.required_tags) * 100)
+            )
 
     def check_warnings_in_tags(self):
         warnings = []
@@ -139,7 +137,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 warning = '{name} is all uppercase'.format(
                     name=name)
                 warnings.append(warning)
-                
+
             elif name.islower():
                 self.element_complete = False
                 warning = '{name} is all lowercase'.format(
@@ -168,7 +166,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         if osm_type == 'node':
             geo_type = 'Point'
             coordinates = [
-                float(self.element['lon']), 
+                float(self.element['lon']),
                 float(self.element['lat'])
             ]
         elif osm_type == 'way':
@@ -206,12 +204,12 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def set_color_completeness(self):
         if self.completeness_pct == 100:
-            return '#00840d';
+            return '#00840d'
         if self.completeness_pct >= 75:
-            return '#faff00';
+            return '#faff00'
         if self.completeness_pct >= 50:
-            return '#ffe500';
+            return '#ffe500'
         if self.completeness_pct >= 25:
-            return '#FD9A08';
+            return '#FD9A08'
         if self.completeness_pct >= 0:
-            return '#ff0000';
+            return '#ff0000'

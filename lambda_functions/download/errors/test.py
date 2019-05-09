@@ -1,10 +1,8 @@
-import os
 import warnings
 import unittest
 from lambda_function import (
     lambda_handler
 )
-# from utilities import
 
 
 class TestCase(unittest.TestCase):
@@ -20,8 +18,6 @@ class TestCase(unittest.TestCase):
             'type': 'point_restaurant'
         }
         lambda_handler(event, {})
-
-    
 
     def test_date_to_dict(self):
         start_date = '2018-08-01'
@@ -71,6 +67,7 @@ class TestCase(unittest.TestCase):
             'polypolygon");node["amenity"~"cafe|coffee"](poly:"polypolygon")' +
             ';relation["amenity"~"cafe|coffee"](poly:"polypolygon"););' +
             '(._;>;);out meta;')
+
 
 if __name__ == '__main__':
     unittest.main()

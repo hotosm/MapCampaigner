@@ -1,15 +1,14 @@
 import sys
 sys.path.insert(0, "dependencies")
+import json
 from campaign import Campaign
 from utilities import (
-    date_to_dict,
     build_query,
     save_to_s3,
     save_query,
     build_path,
     build_query_path,
     post_request,
-    build_payload,
     invoke_process_feature_completeness,
     invoke_process_count_feature,
     invoke_process_mapper_engagement,
@@ -47,12 +46,11 @@ def main(event, context):
     query = build_query(
         polygon=campaign.corrected_coordinates(),
         typee=typee)
-    
+
     save_query(
         path=build_query_path(uuid, type_id),
         query=query)
 
-    
     post_request(query, type_id)
 
     clean_aoi(campaign, type_id)

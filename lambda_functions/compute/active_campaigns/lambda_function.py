@@ -1,7 +1,6 @@
 import os
 import boto3
 import json
-from datetime import datetime
 from campaign import Campaign
 
 

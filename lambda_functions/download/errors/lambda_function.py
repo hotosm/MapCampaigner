@@ -16,6 +16,7 @@ from aws import S3Data
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def lambda_handler(event, context):
     try:
         main(event, context)
@@ -24,11 +25,11 @@ def lambda_handler(event, context):
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
             body=json.dumps({'function': 'download_errors', 'failure': str(e)}))
 
+
 def main(event, context):
     logger.info('got event{}'.format(event))
     uuid = event['campaign_uuid']
     type_name = event['type']
-    
 
     campaign = fetch_campaign(campaign_path(uuid))
     for type_key in campaign['types']:
@@ -51,10 +52,9 @@ def main(event, context):
     else:
         elements.append('way')
         elements.append('node')
-    
-    query = build_query(uuid, type_id, elements);
+
+    query = build_query(uuid, type_id, elements)
     post_request(query, type_id)
     save_to_s3(
         path=build_path(uuid, type_id),
         type_id=type_id)
-

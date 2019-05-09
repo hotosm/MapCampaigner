@@ -1,151 +1,165 @@
-<div id="campaign-map-detail"></div>
-<script type="text/javascript" src="https://unpkg.com/leaflet.markercluster@1.4.0/dist/leaflet.markercluster.js"></script>
-<link href="https://unpkg.com/leaflet.markercluster@1.4.0/dist/MarkerCluster.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet.markercluster@1.4.0/dist/MarkerCluster.Default.css" rel="stylesheet">
-<script type="text/javascript">
+<div id="campaign-map-detail">
+  <div class="legend">
+    <span><b>Completeness</b></span><br/>
+    <i style="background-color:#00840d"></i> <span>100%</span><br/>
+    <i style="background-color:#faff00"></i> <span>75%</span><br/>
+    <i style="background-color:#ffe500"></i> <span>50%</span><br/>
+    <i style="background-color:#FD9A08"></i> <span>25%</span><br/>
+    <i style="background-color:#ff0000"></i> <span>0%</span><br/>
+  </div>
+</div>
+<script>
+  var s3_base_url = "https://s3-us-west-2.amazonaws.com/hotosm-fieldcampaigner-data-staging/campaigns/";
+  var vt_url =  s3_base_url + "{{ uuid }}" + "/render/" + "{{ type_id }}" + "/tiles/{z}/{x}/{y}.pbf";
+  mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGUiLCJhIjoicFNVWk5VWSJ9.hluCd0YGvYHNlFi_utWe2g';
+  map = new mapboxgl.Map({
+    container: 'campaign-map-detail',
+    style: 'mapbox://styles/mapbox/light-v10',
+    center: [0, 0],
+    zoom: 1
+  });
+  map.addControl(new mapboxgl.NavigationControl());
 
-  var map = createMap();
-  addLegend(map);
-  setTitleLayer(map);
-  setViewFromCampaign(map);
-  renderMap(map);
+  map.on('load', function() {
+    map.resize();
+    map.addSource('tiles', {
+      "type": "vector",
+      "minzoom": 10,
+      "maxzoom": 17,
+      "tiles": [vt_url]
+    });
 
-
-  function createMap() {
-    return L.map('campaign-map-detail').setView([0, 0], 1);
-  }
-
-  function addLegend(map) {
-    var legend = L.control({position: 'bottomleft'});
-    legend.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'legend');
-      div.innerHTML += '<span><b>Completeness</b></span><br/>';
-      div.innerHTML += '<i style="background-color:#00840d"></i> <span>100%</span><br/>';
-      div.innerHTML += '<i style="background-color:#faff00"></i> <span>75%</span><br/>';
-      div.innerHTML += '<i style="background-color:#ffe500"></i> <span>50%</span><br/>';
-      div.innerHTML += '<i style="background-color:#FD9A08"></i> <span>25%</span><br/>';
-      div.innerHTML += '<i style="background-color:#ff0000"></i> <span>0%</span><br/>';
-      return div;
-    };
-    legend.addTo(map);    
-  }
-    
-  function setTitleLayer(map) {
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaG90IiwiYSI6IlBtUmNiR1kifQ.dCS1Eu9DIRNZGktc24IwtA', {
-      minZoom: 1,
-      maxZoom: 18,
-      attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-      id: 'mapbox.light',
-      unloadInvisibleTiles: true,
-      updateWhenIdle: true,
-      reuseTiles: true
-    }).addTo(map);
-  }
-
-  function setViewFromCampaign(map) {
-    geometry = {{ geometry }}
-    campaign_layer = L.geoJSON(geometry, {
-      onEachFeature: function(feature, layer) {
-        layer.bindPopup(`
-          <h4>Area</h4>
-          <div class="layer-group">
-            <div class="layer-popup-area">
-              <b>Area:</b> ${feature.properties.area || '-'}
-            </div>
-            <div class="layer-popup-area">
-              <b>Team:</b> ${feature.properties.team || '-'}
-            </div>
-            <div class="layer-popup-area">
-              <b>Status:</b> ${feature.properties.status || '-'}
-            </div>
-          </div>
-        `)
+    map.addSource('aoi', {
+      "type": "geojson",
+      "data": {{ geometry }}
+    });
+    // load aoi geometry layer
+    map.addLayer({
+      "id": "aoi-geometry",
+      "type": "fill",
+      "source": "aoi",
+      "paint": {
+        "fill-color": "#3388ff",
+        "fill-opacity": 0.1
       }
     });
-    map.addLayer(campaign_layer);
-    map.fitBounds(campaign_layer.getBounds());
-    window.setTimeout(function() {
-      map.invalidateSize();  
-    }, 2000);
-    
-    return map;
-  }
+    map.addLayer({
+      "id": "aoi-bounds",
+      "type": "line",
+      "source": "aoi",
+      "paint": {
+        "line-color": "#003278"
+      }
+    });
+    // add campaign layers by type
+    map.addLayer({
+      "id": "campaign-polygons",
+      "type": "fill",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "Polygon"],
+      "paint": {
+        "fill-color": ['get', 'completeness_color'],
+        "fill-opacity": 1
+      }
+    });
+    map.addLayer({
+      "id": "campaign-lines",
+      "type": "line",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "LineString"],
+      "paint": {
+        "line-color": ['get', 'completeness_color'],
+        "line-opacity": 0.7
+      }
+    });
+    map.addLayer({
+      "id": "campaign-points",
+      "type": "circle",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "Point"],
+      "paint": {
+        "circle-color": ['get', 'completeness_color'],
+      }
+    });
 
-  function renderMap(map) {
-    var geojsonFilesCount = {{ feature_completeness['geojson_files_count']}};
+    var popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+    map.on('mouseenter', 'aoi-bounds', function(e) {
+      map.getCanvas().style.cursor = 'pointer';
+      var description = `
+      <h4>Area</h4>
+      <div class="layer-group">
+        <div class="layer-popup-area">
+          <b>Area:</b> ${e.features[0].properties.area || '-'}
+        </div>
+        <div class="layer-popup-area">
+          <b>Team:</b> ${e.features[0].properties.team || '-'}
+        </div>
+        <div class="layer-popup-area">
+          <b>Status:</b> ${e.features[0].properties.status || '-'}
+        </div>
+      </div>
+      `;
+      popup.setLngLat(e.lngLat)
+      .setHTML(description)
+      .addTo(map);
+    });
+    map.on('mouseleave', 'aoi-bounds', function() {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    });
+    map.fitBounds(extent({{ geometry }}), {padding: 40});
+  });
 
-    for (var i = 1; i <= geojsonFilesCount; i++) {
-      var geojsonUrl = "{{ url | safe }}" + '/geojson_' + i + '.json';
-      $.ajax({
-        url: geojsonUrl,
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-          var geojson = L.geoJSON(data, {
-            pointToLayer: function (feature, latlng) {
-              return L.circle(latlng, {
-                radius: 5,
-                fillColor: feature.properties.completeness_color,
-                color: feature.properties.completeness_color,
-                weight: 5,
-                opacity: 1,
-                fillOpacity: 0.8
-                });
-            },
-            onEachFeature: onEachFeature,
-            style: function(feature) {
-              return {color: feature.properties.completeness_color}
-            }
-          });
 
-          var markers = L.markerClusterGroup({chunkedLoading: true});
-          markers.addLayer(geojson);
-
-          map.addLayer(markers);
-        }
+  ["campaign-polygons", "campaign-lines", "campaign-points"].forEach(
+    layer => {
+      map.on('mouseenter', layer, () => {
+        map.getCanvas().style.cursor = 'pointer';
       });
+      map.on('mouseleave', layer, () => {
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('click', layer, e => displayPopup(e));
     }
-  }
+  );
 
-  function displayPopup(event) {
-    var feature = event.target.feature;
-
-    var link = `<a href="https://www.openstreetmap.org/${feature.properties.type}/${feature.id}" target="_blank">https://www.openstreetmap.org/${feature.properties.type}/${feature.id}</a>`;
+  function displayPopup(e) {
+    var feature = e.features[0];
+    var link = `
+      <a href="https://www.openstreetmap.org/${feature.properties.type}/${feature.properties.id}" target="_blank">
+        ${feature.properties.type} / ${feature.properties.id}
+      </a>
+    `;
     var content = `${link}<br />`;
 
-    var type = `<b>type</b> : ${feature.properties.type}`;
-    content += `${type}<br />`;
+    var percentage = `<b>Completeness</b>: ${feature.properties.completeness_pct}`;
+    content += percentage;
 
-    if (feature.properties.errors !== null) {
-      var errors = `<div style='color:red'><b>errors</b> : ${feature.properties.errors}</div>`;
+    if (feature.properties.errors && feature.properties.errors !== "null") {
+      var errors = `<div style='color:red'><b>Errors</b>: ${feature.properties.errors}</div>`;
       content += errors;
     }
 
-    if (feature.properties.warnings !== null) {
-      var warnings = `<div style='color:orange'><b>warnings</b> : ${feature.properties.warnings}</div>`
+    if (feature.properties.warnings && feature.properties.warnings !== "null") {
+      var warnings = `<div style='color:orange'><b>warnings</b>: ${feature.properties.warnings}</div>`
       content += warnings;
-    }    
-
-    var tags = []
-    for (var tag in feature.properties.tags) {
-      tag_to_s = `<b>${tag}</b> : ${feature.properties.tags[tag]}`
-      tags.push(tag_to_s)
     }
+
+    var tags = Object.entries(JSON.parse(feature.properties.tags)).map(
+      i => `<b>${i[0]}</b>: ${i[1]}`
+    );
     tags = tags.join('<br />')
-  
-    content += `${tags}<br />`;
-    
-    var percentage = `<b>completeness</b> : ${feature.properties.completeness_pct}`;
+    content += `<p><i>${tags}</i></p>`;
 
-    content += percentage;
-
-    map.openPopup(content, event.latlng);
+    new mapboxgl.Popup()
+      .setLngLat(e.lngLat)
+      .setHTML(content)
+      .addTo(map);
   }
-
-  function onEachFeature(feature, layer) {
-    layer.on({
-      click: displayPopup
-    });
-  } 
-
 </script>

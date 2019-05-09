@@ -331,7 +331,7 @@ def get_contribs(url, ctype):
     resp = requests.get(req.format(url, ctype))
 
     # We return nothing. At the end, we filter results.
-    if resp.status_code != 200 :
+    if resp.status_code != 200:
         return None
 
     users = resp.json()

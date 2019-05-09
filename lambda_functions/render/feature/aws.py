@@ -3,6 +3,7 @@ import json
 from dependencies import yaml
 import boto3
 
+
 class S3Data(object):
     """
     Class for AWS S3

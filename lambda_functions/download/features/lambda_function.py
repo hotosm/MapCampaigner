@@ -2,10 +2,7 @@ import sys
 sys.path.insert(0, "dependencies")
 import json
 from campaign import Campaign
-from utilities import (
-    get_unique_features,
-    invoke_download_overpass_data
-)
+from utilities import invoke_download_overpass_data
 from aws import S3Data
 
 

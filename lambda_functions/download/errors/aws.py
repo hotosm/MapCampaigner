@@ -85,10 +85,10 @@ class S3Data(object):
             Key=key,
             Body=body)
 
-    def upload_file(self, key, body):        
+    def upload_file(self, key, body):
         self.s3.upload_fileobj(
-            Fileobj=body, 
-            Bucket=self.bucket, 
+            Fileobj=body,
+            Bucket=self.bucket,
             Key=key,
             ExtraArgs={
                 'ACL': 'public-read'
@@ -98,10 +98,11 @@ class S3Data(object):
         with open('/{destination}/{feature}.json'.format(
             feature=feature,
             destination=destination), 'wb') as data:
-                self.s3.download_fileobj(
-                    Bucket=self.bucket, 
-                    Key=key, 
-                    Fileobj=data)
+            self.s3.download_fileobj(
+                Bucket=self.bucket,
+                Key=key,
+                Fileobj=data
+                )
 
     def get_last_modified_date(self, key):
         obj = self.s3.get_object(

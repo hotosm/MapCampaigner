@@ -267,11 +267,33 @@
 }
 
 #campaign-map-detail {
-    min-height: 500px;
     margin-top: 4px;
-    margin-left: -15px;
     border: 1px solid #cdcdcd;
     border-width: 1px 1px 1px 0;
+    top: 0;
+    right: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.map-wrapper {
+  margin-left: -15px;
+}
+
+.mapboxgl-canvas {
+  position: relative !important;
+  right: 0;
+  top: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.mapboxgl-popup-content {
+  max-width: 300px;
+}
+
+.mapboxgl-popup-content p {
+  margin: 5px 0 !important;
 }
 
 .map-side-panel {
@@ -291,7 +313,7 @@
 .map-side-list {
     /*height: 150px;*/
     border-bottom: 1px solid #cdcdcd;
-    background-color: #f6f6f6;    
+    background-color: #f6f6f6;
 }
 
 .map-side-list-attributes {
@@ -307,7 +329,7 @@
 .attr-compl-info {
     text-align: right;
     font-weight: bold;
-    font-size: 13pt;    
+    font-size: 13pt;
 }
 
 .map-side-list-attr-features-checked {
@@ -327,10 +349,6 @@
 .map-side-list.active {
     background-color: #ffffff;
     border-right: 2px solid #fc6525;
-}
-
-.map-side-list:hover {
-    cursor: pointer;
 }
 
 .map-side-panel {
@@ -837,6 +855,10 @@ tr.odd {
     padding: 5px 10px;
     background-color: rgba(255,255,255,0.8);
     border-radius: 3px;
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    z-index: 1;
 }
 
 .chart-legend{

@@ -1,8 +1,6 @@
 import os
 import boto3
 import json
-from dependencies.shapely import geometry
-from aws import S3Data
 
 
 def invoke_download_overpass_data(payload):

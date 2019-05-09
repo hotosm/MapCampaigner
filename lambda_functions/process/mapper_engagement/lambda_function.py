@@ -8,7 +8,6 @@ from utilities import (
     campaign_path,
     download_overpass_file,
     osm_object_contributions,
-    fetch_type,
     save_data
 )
 from aws import S3Data
@@ -27,7 +26,6 @@ def main(event, context):
     uuid = event['campaign_uuid']
     type_name = event['type']
     type_id = type_name.replace(' ', '_')
-
 
     campaign = fetch_campaign(campaign_path(uuid))
     for type_key in campaign['types']:
@@ -49,6 +47,5 @@ def main(event, context):
         tag_name,
         start_date,
         end_date)
-
 
     save_data(uuid, type_id, sorted_user_list)

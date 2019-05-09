@@ -84,6 +84,7 @@ def setup_logger():
     add_handler_once(logger, file_handler)
     add_handler_once(logger, console_handler)
 
+
 LOGGER = logging.getLogger('osm-reporter')
 
 reporter = Blueprint(
