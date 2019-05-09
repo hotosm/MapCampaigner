@@ -79,4 +79,8 @@ function main(event) {
   );
 }
 
-module.exports = main;
+
+exports.handler = (event, context, callback) => {
+  main(event);
+  callback(null, `finished: ${event.campaign_uuid}`);
+};

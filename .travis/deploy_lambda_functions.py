@@ -156,7 +156,7 @@ def update_function(path, function_name):
         '--function-name {function_name}',
         '--environment Variables={env_variables}',
         '--timeout 900',
-        '--memory-size 512',
+        '--memory-size 3008',
         '--region us-west-2'
     ]).format(
         function_name=function_name_with_env,
@@ -168,6 +168,13 @@ def update_function(path, function_name):
 
 def create_function(path, function_name):
     install_dependencies(path)
+    if os.path.isfile('{path}/package.json'.format(path=path)):
+        runtime = 'nodejs8.10'
+        handler = 'index.handler'
+    else:
+        runtime = 'python3.6'
+        handler = 'lambda_function.lambda_handler'
+
     env = set_env_from_branch()
     zip_path = zip_files(path, function_name)
     role = CONFIG[set_env_from_branch()]['role']
@@ -185,17 +192,19 @@ def create_function(path, function_name):
         'aws lambda create-function',
         '--region us-west-2',
         '--function-name {function_name_with_env}',
-        '--runtime python3.6',
+        '--runtime {runtime}',
         '--role {role}',
+        '--handler {handler}',
         '--handler lambda_function.lambda_handler',
         '--environment Variables={env_variables}',
         '--code {code}',
-        '--memory-size 512',
-        '--timeout 900',
-        '--region us-west-2'
+        '--memory-size 3008',
+        '--timeout 900'
     ]).format(
         function_name=function_name,
         function_name_with_env=function_name_with_env,
+        runtime=runtime,
+        handler=handler,
         role=role,
         env_variables=set_env_variables(),
         code=code)
