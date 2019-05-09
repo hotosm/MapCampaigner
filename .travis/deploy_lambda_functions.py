@@ -195,7 +195,6 @@ def create_function(path, function_name):
         '--runtime {runtime}',
         '--role {role}',
         '--handler {handler}',
-        '--handler lambda_function.lambda_handler',
         '--environment Variables={env_variables}',
         '--code {code}',
         '--memory-size 3008',
