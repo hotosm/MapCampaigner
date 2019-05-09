@@ -306,7 +306,7 @@ def build_nodejs_docker_container():
     command = ' '.join([
         'docker build',
         '-t install-aws-dependencies-nodejs',
-        '-f .travis/Dockerfile .'])
+        '-f .travis/Dockerfile_nodejs .'])
     os.system(command)
 
 
