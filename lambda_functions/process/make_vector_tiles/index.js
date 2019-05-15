@@ -117,10 +117,11 @@ async function main(event) {
   const geojsonData = await readGeojsonFiles(localDir);
   await make_vector_tiles(geojsonData, type_id);
   const uploadedTiles = await uploadTiles(localDir, event.campaign_uuid, type_id);
-  console.log(`finished... ${uploadedTiles}`);
+  return(uploadedTiles);
 }
 
-exports.handler = (event, context, callback) => {
-  main(event);
-  callback(null, `finished: ${event.campaign_uuid}`);
+
+exports.handler = async (event) => {
+  var tiles = await main(event);
+  return `finished ${event.campaign_uuid} - ${tiles.length} uploaded`;
 };
