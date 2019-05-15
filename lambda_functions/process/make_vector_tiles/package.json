@@ -1,5 +1,5 @@
 {
-  "name": "make_vt",
+  "name": "make_vector_tiles",
   "version": "1.0.0",
   "description": "Lambda function to generate vector tiles out of a geojson",
   "main": "index.js",

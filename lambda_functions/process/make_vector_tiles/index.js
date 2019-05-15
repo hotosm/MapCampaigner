@@ -1,11 +1,10 @@
 var fs = require('fs');
 var path = require('path');
 var zlib = require("zlib");
-var exec = require('child_process').exec;
+var AWS = require('aws-sdk');
 var geojson2vt = require('@hotosm/geojson2vt');
 var geojsonMerge = require('@mapbox/geojson-merge');
 var turfExtent = require("turf-extent");
-
 
 function read_geojson(file) {
   var data = JSON.parse(zlib.gunzipSync(fs.readFileSync(file)));
@@ -30,53 +29,90 @@ function make_vector_tiles(data, type_id) {
   geojson2vt(options);
 }
 
+async function downloadGeojsonFiles(uuid, type_id, localDir) {
+  var S3 = new AWS.S3();
+  var result = [];
 
-function main(event) {
+  let listedObjects = await S3.listObjects({
+    Bucket: process.env.S3_BUCKET,
+    Prefix: `campaigns/${uuid}/render/${type_id}/`
+  }).promise();
+
+  listedObjects = listedObjects.Contents.filter(item =>
+      path.parse(item.Key).ext === '.json' && path.parse(item.Key).name.startsWith('geojson')
+    ).map(
+      item => item.Key
+    );
+
+  await Promise.all(listedObjects.map(async (item) => {
+    const getObject = await S3.getObject({
+      Bucket: process.env.S3_BUCKET,
+      Key: item
+    }).promise();
+    fs.writeFileSync(path.join(localDir, path.parse(item).base), getObject.Body);
+    console.log(`Downloaded ${item}`);
+  }));
+}
+
+async function readGeojsonFiles(localDir) {
+  const geojson = await new Promise((resolve, reject) => {
+    fs.readdir(localDir, (err, files) => {
+      if (err) {
+        console.log(`-- Could not read the dir ${localDir}`);
+      } else {
+        resolve(files.filter(
+          i => i.startsWith('geojson')
+        ).map(
+          i => read_geojson(path.join(localDir, i))
+        ));
+      }
+    });
+  });
+  return geojson;
+}
+
+async function uploadTiles(localDir, uuid, type_id) {
+  console.log('-- Uploading tiles to S3.');
+  const S3 = new AWS.S3();
+  await fs.readdir(path.join(localDir, 'tiles'), async (err, zoomLevels) => {
+    await Promise.all(zoomLevels.map(async (zoomLevel) => {
+      await fs.readdir(path.join(localDir, 'tiles', zoomLevel), async (err, tiles) => {
+        await Promise.all(tiles.map(async (tile) => {
+          await fs.readdir(path.join(localDir, 'tiles', zoomLevel, tile), async (err, pbfs) => {
+            await Promise.all(pbfs.map(async (pbf) => {
+              return S3.putObject({
+                Bucket: process.env.S3_BUCKET,
+                Key: `campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`,
+                Body: fs.readFileSync(path.join(localDir, 'tiles', zoomLevel, tile, pbf)),
+                ContentEncoding: 'gzip'
+              }).promise();
+            }));
+          });
+        }));
+      });
+    }));
+  });
+}
+
+
+async function main(event) {
   const type_id = event.type.replace(' ', '_');
   const AWSBUCKETPREFIX = `${process.env.S3_BUCKET}/campaigns/${event.campaign_uuid}/render/${type_id}/`;
   const localDir = path.join('/tmp', type_id);
 
-  exec(
-    `aws s3 sync "s3://${AWSBUCKETPREFIX}" "${localDir}" --content-encoding "gzip" --exclude "*" --include "geojson*"`,
-    {maxBuffer: 1024 * 5000},
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
+  if (!fs.existsSync(localDir)) {
+    fs.mkdir(localDir, (err) => {if (err) throw err;});
+  }
 
-      fs.readdir(localDir, (err, files) => {
-        if (err) {
-          console.log(`-- Could not read the dir ${localDir}`);
-        } else {
-          const geojson_files = files.filter(
-            i => i.startsWith('geojson')
-          ).map(
-            i => read_geojson(path.join(localDir, i))
-          );
-
-          async function create_and_upload() {
-            await make_vector_tiles(geojson_files, type_id);
-            console.log('-- Uploading tiles to S3.');
-            exec(
-              `aws s3 cp --recursive ${path.join(localDir, 'tiles')} s3://${AWSBUCKETPREFIX}tiles --content-encoding gzip`,
-              {maxBuffer: 1024 * 5000},
-              (error, stdout, stderr) => {
-                if (error) {
-                  console.error(`exec error: ${error}`);
-                  return;
-                }
-                console.log(`stdout: ${stdout}`);
-                console.log('-- Upload finished.');
-              }
-            );
-          }
-          create_and_upload();
-        }
-      });
-      }
+  const result = await downloadGeojsonFiles(
+    event.campaign_uuid,
+    type_id,
+    localDir
   );
+  const geojsonData = await readGeojsonFiles(localDir);
+  await make_vector_tiles(geojsonData, type_id);
+  await uploadTiles(localDir, event.campaign_uuid, type_id);
+  console.log('finished...');
 }
 
 
