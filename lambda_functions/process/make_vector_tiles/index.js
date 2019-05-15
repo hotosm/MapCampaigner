@@ -74,21 +74,29 @@ async function readGeojsonFiles(localDir) {
 async function uploadTiles(localDir, uuid, type_id) {
   console.log('-- Uploading tiles to S3.');
   const S3 = new AWS.S3();
+  let result = [];
   const zoomLevels = fs.readdirSync(path.join(localDir, 'tiles'));
   await Promise.all(zoomLevels.map(async (zoomLevel) => {
     const tiles = fs.readdirSync(path.join(localDir, 'tiles', zoomLevel));
     await Promise.all(tiles.map(async (tile) => {
       const pbfs = fs.readdirSync(path.join(localDir, 'tiles', zoomLevel, tile));
-      await Promise.all(pbfs.map(async (pbf) => {
-        return S3.putObject({
-          Bucket: process.env.S3_BUCKET,
-          Key: `campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`,
-          Body: fs.readFileSync(path.join(localDir, 'tiles', zoomLevel, tile, pbf)),
-          ContentEncoding: 'gzip'
-        }).promise();
-      }));
+       result.push(await Promise.all(pbfs.map(async (pbf) => {
+        console.log(`Uploading to ${process.env.S3_BUCKET}/campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`);
+        return new Promise((resolve, reject) => {
+          return S3.putObject({
+            Bucket: process.env.S3_BUCKET,
+            Key: `campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`,
+            Body: fs.readFileSync(path.join(localDir, 'tiles', zoomLevel, tile, pbf)),
+            ContentEncoding: 'gzip'
+          }).promise()
+          .then((data) => {
+            return resolve(JSON.stringify(data));
+          });
+        });
+      })));
     }));
   }));
+  return Promise.resolve(result);
 }
 
 
@@ -108,10 +116,9 @@ async function main(event) {
   );
   const geojsonData = await readGeojsonFiles(localDir);
   await make_vector_tiles(geojsonData, type_id);
-  await uploadTiles(localDir, event.campaign_uuid, type_id);
-  console.log('finished...');
+  const uploadedTiles = await uploadTiles(localDir, event.campaign_uuid, type_id);
+  console.log(`finished... ${uploadedTiles}`);
 }
-
 
 exports.handler = (event, context, callback) => {
   main(event);
