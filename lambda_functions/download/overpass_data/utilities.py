@@ -175,6 +175,17 @@ def invoke_process_count_feature(uuid, type_name):
         payload=payload)
 
 
+def invoke_process_make_vector_tiles(uuid, type_name):
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'type': type_name
+    })
+
+    invoke_process_function(
+        function_name='process_make_vector_tiles',
+        payload=payload)
+
+
 def invoke_process_feature_completeness(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
