@@ -74,24 +74,21 @@ async function readGeojsonFiles(localDir) {
 async function uploadTiles(localDir, uuid, type_id) {
   console.log('-- Uploading tiles to S3.');
   const S3 = new AWS.S3();
-  await fs.readdir(path.join(localDir, 'tiles'), async (err, zoomLevels) => {
-    await Promise.all(zoomLevels.map(async (zoomLevel) => {
-      await fs.readdir(path.join(localDir, 'tiles', zoomLevel), async (err, tiles) => {
-        await Promise.all(tiles.map(async (tile) => {
-          await fs.readdir(path.join(localDir, 'tiles', zoomLevel, tile), async (err, pbfs) => {
-            await Promise.all(pbfs.map(async (pbf) => {
-              return S3.putObject({
-                Bucket: process.env.S3_BUCKET,
-                Key: `campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`,
-                Body: fs.readFileSync(path.join(localDir, 'tiles', zoomLevel, tile, pbf)),
-                ContentEncoding: 'gzip'
-              }).promise();
-            }));
-          });
-        }));
-      });
+  const zoomLevels = fs.readdirSync(path.join(localDir, 'tiles'));
+  await Promise.all(zoomLevels.map(async (zoomLevel) => {
+    const tiles = fs.readdirSync(path.join(localDir, 'tiles', zoomLevel));
+    await Promise.all(tiles.map(async (tile) => {
+      const pbfs = fs.readdirSync(path.join(localDir, 'tiles', zoomLevel, tile));
+      await Promise.all(pbfs.map(async (pbf) => {
+        return S3.putObject({
+          Bucket: process.env.S3_BUCKET,
+          Key: `campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`,
+          Body: fs.readFileSync(path.join(localDir, 'tiles', zoomLevel, tile, pbf)),
+          ContentEncoding: 'gzip'
+        }).promise();
+      }));
     }));
-  });
+  }));
 }
 
 
