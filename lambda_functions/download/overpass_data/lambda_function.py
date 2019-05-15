@@ -11,6 +11,7 @@ from utilities import (
     post_request,
     invoke_process_feature_completeness,
     invoke_process_count_feature,
+    invoke_process_make_vector_tiles,
     invoke_process_mapper_engagement,
     clean_aoi
 )
@@ -62,3 +63,4 @@ def main(event, context):
     invoke_process_feature_completeness(uuid, type_name)
     invoke_process_count_feature(uuid, type_name)
     invoke_process_mapper_engagement(uuid, type_name)
+    invoke_process_make_vector_tiles(uuid, type_name)
