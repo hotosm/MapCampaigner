@@ -171,7 +171,7 @@ def update_function(path, function_name):
 def create_function(path, function_name):
     install_dependencies(path)
     if os.path.isfile('{path}/package.json'.format(path=path)):
-        runtime = 'nodejs8.10'
+        runtime = 'nodejs10.x'
         handler = 'index.handler'
     else:
         runtime = 'python3.6'
