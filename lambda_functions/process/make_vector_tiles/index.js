@@ -12,9 +12,9 @@ function read_geojson(file) {
   return data;
 }
 
-function make_vector_tiles(data, type_id) {
-  const mergedData = geojsonMerge.merge(data);
-  const [west, south, east, north] = turfExtent(mergedData);
+async function make_vector_tiles(data, type_id) {
+  const mergedData = await geojsonMerge.merge(data);
+  const [west, south, east, north] = await turfExtent(mergedData);
   const options = {
     layers: {
       campaign: mergedData
@@ -26,7 +26,7 @@ function make_vector_tiles(data, type_id) {
       max : 17
     }
   };
-  geojson2vt(options);
+  return await geojson2vt(options);
 }
 
 async function downloadGeojsonFiles(uuid, type_id, localDir) {
@@ -113,6 +113,7 @@ async function main(event) {
   const vt = await make_vector_tiles(geojsonData, type_id);
   const uploadedTiles = await uploadTiles(localDir, event.campaign_uuid, type_id);
   console.log(`finished... ${uploadedTiles}`);
+  return uploadedTiles;
 }
 
 
