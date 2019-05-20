@@ -152,7 +152,7 @@ def build_payload(uuid, feature, date):
     })
 
 
-def invoke_process_function(function_name, payload):
+def invoke_process_function(function_name, payload, invocation_type='Event'):
     aws_lambda = boto3.client('lambda')
     function_name_with_env = '{env}_{function_name}'.format(
         env=os.environ['ENV'],
@@ -160,7 +160,7 @@ def invoke_process_function(function_name, payload):
 
     aws_lambda.invoke(
         FunctionName=function_name_with_env,
-        InvocationType='Event',
+        InvocationType=invocation_type,
         Payload=payload)
 
 
@@ -183,7 +183,8 @@ def invoke_process_make_vector_tiles(uuid, type_name):
 
     invoke_process_function(
         function_name='process_make_vector_tiles',
-        payload=payload)
+        payload=payload,
+        invocation_type='RequestResponse')
 
 
 def invoke_process_feature_completeness(uuid, type_name):
