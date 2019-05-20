@@ -15,9 +15,11 @@
   "author": "Humanitarian OpenStreetMap Team",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@hotosm/geojson2vt": "^0.1.2",
+    "@hotosm/geojson2vt": "^0.1.3",
     "@mapbox/geojson-merge": "^1.0.2",
     "aws-sdk": "^2.439.0",
+    "gzip": "^0.1.0",
+    "stream": "0.0.2",
     "turf-extent": "^1.0.4"
   }
 }
