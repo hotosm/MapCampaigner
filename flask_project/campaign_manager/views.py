@@ -575,13 +575,25 @@ def download_csv(uuid, file_name):
 @campaign_manager.route('/generate_kml', methods=['POST'])
 def generate_kml():
     """Generate KML file from geojson."""
-    geojson = request.values.get('location', None)
     uuid = request.values.get('uuid', None)
     campaign_name = request.values.get('campaign_name', None)
+    campaign = Campaign(uuid)
 
-    if not geojson or not uuid:
-        abort(404)
-    features = json.loads(geojson)['features']
+    # Get json for each type.
+    types = campaign.get_s3_types()
+    if types is None:
+        return Response(json.dumps({'error': 'types not found'}), 400)
+
+    data = []
+    for t in types:
+        data.append(campaign.get_type_geojsons(t))
+
+    if len(data) == 0:
+        return Response(json.dumps({'error': 'Data not found'}), 400)
+
+    features = [i['features'] for sublist in data for i in sublist]
+
+    # for each type, we need to get geojson.
     kml = Kml(name=campaign_name)
 
     file_name = hashlib.md5(
@@ -593,7 +605,9 @@ def generate_kml():
 
     # For now, let's work only with points.
     # TODO: include polygons in the kml file.
-    features = [f for f in features if f['geometry']['type'] == 'Point']
+    features = [[f for f in sublist if f['geometry']['type'] == 'Point']
+        for sublist in features]
+    features = [item for sublist in features for item in sublist]
 
     for feature in features:
         tags = feature['properties']['tags']

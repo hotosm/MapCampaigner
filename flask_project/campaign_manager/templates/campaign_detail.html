@@ -456,16 +456,7 @@
     }
 
     function openOtherDataCollectonForm(app) {
-        let campaign_points;
-        // retreive from map the points.
-        map.eachLayer(function (layer) {
-            if (layer instanceof L.MarkerClusterGroup) {
-                campaign_points = layer.toGeoJSON()
-            }
-        });
-
         let campaign_data = {
-            'location': JSON.stringify(campaign_points),
             'uuid': '{{ uuid }}',
             'campaign_name': '{{ name }}'
         };
@@ -484,7 +475,8 @@
                 $('#download_kml').get(0).click();
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                $('#download_div').html('Error. Please contact MapCampaigner administrator').addClass('alert-danger').show();
+                let err_str = thrownError + ' error. Please contact MapCampaigner administrator'
+                $('#download_div').html(err_str).addClass('alert-danger').show();
             }
         });
 
