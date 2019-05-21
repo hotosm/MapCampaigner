@@ -61,6 +61,22 @@ def invoke_render_feature(uuid, type_name):
         Payload=payload)
 
 
+def invoke_process_make_vector_tiles(uuid, type_name):
+    aws_lambda = boto3.client('lambda')
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'type': type_name
+    })
+    function_name_with_env = '{env}_{function_name}'.format(
+        env=os.environ['ENV'],
+        function_name='process_make_vector_tiles')
+
+    aws_lambda.invoke(
+        FunctionName=function_name_with_env,
+        Payload=payload,
+        InvocationType='RequestResponse')
+
+
 def save_data(uuid, type_id, data):
     with open('/tmp/data.json', 'w') as file:
         json.dump(data, file)

@@ -9,6 +9,7 @@ from utilities import (
     build_render_data_path,
     invoke_render_feature,
     invoke_download_errors,
+    invoke_process_make_vector_tiles,
     compute_completeness_pct,
     save_data,
     download_overpass_file,
@@ -90,3 +91,4 @@ def main(event, context):
     save_data(uuid, type_id, processed_data)
     invoke_download_errors(uuid, type_name)
     invoke_render_feature(uuid, type_name)
+    invoke_process_make_vector_tiles(uuid, type_name)
