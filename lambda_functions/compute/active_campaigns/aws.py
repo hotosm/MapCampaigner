@@ -91,12 +91,15 @@ class S3Data(object):
         prefix = '{}/'.format(prefix)
         objects = []
         try:
-            for obj in self.s3.list_objects(
+            paginator = self.s3.get_paginator('list_objects')
+            result = paginator.paginate(
                 Bucket=self.bucket,
-                    Prefix=prefix)['Contents']:
-                if obj['Key'] != prefix:
-                    key = obj['Key'].replace(prefix, '')
-                    objects.append(key.split('/')[0])
+                Prefix=prefix,
+                Delimiter='/'
+                )
+            for obj in result.search('CommonPrefixes'):
+                key = obj.get('Prefix').replace(prefix, '')
+                objects.append(key.split('/')[0])
             return list(set(objects))
         except KeyError:
             return []
