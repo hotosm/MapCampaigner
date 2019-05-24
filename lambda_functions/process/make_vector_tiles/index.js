@@ -1,10 +1,12 @@
 var fs = require('fs');
 var path = require('path');
 var zlib = require("zlib");
+const { execSync } = require('child_process');
 var AWS = require('aws-sdk');
 var geojson2vt = require('@hotosm/geojson2vt');
 var geojsonMerge = require('@mapbox/geojson-merge');
 var turfExtent = require("turf-extent");
+
 
 function read_geojson(file) {
   var data = JSON.parse(zlib.gunzipSync(fs.readFileSync(file)));
@@ -105,7 +107,7 @@ async function emptyS3TilesDir(uuid, type) {
       keepRunning = false;
     }
   }
-  console.log(`Deleted ${deletionsNumber} files.`);
+  return deletionsNumber;
 }
 
 
@@ -143,13 +145,14 @@ async function main(event) {
   const AWSBUCKETPREFIX = `${process.env.S3_BUCKET}/campaigns/${event.campaign_uuid}/render/${type_id}/`;
   const localDir = path.join('/tmp', type_id);
 
+  var deletedNumber = await emptyS3TilesDir(event.campaign_uuid, type_id);
+  console.log(`Deleted ${deletedNumber} files on S3.`);
   // It's possible a lambda container being reused, so in order to avoid wrong data
   // processing and save disk space, we remove the localDir if it already exists
   if (fs.existsSync(localDir)) {
-    fs.rmdirSync(localDir, (err) => {if (err) throw err;});
+    execSync(`rm -rf ${localDir}`);
   }
   fs.mkdirSync(localDir, (err) => {if (err) throw err;});
-  await emptyS3TilesDir(event.campaign_uuid, type_id);
 
   const result = await downloadGeojsonFiles(
     event.campaign_uuid,
