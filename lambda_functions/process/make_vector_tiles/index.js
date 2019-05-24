@@ -71,6 +71,44 @@ async function readGeojsonFiles(localDir) {
   return geojson;
 }
 
+
+async function emptyS3TilesDir(uuid, type) {
+  var S3 = new AWS.S3();
+  var keepRunning = true;
+  var params = {
+    Bucket: process.env.S3_BUCKET,
+    Prefix: `campaigns/${uuid}/render/${type}/tiles/`
+  };
+  var deletionsNumber = 0;
+
+  while (keepRunning) {
+    let listedObjects = await S3.listObjectsV2(params).promise();
+    let toDeleteItens = []
+
+    listedObjects.Contents.filter(
+      item => path.parse(item.Key).ext === '.pbf'
+    ).map(
+      item => toDeleteItens.push({ Key: item.Key })
+    );
+    if (toDeleteItens.length) {
+      let deleted = await S3.deleteObjects({
+        Bucket: process.env.S3_BUCKET,
+        Delete: {
+          Objects: toDeleteItens
+        }
+      }).promise();
+      deletionsNumber += deleted.Deleted.length;
+    }
+    if (listedObjects.NextContinuationToken) {
+      params.ContinuationToken = listedObjects.NextContinuationToken;
+    } else {
+      keepRunning = false;
+    }
+  }
+  console.log(`Deleted ${deletionsNumber} files.`);
+}
+
+
 async function uploadTiles(localDir, uuid, type_id) {
   console.log('-- Uploading tiles to S3.');
   const S3 = new AWS.S3();
@@ -105,9 +143,13 @@ async function main(event) {
   const AWSBUCKETPREFIX = `${process.env.S3_BUCKET}/campaigns/${event.campaign_uuid}/render/${type_id}/`;
   const localDir = path.join('/tmp', type_id);
 
-  if (!fs.existsSync(localDir)) {
-    fs.mkdir(localDir, (err) => {if (err) throw err;});
+  // It's possible a lambda container being reused, so in order to avoid wrong data
+  // processing and save disk space, we remove the localDir if it already exists
+  if (fs.existsSync(localDir)) {
+    fs.rmdirSync(localDir, (err) => {if (err) throw err;});
   }
+  fs.mkdirSync(localDir, (err) => {if (err) throw err;});
+  await emptyS3TilesDir(event.campaign_uuid, type_id);
 
   const result = await downloadGeojsonFiles(
     event.campaign_uuid,
