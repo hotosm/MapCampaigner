@@ -81,22 +81,22 @@ async function emptyS3TilesDir(uuid, type) {
     Bucket: process.env.S3_BUCKET,
     Prefix: `campaigns/${uuid}/render/${type}/tiles/`
   };
-  var deletionsNumber = 0;
+  let deletionsNumber = 0;
 
   while (keepRunning) {
     let listedObjects = await S3.listObjectsV2(params).promise();
-    let toDeleteItens = []
+    let toDeleteItems = []
 
     listedObjects.Contents.filter(
       item => path.parse(item.Key).ext === '.pbf'
-    ).map(
-      item => toDeleteItens.push({ Key: item.Key })
+    ).forEach(
+      item => toDeleteItems.push({ Key: item.Key })
     );
-    if (toDeleteItens.length) {
+    if (toDeleteItems.length) {
       let deleted = await S3.deleteObjects({
         Bucket: process.env.S3_BUCKET,
         Delete: {
-          Objects: toDeleteItens
+          Objects: toDeleteItems
         }
       }).promise();
       deletionsNumber += deleted.Deleted.length;
