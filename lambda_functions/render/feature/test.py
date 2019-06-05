@@ -1,16 +1,19 @@
 import unittest
 import warnings
-from lambda_function import (
-    lambda_handler
-)
+from lambda_function import lambda_handler
+
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")   
+        warnings.filterwarnings(
+            "ignore",
+            category=ResourceWarning,
+            message="unclosed.*<ssl.SSLSocket.*>"
+            )
 
     def test_run(self):
         event = {
-           'campaign_uuid': '6f35021df8864397903a60e0d5853920', 
+           'campaign_uuid': '6f35021df8864397903a60e0d5853920',
            'type': 'GOD'
         }
         lambda_handler(event, {})

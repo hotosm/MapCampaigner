@@ -97,6 +97,7 @@ def campaign_path(uuid):
         '{uuid}']).format(
             uuid=uuid)
 
+
 def build_processed_data_path(campaign_path, feature):
     return '/'.join([
         '{campaign_path}',

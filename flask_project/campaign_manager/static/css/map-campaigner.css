@@ -564,6 +564,10 @@ body {
     border-radius: 2px;
 }
 
+.alert i {
+    font-size: 150%;
+}
+
 #campaign-form .form-group ul {
     list-style-type: none;
     padding-left: 10px;

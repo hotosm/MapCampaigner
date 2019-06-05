@@ -1,5 +1,4 @@
 import os
-import json
 import boto3
 
 
@@ -78,4 +77,5 @@ class S3Data(object):
         """
         self.s3.delete_object(
             Bucket=self.bucket,
-            Key=key)
+            Key=key
+            )

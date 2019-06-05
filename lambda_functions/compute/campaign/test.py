@@ -4,9 +4,14 @@ from lambda_function import (
     lambda_handler
 )
 
+
 class TestCase(unittest.TestCase):
     def setUp(self):
-        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>")   
+        warnings.filterwarnings(
+            "ignore",
+            category=ResourceWarning,
+            message="unclosed.*<ssl.SSLSocket.*>"
+            )
 
     def test_run(self):
         event = {

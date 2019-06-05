@@ -8,6 +8,7 @@ from test_helper import (
     SELECTED_FUNCTIONS
 )
 
+
 class TestCase(unittest.TestCase):
 
     def test_run(self):

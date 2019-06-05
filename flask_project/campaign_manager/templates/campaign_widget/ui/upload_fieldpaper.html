@@ -20,15 +20,33 @@
 
         $('#fieldpaper-id').click();
     }
-    
-    function isMultiPolygon(features) {
-        var isMultiPolygon = false;
+
+    function isnull(feature) {
+        let entries = Object.entries(feature);
+
+        for (let entry of entries) {
+            if (entry[1] === null) {
+                return true;
+                break;
+            }
+
+            if (typeof entry[1] === 'object') {
+                if (isnull(entry[1])) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    function invalidGeometry(features) {
+        var invalidGeom = false;
         features.forEach((feature) => {
             type = feature['geometry']['type']
-            if (type === "MultiPolygon")
-                isMultiPolygon = true;
+            if ((type === "MultiPolygon") || (type === "LineString"))
+                invalidGeom = true;
         });
-        return isMultiPolygon;
+        return invalidGeom;
     }
 
     function handleFileSelect(evt) {
@@ -50,9 +68,20 @@
         reader.onload = function (e) {
             var geojsonFeature = JSON.parse(reader.result);
             geojsonFeature = geojsonFeature['features'];
-            
-            if (isMultiPolygon(geojsonFeature)) {
-                showNotifications('MultiPolygons are not supported. Please change it to Polygon.', 'danger');
+            if (invalidGeometry(geojsonFeature)) {
+                showNotifications('Geometry type not supported', 'danger');
+                return;
+            }
+
+            // Traverse over json elements and check for any null values.
+            let nulljson = false;
+            geojsonFeature.forEach((feature) => {
+                nulljson = isnull(feature)
+            });
+
+            // If there are some elements show notifications.
+            if (nulljson) {
+                showNotifications('GeoJson file has null values', 'danger');
                 return;
             }
 

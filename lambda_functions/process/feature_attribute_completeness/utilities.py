@@ -15,6 +15,7 @@ def fix_tags(broken_tags):
             tags[tag] = broken_tags[tag]
     return tags
 
+
 def download_overpass_file(uuid, type_id):
     key = build_raw_data_overpass_path(
         campaign_path=campaign_path(uuid),
@@ -57,7 +58,23 @@ def invoke_render_feature(uuid, type_name):
     aws_lambda.invoke(
         FunctionName=function_name_with_env,
         InvocationType='Event',
-        Payload=payload)    
+        Payload=payload)
+
+
+def invoke_process_make_vector_tiles(uuid, type_name):
+    aws_lambda = boto3.client('lambda')
+    payload = json.dumps({
+        'campaign_uuid': uuid,
+        'type': type_name
+    })
+    function_name_with_env = '{env}_{function_name}'.format(
+        env=os.environ['ENV'],
+        function_name='process_make_vector_tiles')
+
+    aws_lambda.invoke(
+        FunctionName=function_name_with_env,
+        Payload=payload,
+        InvocationType='RequestResponse')
 
 
 def save_data(uuid, type_id, data):
@@ -78,9 +95,9 @@ def compute_completeness_pct(features_collected, features_completed):
     completeness_pct = '0.0'
     if features_collected > 0:
         completeness_pct = '%.1f' % (
-        (features_completed / features_collected) * 100)
+            (features_completed / features_collected) * 100
+            )
     return completeness_pct
-
 
 
 def campaign_path(uuid):
@@ -126,8 +143,10 @@ def fetch_required_tags(seeked_feature, functions):
         is_function_and_feature(
             function_name=function[1]['function'],
             feature=function[1]['feature'],
-            seeked_feature=seeked_feature),
-        functions.items())).values())[0]['attributes']
+            seeked_feature=seeked_feature
+            ),
+        functions.items()
+        )).values())[0]['attributes']
 
 
 def fetch_type(seeked_feature, functions):
@@ -135,18 +154,19 @@ def fetch_type(seeked_feature, functions):
         is_function_and_feature(
             function_name=function[1]['function'],
             feature=function[1]['feature'],
-            seeked_feature=seeked_feature),
-        functions.items())).values())[0]['type']
+            seeked_feature=seeked_feature
+            ),
+        functions.items()
+        )).values())[0]['type']
 
 
 def is_function_and_feature(function_name, feature, seeked_feature):
-    return \
-        function_name == 'FeatureAttributeCompleteness' \
-        and \
-        feature == seeked_feature
+    return (function_name == 'FeatureAttributeCompleteness' and
+            feature == seeked_feature
+        )
 
 
-def save_to_s3(path, data):    
+def save_to_s3(path, data):
     S3Data().create(
         key=path,
         body=json.dumps(data))

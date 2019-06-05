@@ -9,6 +9,7 @@ def fetch_campaign(campaign_path):
     return S3Data().fetch('{campaign_path}/campaign.json'.format(
         campaign_path=campaign_path))
 
+
 def get_error_ids(uuid, type_id, elements):
     data = download_feature_completeness_file(uuid, type_id)
     return cast_element_ids_to_s(data['error_ids'], elements)
@@ -16,7 +17,7 @@ def get_error_ids(uuid, type_id, elements):
 
 def download_feature_completeness_file(uuid, type_id):
     feature_completeness_data_path = build_feature_completeness_path(
-        campaign_path=campaign_path(uuid), 
+        campaign_path=campaign_path(uuid),
         type_id=type_id)
     return S3Data().fetch(feature_completeness_data_path)
 
@@ -73,14 +74,13 @@ def format_query(parameters):
 
 
 def build_query(uuid, type_id, elements):
-    error_ids = get_error_ids(uuid, type_id, elements);
+    error_ids = get_error_ids(uuid, type_id, elements)
     parameters = {
         'element_parameters': error_ids,
         'print_mode': 'meta'
     }
 
-    return format_query(parameters)    
-
+    return format_query(parameters)
 
 
 def post_request(query, type_id):
@@ -104,6 +104,7 @@ def save_to_s3(path, type_id):
         S3Data().upload_file(
             key=path,
             body=data)
+
 
 def build_path(uuid, type_id):
     return '/'.join([

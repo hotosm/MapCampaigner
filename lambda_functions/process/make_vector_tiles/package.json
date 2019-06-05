@@ -1,0 +1,25 @@
+{
+  "name": "make_vector_tiles",
+  "version": "1.0.0",
+  "description": "Lambda function to generate vector tiles out of a geojson",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gis",
+    "vector tiles",
+    "geojson",
+    "mapbox vector tiles"
+  ],
+  "author": "Humanitarian OpenStreetMap Team",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@hotosm/geojson2vt": "^0.1.3",
+    "@mapbox/geojson-merge": "^1.0.2",
+    "aws-sdk": "^2.439.0",
+    "gzip": "^0.1.0",
+    "stream": "0.0.2",
+    "turf-extent": "^1.0.4"
+  }
+}

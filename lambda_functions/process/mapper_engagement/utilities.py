@@ -1,8 +1,9 @@
 import json
-from aws import S3Data
 import xml.sax
 import time
 from datetime import date, timedelta
+from aws import S3Data
+from osm_way_parser import OsmParser
 
 
 def save_data(uuid, type_id, data):
@@ -29,12 +30,15 @@ def build_render_data_path(campaign_path, type_id):
 
 
 def fetch_type(seeked_feature, functions):
-    return list(dict(filter(lambda function:
-        is_function_and_feature(
-            function_name=function[1]['function'],
-            feature=function[1]['feature'],
-            seeked_feature=seeked_feature),
-        functions.items())).values())[0]['type']
+    return list(dict(filter(
+        lambda function:
+            is_function_and_feature(
+                function_name=function[1]['function'],
+                feature=function[1]['feature'],
+                seeked_feature=seeked_feature
+                ),
+            functions.items()
+        )).values())[0]['type']
 
 
 def is_function_and_feature(function_name, feature, seeked_feature):
@@ -70,16 +74,18 @@ def campaign_path(uuid):
         '{uuid}']).format(
             uuid=uuid)
 
+
 def fetch_campaign(campaign_path):
     return S3Data().fetch('{campaign_path}/campaign.json'.format(
         campaign_path=campaign_path))
 
+
 def fetch_osm_data(campaign_path, filename):
     return S3Data().fetch('{campaign_path}/raw_data/attic/{filename}'.format(
         campaign_path=campaign_path,
-        filename=filename))
+        filename=filename)
+        )
 
-from osm_way_parser import OsmParser
 
 def osm_object_contributions(
         osm_file,
@@ -193,6 +199,7 @@ def osm_object_contributions(
             d['average']))
     return sorted_user_list
 
+
 def date_range(timeline):
     """Given a timeline, determine the start and end dates.
 
@@ -227,6 +234,7 @@ def date_range(timeline):
         if timeline_date > end_date:
             end_date = timeline_date
     return start_date, end_date
+
 
 def interpolated_timeline(timeline):
     """Interpolate a timeline given a sparse timeline.
@@ -281,6 +289,7 @@ def interpolated_timeline(timeline):
     time_line += ']'
     return time_line
 
+
 def date_range_iterator(start_date, end_date):
     """Given two dates return a collection of dates between start and end.
 
@@ -295,6 +304,7 @@ def date_range_iterator(start_date, end_date):
     """
     for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timedelta(n)
+
 
 def best_active_day(timeline):
     """Compute the best activity for a single active day in a sparse timeline.
@@ -333,6 +343,7 @@ def worst_active_day(timeline):
             worst = value
     return worst
 
+
 def average_for_active_days(timeline):
     """Compute the average activity per active day in a sparse timeline.
 
@@ -352,4 +363,3 @@ def average_for_active_days(timeline):
     # Python 3 seems to automagically turn integer maths into float if needed
     average = int(total / count)
     return average
-

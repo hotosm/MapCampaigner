@@ -114,7 +114,7 @@ def find_outside_polygons(file, campaign_polygons):
             way_id = elem.attrib['id']
 
         # nd element in a way element
-        if elem.tag == 'nd' and in_way == True:
+        if elem.tag == 'nd' and in_way is True:
             # fetch the node
             node = nodes[elem.attrib['ref']]
             ways[way_id].append(node)
@@ -152,7 +152,7 @@ def build_payload(uuid, feature, date):
     })
 
 
-def invoke_process_function(function_name, payload):
+def invoke_process_function(function_name, payload, invocation_type='Event'):
     aws_lambda = boto3.client('lambda')
     function_name_with_env = '{env}_{function_name}'.format(
         env=os.environ['ENV'],
@@ -160,7 +160,7 @@ def invoke_process_function(function_name, payload):
 
     aws_lambda.invoke(
         FunctionName=function_name_with_env,
-        InvocationType='Event',
+        InvocationType=invocation_type,
         Payload=payload)
 
 
@@ -178,7 +178,7 @@ def invoke_process_count_feature(uuid, type_name):
 def invoke_process_feature_completeness(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'type': type_name    
+        'type': type_name
     })
 
     invoke_process_function(
@@ -189,7 +189,7 @@ def invoke_process_feature_completeness(uuid, type_name):
 def invoke_process_mapper_engagement(uuid, type_name):
     payload = json.dumps({
         'campaign_uuid': uuid,
-        'type': type_name    
+        'type': type_name
     })
 
     invoke_process_function(
@@ -200,19 +200,19 @@ def invoke_process_mapper_engagement(uuid, type_name):
 def format_query(parameters):
     if parameters['value']:
         if parameters['element_type'] == 'Point':
-            query = template_node_query_with_value();
-        elif parameters['element_type'] == 'Line' or \
-            parameters['element_type'] == 'Polygon':
+            query = template_node_query_with_value()
+        elif (parameters['element_type'] == 'Line' or
+            parameters['element_type'] == 'Polygon'):
             query = template_way_query_with_value()
         else:
             query = template_query_with_value()
     else:
         if parameters['element_type'] == 'Point':
             query = template_node_query()
-        elif parameters['element_type'] == 'Line' or \
-            parameters['element_type'] == 'Polygon':
+        elif (parameters['element_type'] == 'Line' or
+            parameters['element_type'] == 'Polygon'):
             query = template_way_query()
-        else:       
+        else:
             query = template_query()
 
     return query.format(**parameters)
@@ -238,6 +238,7 @@ def build_query(polygon, typee):
     }
     return format_query(parameters)
 
+
 def build_query_path(uuid, type_id):
     return '/'.join([
         'campaigns/{uuid}',
@@ -245,6 +246,7 @@ def build_query_path(uuid, type_id):
         ]).format(
             uuid=uuid,
             type_id=type_id)
+
 
 def build_path(uuid, type_id):
     return '/'.join([
@@ -265,6 +267,7 @@ def template_way_query():
         'out {print_mode};'
     )
 
+
 def template_way_query_with_value():
     return (
         '[out:xml];('
@@ -274,6 +277,7 @@ def template_way_query_with_value():
         '(._;>;);'
         'out {print_mode};'
     )
+
 
 def template_node_query_with_value():
     return (
@@ -285,6 +289,7 @@ def template_node_query_with_value():
         'out {print_mode};'
     )
 
+
 def template_node_query():
     return (
         '[out:xml];('
@@ -293,7 +298,8 @@ def template_node_query():
         ');'
         '(._;>;);'
         'out {print_mode};'
-    )    
+    )
+
 
 def template_query():
     return (
@@ -337,16 +343,17 @@ def post_request(query, type_id):
 
 
 def save_to_s3(path, type_id):
-    with open('/tmp/{type_id}.xml'.format(
-        type_id=type_id), 'rb') as data:
+    with open('/tmp/{type_id}.xml'.format(type_id=type_id), 'rb') as data:
         S3Data().upload_file(
             key=path,
             body=data)
+
 
 def save_query(path, query):
     S3Data().create(
         key=path,
         body=query)
+
 
 def date_to_dict(start_date, end_date):
     return {

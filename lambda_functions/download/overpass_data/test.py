@@ -7,9 +7,7 @@ from lambda_function import (
 from utilities import (
     date_to_dict,
     format_query,
-    format_feature_values,
-    build_query,
-    post_request
+    format_feature_values
 )
 
 
@@ -27,8 +25,6 @@ class TestCase(unittest.TestCase):
                 'type': 'Building'
             }
             lambda_handler(event, {})
-
-    
 
     def test_date_to_dict(self):
         start_date = '2018-08-01'
@@ -78,6 +74,7 @@ class TestCase(unittest.TestCase):
             'polypolygon");node["amenity"~"cafe|coffee"](poly:"polypolygon")' +
             ';relation["amenity"~"cafe|coffee"](poly:"polypolygon"););' +
             '(._;>;);out meta;')
+
 
 if __name__ == '__main__':
     unittest.main()

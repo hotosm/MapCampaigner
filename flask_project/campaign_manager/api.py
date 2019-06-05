@@ -39,8 +39,10 @@ class CampaignList(Resource):
         cached_uuids = get_uuids_from_cache(folder_path)
 
         # Get all campaign information from either s3 or cache directory.
-        campaigns = [get_data(campaign, cached_uuids, folder_path)
-            for campaign in campaign_uuids]
+        campaigns = [
+            get_data(campaign, cached_uuids, folder_path)
+            for campaign in campaign_uuids
+            ]
 
         return campaigns
 

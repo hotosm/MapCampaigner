@@ -1,0 +1,54 @@
+<!-- Modal content-->
+<div>
+    <textarea id="yaml-input" rows="10" placeholder="put yaml types in here" type="text" class="form-control"></textarea>
+</div>
+<div class="modal-required-message">This field is required</div>
+<div class="modal-error-message"></div>
+<div class="help-block">
+    Edit templates in yaml above.
+</div><br>
+
+<div class="row">
+<div class="pull-right">
+    <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveYamlCustomType()">Add</button>
+    <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
+</div>
+</div>
+
+<div class="modal-required-message">Some names already registered, please choose other name.</div>
+
+<div class="help">
+    <b>GUIDE :</b>
+    <pre class="example">
+restaurant:
+    feature: amenity
+    tags:
+        - amenity:
+            - restaurant
+            - fast-food
+        - name
+        - cuisine
+    element_type: Point
+shop:
+    feature: amenity
+    tags:
+        - amenity:
+            - shop
+            - name
+        - opening_hours
+    element_type: Polygon
+        </pre>
+    Put types in yaml format. The formats are:<br>
+    - Whitespace is sensitive. Each child element must be indented below its parent element.<br>
+    - The first parent, put <b>title</b> of custom type.<br>
+    - The second one 2 key, which are feature and tags.<br>
+    - <b>Feature</b> : This is specific feature of data for this type. For example: building, amenity, etc.<br>
+    - To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.<br>
+    - <b>Tags</b> : The format is the list, put dash for every line.
+    - Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.
+    - For specific tag, add new child for that tags (for example amenity). It will check attributes is restaurant or fast-food.
+    - Can put second type (or more) by creating new parent<br />
+    - <b>Element type</b>: Point, Line, Polygon
+</div>
+
+
