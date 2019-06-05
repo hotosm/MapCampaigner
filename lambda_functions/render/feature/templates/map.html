@@ -9,8 +9,7 @@
   </div>
 </div>
 <script>
-  var s3_base_url = "https://s3-us-west-2.amazonaws.com/hotosm-fieldcampaigner-data-staging/campaigns/";
-  var vt_url =  s3_base_url + "{{ uuid }}" + "/render/" + "{{ type_id }}" + "/tiles/{z}/{x}/{y}.pbf";
+  var vt_url =  "{{ url }}" + "/tiles/{z}/{x}/{y}.pbf";
   mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGUiLCJhIjoicFNVWk5VWSJ9.hluCd0YGvYHNlFi_utWe2g';
   map = new mapboxgl.Map({
     container: 'campaign-map-detail',
