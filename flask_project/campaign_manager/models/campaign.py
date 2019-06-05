@@ -12,6 +12,7 @@ import json
 import os
 import pygeoj
 import time
+import zlib
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
@@ -456,6 +457,43 @@ class Campaign(JsonModel):
             if self.remote_projects:
                 status = 'remote-mapping'
         return status
+
+    def get_type_geojsons(self, type):
+        s3 = S3Data()
+        # For each type we get first level data.
+        response = s3.s3.list_objects(Bucket=s3.bucket,
+            Prefix=type,
+            Delimiter='/')
+        if 'Contents' not in list(response.keys()):
+            return None
+
+        contents = response['Contents']
+        paths = [c['Key'] for c in contents if 'geojson' in c['Key']]
+
+        # Now we have to download from s3 the geojson and return dictionary.
+        geojsons = []
+
+        for path in paths:
+            body = s3.s3.get_object(Bucket=s3.bucket, Key=path)['Body']
+            data = zlib.decompress(body.read(), 16 + zlib.MAX_WBITS)
+            json_data = json.loads(data)
+
+            geojsons.append(json_data)
+
+        return geojsons
+
+    def get_s3_types(self):
+        s3 = S3Data()
+        objs = s3.s3.list_objects(Bucket=s3.bucket,
+            Prefix='campaigns/{}/render/'.format(self.uuid),
+            Delimiter='/')
+
+        if 'CommonPrefixes' not in objs:
+            return None
+
+        types = [t['Prefix'] for t in objs['CommonPrefixes']]
+
+        return types
 
     # ----------------------------------------------------------
     # coverage functions
