@@ -329,7 +329,7 @@ def template_query_with_value():
 
 def post_request(query, type_id):
     data = requests.post(
-        url='http://exports-prod.hotosm.org:6080/api/interpreter',
+        url='http://overpass.hotosm.org/api/interpreter',
         data={'data': query},
         headers={'User-Agent': 'HotOSM'},
         stream=True)
