@@ -496,7 +496,7 @@ def generate_josm():
     if not error_features:
         abort(404)
 
-    server_url = 'http://exports-prod.hotosm.org:6080/api/' \
+    server_url = 'http://overpass.hotosm.org/api/' \
                  'interpreter'
     error_features = json.loads(error_features)
     element_query = OverpassProvider().parse_url_parameters(
