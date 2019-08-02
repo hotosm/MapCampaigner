@@ -2,25 +2,25 @@
 
 MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.
 
-Join the development: 
+Join the development:
 
-  * Add to the discussion in the [issue tracker](https://github.com/hotosm/field-campaigner/issues). Tag issues as Discussion or Ideas to contribute. 
-  * More information and project documentation about the vision and scope in the [wiki](https://github.com/hotosm/field-campaigner/wiki)
-  * Join online chat on [HOT’s Slack community](https://slack.hotosm.org/), #field-campaigner channel. 
+  * Add to the discussion in the [issue tracker](https://github.com/hotosm/MapCampaigner/issues). Tag issues as Discussion or Ideas to contribute.
+  * More information and project documentation about the vision and scope in the [wiki](https://github.com/hotosm/MapCampaigner/wiki)
+  * Join online chat on [HOT’s Slack community](https://slack.hotosm.org/), #mapcampaigner channel.
 
 ## Project Overview
 
-This project is based on the original work done in the osm-reporter. The project was extended to include a campaign management application. The aim of the campaign management is to allow field campaigns to be tracked and their quality measured. 
+This project is based on the original work done in the osm-reporter. The project was extended to include a campaign management application. The aim of the campaign management is to allow field campaigns to be tracked and their quality measured.
 
 ### OSM Users
 
-The OSM user identity is used in this project. All actions are performed as such. A list of authorized admin users is maintained in the settings file. 
+The OSM user identity is used in this project. All actions are performed as such. A list of authorized admin users is maintained in the settings file.
 
 ### How to install MapCampaigner locally
 
 1. Fork this repo into your github account.
 2. Clone the repo (from your github account).
-3. Create a OpenStreetMap account 
+3. Create a OpenStreetMap account
 
     [Sign Up | OpenStreetMap](https://www.openstreetmap.org/user/new)
 
@@ -162,7 +162,7 @@ The insights functions are clearly understandable english sentences, which highl
 
 ### Data Provider
 
-The Data Provider is an abstraction around the data source. External resource querying is handled here. The prime example is the OSM Reporter Function Provider, which provides the feature list over a given time period for a specific area. This data is aggregated here and passed on to the relevant insights functions. 
+The Data Provider is an abstraction around the data source. External resource querying is handled here. The prime example is the OSM Reporter Function Provider, which provides the feature list over a given time period for a specific area. This data is aggregated here and passed on to the relevant insights functions.
 
 ### Insights Function
 
@@ -174,7 +174,7 @@ See LICENSE.md file.
 
 ## Contributors
 
-Built by [Kartoza](http://kartoza.com/): 
+Built by [Kartoza](http://kartoza.com/):
 
 @cchristelis
 @ann26
@@ -183,7 +183,7 @@ Built by [Kartoza](http://kartoza.com/):
 @MariaSolovyeva
 @pierrealixt
 
-Based on previous osm-reporter work by: 
+Based on previous osm-reporter work by:
 
 Tim Sutton - tim@linfiniti.com
 Yohan Boniface - yb@enix.org
