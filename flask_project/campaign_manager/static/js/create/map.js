@@ -18,8 +18,8 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
 
 
 L.tileLayer(map_provider, {
-    attribution: '© <a href="http://www.openstreetmap.org" target="_parent">OpenStreetMap</a> and ' +
-    'contributors, under an <a href="http://www.openstreetmap.org/copyright" target="_parent">open license</a>',
+    attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
+    'contributors',
     maxZoom: 18
 }).addTo(campaignMap);
 
