@@ -140,7 +140,7 @@ async function uploadTiles(localDir, uuid, type_id) {
 
 
 async function main(event) {
-  const type_id = event.type.replace(' ', '_');
+  const type_id = event.type.split(' ').join('_');
   const AWSBUCKETPREFIX = `${process.env.S3_BUCKET}/campaigns/${event.campaign_uuid}/render/${type_id}/`;
   console.log(`Processing campaign ${event.campaign_uuid} - ${type_id}`);
   const localDir = path.join('/tmp', type_id);
