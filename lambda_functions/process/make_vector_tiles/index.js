@@ -121,7 +121,6 @@ async function uploadTiles(localDir, uuid, type_id) {
     await Promise.all(tiles.map(async (tile) => {
       const pbfs = fs.readdirSync(path.join(localDir, 'tiles', zoomLevel, tile));
        result.push(await Promise.all(pbfs.map(async (pbf) => {
-        console.log(`Uploading to ${process.env.S3_BUCKET}/campaigns/${uuid}/render/${type_id}/tiles/${zoomLevel}/${tile}/${pbf}`);
         return new Promise((resolve, reject) => {
           return S3.putObject({
             Bucket: process.env.S3_BUCKET,
@@ -143,6 +142,7 @@ async function uploadTiles(localDir, uuid, type_id) {
 async function main(event) {
   const type_id = event.type.replace(' ', '_');
   const AWSBUCKETPREFIX = `${process.env.S3_BUCKET}/campaigns/${event.campaign_uuid}/render/${type_id}/`;
+  console.log(`Processing campaign ${event.campaign_uuid} - ${type_id}`);
   const localDir = path.join('/tmp', type_id);
 
   var deletedNumber = await emptyS3TilesDir(event.campaign_uuid, type_id);
