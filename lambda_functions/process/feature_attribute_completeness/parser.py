@@ -21,6 +21,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.errors_warnings = 0
         self.errors_to_s = ''
         self.warnings_to_s = ''
+        self.completeness_pct = 0
         self.unused_nodes = {}
         self.geojson_file_manager = GeojsonFileManager(
             destination=render_data_path)
