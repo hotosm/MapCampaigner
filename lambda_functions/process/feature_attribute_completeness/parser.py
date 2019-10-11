@@ -19,9 +19,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.features_collected = 0  # element has tags
         self.features_completed = 0  # element has no errors
         self.errors_warnings = 0
-        self.errors_to_s = ''
-        self.warnings_to_s = ''
-        self.completeness_pct = 0
         self.unused_nodes = {}
         self.geojson_file_manager = GeojsonFileManager(
             destination=render_data_path)
@@ -109,6 +106,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def check_errors_in_tags(self):
         errors = []
+        self.errors_to_s = None
         for (key, values) in self.required_tags.items():
             if key not in self.tags.keys():
                 error = '{key} not found'.format(key=key)
@@ -131,6 +129,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def check_warnings_in_tags(self):
         warnings = []
+        self.warnings_to_s = None
         if 'name' in self.tags:
             name = self.tags['name']
             if name.isupper():
