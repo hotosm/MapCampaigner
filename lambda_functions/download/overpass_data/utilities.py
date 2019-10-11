@@ -60,13 +60,13 @@ def rebuild_osm_file(file, type_id, outside_polygons):
             osm_base = elem.attrib['osm_base']
             clean_file.write(f'<meta osm_base="{osm_base}"/>')
 
-        if elem.tag == 'node' and event == 'start':
+        if elem.tag == 'node' and event == 'end':
             # write nodes
             if elem.attrib['id'] not in outside_polygons['nodes']:
                 el = ET.tostring(elem)
                 clean_file.write(el.decode("utf-8"))
 
-        if elem.tag == 'way' and event == 'start':
+        if elem.tag == 'way' and event == 'end':
             if elem.attrib['id'] not in outside_polygons['ways']:
                 el = ET.tostring(elem)
                 clean_file.write(el.decode("utf-8"))
