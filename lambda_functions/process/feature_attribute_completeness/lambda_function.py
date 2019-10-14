@@ -66,7 +66,8 @@ def main(event, context):
     parser = FeatureCompletenessParser(
         required_tags,
         render_data_path,
-        element_type
+        element_type,
+        type_name
         )
 
     try:
