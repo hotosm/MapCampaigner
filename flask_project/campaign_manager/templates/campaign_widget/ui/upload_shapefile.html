@@ -1,0 +1,83 @@
+<div class="upload-fieldpaper-wrapper">
+    <input id="shapefile-id" type="file" name="filename" hidden/>
+    <button type="button" class="btn btn-outline btn-primary btn-lg btn-upload-fieldpaper" id="upload-shapefile">
+        Upload Shapefile
+    </button>
+</div>
+
+<script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+<script>
+    $('#upload-shapefile').click(uploadShapefile);
+    $('#shapefile-id').change(handleShapefile);
+
+    function uploadShapefile(el) {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Great success! All the File APIs are supported.
+        } else {
+          alert('The File APIs are not fully supported in this browser.');
+          return;
+        }
+
+        $('#shapefile-id').click();
+    }
+
+    function handleShapefile(evt) {
+		var files = evt.target.files;
+        var output = [];
+        if(files.length <= 0) {
+            return;
+        }
+
+        var uploadedFile = files[0];
+
+        // Check filename
+        if(uploadedFile.name.indexOf('.zip') === -1) {
+            alert('Wrong format');
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+        	shp(reader.result).then(geojson => {
+	        	let geojsonFeature = geojson.features
+
+	            if (invalidGeometry(geojsonFeature)) {
+	                showNotifications('Geometry type not supported', 'danger');
+	                return;
+	            }
+
+	            // Traverse over json elements and check for any null values.
+	            let nulljson = false;
+	            geojsonFeature.forEach((feature) => {
+	                nulljson = isnull(feature)
+	            });
+
+	            // If there are some elements show notifications.
+	            if (nulljson) {
+	                showNotifications('GeoJson file has null values', 'danger');
+	                return;
+	            }
+
+	            drawnItems.clearLayers();
+	            let geojsonLayer = L.geoJSON(geojsonFeature, {
+	                style: function (feature) {
+	                    return {
+	                        weight: 2,
+	                        color: "#999",
+	                        opacity: 1,
+	                        fillColor: '#D3D3D3',
+	                        fillOpacity: 0.8
+	                    }
+	                },
+	                onEachFeature: onEachFeature
+	            });
+	            campaignMap.fitBounds(drawnItems.getBounds());
+	            stringfyGeometry();
+	            getAreaSize();
+        	});
+        };
+        reader.readAsArrayBuffer(uploadedFile)
+
+    }
+
+</script>
