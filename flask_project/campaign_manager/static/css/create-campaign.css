@@ -752,6 +752,11 @@ input#start_date.form-control, input#end_date.form-control {
 #fieldpaper-id {
     display: none;
 }
+
+#shapefile-id {
+    display: none;
+}
+
 /*.btn-upload-fieldpaper {
     width: 100%;
     height: 50px;

@@ -237,58 +237,6 @@ def campaign_boundary_upload_chunk_success(uuid):
         }))
 
 
-@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
-def campaign_coverage_upload_chunk_success(uuid):
-    """Upload chunk handle success.
-    """
-    from campaign_manager.models.campaign import Campaign
-    from campaign_manager.insights_functions.upload_coverage import (
-        UploadCoverage
-    )
-    # validate coverage
-    try:
-        campaign = Campaign.get(uuid)
-        coverage_function = UploadCoverage(campaign)
-        coverage = coverage_function.get_function_raw_data()
-        if not coverage:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Shapefile is not valid.'
-            }))
-        if not check_geojson_is_polygon(coverage):
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'It is not in polygon/multipolygon type.'
-            }))
-
-        try:
-            coverage['features'][0]['properties']['date']
-        except KeyError:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Needs date attribute in shapefile.'
-            }))
-
-        campaign.coverage = {
-            'last_uploader': request.args.get('uploader', ''),
-            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
-            'geojson': coverage
-
-        }
-        coverage_uploader = request.args.get('uploader', '')
-        campaign.save(coverage_uploader)
-        return Response(json.dumps({
-            'success': True,
-            'data': campaign.coverage,
-            'files': coverage_function.get_coverage_files()
-        }))
-    except Campaign.DoesNotExist:
-        abort(404)
-
-
 def upload_chunk(_file, filename):
     """Upload chunk file for specific folder.
     :param _file: file to be saved
