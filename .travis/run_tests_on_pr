@@ -3,7 +3,6 @@ nosetests campaign_manager.test.test_api &&
 nosetests campaign_manager.test.test_feature_attribute_completeness &&
 nosetests campaign_manager.test.test_osmcha_changeset &&
 nosetests campaign_manager.test.test_osmcha_features &&
-nosetests campaign_manager.test.test_upload_coverage &&
 nosetests reporter.test.test_metadata &&
 nosetests reporter.test.test_osm &&
 nosetests reporter.test.test_osm_way_parser &&
