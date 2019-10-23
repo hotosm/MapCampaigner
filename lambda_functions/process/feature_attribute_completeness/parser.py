@@ -4,6 +4,7 @@ from file_manager import (
     GeojsonFileManager,
     ErrorsFileManager
 )
+from utilities import is_valid_element
 
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
@@ -62,6 +63,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def endElement(self, name):
         if name in ['node', 'way']:
+            if is_valid_element(name, self.element) is False:
+                return
+
             if self.has_tags is True:
 
                 if (self.has_no_required_tags() and
