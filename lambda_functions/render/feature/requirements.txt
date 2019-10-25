@@ -1,2 +1,2 @@
-pyyaml==3.13
-Jinja2==2.10
+PyYAML==5.1.2
+Jinja2==2.10.3
