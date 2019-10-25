@@ -99,7 +99,7 @@ class GeojsonFileManager(FileManager):
         super(GeojsonFileManager, self).__init__(destination)
 
     def write_header(self):
-        self.fd.write('{"type": "FeatureCollection","features": [\n')
+        self.fd.write('{"type": "FeatureCollection","features": [ \n')
 
     def write_footer(self):
         self.remove_last_comma()
