@@ -4,15 +4,6 @@ import boto3
 from aws import S3Data
 
 
-def is_valid_element(name, element_type):
-    if name == 'node' and element_type != 'Point':
-        return False
-    if name == 'way' and element_type not in ['Line', 'Polygon']:
-        return False
-
-    return True
-
-
 def fix_tags(broken_tags):
     tags = {}
     for tag in broken_tags:

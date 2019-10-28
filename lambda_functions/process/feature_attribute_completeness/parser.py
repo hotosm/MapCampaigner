@@ -4,7 +4,6 @@ from file_manager import (
     GeojsonFileManager,
     ErrorsFileManager
 )
-from utilities import is_valid_element
 
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
@@ -64,9 +63,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
     def endElement(self, name):
         if name in ['node', 'way']:
             # Remove different elements not related to the element_type.
-            if self.element_type is not None:
-                if is_valid_element(name, self.element_type) is False:
-                    return
             if self.has_tags is True:
 
                 if (self.has_no_required_tags() and
@@ -81,7 +77,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
-            if self.has_tags is True:
+            if self.has_tags is True and self.element_type == 'Point':
                 self.build_feature('node')
                 self.tags = {}
             elif self.has_tags is False:
@@ -89,7 +85,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     float(self.element['lon']),
                     float(self.element['lat'])
                 ]
-        if name == 'way':
+        if name == 'way' and self.element_type in ['Polygon', 'Line']:
             self.build_feature('way')
             self.tags = {}
 
