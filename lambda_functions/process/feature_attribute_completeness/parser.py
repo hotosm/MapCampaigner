@@ -63,9 +63,10 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def endElement(self, name):
         if name in ['node', 'way']:
-            if is_valid_element(name, self.element) is False:
-                return
-
+            # Remove different elements not related to the element_type.
+            if self.element_type is not None:
+                if is_valid_element(name, self.element_type) is False:
+                    return
             if self.has_tags is True:
 
                 if (self.has_no_required_tags() and
