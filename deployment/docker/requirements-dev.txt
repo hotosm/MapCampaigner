@@ -6,3 +6,4 @@ nosexcover
 nose
 selenium
 awscli
+python-dotenv
