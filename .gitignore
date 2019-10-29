@@ -11,6 +11,7 @@ secret.py
 .DS_STORE
 .vscode
 .env
+node_modules/
 lambda_functions/process/make_vector_tiles/node_modules
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
