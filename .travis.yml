@@ -21,7 +21,7 @@ env:
   global:
     - ON_TRAVIS=true
     - SECRET_KEY='tT\xd7\xb06\xf7\x9b\xff\x0fZL\xca\xca\x11\xefM\xacr\xfb\xdf\xca\x9b'
-    - APP_SETTINGS=app_config.AWSTestingConfig
+    - APP_SETTINGS=app_config.Config
     - ATTIC_DATA_SERVER_URL='http://overpass-api.de/api/interpreter'
     - DEFAULT_OVERPASS_URL='http://overpass.hotosm.org/api/interpreter'
 

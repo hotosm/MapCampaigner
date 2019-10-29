@@ -30,7 +30,7 @@ services:
         - PGUSER=docker
         - PGPASSWORD=docker
         - PGHOST=db
-        - APP_SETTINGS=app_config.ProductionConfig
+        - APP_SETTINGS=app_config.Config
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
         - ATTIC_DATA_SERVER_URL=http://export.hotosm.org:6080/api/interpreter

@@ -11,9 +11,9 @@ try:
 
     print('config %s ' % osm_app.config['DEBUG'])
 except KeyError:
-    from app_config import DevelopmentConfig
+    from app_config import Config
 
-    osm_app.config.from_object(DevelopmentConfig)
+    osm_app.config.from_object(Config)
 
 
 @osm_app.errorhandler(404)

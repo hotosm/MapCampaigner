@@ -30,7 +30,7 @@ services:
         - PGUSER=docker
         - PGPASSWORD=docker
         - PGHOST=db
-        - APP_SETTINGS=app_config.ProductionConfig
+        - APP_SETTINGS=app_config.Config
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
         - ATTIC_DATA_SERVER_URL=http://ec2-54-172-198-122.compute-1.amazonaws.com/api/interpreter
@@ -55,7 +55,7 @@ services:
         - PGUSER=docker
         - PGPASSWORD=docker
         - PGHOST=db
-        - APP_SETTINGS=app_config.DevelopmentConfig
+        - APP_SETTINGS=app_config.Config
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
         - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter
@@ -76,7 +76,7 @@ services:
         - PGUSER=docker
         - PGPASSWORD=docker
         - PGHOST=db
-        - APP_SETTINGS=app_config.DevelopmentConfig
+        - APP_SETTINGS=app_config.Config
         - DATABASE_URL=postgresql://db/gis
         - DATA_FOLDER=/home/web/field-campaigner-data
         - ATTIC_DATA_SERVER_URL=http://overpass-api.de/api/interpreter

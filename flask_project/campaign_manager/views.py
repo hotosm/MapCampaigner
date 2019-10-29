@@ -55,14 +55,11 @@ from campaign_manager.aws import S3Data
 from xml.sax.saxutils import escape
 
 try:
-    from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
-except ImportError:
-    try:
-        OAUTH_CONSUMER_KEY = os.environ['OAUTH_CONSUMER_KEY']
-        OAUTH_SECRET = os.environ['OAUTH_SECRET']
-    except KeyError:
-        OAUTH_CONSUMER_KEY = ''
-        OAUTH_SECRET = ''
+    OAUTH_CONSUMER_KEY = os.environ['OAUTH_CONSUMER_KEY']
+    OAUTH_SECRET = os.environ['OAUTH_SECRET']
+except KeyError:
+    OAUTH_CONSUMER_KEY = ''
+    OAUTH_SECRET = ''
 
 MAX_AREA_SIZE = 320000000
 

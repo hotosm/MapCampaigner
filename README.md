@@ -48,7 +48,6 @@ The OSM user identity is used in this project. All actions are performed as such
             </CORSRule>
             </CORSConfiguration>
 
-    3. In flask_project/app_config.py, in DevelopmentConfig, add your bucket name.
     4. Upload folders (in bucket) "surveys", "campaigns" and "thumbnail" at the root of your project. Your S3 structure should look like:
 
             campaigns/
@@ -74,13 +73,7 @@ The OSM user identity is used in this project. All actions are performed as such
 
         $> pip install -r requirements.txt
 
-10. Create a file: flask_project/secret.py
-
-        SECRET_KEY = 'YOUR_SECRET_KEY'
-        OAUTH_CONSUMER_KEY = 'YOUR_OAUTH_CONSUMER_KEY'
-        OAUTH_SECRET = 'YOUR_OAUTH_SECRET'
-
-11. Go to the AWS Console > IAM console > Create a policy
+10. Go to the AWS Console > IAM console > Create a policy
 
         {
             "Version": "2012-10-17",
@@ -103,7 +96,7 @@ The OSM user identity is used in this project. All actions are performed as such
             ]
         }
 
-12. Stay in the IAM console > Create a Role
+11. Stay in the IAM console > Create a Role
     1. Service that will use this role: Lambda
     2. Policies:
         1. the one you just created
@@ -113,32 +106,44 @@ The OSM user identity is used in this project. All actions are performed as such
     3. Role name: whatever name you like
     4. Role description: role to execute MapCampaigner lambda functions
     5. Keep the role ARN (arn:aws:iam:::.....)
-13. Edit ./travis/deploy_lambda_functions.py
 
-        CONFIG = {
-            'local': {
-                'env': {
-                    's3_bucket': 'YOUR_BUCKET',
-                    'env': 'local'
-                },
-                'role': 'YOUR_ROLE_IN_ARN_FORMAT'
-            },
-        		...
+12. Create a file: `.env` in the project root with the following:
 
-14. Download and install Docker
-15. Deploy the lambda functions
+        # Project Config
+        ENV=local
+        PYTHONPATH=flask_project
+        DEVELOPMENT=True
+        DEBUG=True
+        # TESTING=True
+        DATA_FOLDER=/home/web/field-campaigner-data
+        CSRF_ENABLED=True
+        # AWS Config
+        SECRET_KEY=<secret key from step 6>
+        AWS_BUCKET=<AWS bucket name from step 5>
+        AWS_REGION=<AWS region name from step 5>
+        AWS_ROLE=<AWS role in arn format from step 11>
+        # OpenStreetMap Config
+        OAUTH_CONSUMER_KEY=<Oauth consumer key from step 3>
+        OAUTH_SECRET=<Oauth secret from step 3>
+        _OSMCHA_DOMAIN=https://osmcha.mapbox.com/
+        OSMCHA_API_PATH=api/v1/
+        OSMCHA_FRONTEND_URL=https://osmcha.mapbox.com/
+
+
+13. Download and install Docker
+14. Deploy the lambda functions
 
         $> python ./.travis/deploy_lambda_functions.py
 
-16. Run the server:
+15. Run the server:
 
         $> python flask_project/runserver.py
 
-17. Open your browser and visit localhost:5000
-18. Log in
+16. Open your browser and visit localhost:5000
+17. Log in
     1. It should open an OpenStreetMap popup
     2. If not, then you didn't set up properly OAUTH_CONSUMER_KEY and OAUTH_SECRET
-19. Create a campaign
+18. Create a campaign
 
 ### User Interface
 
