@@ -1,0 +1,79 @@
+@media screen and (min-width: 66rem) {
+  .dib-66rem {
+    display: inline-block;
+  }
+}
+
+@media screen and (min-width: 90em) {
+  .pl6-xl {
+    padding-left: 8rem;
+  }
+}
+
+@media screen and (min-width: 60em) {
+  .bg-split-blue-white {
+    background: linear-gradient(to right, $blue-dark, $blue-dark 80%, $white 20%, $white);
+  }
+  .f-4rem-l {
+    font-size: 4rem;
+  }
+  .mw-36rem-l {
+    max-width: 36rem;
+  }
+}
+
+@media screen and (max-width: 60em) {
+  .mw-20rem {
+    max-width: 20rem;
+  }
+  .bg-split-blue-white {
+    background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, $white 20%, $white);
+  }
+}
+
+.bg-split-white-grey-light {
+  background: linear-gradient(to right, $white, $white 20%, $grey-light 20%, $grey-light);
+}
+
+/* used for project progress bar */
+.hhalf {
+  height: 0.5rem;
+}
+
+/*
+   Add shadow on hover, building on what is already in Tachyons
+   adjust for the lighter shadow from design
+*/
+.shadow-hover::after {
+  box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+  z-index: 0;
+}
+
+button:focus, button:active, a:focus, a:active {
+  outline: 0;
+}
+/* TOGGLE for Show Map*/
+.t-cb { transition: all .3s cubic-bezier(.33, 1, .66, 1); } // Custom class
+
+.checkbox:checked + .checkbox-wrapper {
+  background-color: $red; // @extend .bg-green;
+
+  .checkbox-toggle {
+    left: 2rem; // @extend .left-2;
+    background-color: $white; // @extend .bg-moon-gray;
+    border-color: $red;
+  }
+}
+.checkbox-toggle:hover {
+  border: dashed red !important;
+ }
+
+/* mapping type by RADIO BUTTONs
+https://codepen.io/nielsenramon/pen/mLMeLY
+ */
+.radiobutton:checked + .radiobutton-wrapper {
+  background-color: $red; // @extend .bg-white;
+  div {
+    border-color: $white; // @extend .b--white;
+  }
+}
