@@ -1,29 +1,15 @@
 import os
 import re
 import subprocess
+from dotenv import load_dotenv
+from pathlib import Path
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 
 CONFIG = {
-    'local': {
-        'env': {
-            's3_bucket': 'pat-mapcampaigner-dev',
-            'env': 'local'
-        },
-        'role': 'arn:aws:iam::142767531394:role/lambda_field_campaigner'
-    },
-    'staging': {
-        'env': {
-            's3_bucket': 'hotosm-fieldcampaigner-data-staging',
-            'env': 'staging'
-        },
-        'role': 'arn:aws:iam::670261699094:role/lambda_mapcampaigner'
-    },
-    'production': {
-        'env': {
-            's3_bucket': 'hotosm-fieldcampaigner-data-production',
-            'env': 'production'
-        },
-        'role': 'arn:aws:iam::670261699094:role/lambda_mapcampaigner'
-    }
+    's3_bucket': os.environ.get('AWS_BUCKET', ''),
+    'env': os.environ.get('TRAVIS_BRANCH', 'local'),
+    'role': os.environ.get('AWS_ROLE')
 }
 
 
@@ -94,7 +80,7 @@ def copy_zip_to_s3(zip_path, function_name):
         's3://{bucket}/lambda_zips/{function_name}.zip'
     ]).format(
         zip_path=zip_path,
-        bucket=CONFIG[env]['env']['s3_bucket'],
+        bucket=CONFIG['s3_bucket'],
         function_name=function_name)
     os.system(command)
 
@@ -116,7 +102,7 @@ def set_env_variables():
             var_key=var[0].upper(),
             var_value=var[1]
             ),
-        CONFIG[env]['env'].items()
+        CONFIG.items()
         ))
     return '"{s}{env_vars_to_str}{e}"'.format(
         s='{',
@@ -146,7 +132,7 @@ def update_function(path, function_name):
     ]).format(
         function_name_with_env=function_name_with_env,
         function_name=function_name,
-        bucket=CONFIG[env]['env']['s3_bucket'])
+        bucket=CONFIG['s3_bucket'])
 
     os.system(command)
     print('done.')
@@ -177,7 +163,7 @@ def create_function(path, function_name):
 
     env = set_env_from_branch()
     zip_path = zip_files(path, function_name)
-    role = CONFIG[set_env_from_branch()]['role']
+    role = CONFIG['role']
 
     copy_zip_to_s3(zip_path, function_name)
 
@@ -185,7 +171,7 @@ def create_function(path, function_name):
         env=set_env_from_branch(),
         function_name=function_name)
     code = 'S3Bucket={bucket},S3Key=lambda_zips/{function_name}.zip'.format(
-        bucket=CONFIG[env]['env']['s3_bucket'],
+        bucket=CONFIG['s3_bucket'],
         function_name=function_name)
 
     command = ' '.join([

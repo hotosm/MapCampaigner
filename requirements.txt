@@ -23,6 +23,7 @@ pyasn1==0.4.7
 PyGeoj==1.0.0
 pyparsing==2.4.2
 python-dateutil==2.8.0
+python-dotenv==0.10.3
 pytz==2019.3
 PyYAML==5.1.2
 raven==6.10.0
