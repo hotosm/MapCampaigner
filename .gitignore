@@ -13,6 +13,7 @@ secret.py
 .env
 node_modules/
 lambda_functions/process/make_vector_tiles/node_modules
+flask_project/campaign_manager/static/dist
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
