@@ -84,6 +84,22 @@ def home():
     # noinspection PyUnresolvedReferences
     return render_template('index.html', **context)
 
+@campaign_manager.route('/styleguide')
+def styleguide():
+    """Styleguide view.
+
+    This page shows a library of UI components.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider(),
+        bucket_url=S3Data().bucket_url()
+    )
+
+    return render_template('styleguide.html', **context)
+
 
 @campaign_manager.route('/all')
 def home_all():
