@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#929db3" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.">
     <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png" />
     <link rel="manifest" href="/static/manifest.json" />
     <meta property="og:image" content="/static/img/hot-logo-2.png" />
 
+    <link rel="shortcut icon" href="/static/favicon.ico" />
     <link href="/static/dist/main.css" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Archivo|Barlow+Condensed&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/datatables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,18 +33,21 @@
     {% block extra_head %}{% endblock %}
 
     <script type="application/javascript">
-      var site_id="10"; // site_id is for the HOTOSM tracking code below
+      var site_id = "10"; // site_id is for the HOTOSM tracking code below
     </script>
     <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
     <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
   </head>
 
   <body id="wrap">
+    {% include 'components/header.html' %}
+
     <div id="wrapper">
-      {% include 'components/navigation.html' %}
       {% block header_content %}{% endblock %}
       <div id="page-wrapper">
-        <div class="row"><div class="col-lg-12" id="first-row"></div></div>
+        <div class="row">
+          <div class="col-lg-12" id="first-row"></div>
+        </div>
         {% block content %}{% endblock %}
       </div>
     </div>
@@ -97,7 +100,8 @@
       });
 
       $(document).ready(function () {
-        $('#login-menu').click(function () {
+        $('#login-menu').click(function (e) {
+          e.preventDefault();
           login();
         });
         $('#logout-menu').click(function () {
@@ -120,13 +124,13 @@
       function update() {
         window.isAuthenticated = auth.authenticated();
         if (auth.authenticated()) {
-          if(typeof this.map !== 'undefined') {
+          if (typeof this.map !== 'undefined') {
             showDetails(map);
           } else {
             showDetails();
           }
         } else {
-          if(typeof this.map !== 'undefined') {
+          if (typeof this.map !== 'undefined') {
             hideDetails(map);
           } else {
             hideDetails();
@@ -164,13 +168,13 @@
             o['lon'] = long;
             o['lat'] = lat;
             if (map) {
-              that.locationMarker = L.marker([lat, long], {icon: userIcon}).addTo(map);
+              that.locationMarker = L.marker([lat, long], { icon: userIcon }).addTo(map);
               map.setView([lat, long], 8);
               that.locationMarker.bindPopup("Your location from osm");
             }
           }
 
-          if(loginProcess) {
+          if (loginProcess) {
             loginProcess = false;
           }
 
@@ -192,7 +196,8 @@
 
       update();
 
-      $('#create_campaign').click(function () {
+      $('#create_campaign').click(function (e) {
+        e.preventDefault()
         if (auth.authenticated()) {
           location.href = '/create';
         } else {
@@ -208,4 +213,5 @@
     {% block after_base_js %}{% endblock %}
 
   </body>
+
 </html>

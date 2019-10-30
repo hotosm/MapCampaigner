@@ -1,18 +1,23 @@
 {% extends 'base.html' %}
+{% set active_page = "styleguide" %}
 
 {% block header_content %}
-    <div class="home-header"><h1 style="font-weight: 700">ABOUT</h1></div>
+<div class="home-header">
+    <h1 style="font-weight: 700">ABOUT</h1>
+</div>
 {% endblock %}
 
 {% block content %}
-    <style>
+<style>
     .page-title {
         font-weight: 600;
         margin-top: 40px;
     }
+
     .page-content {
         font-size: 12pt;
     }
+
     .home-header {
         text-align: center;
         font-weight: 700;
@@ -22,12 +27,10 @@
         width: 85%;
         margin: auto;
     }
+</style>
 
-
-    </style>
-
-    <div id="page-wrapper" class="panel-custom" style="background-color: white;">
-        <div class="main-page" style="vertical-align: middle !important;">
+<div id="page-wrapper" class="panel-custom" style="background-color: white;">
+    <div class="main-page" style="vertical-align: middle !important;">
         <div class="row">
             <h2 class="page-title">What is the Map Campaigner?</h2>
             <div class="page-content">
@@ -67,9 +70,9 @@
                 <p>
                     <a href="https://www.hotosm.org">Humanitarian OpenStreetMap Team</a> applies the principles of open source and open data sharing for humanitarian response and economic development. <a href="http://www.kartoza.com">Kartoza</a> are a Free and Open Source GIS (FOSSGIS) Service provider working to solve geospatial problems.
                 </p>
-                <p><a href="https://www.hotosm.org"> <img src="/static/img/hot-logo.svg" style="height: 25px;"/> </a> <a href="http://www.kartoza.com"><img src="/static/img/kartoza-logo.png" style="padding-left: 10px;"/></a></p>
+                <p><a href="https://www.hotosm.org"> <img src="/static/img/hot-logo.svg" style="height: 25px;" /> </a> <a href="http://www.kartoza.com"><img src="/static/img/kartoza-logo.png" style="padding-left: 10px;" /></a></p>
             </div>
         </div>
-        </div>
     </div>
+</div>
 {% endblock %}
