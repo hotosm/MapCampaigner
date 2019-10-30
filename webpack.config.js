@@ -8,7 +8,7 @@ module.exports = [
     entry: {
       // These scripts are installed from package.json with npm
       vendor: [
-        'jquery/dist/jquery.min.js', // Remove .slim if full version needed
+        'jquery/dist/jquery.min.js',
         'bootstrap/dist/js/bootstrap.min.js', // TODO: Only include needed comps
         'metismenu/dist/metisMenu.min.js',
         'leaflet/dist/leaflet.js',
@@ -46,7 +46,11 @@ module.exports = [
     entry: {
       main: [
         './flask_project/campaign_manager/index.js',
-        './flask_project/campaign_manager/styles/index.scss'
+        './flask_project/campaign_manager/styles/index.scss',
+        // These are vendor CSS files, but we're including then in the main bundle
+        'datatables.net-dt/css/jquery.dataTables.min.css',
+        'datatables.net-rowreorder-dt/css/rowReorder.dataTables.min.css',
+        'datatables.net-responsive-dt/css/responsive.dataTables.min.css',
       ]
     },
     output: {
@@ -85,6 +89,10 @@ module.exports = [
             'css-loader',
             'sass-loader',
           ],
+        },
+        {
+          test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+          use: { loader: 'url-loader?limit=100000' }
         }
       ],
     },
