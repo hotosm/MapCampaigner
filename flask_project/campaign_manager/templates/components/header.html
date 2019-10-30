@@ -1,20 +1,22 @@
 {% set navigation_items = [
   (url_for('campaign_manager.home'), 'home', 'Home'),
   ('/learn', 'learn', 'Learn'),
-  ('/explore/', 'explore', 'Explore'),
+  (url_for('campaign_manager.home_all'), 'explore', 'Explore'),
   ('/projects/', 'my-projects', 'My Projects')
 ] -%}
 
 {% set active_page = active_page|default('home') -%}
 
 <div class="panel panel-default">
-  <div class="panel-body">
-    Mapping our world together
-    <a class="pull-right">Link</a>
+  <div class="container container-fluid">
+    <div class="panel-body">
+      Mapping our world together
+      <a class="pull-right" href="https://hotosm.org">hotosm.org <svg width="11" height="11" viewBox="0 0 11 11" class="pl2 v-btm" style="height: 15px;"><path fill="currentColor" d="M9.778 9.778H1.222V1.222H5.5V0H1.222C.544 0 0 .55 0 1.222v8.556C0 10.45.544 11 1.222 11h8.556C10.45 11 11 10.45 11 9.778V5.5H9.778v4.278zM6.722 0v1.222h2.194L2.91 7.23l.862.862 6.007-6.007v2.194H11V0H6.722z"></path></svg></a>
+    </div>
   </div>
 </div>
 <nav class="navbar navbar-default">
-  <div class="container-fluid">
+  <div class="container container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>

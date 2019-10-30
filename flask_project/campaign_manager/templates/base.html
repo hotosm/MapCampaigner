@@ -29,17 +29,11 @@
     <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
   </head>
 
-  <body id="wrap">
+  <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
-
-    <div id="wrapper">
+    <div class="container container-fluid">
       {% block header_content %}{% endblock %}
-      <div id="page-wrapper">
-        <div class="row">
-          <div class="col-lg-12" id="first-row"></div>
-        </div>
-        {% block content %}{% endblock %}
-      </div>
+      {% block content %}{% endblock %}
     </div>
 
     <div id="auth-modal" class="modal fade" role="dialog">

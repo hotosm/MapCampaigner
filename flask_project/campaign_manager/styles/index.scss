@@ -2,6 +2,11 @@
 @import "/static/libs/metisMenu/metisMenu.min.css";
 @import "/static/libs/leaflet/css/leaflet.css";
 @import "/static/libs/mapbox-gl/mapbox-gl.css";
-@import "/static/css/map-campaigner.css"; // Custom CSS
 @import "/static/css/datepicker.min.css";
 @import "/static/css/leaflet-search/leaflet-search.css";
+
+@import "/static/css/map-campaigner.css"; // Legacy CSS
+
+@import "variables";
+@import "media-queries";
+@import "footer";

@@ -1,0 +1,26 @@
+.footer {
+  background-color:$blue-dark;
+  color: $white;
+  width: 100%;
+  padding-top: 55px;
+  padding-bottom: 32px;
+  margin-top: 80px;
+}
+
+.footer a {
+  color: $white;
+}
+
+.footer .list-unstyled li {
+  display: inline-block;
+  margin-top: 135px;
+}
+
+.footer {
+  @include respond-below(md) {
+    .pull-right {
+      float: left !important;
+      clear: both;
+    }
+  }
+}
