@@ -4,7 +4,7 @@ venv
 .idea
 apache/osm-reporter.apache.conf
 reporter/config/local.py
-components/
+./components/
 data
 *~
 secret.py
@@ -12,7 +12,6 @@ secret.py
 .vscode
 .env
 node_modules/
-lambda_functions/process/make_vector_tiles/node_modules
 flask_project/campaign_manager/static/dist
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
