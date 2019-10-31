@@ -1,6 +1,8 @@
+.btn {
+  border-radius: 2px;
+}
 .btn-primary {
   background: $red;
-  border-radius: 2px;
   border: none;
   color: $white !important;
   &:hover, &:focus {
@@ -8,9 +10,13 @@
     color: $white !important;
   }
 }
+.btn-default {
+  color: $blue-dark;
+  background: $white;
+  border: 1px solid $grey-light;
+}
 .btn-info {
   background: $blue-dark;
-  border-radius: 2px;
   border: none;
   color: $white !important;
   font-family: 'Archivo', sans-serif;

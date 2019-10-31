@@ -1,56 +1,54 @@
 {% extends 'base.html' %}
-{% set active_page = 'home' %}
+{% set active_page = "home" %}
 
 {% block content %}
-<div id="page-wrapper" class="panel-custom">
-    <div class="main-page">
-        <div class="row">
-            <div class="media">
-                <a class="pull-right" href="#">
-                    <img class="media-object" src="https://placehold.it/400x300/A8B7C1" alt="">
-                </a>
-                <div class="media-body">
-                    <h2 class="media-heading">Manage mapping activities</h2>
-                    <p>Map Campaigner is a tool that is intended to gather all project managers and also surveyors into one platform.</p>
-                    <p>Project manager can arrange mapping activities with specific features and attributes according to their needs. Map Campaigner will monitor the progress of the activity in a statistical data about how many objects have been mapped as well as how many data collectors are engaged.</p>
-                    <a class="btn btn-lg btn-danger" href="#" role="button">Create a new project</a>
-                    <a class="btn btn-lg" href="#" role="button">Explore active projects</a>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-                </a>
-                <div class="media-body">
-                    <h3 class="media-heading">End to end management</h3>
-                    <p>Map Campaigner helps project managers to manage mapping activities from end to end.</p>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-                </a>
-                <div class="media-body">
-                    <h3 class="media-heading">Monitor attributes completeness</h3>
-                    <p>Map Campaigner monitors the mapping progress of how many objects have been mapped and the attributes completeness.</p>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-                </a>
-                <div class="media-body">
-                    <h3 class="media-heading">Keep OSM users engaged</h3>
-                    <p>Map Campaigner tracks how many OpenStreetMap users are helping to participate in this mapping project, as well as the data quality they provided.</p>
-                </div>
-            </div>
-        </div>
+<div class="col-xs-12">
+  <div class="row">
+    <div class="media">
+      <a class="pull-right" href="#">
+        <img class="media-object" src="https://placehold.it/400x300/A8B7C1" alt="">
+      </a>
+      <div class="media-body">
+        <h2 class="media-heading">Manage mapping activities</h2>
+        <p>Map Campaigner is a tool that is intended to gather all project managers and also surveyors into one platform.</p>
+        <p>Project manager can arrange mapping activities with specific features and attributes according to their needs. Map Campaigner will monitor the progress of the activity in a statistical data about how many objects have been mapped as well as how many data collectors are engaged.</p>
+        <a class="btn btn-lg btn-primary" href="#" role="button">Create a new project</a>
+        <a class="btn btn-lg btn-default" href="#" role="button">Explore active projects</a>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
+      </a>
+      <div class="media-body" style="max-width: 470px;">
+        <h3 class="media-heading">End to end management</h3>
+        <p>Map Campaigner helps project managers to manage mapping activities from end to end.</p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
+      </a>
+      <div class="media-body" style="max-width: 470px;">
+        <h3 class="media-heading">Monitor attributes completeness</h3>
+        <p>Map Campaigner monitors the mapping progress of how many objects have been mapped and the attributes completeness.</p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
+      </a>
+      <div class="media-body" style="max-width: 470px;">
+        <h3 class="media-heading">Keep OSM users engaged</h3>
+        <p>Map Campaigner tracks how many OpenStreetMap users are helping to participate in this mapping project, as well as the data quality they provided.</p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
