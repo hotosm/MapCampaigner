@@ -6,6 +6,7 @@ const mode = process.env.NODE_ENV;
 module.exports = [
   {
     devServer: {
+      stats: 'minimal',
       watchContentBase: true,
       writeToDisk: true,
       proxy: {'/': 'http://0.0.0.0:5000'}
