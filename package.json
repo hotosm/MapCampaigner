@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "start": "webpack-dev-server",
-    "start:server": "source venv/bin/activate && python flask_project/runserver.py"
+    "start:server": "source venv/bin/activate && python flask_project/runserver.py",
+    "deploy:lambda": "source venv/bin/activate && python ./.travis/deploy_lambda_functions.py"
   },
   "repository": {
     "type": "git",
