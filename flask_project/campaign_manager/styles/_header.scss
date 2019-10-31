@@ -16,93 +16,60 @@
     margin-left: 5px;
   }
   .panel-body {
-    padding: 13px 16px;
+    padding: 13px 0;
     vertical-align: middle;
   }
 }
 
 .navbar-default {
   background-color: $white;
-  padding: 5px;
-}
-
-.navbar-brand {
-  color: #5c5c5c !important;
-  font-weight: 900;
-}
-
-.navbar-nav a {
-  font-size: 11pt;
-  color: #888080 !important;
-  font-weight: 100 !important;
-}
-
-.navbar-nav a:hover {
-  border-bottom: 2px solid #5e5e5e;
-  padding-bottom: 12px;
-}
-
-.navbar-top-links {
-  margin-right: 0;
-}
-
-.navbar-top-links li {
-  display: inline-block;
-}
-
-.navbar-top-links li:last-child {
-  margin-right: 15px;
-}
-
-.navbar-top-links li a {
-  padding: 15px;
-  min-height: 50px;
-}
-
-.navbar-top-links .dropdown-menu li {
-  display: block;
-}
-
-.navbar-top-links .dropdown-menu li:last-child {
-  margin-right: 0;
-}
-
-.navbar-top-links .dropdown-menu li a {
-  padding: 3px 20px;
-  min-height: 0;
-}
-
-.navbar-top-links .dropdown-menu li a div {
-  white-space: normal;
-}
-
-.navbar-top-links .dropdown-messages, .navbar-top-links .dropdown-tasks, .navbar-top-links .dropdown-alerts {
-  width: 310px;
-  min-width: 0;
-}
-
-.navbar-top-links .dropdown-messages {
-  margin-left: 5px;
-}
-
-.navbar-top-links .dropdown-tasks {
-  margin-left: -59px;
-}
-
-.navbar-top-links .dropdown-alerts {
-  margin-left: -123px;
-}
-
-.navbar-top-links .dropdown-user {
-  left: auto;
-}
-
-.nav.navbar-nav {
-  margin-left: 30px;
-}
-
-@media (min-width: 768px) {
-  .navbar-top-links .dropdown-messages, .navbar-top-links .dropdown-tasks, .navbar-top-links .dropdown-alerts {
-    margin-left: auto;
+  .navbar-brand {
+    padding: 23px 0;
+    height: auto;
+  }
+  .navbar-text {
+    font-size: 22px;
+    color: $blue-dark;
+    margin-top: 19px;
+    margin-left: 9px;
+    margin-right: 50px;
+    @include respond-above(md) {
+      margin-right: 105px;
+    }
+  }
+  .navbar-collapse {
+    padding-top: 18px;
+    .btn {
+      margin-top: -4px;
+    }
+  }
+  .navbar-toggle {
+    margin-top: 18px;
+  }
+  @include respond-below(md) {
+    .navbar-header {
+      margin-left: 0;
+    }
+  }
+  .navbar-nav>li {
+    margin: 0 20px;
+    >a:not(.btn) {
+      font-size: 18px;
+      color: $blue-dark;
+      text-transform: uppercase;
+      padding: 8px 0;
+    }
+    >a:not(.btn):hover, &.active>a:not(.btn), &.active>a:not(.btn):hover {
+      border-bottom: 2px solid $blue-dark;
+      background: none;
+      color: $blue-dark;
+    }
+    &#create_campaign > a {
+      color: $red;
+      border-color: $red;
+      @include respond-below(sm) {
+        margin-bottom: 30px;
+      }
+    }
   }
 }

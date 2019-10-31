@@ -1,0 +1,15 @@
+.btn-info {
+  background: $blue-dark;
+  border-radius: 2px;
+  border: none;
+  color: $white !important;
+  font-family: 'Archivo', sans-serif;
+  &:hover, &:focus {
+    background: $blue-dark !important;
+    color: $white !important;
+  }
+}
+.btn-sm {
+  font-size: 16px !important;
+  padding: 11px 24px !important;
+}
