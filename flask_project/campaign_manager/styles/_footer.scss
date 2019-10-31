@@ -5,18 +5,22 @@
   padding-top: 55px;
   padding-bottom: 32px;
   margin-top: 80px;
-}
-
-.footer a {
-  color: $white;
-}
-
-.footer .list-unstyled li {
-  display: inline-block;
-  margin-top: 135px;
-}
-
-.footer {
+  a {
+    color: $white;
+  }
+  .footer-text {
+    font-size: 24px;
+    line-height: 31px;
+  }
+  .list-unstyled {
+    margin: 40px 0;
+    @include respond-above(md) {
+      margin-top: 125px;
+    }
+    li {
+      display: inline-block;
+    }
+  }
   @include respond-below(md) {
     .pull-right {
       float: left !important;

@@ -62,40 +62,6 @@ body {
   transition: all .5s;
 }
 
-.btn-primary.btn-outline {
-  color: #FF5722;
-}
-
-.btn-success.btn-outline {
-  color: #5cb85c;
-}
-
-.btn-info.btn-outline {
-  color: #5bc0de;
-}
-
-.btn-warning.btn-outline {
-  color: #f0ad4e;
-}
-
-.btn-danger.btn-outline {
-  color: #d9534f;
-}
-
-.btn-primary.btn-outline:hover, .btn-success.btn-outline:hover, .btn-info.btn-outline:hover, .btn-warning.btn-outline:hover, .btn-danger.btn-outline:hover {
-  color: white;
-}
-
-.btn-primary.btn-outline:hover, .btn-primary.btn-outline:focus {
-  background-color: #FF5722;
-  border-color: #FF5722;
-  color: white;
-}
-
-.btn-primary {
-  border-color: #FF5722;
-}
-
 .chat {
   margin: 0;
   padding: 0;

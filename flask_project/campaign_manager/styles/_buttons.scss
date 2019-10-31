@@ -1,3 +1,13 @@
+.btn-primary {
+  background: $red;
+  border-radius: 2px;
+  border: none;
+  color: $white !important;
+  &:hover, &:focus {
+    background: $red !important;
+    color: $white !important;
+  }
+}
 .btn-info {
   background: $blue-dark;
   border-radius: 2px;
@@ -12,4 +22,9 @@
 .btn-sm {
   font-size: 16px !important;
   padding: 11px 24px !important;
+}
+.btn-lg {
+  min-width: 200px;
+  font-size: 16px !important;
+  line-height: 18px;
 }

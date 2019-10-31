@@ -23,6 +23,8 @@
 
 .navbar-default {
   background-color: $white;
+  position: sticky;
+  top: 0;
   .navbar-brand {
     padding: 23px 0;
     height: auto;
