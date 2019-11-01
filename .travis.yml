@@ -40,6 +40,7 @@ git:
   depth: 30
 
 before_install:
+  - nvm install 12.10.0
 
 install:
   - pip install coveralls
