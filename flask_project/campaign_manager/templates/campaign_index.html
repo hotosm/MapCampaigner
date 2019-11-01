@@ -8,82 +8,40 @@
   <script src="/static/libs/ellipsis.js"></script>
 {% endblock %}
 
-{% block header_content %}
-    <div class="v2-home-header">
-        <div class="row">
-            <div class="col-lg-6">
-                <div style="text-align: center; margin-top: 10px">
-                    <div class="head-title">Monitor Field Mapping in OpenStreetMap</div>
-                    <div class="head-desc">
-                        MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.
-                    </div>
-                    <div class="active-campaing-text-wrapper">
-                        <span class="active-campaign-text">Active campaigns:&nbsp;</span>
-                        <span class="active-campaign-text-bold" id="active-campaign-number">0</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div id="campaign-map"></div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
 {% block content %}
-
-    <div class="row" id="campaign-list">
-
-        <div class="row" style="margin-bottom: 20px">
-            <div class="col-md-7">
-                <div class="pull-left">
-                    <table class="home-option">
-                        <tr class="home-option">
-                            <td id="showing-div" class="home-option">Showing:</td>
-                            <td class="home-option no-padding">
-                                <select class="flat-select" id="campaigns-select">
-                                    <!-- <option value="nearest">nearest</option> -->
-                                    <option value="active">active</option>
-                                    <option value="all">all</option>
-                                    <option value="inactive">inactive</option>
-                                </select>
-                            </td>
-                            <td class="home-option nearest-option no-padding">
-                                <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
-                            </td>
-                            <td class="home-option nearest-option">
-                                campaigns
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-5 custom-5" id="search-campaign">
-                <!-- class="search" automagically makes an input a search field. -->
-                <input class="search" placeholder="Search"/><span class="search-icon" style="text-align: right"><i class='fa fa-search' style="font-size: 12pt"></i></span>
-            </div>
-
-<!--             <div class="col-md-2 no-padding metroUIform" style="text-align: center">
-                <button class="sort" id="sort-campaign-by-name" data-sort="campaign-name" style="display: none">
-                    Sort By Name
-                </button>
-                <button class="sort" id="sort-campaign-by-date" data-sort="campaign-start-date" style="display: none;">
-                    Sort By Date
-                </button>
-                <select class="flat-select" id="filter-select">
-                    <option value="name">Sort By Name</option>
-                    <option value="date">Sort By Date</option>
-                </select>
-            </div> -->
+<!-- This page uses the List.js API: https://listjs.com/ -->
+<div class="row">
+  <div class="col-xs-12 col-md-6">
+    <div class="row">
+      <div class="col-xs-9" id="search-campaign">
+        <input class="search" placeholder="Search"/>
+      </div>
+      <div class="col-x3-3">
+        <select id="campaigns-select">
+          <option value="active">active</option>
+          <option value="all">all</option>
+          <option value="inactive">inactive</option>
+        </select>
+        <div class="home-option nearest-option no-padding">
+          <input id="limit-page" name="limit-page" type="text" class="form-control" value="5" style="width: 50px;" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
         </div>
-
-        <div class="row">
-        <ul class="list card-wrapper">
-
-        </ul>
-        </div>
-
+      </div>
     </div>
+  </div>
+  <div class="col-sm-12 col-md-6">
+    <label class="btn btn-primary active">
+      <input type="checkbox" checked id="check-show-map"> Show map
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-6" id="search-results">
+    <ul class="list card-wrapper"></ul>
+  </div>
+  <div class="col-xs-12 col-md-6">
+    <div id="campaign-map"></div>
+  </div>
+</div>
 
 {% endblock %}
 
@@ -164,31 +122,6 @@
     </style>
 
     <script type="text/javascript">
-
-        // $(function () {
-        //     var user_location_setting = Cookies.get('user_location_setting');
-        //     var tag = "{{ tag }}";
-        //     if(user_location_setting === 'all' && auth.authenticated()) {
-        //         // check current url
-        //         var current_href = window.location.href.split('/');
-        //         if(current_href[current_href.length-1] !== 'all' && !tag) {
-        //            location.href='/all';
-        //         }
-        //     }
-
-        //     var campaignStatus = Cookies.get('campaign-status');
-        //     if(!campaignStatus) {
-        //         campaignStatus = 'active';
-        //     }
-
-        //     if(campaignStatus === 'active') {
-        //         $('#display-inactive').show();
-        //     } else if(campaignStatus === 'all') {
-        //         $('#hide-inactive').show();
-        //     }
-
-        // });
-
         var map = L.map('campaign-map').setView([0, 0], 2);
         L.tileLayer('{{ map_provider }}', {
             attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
@@ -231,13 +164,13 @@
             });
         });
 
-        //---------------- EVENT ------------------//
-
         $('#check-show-map').click(function () {
            if( $(this).is(':checked') ){
                $('#campaign-map').show();
+               $('#search-results').addClass('col-md-6').removeClass('col-md-12')
            } else{
                $('#campaign-map').hide();
+               $('#search-results').addClass('col-md-12').removeClass('col-md-6')
            }
         });
 
@@ -262,12 +195,7 @@
                 $('.active-campaign').show();
                 $('.inactive-campaign').hide();
             } else if(value === 'nearest') {
-                // Cookies.set('user_location_setting', 'nearest');
-                // Cookies.set('campaign-status', 'active');
-                // location.href='/'
             } else if(value === 'inactive') {
-                // displayInactive();
-                // location.href='/';
                 $('.inactive-campaign').show();
                 $('.active-campaign').hide();
             }
@@ -353,36 +281,10 @@
         function updated(user) {
             clearNotification();
             var currentUser = user.display_name;
-            // var url = "/campaigns";
-
-            // if(user['lon'] && user['lat']) {
-            //     userLocation = {
-            //         'lat': user['lat'],
-            //         'lon': user['lon']
-            //     }
-            //     url = "/nearest_campaigns";
-            // }
             clearMap();
-            // clearTable();
-            // getTotalCampaigns();
             clearCampaigns();
             getCampaigns(currentUser);
             $('#campaigns-select').val("active");
-            // {% if not all %}
-            //     var limitPage = Cookies.get('limit_page');
-            //     if(limitPage) {
-            //         $('#limit-page').val(Cookies.get('limit_page'));
-            //     } else {
-            //         limitPage = $('#limit-page').val();
-            //         Cookies.set('limit_page', limitPage);
-            //     }
-            //     $('#campaigns-select').val("nearest");
-            //     getCampaigns(url, currentUser, limitPage);
-            //     $('.nearest-option').show();
-            // {% else %}
-            //     getCampaigns(url, currentUser);
-            //     $('#campaigns-select').val("all");
-            // {% endif %}
         }
 
         function clearCampaigns() {
@@ -396,12 +298,8 @@
         });
 
         function logoutSuccess() {
-            // clearMap();
-            // clearTable();
             clearCampaigns();
             getCampaigns(null);
-            
-            // userLocation = {};
         }
 
         function clearManageButtons() {
@@ -409,8 +307,6 @@
         }
 
         if(!auth.authenticated()) {
-            // getBrowserLocation();
-            // getTotalCampaigns();
             getCampaigns(null, null, null)
         }
 
@@ -428,7 +324,6 @@
         }
 
         function clearTable() {
-            // table.clear().draw('false');
         }
 
         function getBrowserLocation() {
@@ -532,7 +427,7 @@
 
         function buildCampaignCard(campaign, user) {
             return `
-                <li class="col-lg-6 ${campaignStatus(campaign)}-campaign">
+                <li class="${campaignStatus(campaign)}-campaign">
                 <div class="campaign-card panel" onclick="openCampaign(event, this, '${campaign.uuid}')">
                     <div class="panel-heading">
                     <div class="row">
@@ -584,7 +479,7 @@
         function actionCampaignButton(campaign, user) {
             if($.inArray(user, campaign.campaign_managers)>-1) {
                 return `
-                    <button type="button" href="#" class="manage-campaign-button campaign-list btn" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
+                    <button type="button" href="#" class="manage-campaign-button btn btn-primary" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
                         <span class="pull-left">Manage</span>
                     </button>`;
             } else {
@@ -638,7 +533,6 @@
                     });
 
                     totalActiveCampaigns = $('.active-campaign').length;
-                    $('#active-campaign-number').html(totalActiveCampaigns);
                     $('.inactive-campaign').hide();
                     hideLoading();
                     setSearch();
@@ -692,7 +586,8 @@
             var options = {
                 valueNames: ['campaign-name', 'campaign-start-date']
             }
-            var campaignList = new List('campaign-list', options);
+            var campaignList = new List('page-projects', options);
+            console.log('setting', campaignList)
         }
 
         function getCampaignsOld(url, user, limit) {

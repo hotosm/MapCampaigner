@@ -375,11 +375,6 @@ body {
   }
 }
 
-#campaign-map {
-  height: 300px;
-  margin-top: 4px;
-}
-
 .sidebar-nav a, .navbar-top-links a {
   color: black !important;
 }
@@ -436,23 +431,6 @@ body {
 .error-form {
   color: red;
   margin-top: -10px;
-}
-
-.btn.campaign-list {
-  background-color: #fb6624 !important;
-  color: white;
-  border-radius: 3px;
-  margin-top: 10px;
-  padding: 5px 30px !important;
-  float: right;
-}
-
-.campaign-list.btn:hover {
-  background-color: #ff8440 !important;
-}
-
-.campaign-list-disabled {
-  display: none;
 }
 
 .sub-description {
@@ -864,11 +842,6 @@ span.inactive {
 
 .grey-italic {
   color: #898989;
-}
-
-#campaign-list ul {
-  padding: 0;
-  list-style-type: none;
 }
 
 .active-campaign-text-bold {
