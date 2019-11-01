@@ -1,7 +1,7 @@
 {% set navigation_items = [
   (url_for('campaign_manager.home'), 'home', 'Home'),
-  ('/learn', 'learn', 'Learn'),
-  ('/projects/', 'my-projects', 'My Projects')
+  (url_for('campaign_manager.learn'), 'learn', 'Learn'),
+  (url_for('campaign_manager.campaigns_all'), 'my-projects', 'My Projects')
 ] -%}
 
 {% set active_page = active_page|default('home') -%}
