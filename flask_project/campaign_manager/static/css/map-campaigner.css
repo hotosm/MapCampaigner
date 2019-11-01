@@ -788,36 +788,6 @@ span.inactive {
   width: 50%;
 }
 
-.campaign-card {
-  padding: 7px;
-  line-height: 16pt;
-  border: 1px solid #E7E7E7;
-  border-radius: 2px;
-  height: 240px;
-}
-
-.campaign-card.panel {
-  -webkit-transition: 0.24s ease-in-out;
-  -moz-transition: 0.24s ease-in-out;
-  -o-transition: 0.24s ease-in-out;
-  transition: 0.24s ease-in-out;
-}
-
-.campaign-card.panel:hover {
-  -moz-transform: translate(0, -3px);
-  -ms-transform: translate(0, -3px);
-  -o-transform: translate(0, -3px);
-  -webkit-transform: translate(0, -3px);
-  transform: translate(0, -3px);
-  cursor: pointer;
-}
-
-.campaign-thumbnail img {
-  height: 100px;
-  width: 100%;
-  float: right;
-}
-
 @media (max-width: 600px) {
   #showing-div {
     display: none;
@@ -898,24 +868,8 @@ select#filter-select {
   float: right;
 }
 
-select#campaigns-select, input#limit-page {
-  border: none;
-  box-shadow: none;
-}
-
 .home-option table {
   align-self: center;
-}
-
-input.search {
-  width: 95%;
-  border-radius: 5px;
-  border-top: 1px solid #E7E7E7;
-  border-left: 1px solid #E7E7E7;
-  border-bottom: 1px solid #E7E7E7;
-  padding: 5px 10px;
-  display: inline-block;
-  height: 32px;
 }
 
 .search-icon {
@@ -930,83 +884,6 @@ input.search {
   border-bottom-right-radius: 5px;
   display: inline-block;
   height: 32px;
-}
-
-.campaign-card a {
-  font-weight: bold;
-  font-size: 14pt;
-  color: #555;
-}
-
-.campaign-start-date {
-  font-style: italic;
-}
-
-.campaign-tags {
-  padding: 0 10px;
-  background-color: #e2e2e2;
-  border-radius: 5px;
-}
-
-.campaign-creator {
-  margin-top: 10px;
-  color: grey;
-}
-
-.campaign-creator-name {
-  text-decoration: underline;
-  color: black;
-}
-
-.campaign-name, .campaign-start-date, .campaign-description, .campaign-tags {
-  margin-bottom: 5px;
-}
-
-.campaign-description {
-  margin-top: 10px;
-  overflow: hidden;
-  width: 95%;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-height: 1.5em;
-  height: 3em;
-  font-size: 10pt;
-}
-
-.campaign-tags-list, .campaign-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.campaign-tags-list {
-  width: 95%;
-  line-height: 1.5em;
-  height: 3em;
-  font-size: 10pt;
-}
-
-.campaign-name {
-  width: 100%;
-  line-height: 16pt;
-  height: 17pt;
-}
-
-.campaign-progress-bar {
-  text-align: right;
-}
-
-.campaign-progress-bar .progress-bar {
-  background-color: #a0a0a0 !important;
-}
-
-.campaign-progress-bar .progress {
-  margin-top: 5px;
-  height: 12px;
 }
 
 .ellipsis {
@@ -1043,11 +920,6 @@ select.flat-select {
   -ms-transition: 0.3s ease all;
   -o-transition: 0.3s ease all;
   transition: 0.3s ease all;
-}
-
-select#campaigns-select {
-  width: 80px;
-  border-radius: 0;
 }
 
 .head-title {
