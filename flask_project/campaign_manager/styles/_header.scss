@@ -68,9 +68,9 @@
       background: none;
       color: $blue-dark;
     }
-    &#create_campaign > a {
-      color: $red;
-      border-color: $red;
+    a.create-campaign-button {
+      color: $red !important;
+      border-color: $red !important;
       @include respond-below(sm) {
         margin-bottom: 30px;
       }
