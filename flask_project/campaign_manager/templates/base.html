@@ -84,11 +84,11 @@
       });
 
       $(document).ready(function () {
-        $('#login-menu').click(function (e) {
+        $('#login-button').click(function (e) {
           e.preventDefault();
           login();
         });
-        $('#logout-menu').click(function () {
+        $('#logout-button').click(function () {
           logout();
         });
       });
@@ -123,8 +123,8 @@
       }
 
       function showDetails(map) {
-        $('#login-menu').hide();
-        $('#logout-menu').show();
+        $('#login-button').hide();
+        $('#user-menu').show();
 
         var that = this;
         auth.xhr({ method: 'GET', path: '/api/0.6/user/details' }, function (err, res) {
@@ -165,10 +165,10 @@
         }, this);
       }
       function hideDetails(map) {
-        $('#login-menu').show();
-        $('#logout-menu').hide();
+        $('#login-button').show();
+        $('#user-menu').hide();
 
-        $('#profile-name').html('<i class="fa fa-user fa-fw profile-icon"></i>');
+        $('#profile-name').html('');
 
         if (map) {
           if (this.locationMarker) {

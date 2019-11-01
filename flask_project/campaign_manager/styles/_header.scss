@@ -68,6 +68,9 @@
       background: none;
       color: $blue-dark;
     }
+    >a.dropdown-toggle {
+      border: none !important;
+    }
     a.create-campaign-button {
       color: $red !important;
       border-color: $red !important;
