@@ -5,7 +5,7 @@
   background: $red;
   border: none;
   color: $white !important;
-  &:hover, &:focus {
+  &:hover, &:focus, &.active {
     background: $red !important;
     color: $white !important;
   }
@@ -20,7 +20,7 @@
   border: none;
   color: $white !important;
   font-family: 'Archivo', sans-serif;
-  &:hover, &:focus {
+  &:hover, &:focus, &.active {
     background: $blue-dark !important;
     color: $white !important;
   }
