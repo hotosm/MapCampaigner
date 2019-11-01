@@ -32,7 +32,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  margin-bottom: 80px;
+  margin-bottom: 0;
   .navbar-brand {
     padding: 23px 0;
     height: auto;
@@ -119,5 +119,32 @@
         }
       }
     }
+  }
+}
+
+.jumbotron {
+  height: 163px;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAX0lEQVQoU2NcvWb9f3YODgZra2sGbODo0aMMP3/8YGDctGX7fw0NDQZhYWGsCt++fctw48YNBsa37z/9x6oCTRBFIUw3SA26LSgKYe4BKUR3N3kKibYan6eIDx5iAxwAKDFTG6QviGsAAAAASUVORK5CYII=');
+  background-size: 5px;
+  font-family: 'Barlow Condensed', sans-serif;
+  .container {
+    position: relative;
+    height: 100%;
+  }
+  h1 {
+    padding: 10px 22px 10px 20px;
+    margin: 0;
+    background: $red;
+    color: $white;
+    text-transform: uppercase;
+    display: inline;
+    position: absolute;
+    bottom: 0;
+    font-weight: bold;
+    font-size: 64px;
+    line-height: 72px;
   }
 }

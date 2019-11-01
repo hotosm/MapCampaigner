@@ -1,10 +1,11 @@
 {% set navigation_items = [
   (url_for('campaign_manager.home'), 'home', 'Home'),
   (url_for('campaign_manager.learn'), 'learn', 'Learn'),
-  (url_for('campaign_manager.campaigns_all'), 'my-projects', 'My Projects')
+  (url_for('campaign_manager.campaigns_all'), 'projects', 'My Projects')
 ] -%}
 
 {% set active_page = active_page|default('home') -%}
+{% from 'components/page_header.html' import page_header -%}
 
 <div class="panel panel-pagetop">
   <div class="container container-fluid">
@@ -71,3 +72,6 @@
     </div>
   </div>
 </nav>
+{% if page_title is defined %}
+{{ page_header(page_title) }}
+{% endif %}

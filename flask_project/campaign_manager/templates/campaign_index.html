@@ -1,11 +1,14 @@
-{% extends 'new_base.html' %}
+{% extends 'base.html' %}
+
+{% set active_page = "projects" %}
+{% set page_title = "My Projects" %}
+
+{% block extra_head %}
+  <script src="/static/libs/list.min.js"></script>
+  <script src="/static/libs/ellipsis.js"></script>
+{% endblock %}
 
 {% block header_content %}
-
-    <!-- List Javascript  -->
-    <script type="text/javascript" src="/static/libs/list.min.js"></script>
-    <script type="text/javascript" src="/static/libs/ellipsis.js"></script>
-
     <div class="v2-home-header">
         <div class="row">
             <div class="col-lg-6">

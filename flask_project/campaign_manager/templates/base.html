@@ -16,22 +16,23 @@
     <link href="/static/dist/main.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Archivo|Barlow+Condensed:400,500&display=swap" rel="stylesheet">
 
+    <script type="application/javascript">
+      var site_id = "10"; // site_id is for the HOTOSM tracking code below
+    </script>
+    <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
+
     <script src="/static/dist/vendor.js"></script>
     <script src="/static/dist/legacy.js"></script>
     <script src="/static/dist/main.js"></script>
 
     {% block extra_head %}{% endblock %}
 
-    <script type="application/javascript">
-      var site_id = "10"; // site_id is for the HOTOSM tracking code below
-    </script>
-    <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
     <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
   </head>
 
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
-    <div class="container container-fluid">
+    <div class="container container-fluid page-content">
       {% block header_content %}{% endblock %}
       {% block content %}{% endblock %}
     </div>
