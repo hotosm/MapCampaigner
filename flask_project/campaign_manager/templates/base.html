@@ -162,7 +162,7 @@
           if (loginProcess) {
             loginProcess = false;
           }
-          updated(o);
+          if ("updated" in window && typeof updated === 'function') updated(o)
 
         }, this);
       }
