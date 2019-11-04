@@ -31,11 +31,15 @@
         font-size: 14px;
       }
     }
-    .manage-campaign-button {
+    .manage-campaign-button, .view-campaign-button {
       margin-bottom: 4px;
+      color: $blue-light;
+      border-color: $blue-light;
+      text-transform: uppercase;
+    }
+    .manage-campaign-button {
       color: $red;
       border-color: $red;
-      text-transform: uppercase;
     }
     .campaign-name, .campaign-date, .campaign-description, .campaign-tags {
       margin-bottom: 5px;

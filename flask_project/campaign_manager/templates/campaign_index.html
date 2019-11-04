@@ -128,14 +128,6 @@
     maxZoom: 15
   }).addTo(map);
 
-  $('#create-campaign').click(function () {
-    if (window.isAuthenticated) {
-      location.href = '/create';
-    } else {
-      showNotifications('You need to login first.', 'danger');
-    }
-  });
-
 </script>
 
 {% endblock %}
@@ -469,12 +461,13 @@
 
   function actionCampaignButton(campaign, user) {
     if ($.inArray(user, campaign.campaign_managers) > -1) {
-      return `
-    <button type="button" href="#" class="manage-campaign-button btn btn-default btn-sm pull-right" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
-      <span class="pull-left">Manage</span>
-    </button>`;
+      return `<button type="button" href="#" class="manage-campaign-button btn btn-default btn-sm pull-right" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
+       <span class="pull-left">Manage</span>
+      </button>`;
     } else {
-      return '';
+      return `<button type="button" href="#" class="view-campaign-button btn btn-default btn-sm pull-right" onclick="openCampaign(event, this, '${campaign.uuid}')">
+        <span class="pull-left">View</span>
+      </button>`;
     }
   }
 
