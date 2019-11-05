@@ -2,6 +2,12 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 12px;
   font-weight: 500;
+  @include respond-above(md) {
+    .container {
+      margin: 0;
+      width: 100%;
+    }  
+  }
 }
 
 .panel-pagetop {
@@ -30,8 +36,10 @@
   .navbar-brand {
     padding: 23px 0;
     height: auto;
+    margin-left: 0 !important;
   }
   .navbar-text {
+    float: left;
     font-size: 22px;
     color: $blue-dark;
     margin-top: 19px;
@@ -57,6 +65,9 @@
   }
   .navbar-nav>li {
     margin: 0 20px;
+    &:last-child {
+      margin-right: 0;
+    }
     >a:not(.btn) {
       font-size: 18px;
       color: $blue-dark;
