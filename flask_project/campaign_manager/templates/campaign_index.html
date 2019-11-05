@@ -502,7 +502,6 @@
     $.ajax({
       url: "/campaigns",
       success: function (data) {
-        console.log({ data })
         data.map(function (campaign) {
           try {
             addCampaign(campaign, user);
