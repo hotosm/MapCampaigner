@@ -53,12 +53,9 @@ script:
   - bash ./.travis/run_tests
   - npm run build
 
-before_deploy:
-  - rm .gitignore
-
 deploy:
   - provider: elasticbeanstalk
-    skip_cleanup: true
+    edge: true # Enable v2 which uses .ebignore instead of .gitignore to exclude build assets
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     region: "us-west-2"
