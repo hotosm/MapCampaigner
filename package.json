@@ -34,7 +34,7 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "bootstrap": "3.3.7",
+    "bootstrap": "3.4.1",
     "chart.js": "^2.7.2",
     "datatables.net-dt": "^1.10.20",
     "datatables.net-plugins": "^1.10.19",
