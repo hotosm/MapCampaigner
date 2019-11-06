@@ -1,0 +1,51 @@
+{
+  "name": "mapcampaigner",
+  "version": "0.0.0",
+  "description": "MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack-dev-server",
+    "start:server": "source venv/bin/activate && python flask_project/runserver.py",
+    "deploy:lambda": "source venv/bin/activate && python ./.travis/deploy_lambda_functions.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hotosm/MapCampaigner.git"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/hotosm/MapCampaigner/issues"
+  },
+  "homepage": "https://github.com/hotosm/MapCampaigner#readme",
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "script-loader": "^0.7.2",
+    "url-loader": "^2.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "chart.js": "^2.7.2",
+    "datatables.net-dt": "^1.10.20",
+    "datatables.net-plugins": "^1.10.19",
+    "datatables.net-responsive-dt": "^2.2.3",
+    "datatables.net-rowreorder-dt": "^1.2.6",
+    "gasparesganga-jquery-loading-overlay": "^1.5.3",
+    "jquery": "3.4.1",
+    "leaflet": "^1.0.3",
+    "mapbox-gl": "^0.53.1",
+    "metismenu": "1.1.3",
+    "moment": "^2.18.1",
+    "webpack-dev-server": "^3.9.0"
+  }
+}

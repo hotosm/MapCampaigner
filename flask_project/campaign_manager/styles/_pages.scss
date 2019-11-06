@@ -1,0 +1,99 @@
+  body {
+    background: $page-background;
+  }
+  #page-home {
+    background: $white;
+    .btn-default {
+      border: 1px solid $grey1;
+    }
+    .media-body-narrow {
+      max-width: 470px;
+    }
+  }
+  #page-styleguide {
+    .row .btn {
+      margin: 0px 30px 30px 0;
+    }
+    .swatch {
+      float: left;
+      height: 70px;
+      width: 70px;
+      padding: 5px;
+      border-radius: 2px;
+      margin: 0 30px 30px 0;
+      box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+      font-size: 11px;
+      color: $black;
+      &:before {
+        content: attr(class);
+     }
+      &.red {
+        background: $red;
+        color: $white;
+      }
+      &.red-light {
+        background: $red-light;
+      }
+      &.orange {
+        background: $orange;
+      }
+      &.blue-dark {
+        background: $blue-dark;
+        color: $white;
+      }
+      &.blue-light {
+        background: $blue-light;
+      }
+      &.blue-grey {
+        background: $blue-grey;
+      }
+      &.grey-light {
+        background: $grey-light;
+      }
+      &.tan {
+        background: $tan;
+      }
+      &.page-background {
+        background: $page-background;
+      }
+      &.grey1 {
+        background: $grey1;
+      }
+      &.black {
+        background: $black;
+        color: $white;
+      }
+      &.white {
+        background: $white;
+      }
+    }
+  }
+  .media {
+  margin: 80px 0 100px 0;
+  .media-heading {
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+  h2.media-heading {
+    font-size: 40px;
+  }
+  h3.media-heading {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  p {
+    font-size: 20px;
+    line-height: 28px;
+    color: $blue-dark;
+  }
+  >.pull-right {
+    padding-left: 42px;
+  }
+  >.pull-left {
+    padding-right: 100px;
+  }
+  .btn {
+    margin-top: 24px;
+    margin-right: 30px;
+  }
+}

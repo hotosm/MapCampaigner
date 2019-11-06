@@ -69,25 +69,53 @@ MAX_AREA_SIZE = 320000000
 
 @campaign_manager.route('/')
 def home():
-    """Home page view.
+    """Landing page
 
-    On this page a summary campaign manager view will shown.
+    The first page users land on when they use the app.
     """
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        map_provider=map_provider(),
-        bucket_url=S3Data().bucket_url()
+        map_provider=map_provider()
     )
 
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
+    return render_template('home.html', **context)
+
+@campaign_manager.route('/learn')
+def learn():
+    """MapCampaigner Docs
+
+    Information about MapCampaigner.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
+    )
+
+    return render_template('learn.html', **context)
+
+@campaign_manager.route('/styleguide')
+def styleguide():
+    """Styleguide
+
+    This page shows a library of UI components.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
+    )
+
+    return render_template('styleguide.html', **context)
 
 
 @campaign_manager.route('/all')
-def home_all():
-    """Home page view.
+def campaigns_all():
+    """All campaigns view
 
     On this page a summary campaign manager view will shown with all campaigns.
     """
@@ -96,11 +124,11 @@ def home_all():
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
         all=True,
-        map_provider=map_provider()
+        map_provider=map_provider(),
+        bucket_url=S3Data().bucket_url()
     )
 
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
+    return render_template('campaign_index.html', **context)
 
 
 def clean_argument(args):

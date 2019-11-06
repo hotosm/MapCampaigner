@@ -1,0 +1,41 @@
+.btn {
+  font-family: 'Archivo', sans-serif;
+  border-radius: 2px;
+  font-size: 16px !important;
+  border: none;
+  padding: 13px 50px;
+}
+.btn-primary {
+  background: $red;
+  color: $white !important;
+  &:hover, &:focus, &.active {
+    background: $red !important;
+    color: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+  }
+}
+.btn-default {
+  color: $blue-dark;
+  background: $white;
+  &:hover {
+    color: $blue-dark !important;
+    background: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+  }
+}
+.btn-info {
+  background: $blue-dark;
+  color: $white !important;
+  &:hover, &:focus, &.active {
+    background: $blue-dark !important;
+    color: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+  }
+}
+.btn-sm {
+  font-size: 15px !important;
+  padding: 8px 24px !important;
+}
+.btn-lg {
+  min-width: 200px;
+}
