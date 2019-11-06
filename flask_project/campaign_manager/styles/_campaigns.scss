@@ -19,6 +19,9 @@
     &.panel {
       cursor: pointer;
     }
+    .label {
+      margin: 0 12px;
+    }
     a {
       font-weight: bold;
       color: $blue-dark;

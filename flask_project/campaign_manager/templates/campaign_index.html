@@ -417,12 +417,20 @@
     return hasStarted && !hasEnded;
   }
 
+  function getDaysLeft(campaign) {
+    var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true);
+    var now = moment(new Date(), 'YYYY-MM-DD');
+    return endDate.diff(now, 'days');
+  }
+
   function buildCampaignCard(campaign, user) {
     var startDate = moment(campaign.start_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var featureCount = Object.keys(campaign.types || {}).length;
     var completeness = campaignProgress(campaign);
     var isActive = campaignStatus(campaign);
+    var daysLeft = getDaysLeft(campaign);
+    var warning = daysLeft ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
     return `
     <li class="${!isActive ? 'in' : ''}active-campaign">
       <div class="campaign-card panel ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">
@@ -438,7 +446,17 @@
         </div>
         <div class="row">
           <div class="col-xs-7">
-            <p class="campaign-date">${startDate}&mdash;${endDate}</p>
+            <p class="campaign-date">${startDate}&mdash;${endDate}
+              ${daysLeft <= 10 ? `<span class="label label-warning">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
+                    <g fill="#2C3038" fill-rule="nonzero">
+                      <path d="M0 6.533C0 3.723 2.174 1.415 4.944 1.2V.841h-.995a.416.416 0 0 1-.42-.42c0-.236.184-.421.42-.421h2.769c.236 0 .42.185.42.42 0 .236-.184.421-.42.421h-.933V1.2a5.298 5.298 0 0 1 2.738 1.015l.462-.461-.195-.195a.42.42 0 0 1 .595-.595l.974.974a.42.42 0 0 1-.595.595l-.195-.195-.42.421a5.335 5.335 0 0 1 1.559 3.774c0 2.954-2.4 5.354-5.354 5.354A5.358 5.358 0 0 1 0 6.533zm5.354-4.512A4.524 4.524 0 0 0 .83 6.544a4.53 4.53 0 0 0 4.523 4.523 4.53 4.53 0 0 0 4.523-4.523A4.53 4.53 0 0 0 5.354 2.02z"/>
+                      <path d="M5.354 6.882h1.795c.236 0 .42-.185.42-.42a.416.416 0 0 0-.42-.421H5.774V3.877a.416.416 0 0 0-.42-.42.416.416 0 0 0-.42.42v2.595c0 .225.184.41.42.41z"/>
+                    </g>
+                  </svg>
+                  ${warning}
+                </span>`: ''}
+            </p>
             <p><b>${completeness}%</b> Attributes completeness</p>
             <div class="campaign-progress-bar">
               <div class="progress" style="width:82%;float:left;">
