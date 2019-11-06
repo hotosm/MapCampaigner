@@ -1,5 +1,11 @@
   body {
     background: $page-background;
+    a {
+      color: $red;
+      &:hover, &:focus {
+        color: $red;
+      }
+    }
   }
   #page-home {
     background: $white;
@@ -70,6 +76,7 @@
   }
   .page-content {
     margin-top: 80px;
+    min-height: 50vh;
   }
   .media {
   margin: 80px 0 100px 0;

@@ -10,7 +10,7 @@
 
 {% block content %}
 <!-- This page uses the List.js API: https://listjs.com/ -->
-<div class="row">
+<div class="row search-ui">
   <div class="col-xs-12 col-md-6">
     <div class="row">
       <div class="col-xs-12 col-sm-9" id="search-campaign">
@@ -34,12 +34,19 @@
     </label>
   </div>
 </div>
-<div class="row">
+<div class="row search-ui">
   <div class="col-xs-12 col-md-6" id="search-results">
     <ul class="list card-wrapper"></ul>
   </div>
   <div class="col-xs-12 col-md-6">
     <div id="campaign-map"></div>
+  </div>
+</div>
+<div class="row empty-ui">
+  <div class="col-xs-12 text-center">
+    <img src="https://placehold.it/275x215/A8B7C1" alt="">
+    <h2>Create your first project</h2>
+    <p>Looks like you dont have any projects yet. Our <a href="">quick start guide</a> will get you using the tool straight away!</p>
   </div>
 </div>
 
@@ -529,19 +536,24 @@
     $.ajax({
       url: "/campaigns",
       success: function (data) {
-        data.map(function (campaign) {
-          try {
-            addCampaign(campaign, user);
-            setMarkerToMap(campaign, campaign.geojson);
-          } catch (e) {
-            console.log('error: ' + campaign.uuid);
-          }
-        });
-
-        totalActiveCampaigns = $('.active-campaign').length;
-        $('.inactive-campaign').hide();
         hideLoading();
-        setSearch();
+        if (data.length > 1) {
+          data.map(function (campaign) {
+            try {
+              addCampaign(campaign, user);
+              setMarkerToMap(campaign, campaign.geojson);
+            } catch (e) {
+              console.log('error: ' + campaign.uuid);
+            }
+          });
+          setSearch();
+          $('.inactive-campaign').hide();
+          $('.search-ui').show();
+          $('.empty-ui').hide();
+        } else {
+          $('.search-ui').hide();
+          $('.empty-ui').show();
+        }
       }
     });
 
