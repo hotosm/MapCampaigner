@@ -6,6 +6,9 @@
     .btn-default {
       border: 1px solid $grey1;
     }
+    .media-body-narrow {
+      max-width: 470px;
+    }
   }
   #page-styleguide {
     .row .btn {
