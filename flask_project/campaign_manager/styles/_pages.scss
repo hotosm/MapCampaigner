@@ -1,3 +1,17 @@
+  body {
+    background: $page-background;
+  }
+  #page-home {
+    background: $white;
+    .btn-default {
+      border: 1px solid $grey1;
+    }
+  }
+  #page-styleguide {
+    .btn {
+      margin: 0px 30px 30px 0;
+    }
+  }
   .media {
   margin: 80px 0 100px 0;
   .media-heading {

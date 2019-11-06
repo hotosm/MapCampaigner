@@ -1,36 +1,41 @@
 .btn {
+  font-family: 'Archivo', sans-serif;
   border-radius: 2px;
+  font-size: 16px !important;
+  border: none;
+  padding: 13px 50px;
 }
 .btn-primary {
   background: $red;
-  border: none;
   color: $white !important;
   &:hover, &:focus, &.active {
     background: $red !important;
     color: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
   }
 }
 .btn-default {
   color: $blue-dark;
   background: $white;
-  border: 1px solid $grey-light;
+  &:hover {
+    color: $blue-dark !important;
+    background: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+  }
 }
 .btn-info {
   background: $blue-dark;
-  border: none;
   color: $white !important;
-  font-family: 'Archivo', sans-serif;
   &:hover, &:focus, &.active {
     background: $blue-dark !important;
     color: $white !important;
+    box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
   }
 }
 .btn-sm {
-  font-size: 16px !important;
-  padding: 11px 24px !important;
+  font-size: 15px !important;
+  padding: 8px 24px !important;
 }
 .btn-lg {
   min-width: 200px;
-  font-size: 16px !important;
-  line-height: 18px;
 }

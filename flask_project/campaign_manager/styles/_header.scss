@@ -51,12 +51,15 @@
   }
   .navbar-collapse {
     padding-top: 18px;
-    .btn {
-      margin-top: -4px;
-    }
   }
   .navbar-toggle {
     margin-top: 18px;
+    border: none;
+    .icon-bar {
+      background: $black;
+      height: 3px;
+      width: 24px;
+    }
   }
   @include respond-below(md) {
     .navbar-header {
