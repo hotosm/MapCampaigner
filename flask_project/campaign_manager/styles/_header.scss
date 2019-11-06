@@ -79,14 +79,41 @@
       background: none;
       color: $blue-dark;
     }
-    >a.dropdown-toggle {
-      border: none !important;
-    }
     a.create-campaign-button {
       color: $red !important;
       border-color: $red !important;
       @include respond-below(sm) {
         margin-bottom: 30px;
+      }
+    }
+    >a.dropdown-toggle {
+      border: none !important;
+    }
+    &.dropdown.open {
+      background: none;
+      >a.dropdown-toggle {
+        background: none;
+        color: $blue-dark;
+      }
+    }
+    .dropdown-menu {
+      font-family: 'Archivo', sans-serif;
+      border-radius: 2px;
+      box-shadow: 4px 8px 12px 0 rgba(0, 0, 0, 0.2);
+      border: solid 1px $tan;
+      background-color: $white;
+      padding: 0;
+      min-width: auto;
+      a {
+        font-size: 16px;
+        line-height: 37px;
+        &:hover {
+          background: $tan;
+        }
+        svg {
+          margin-right: 8px;
+          vertical-align: text-bottom;
+        }
       }
     }
   }
