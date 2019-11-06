@@ -8,8 +8,61 @@
     }
   }
   #page-styleguide {
-    .btn {
+    .row .btn {
       margin: 0px 30px 30px 0;
+    }
+    .swatch {
+      float: left;
+      height: 70px;
+      width: 70px;
+      padding: 5px;
+      border-radius: 2px;
+      margin: 0 30px 30px 0;
+      box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+      font-size: 11px;
+      color: $black;
+      &:before {
+        content: attr(class);
+     }
+      &.red {
+        background: $red;
+        color: $white;
+      }
+      &.red-light {
+        background: $red-light;
+      }
+      &.orange {
+        background: $orange;
+      }
+      &.blue-dark {
+        background: $blue-dark;
+        color: $white;
+      }
+      &.blue-light {
+        background: $blue-light;
+      }
+      &.blue-grey {
+        background: $blue-grey;
+      }
+      &.grey-light {
+        background: $grey-light;
+      }
+      &.tan {
+        background: $tan;
+      }
+      &.page-background {
+        background: $page-background;
+      }
+      &.grey1 {
+        background: $grey1;
+      }
+      &.black {
+        background: $black;
+        color: $white;
+      }
+      &.white {
+        background: $white;
+      }
     }
   }
   .media {

@@ -2,63 +2,58 @@
 {% set active_page = "styleguide" %}
 
 {% block content %}
-<div class="col-xs-12">
-  <div class="row">
-    <h2>Buttons</h2>
-    <a href="" class="btn btn-primary">Primary</a>
-    <a href="" class="btn btn-default">Secondary</a>
-    <a href="" class="btn btn-primary btn-sm">Primary Small</a>
-    <a href="" class="btn btn-info btn-sm">Secondary Small</a>
-    <h3>Disabled</h3>
-    <a href="" class="btn btn-primary" disabled>Primary</a>
-    <a href="" class="btn btn-default" disabled>Secondary</a>
-    <a href="" class="btn btn-primary btn-sm" disabled>Primary Small</a>
-    <a href="" class="btn btn-info btn-sm" disabled>Secondary Small</a>
-  </div>
-  <div class="row">
-    <div class="media">
-      <a class="pull-right" href="#">
-        <img class="media-object" src="https://placehold.it/400x300/A8B7C1" alt="">
-      </a>
-      <div class="media-body">
-        <h2 class="media-heading">Manage mapping activities</h2>
-        <p>Map Campaigner is a tool that is intended to gather all project managers and also surveyors into one platform.</p>
-        <p>Project manager can arrange mapping activities with specific features and attributes according to their needs. Map Campaigner will monitor the progress of the activity in a statistical data about how many objects have been mapped as well as how many data collectors are engaged.</p>
-        <a class="btn btn-lg btn-danger" href="#" role="button">Create a new project</a>
-        <a class="btn btn-lg btn-default" href="#" role="button">Explore active projects</a>
-      </div>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      <p>This page shows reusable component examples with the available CSS. The HTML can be copied and pasted to use a component elsewhere in the app. This page can also be used as a reference when making changes to the CSS to prevent regressions and help remove unused rules.</p>
+      <h2>Buttons</h2>
+      <a href="" class="btn btn-primary" role="button">Primary</a>
+      <a href="" class="btn btn-default" role="button">Secondary</a>
+      <a href="" class="btn btn-primary btn-sm" role="button">Primary Small</a>
+      <a href="" class="btn btn-info btn-sm" role="button">Secondary Small</a>
+      <h3>Disabled</h3>
+      <a href="" class="btn btn-primary" disabled role="button">Primary</a>
+      <a href="" class="btn btn-default" disabled role="button">Secondary</a>
+      <a href="" class="btn btn-primary btn-sm" disabled role="button">Primary Small</a>
+      <a href="" class="btn btn-info btn-sm" disabled role="button">Secondary Small</a>
     </div>
-  </div>
-  <div class="row">
-    <div class="media">
-      <a class="pull-left" href="#">
-        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-      </a>
-      <div class="media-body">
-        <h3 class="media-heading">End to end management</h3>
-        <p>Map Campaigner helps project managers to manage mapping activities from end to end.</p>
-      </div>
+    <div class="row">
+      <h2>Colors</h2>
+      <div class="swatch red"></div>
+      <div class="swatch red-light"></div>
+      <div class="swatch orange"></div>
+      <div class="swatch blue-dark"></div>
+      <div class="swatch blue-light"></div>
+      <div class="swatch blue-grey"></div>
+      <div class="swatch grey-light"></div>
+      <div class="swatch tan"></div>
+      <div class="swatch page-background"></div>
+      <div class="swatch grey1"></div>
+      <div class="swatch black"></div>
+      <div class="swatch white"></div>
     </div>
-  </div>
-  <div class="row">
-    <div class="media">
-      <a class="pull-left" href="#">
-        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-      </a>
-      <div class="media-body">
-        <h3 class="media-heading">Monitor attributes completeness</h3>
-        <p>Map Campaigner monitors the mapping progress of how many objects have been mapped and the attributes completeness.</p>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="media">
-      <a class="pull-left" href="#">
-        <img class="media-object" src="https://placehold.it/300x240/A8B7C1" alt="">
-      </a>
-      <div class="media-body">
-        <h3 class="media-heading">Keep OSM users engaged</h3>
-        <p>Map Campaigner tracks how many OpenStreetMap users are helping to participate in this mapping project, as well as the data quality they provided.</p>
+    <div class="row">
+      <h2>Other Components</h2>
+      <div class="col-xs-6">
+        <div class="media">
+          <a class="pull-right" href="#">
+            <img class="media-object" src="https://placehold.it/200x150/A8B7C1" alt="">
+          </a>
+          <div class="media-body">
+            <h3 class="media-heading">Media Component</h3>
+            <p>An example media component with an image on the right, and a button. Lorem ipsum dolor sit amet.</p>
+            <a class="btn btn-lg btn-primary" href="#" role="button">Button</a>
+          </div>
+        </div>
+        <div class="media">
+          <a class="pull-left" href="#">
+            <img class="media-object" src="https://placehold.it/200x150/A8B7C1" alt="">
+          </a>
+          <div class="media-body">
+            <h3 class="media-heading">Media Component</h3>
+            <p>An example media component with an image on the left. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
