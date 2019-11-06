@@ -61,6 +61,7 @@ deploy:
     region: "us-west-2"
     app: "field-campaigner"
     env: "staging"
+    local_dir: flask_project/campaign_manager/static/dist  
     bucket_name: hotosm-fieldcampaigner-develop-deployments
     on:
       branch: develop
