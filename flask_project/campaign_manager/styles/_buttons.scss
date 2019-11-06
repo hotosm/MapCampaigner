@@ -4,6 +4,10 @@
   font-size: 16px !important;
   border: none;
   padding: 13px 50px;
+  svg {
+    margin-right: 6px;
+    vertical-align: bottom;
+  }
 }
 .btn-primary {
   background: $red;
@@ -13,6 +17,11 @@
     color: $white !important;
     box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
   }
+  &.btn-xs {
+    background: $white !important;
+    color: $red !important;
+    border-color: $red !important;
+  }
 }
 .btn-default {
   color: $blue-dark;
@@ -21,6 +30,14 @@
     color: $blue-dark !important;
     background: $white !important;
     box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
+  }
+  &.btn-xs {
+    background: $white !important;
+    color: $blue-light !important;
+    border-color: $blue-light !important;
+    svg {
+      vertical-align: text-bottom;
+    }
   }
 }
 .btn-info {
@@ -35,6 +52,12 @@
 .btn-sm {
   font-size: 15px !important;
   padding: 8px 24px !important;
+}
+.btn-xs {
+  border: 1px solid;
+  text-transform: uppercase;
+  font-size: 10px !important;
+  padding: 5px 5px !important;
 }
 .btn-lg {
   min-width: 200px;
