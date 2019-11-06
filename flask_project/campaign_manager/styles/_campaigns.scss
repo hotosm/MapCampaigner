@@ -4,8 +4,13 @@
     margin: 0;
     padding: 0;
   }
-  .row .toggle-switch {
-    margin-right: 135px;
+  .row {
+    .toggle-switch {
+      margin-bottom: 15px;
+      @include respond-above(md) {
+        margin-right: 135px;
+      }
+    }
   }
   #campaign-map {
     height: 600px;

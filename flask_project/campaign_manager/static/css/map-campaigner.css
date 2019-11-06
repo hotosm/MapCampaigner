@@ -793,21 +793,6 @@ span.inactive {
   width: 50%;
 }
 
-@media (max-width: 600px) {
-  #showing-div {
-    display: none;
-  }
-  .campaign-card {
-    height: 250px !important;
-  }
-  .campaign-thumbnail img {
-    display: none;
-  }
-  #search-campaign {
-    display: none;
-  }
-}
-
 .information {
   color: gray;
   font-style: italic;
