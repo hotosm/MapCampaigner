@@ -101,6 +101,7 @@
                                         {{ form.description }}
                                     </div>
                                     <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;"/>
+                                    <input id="user_id" title="user_id" name="user_id" style="display: none;"/>
                                     <br/>
                                 </div>
                             </div>
@@ -567,7 +568,6 @@
                     id: u.getAttribute('id'),
                     count: changesets.getAttribute('count')
                 };
-
                 updated(o);
 
             }, this);
@@ -593,6 +593,7 @@
                 $('#managers-list').append(
                         '<span class="manager">' + response.display_name
                 );
+                $("#user_id").val(response.id);
             {% endif %}
         }
 

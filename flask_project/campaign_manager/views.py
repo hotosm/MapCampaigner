@@ -38,7 +38,7 @@ from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
-from campaign_manager.models.campaign import Campaign
+from campaign_manager.models.campaign import Campaign, Permission
 from campaign_manager.models.survey import Survey
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
@@ -768,6 +768,10 @@ def create_campaign():
         Campaign.compute(data["uuid"])
         campaign = Campaign(data['uuid'])
         campaign.save()
+        campaign.save_to_user_campaigns(data['uuid'],
+            data['user_id'],
+            Permission.ADMIN.name
+        )
 
         return redirect(
             url_for(

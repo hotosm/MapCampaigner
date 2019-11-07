@@ -30,7 +30,18 @@ from campaign_manager.utilities import (
     simplify_polygon
 )
 from campaign_manager.aws import S3Data
+from enum import Enum
+from os.path import join
 import visvalingamwyatt as vw
+
+
+USER_CAMPAIGNS = 'user_campaigns'
+
+
+class Permission(Enum):
+    ADMIN = 0
+    MANAGER = 1
+    VIEWER = 2
 
 
 class Campaign(JsonModel):
@@ -56,6 +67,7 @@ class Campaign(JsonModel):
     dashboard_settings = ''
     link_to_omk = False
     thumbnail = ''
+    user_id = None
 
     def __init__(self, uuid=None):
         if uuid:
@@ -64,6 +76,34 @@ class Campaign(JsonModel):
             self.geojson_path = Campaign.get_geojson_file(uuid)
             self.edited_at = S3Data().get_last_modified_date(self.json_path)
             self.parse_json_file()
+
+    @staticmethod
+    def save_to_user_campaigns(user_id, uuid, level):
+        s3_obj = S3Data()
+
+        # Validate that user file exists. If not create it.
+        user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
+        user_campaigns = s3_obj.fetch(user_file)
+        campaign = {
+            'uuid': uuid,
+            'permission': Permission[level].value
+        }
+
+        if len(user_campaigns) == 0:
+            user_campaigns = {
+                'projects': [campaign]
+            }
+        else:
+            # Validate that campaign does not exist.
+            uuids = [c['uuid'] for c in user_campaigns['projects']]
+            if uuid in uuids:
+                raise ValueError("Campaign already exists")
+            user_campaigns['projects'].append(campaign)
+
+        body = json.dumps(user_campaigns)
+        s3_obj.create(user_file, body)
+
+        return True
 
     def save(self, uploader=None, save_to_git=True):
         """Save current campaign
