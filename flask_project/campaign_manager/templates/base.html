@@ -85,7 +85,7 @@
       });
 
       $(document).ready(function () {
-        $('#login-button').click(function (e) {
+        $('.login-button').click(function (e) {
           e.preventDefault();
           login();
         });
@@ -145,6 +145,10 @@
           };
 
           $('#profile-name').html(o.display_name);
+          $('#nav-projects').attr("href", "/user/" + o.id);
+          if (window.location.pathname === "/user/0") {
+            window.location = window.location.origin + "/user/" + o.id;
+          }
 
           if (typeof location !== 'undefined') {
             var long = location.getAttribute('lon');
@@ -171,6 +175,10 @@
         $('#user-menu').hide();
 
         $('#profile-name').html('');
+        $('#nav-projects').attr("href", "/user/0");
+        if (window.location.pathname === "/user/" + o.id) {
+          window.location = window.location.origin + "/user/0";
+        }
 
         if (map) {
           if (this.locationMarker) {

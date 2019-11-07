@@ -10,6 +10,15 @@
 
 {% block content %}
 <!-- This page uses the List.js API: https://listjs.com/ -->
+{% if osm_id == '0' %}
+<div class="row empty-ui">
+  <div class="col-xs-12 text-center">
+    <img src="https://placehold.it/275x215/A8B7C1" alt="">
+    <h2>Please log in</h2>
+    <p>Please <a id="login-button" class="login-button" href="#">log in</a> to view your projects.</p>
+  </div>
+</div>
+{% else %}
 <div class="row search-ui">
   <div class="col-xs-12 col-md-6">
     <div class="row">
@@ -51,6 +60,7 @@
     <p>Looks like you dont have any projects yet. Our <a href="">quick start guide</a> will get you using the tool straight away!</p>
   </div>
 </div>
+{% endif %}
 
 {% endblock %}
 

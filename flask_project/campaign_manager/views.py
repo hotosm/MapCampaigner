@@ -113,11 +113,11 @@ def styleguide():
     return render_template('styleguide.html', **context)
 
 
-@campaign_manager.route('/all')
-def campaigns_all():
-    """All campaigns view
+@campaign_manager.route('/user/<osm_id>')
+def campaigns_list(osm_id):
+    """List the user's campaigns
 
-    On this page a summary campaign manager view will shown with all campaigns.
+    A summary campaign manager view with all the users campaigns
     """
 
     context = dict(
@@ -125,7 +125,8 @@ def campaigns_all():
         oauth_secret=OAUTH_SECRET,
         all=True,
         map_provider=map_provider(),
-        bucket_url=S3Data().bucket_url()
+        bucket_url=S3Data().bucket_url(),
+        osm_id=osm_id
     )
 
     return render_template('campaign_index.html', **context)
