@@ -25,6 +25,9 @@
       }
     }
   }
+  #search-results.col-md-12 {
+    column-count: 2;
+  }
   #campaign-map {
     height: 600px;
     z-index: 1;
@@ -34,6 +37,9 @@
     border: 1px solid $grey-light2;
     border-radius: 2px;
     height: 240px;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
     &.panel {
       cursor: pointer;
     }
