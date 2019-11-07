@@ -156,15 +156,6 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
     return Response("", 200)
-    # try:
-    #     campaign = Campaign.get(uuid)
-    #     rendered_html = campaign.render_insights_function(
-    #         insight_function_id,
-    #         additional_data=clean_argument(request.args)
-    #     )
-    #     return Response(rendered_html)
-    # except Campaign.DoesNotExist:
-    #     abort(404)
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')

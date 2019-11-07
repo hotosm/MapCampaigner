@@ -32,6 +32,7 @@
 
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
+    {% block subhead %}{% endblock %}
     <div class="container container-fluid page-content">
       {% block header_content %}{% endblock %}
       {% block content %}{% endblock %}

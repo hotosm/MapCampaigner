@@ -1,255 +1,246 @@
-{% extends 'new_base.html' %}
+{% extends 'base.html' %}
 
 {% block extra_title %}
-    - {{ name }}
+- {{ name }}
 {% endblock %}
 
 {% block extra_head %}
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Map Campaigner" />
-    <meta property="og:description" content="{{ description }}" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Map Campaigner" />
+<meta property="og:description" content="{{ description }}" />
 {% endblock %}
 
 {% block header_content %}
-
-    <script src="http://connect.facebook.net/en_US/all.js" async=""></script>
-
-    <!-- Custom CSS -->
-    <link href="/static/css/campaign-detail.css" rel="stylesheet">
-
+<script src="http://connect.facebook.net/en_US/all.js" async=""></script>
+<link href="/static/css/campaign-detail.css" rel="stylesheet">
 {% endblock %}
 
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
 
 {% block content %}
-    <div class="row header-panel">
-        <div class="col-lg-12">
-            <div class='row'>
-                <div class='col-lg-10'>
-                    <h3 class="detail-campaign-name">
-                        {{ name }}
-                        <span title="Edit" class="button-manage">
-                        <i class="glyphicon glyphicon-edit" onclick="location.href='/edit/{{ uuid }}'"></i>
-                        </span>
-                    </h3>
-                </div>
-                <div class='col-lg-2 text-right'>
-                    <div class="detail-campaign-status {{ current_status }}">
-                    <i class="fa fa-circle" aria-hidden="true"></i>
-                    <label>{{ current_status }}</label>
-                    </div>
-                </div>
-
-                <div class='col-lg-12'>
-                {% if types %}
-                    {% for type in types %}
-                        <label class="detail-tag"> {{ type }} </label>
-                    {% endfor %}
-                {% endif %}
-                </div>
-                <div class='col-lg-12'>
-                    <div class='detail-creator-info'>
-                        <p>
-                            <span>Started</span>: {{ start_date_date }} {{ start_date_year }}
-                        </p>
-                        <p>
-                            <span>Ends</span>: {{ end_date_date }} {{ end_date_year }}
-                        </p>
-                    </div>
-                </div>
-                <div class='col-lg-12'>
-                    <p>
-                    {% if description %}
-                        {{ description }}
-                    {% else %}
-                        <span>No description</span>
-                    {% endif %}
-                    </p>
-                </div>
-                <div class='col-lg-12'>
-                    <div class="detail-creator-info">
-                        <p>
-                            <span>Campaign Manager : </span>
-                            <span class="text-muted">
-                            {% if campaign_managers %}
-                            {% for campaign_manager in campaign_managers %}
-                                <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
-                                {% if campaign_manager != campaign_managers[-1] %}
-                                    ,
-                                {% endif %}
-                            {% endfor %}
-                            {% else %}
-                                -
-                            {% endif %}
-                            </span>
-                        </p>
-
-                        <p>
-                            <span>Creator : </span>
-                            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">{{ campaign_creator }}</a>
-                        </p>
-                        <p>
-                            <span>Map:</span>
-                            {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
-                                <span id="map-default" style="display: none">
-                                Default
-                                </span>
-                                <span id="map-custom">
-                                Custom
-                                </span>
-                            {% else %}
-                                <span id="map-default"></span>
-                                Default
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-10 detail-button-wrapper participate-button" style="margin-top: 20px">
-                    <span class="btn btn-label"><strong>Participate</strong></span>
-                    <div class="btn-group btn-share-group" role="group" aria-label="...">
-                        {% if link_to_omk %}
-                            <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-                        {% endif %}
-                        <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-                    </div>
-                </div>
-                <div class="col-lg-2 detail-button-wrapper" style="margin-top: 25px;">
-                    <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
-                        <span class="btn btn-default unclickable" >Share</span>
-                        <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
-                        <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
-                    </div>
-                </div>
-            </div>
-            <div id="download_div" class="col-lg-12 alert"></div>
+<div class="row header-panel">
+  <div class="col-lg-12">
+    <div class='row'>
+      <div class='col-lg-2 text-right'>
+        <div class="detail-campaign-status {{ current_status }}">
+          <i class="fa fa-circle" aria-hidden="true"></i>
+          <label>{{ current_status }}</label>
         </div>
+      </div>
+
+      <div class='col-lg-12'>
+        {% if types %}
+        {% for type in types %}
+        <label class="detail-tag"> {{ type }} </label>
+        {% endfor %}
+        {% endif %}
+      </div>
+      <div class='col-lg-12'>
+        <div class='detail-creator-info'>
+          <p>
+            <span>Started</span>: {{ start_date_date }} {{ start_date_year }}
+          </p>
+          <p>
+            <span>Ends</span>: {{ end_date_date }} {{ end_date_year }}
+          </p>
+        </div>
+      </div>
+      <div class='col-lg-12'>
+        <p>
+          {% if description %}
+          {{ description }}
+          {% else %}
+          <span>No description</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class='col-lg-12'>
+        <div class="detail-creator-info">
+          <p>
+            <span>Campaign Manager : </span>
+            <span class="text-muted">
+              {% if campaign_managers %}
+              {% for campaign_manager in campaign_managers %}
+              <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
+              {% if campaign_manager != campaign_managers[-1] %}
+              ,
+              {% endif %}
+              {% endfor %}
+              {% else %}
+              -
+              {% endif %}
+            </span>
+          </p>
+
+          <p>
+            <span>Creator : </span>
+            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">{{ campaign_creator }}</a>
+          </p>
+          <p>
+            <span>Map:</span>
+            {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
+            <span id="map-default" style="display: none">
+              Default
+            </span>
+            <span id="map-custom">
+              Custom
+            </span>
+            {% else %}
+            <span id="map-default"></span>
+            Default
+            {% endif %}
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-10 detail-button-wrapper participate-button" style="margin-top: 20px">
+        <span class="btn btn-label"><strong>Participate</strong></span>
+        <div class="btn-group btn-share-group" role="group" aria-label="...">
+          {% if link_to_omk %}
+          <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
+          {% endif %}
+          <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
+        </div>
+      </div>
+      <div class="col-lg-2 detail-button-wrapper" style="margin-top: 25px;">
+        <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
+          <span class="btn btn-default unclickable">Share</span>
+          <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
+          <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
+        </div>
+      </div>
     </div>
+    <div id="download_div" class="col-lg-12 alert"></div>
+  </div>
+</div>
 
-    <div class='row' id='campaign-computing-status'>
-        <div class='col-lg-12'>
-            <div class='alert alert-warning'>
-                <p><i class="fa fa-clock-o" aria-hidden="true"></i> The campaign is still computing, please come back later <a href="/campaign/{{ uuid }}" class="btn btn-warning btn-xs">Refresh</a> </p>
-            </div>
-        </div>
+<div class='row' id='campaign-computing-status'>
+  <div class='col-lg-12'>
+    <div class='alert alert-warning'>
+      <p><i class="fa fa-clock-o" aria-hidden="true"></i> The campaign is still computing, please come back later <a href="/campaign/{{ uuid }}" class="btn btn-warning btn-xs">Refresh</a> </p>
     </div>
-    <div class='row' id='campaign-failure' style="display:none">
-        <div class='col-lg-12'>
-            <div class='alert alert-danger'>
-                <p>
-                    function: <b><span id="campaign-failure-function"></span></b><br />
-                    error: <b><span id="campaign-failure-error"></span></b>
-                </p>
-            </div>
-        </div>
+  </div>
+</div>
+<div class='row' id='campaign-failure' style="display:none">
+  <div class='col-lg-12'>
+    <div class='alert alert-danger'>
+      <p>
+        function: <b><span id="campaign-failure-function"></span></b><br />
+        error: <b><span id="campaign-failure-error"></span></b>
+      </p>
     </div>
-    <div class='row' id="campaign-feature-details" style="display:none">
-        <div class='col-lg-12'>
-            <div class="panel panel-default detail-panel-information">
-                <div class="panel-body summary-stats">
-                    <div class="row">
-                        <div class="col-lg-4 single-summary-stat">
-                            <div class="summary-stat-title">
-                                Features Collected
-                            </div>
-                            <div class="summary-stat-desc">
-                                <span id="features-collected"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 single-summary-stat">
-                            <div class="summary-stat-title">
-                                Users Engaged
-                            </div>
-                            <div class="summary-stat-desc">
-                                <span id="contributors"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 single-summary-stat">
-                            <div class="summary-stat-title">
-                                Areas Covered
-                            </div>
-                            <div class="summary-stat-desc">
-                                <span id="areas-covered">{{ pct_covered_areas }}%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  </div>
+</div>
+<div class='row' id="campaign-feature-details" style="display:none">
+  <div class='col-lg-12'>
+    <div class="panel panel-default detail-panel-information">
+      <div class="panel-body summary-stats">
+        <div class="row">
+          <div class="col-lg-4 single-summary-stat">
+            <div class="summary-stat-title">
+              Features Collected
             </div>
-        </div>
-        <div class='col-lg-12'>
-            <div class='panel panel-default detail-panel-insights'>
-                <div class="panel-heading">
-                    <i class="glyphicon glyphicon-info-sign"></i>
-                Feature details
-                </div>
-                <div class='panel-body'>
-                    <div class='row side-panel-wrapper'>
-                        <div class='col-lg-4 map-side-panel'>
-                            <div class="btn-group feature-select">
-                              <button type="button" class="btn btn-default active-type"></button>
-                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                              </button>
-                              <ul class="dropdown-menu">
-                                {% for type in types %}
-                                    <li><a data-target="#">{{ type }}</a></li>
-                                {% endfor %}
-                              </ul>
-                            </div>
-                            <div class="content-wrapper"></div>
-                        </div>
-                    <div class='col-lg-8'>
-                        <div class='map-wrapper'></div>
-                    </div>
-
-                    </div>
-                </div>
+            <div class="summary-stat-desc">
+              <span id="features-collected"></span>
             </div>
-        </div>
-        <div class="col-lg-12">
-            <div class='panel panel-default detail-panel-insights'>
-                <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
-                <div class='panel-body'>
-                    <div class="errors-wrapper"></div>
-                </div>
-            </div>
-        </div>
+          </div>
 
-        <div class='col-lg-12'>
-            <div class='panel panel-default detail-panel-insights'>
-                <div class='panel-heading'>
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                    Users Engagement
-                    <div class="pull-right participate-button">
-                        <div id="csv_div"></div>
-                        <button type="button" onclick="DownloadCsv()" class="btn btn-default"><i class="fa fa-download" aria-hidden="true"></i> Download</button>
-                    </div>
-                </div>
-                <div class='panel-body' style="padding-bottom: 0;padding-top: 0;">
-                    <div class='row' id='user-engagement-wrapper'>
-                        <div class='col-lg-4 type-1' style="min-height: 250px;">
-                            <div class="insight-title" style="margin-bottom: 20px;">Users Engaged</div>
-                            <div class="completeness">
-                                <div class="type-insight-text" id="total-users-engaged"></div>
-                            </div>
-                        </div>
-                        <div class='col-lg-4 type-2'>
-                            <div class="insight-title" style="margin-bottom: 20px;">Contributions Frequency</div>
-                            <div class='chart-legend' id='frequency-legend'></div>
-                            <canvas id="user-frequency"></canvas>
-
-                        </div>
-                        <div class='col-lg-4'>
-                            <div class="insight-title" style="margin-bottom: 20px;">Contributions Amount</div>
-                            <div class='chart-legend' id='contribution-legend' style='margin-top:100px'></div>
-                            <canvas id="contribution-amount"></canvas>
-                        </div>
-                    </div>
-                </div>
+          <div class="col-lg-4 single-summary-stat">
+            <div class="summary-stat-title">
+              Users Engaged
             </div>
+            <div class="summary-stat-desc">
+              <span id="contributors"></span>
+            </div>
+          </div>
+
+          <div class="col-lg-4 single-summary-stat">
+            <div class="summary-stat-title">
+              Areas Covered
+            </div>
+            <div class="summary-stat-desc">
+              <span id="areas-covered">{{ pct_covered_areas }}%</span>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  <div class='col-lg-12'>
+    <div class='panel panel-default detail-panel-insights'>
+      <div class="panel-heading">
+        <i class="glyphicon glyphicon-info-sign"></i>
+        Feature details
+      </div>
+      <div class='panel-body'>
+        <div class='row side-panel-wrapper'>
+          <div class='col-lg-4 map-side-panel'>
+            <div class="btn-group feature-select">
+              <button type="button" class="btn btn-default active-type"></button>
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                {% for type in types %}
+                <li><a data-target="#">{{ type }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="content-wrapper"></div>
+          </div>
+          <div class='col-lg-8'>
+            <div class='map-wrapper'></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-12">
+    <div class='panel panel-default detail-panel-insights'>
+      <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
+      <div class='panel-body'>
+        <div class="errors-wrapper"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-lg-12'>
+    <div class='panel panel-default detail-panel-insights'>
+      <div class='panel-heading'>
+        <i class="fa fa-user" aria-hidden="true"></i>
+        Users Engagement
+        <div class="pull-right participate-button">
+          <div id="csv_div"></div>
+          <button type="button" onclick="DownloadCsv()" class="btn btn-default"><i class="fa fa-download" aria-hidden="true"></i> Download</button>
+        </div>
+      </div>
+      <div class='panel-body' style="padding-bottom: 0;padding-top: 0;">
+        <div class='row' id='user-engagement-wrapper'>
+          <div class='col-lg-4 type-1' style="min-height: 250px;">
+            <div class="insight-title" style="margin-bottom: 20px;">Users Engaged</div>
+            <div class="completeness">
+              <div class="type-insight-text" id="total-users-engaged"></div>
+            </div>
+          </div>
+          <div class='col-lg-4 type-2'>
+            <div class="insight-title" style="margin-bottom: 20px;">Contributions Frequency</div>
+            <div class='chart-legend' id='frequency-legend'></div>
+            <canvas id="user-frequency"></canvas>
+
+          </div>
+          <div class='col-lg-4'>
+            <div class="insight-title" style="margin-bottom: 20px;">Contributions Amount</div>
+            <div class='chart-legend' id='contribution-legend' style='margin-top:100px'></div>
+            <canvas id="contribution-amount"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -257,465 +248,468 @@
 {% endblock %}
 
 {% block before_base_js %}
-    <script type="text/javascript">
+<script type="text/javascript">
 
-    </script>
+</script>
 {% endblock %}
 
 {% block after_base_js %}
 
-    <script type="text/javascript">
-    function loginSuccess(user) {
-        location.href='/campaign/{{ uuid }}';
-    }
+<script type="text/javascript">
+  function loginSuccess(user) {
+    location.href = '/campaign/{{ uuid }}';
+  }
 
-    function updated(user) {
-        var managers = {{ campaign_managers | safe }};
-        if (typeof(user) !== 'undefined') {
-            if ($.inArray(user.display_name, managers) > -1) {
-                $('.button-manage').show();
-            }
+  function updated(user) {
+    var managers = {{ campaign_managers | safe
+  }};
+  if (typeof (user) !== 'undefined') {
+    if ($.inArray(user.display_name, managers) > -1) {
+      $('.button-manage').show();
+    }
+  }
+  }
+
+  function logout() {
+    auth.logout();
+    location.href = '/campaign/{{ uuid }}';
+  }
+
+  function login() {
+    auth.authenticate(function () {
+      location.href = '/campaign/{{ uuid }}';
+    });
+  }
+
+  function loginError() {
+    location.href = '/campaign/{{ uuid }}';
+  }
+
+  function logoutSuccess() {
+    location.href = '/campaign/{{ uuid }}';
+  }
+
+  function main() {
+    updated();
+    var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
+    var types = {{ types| safe
+  }};
+
+  $.get({
+    url: s3CampaignUrl + '/failure.json',
+    cache: false
+  }).done(function (data) {
+    $('#campaign-computing-status').hide();
+    $('#campaign-failure').show();
+    data = JSON.parse(data);
+    $('#campaign-failure-function').html(data["function"])
+    $('#campaign-failure-error').html(data["failure"])
+  }).fail(function () {
+    window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
+    countFeaturesCollected(types, s3CampaignUrl);
+    var activeType = types[0];
+    $('.active-type').html(activeType);
+
+    loadType(activeType, s3CampaignUrl);
+
+
+    $('.feature-select a').on('click', function (e) {
+      e.stopPropagation();
+      activeType = $(this).html();
+
+      $('.active-type').html(activeType);
+      $('.dropdown-toggle').attr('aria-expanded', false);
+      $('.feature-select').removeClass('open');
+
+      loadType(activeType, s3CampaignUrl);
+    });
+  });
+  $('#download_div').hide();
+  }
+
+  function DownloadCsv() {
+    let types = {{ types| safe
+  }};
+  let params = {
+    'uuid': '{{ uuid }}',
+    'campaign_url': '{{ s3_campaign_url | safe }}',
+    'types': types.toString()
+  }
+  $.ajax({
+    type: 'GET',
+    url: '/generate_csv',
+    data: params,
+    dataType: 'json',
+    success: function (csv_data) {
+      let url = '/download_csv/' + csv_data.uuid + '/' + csv_data.file_name;
+      $('#csv_div').html('<a id="download_csv" href="' + url + '"></a>');
+      $('#download_csv').get(0).click();
+    }
+  });
+  }
+
+  function loadType(activeType, s3CampaignUrl) {
+    activeType = activeType.replace(/ /g, '_')
+    var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
+
+    $.get({
+      url: typeUrl + 'content.html',
+      cache: false
+    }).then(function (data) {
+      $('#campaign-feature-details').show();
+      $('#campaign-computing-status').hide();
+
+      // Provisional fix to change bars to horizontal.
+      data = data.replace("type: 'bar'", "type: 'horizontalBar'")
+
+      // Adjust font size.
+      let str_token = "options: {"
+      let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
+      let index_split = data.match(str_token).index + str_token.length
+
+      data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
+      data = data.replace(", 'backgroundColor': ['#4286f4']", '')
+
+      $('.content-wrapper').html(data);
+    });
+
+    $.get({
+      url: typeUrl + 'map.html',
+      cache: false
+    }).then(function (data) {
+      $('.map-wrapper').html(data)
+    });
+
+    $.get({
+      url: typeUrl + 'errors.html',
+      cache: false
+    }).then(function (data) {
+      $('.errors-wrapper').html(data)
+    });
+
+    window.setTimeout(function () {
+      setMapHeight();
+    }, 2000);
+
+  }
+
+  function getTypeUrl(activeType, s3CampaignUrl) {
+    return s3CampaignUrl + '/render/' + activeType + '/';
+  }
+
+  function setMapHeight() {
+    var height = $('.map-side-panel').height();
+    $('.map-wrapper').height(height + 3);
+    $('#campaign-map-detail').height(height + 3);
+  }
+
+  function buildAjaxRequests(types, s3CampaignUrl, insight) {
+    var ajaxRequests = [];
+
+    for (var i = 0; i < types.length; i++) {
+      var type_id = types[i].replace(/ /g, '_');
+      var typeUrl = getTypeUrl(type_id, s3CampaignUrl);
+
+      ajaxRequests.push($.ajax({
+        url: typeUrl + insight + '.json',
+        dataType: 'json',
+        cache: false
+      }));
+    }
+    return ajaxRequests;
+  }
+
+  function countFeaturesCollected(types, s3CampaignUrl) {
+    var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
+    $.when.apply($, requests).then(function () {
+      var total = 0;
+      if (requests.length == 1) {
+        total = arguments[0].features_collected
+      } else {
+
+        for (var i = 0; i < arguments.length; i++) {
+          total += arguments[i][0].features_collected;
         }
-    }
-
-    function logout() {
-        auth.logout();
-        location.href='/campaign/{{ uuid }}';
-    }
-
-    function login() {
-        auth.authenticate(function () {
-            location.href='/campaign/{{ uuid }}';
-        });
-    }
-
-    function loginError() {
-        location.href='/campaign/{{ uuid }}';
-    }
-
-    function logoutSuccess() {
-        location.href='/campaign/{{ uuid }}';
-    }
-
-    function main() {
-        updated();
-        var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
-        var types = {{ types|safe }};
-
-        $.get({
-            url: s3CampaignUrl + '/failure.json',
-            cache: false
-        }).done(function(data) {
-            $('#campaign-computing-status').hide();
-            $('#campaign-failure').show();
-            data = JSON.parse(data);
-            $('#campaign-failure-function').html(data["function"])
-            $('#campaign-failure-error').html(data["failure"])
-        }).fail(function() {
-            window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
-            countFeaturesCollected(types, s3CampaignUrl);
-            var activeType = types[0];
-            $('.active-type').html(activeType);
-
-            loadType(activeType, s3CampaignUrl);
-
-
-            $('.feature-select a').on('click', function(e) {
-                e.stopPropagation();
-                activeType = $(this).html();
-
-                $('.active-type').html(activeType);
-                $('.dropdown-toggle').attr('aria-expanded', false);
-                $('.feature-select').removeClass('open');
-
-                loadType(activeType, s3CampaignUrl);
-            });
-        });
-        $('#download_div').hide();
-    }
-
-    function DownloadCsv() {
-        let types = {{ types|safe }};
-        let params = {
-            'uuid': '{{ uuid }}',
-            'campaign_url' : '{{ s3_campaign_url | safe }}',
-            'types': types.toString()
+      }
+      $('#features-collected').html(total);
+    });
+  }
+  function loadMapperEngagement(types, s3CampaignUrl) {
+    var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
+    $.when.apply($, requests).then(function () {
+      var contributors = [];
+      if (requests.length == 1) {
+        contributors = arguments[0]
+      } else {
+        for (var i = 0; i < arguments.length; i++) {
+          contributors = contributors.concat(arguments[i][0]);
         }
-        $.ajax({
-            type: 'GET',
-            url: '/generate_csv',
-            data: params,
-            dataType: 'json',
-            success: function (csv_data) {
-                let url = '/download_csv/'+csv_data.uuid+'/' + csv_data.file_name;
-                $('#csv_div').html('<a id="download_csv" href="' + url + '"></a>');
-                $('#download_csv').get(0).click();
-            }
-        });
+      }
+      updateMapperEngagementTotal(contributors);
+    });
+  }
+
+  function openOtherDataCollectonForm(app) {
+    let campaign_data = {
+      'uuid': '{{ uuid }}',
+      'campaign_name': '{{ name }}'
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: '/generate_kml',
+      dataType: 'json',
+      data: campaign_data,
+
+      success: function (kml_data) {
+        //$('#download_div').show()
+        let url = '/download_kml/' + campaign_data.uuid + '/' + kml_data.file_name;
+        $('#download_div').html('Your Maps.me file is downloading. If not, click <a id="download_kml" href="' + url + '">Here</a>');
+        $('#download_div').addClass('alert-success').show();
+        $('#download_kml').get(0).click();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        let err_str = thrownError + ' error. Please contact MapCampaigner administrator'
+        $('#download_div').html(err_str).addClass('alert-danger').show();
+      }
+    });
+
+  }
+
+
+  function updateMapperEngagementTotal(contributors) {
+    var start_date = "{{ start_date }}";
+    var end_date = "{{ end_date }}";
+
+    $('.user-engagement-loading').hide();
+    $('#user-engagement-wrapper').show();
+
+    if (contributors.length > 0) {
+      $('#total-users-engaged').html(contributors.length);
+      $('#contributors').html(contributors.length);
+    } else {
+      $('#user-engagement-wrapper').html('<div class="no-data" style="padding-top: 20px;"> No users contribution </div>');
+      $('#user-engagement-wrapper').css({
+        height: '80px'
+      });
+      $('#total-users-engaged').html(0);
+      $('#contributors').html(0);
+      return;
     }
 
-    function loadType(activeType, s3CampaignUrl) {
-        activeType = activeType.replace(/ /g, '_')
-        var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
-
-        $.get({
-            url: typeUrl + 'content.html',
-            cache: false
-        }).then(function(data) {
-            $('#campaign-feature-details').show();
-            $('#campaign-computing-status').hide();
-
-            // Provisional fix to change bars to horizontal.
-            data = data.replace("type: 'bar'", "type: 'horizontalBar'")
-
-            // Adjust font size.
-            let str_token = "options: {"
-            let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
-            let index_split = data.match(str_token).index + str_token.length
-
-            data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
-            data = data.replace(", 'backgroundColor': ['#4286f4']", '')
-
-            $('.content-wrapper').html(data);
-        });
-
-      $.get({
-            url: typeUrl + 'map.html',
-            cache: false
-        }).then(function(data) {
-            $('.map-wrapper').html(data)
-        });
-
-      $.get({
-            url: typeUrl + 'errors.html',
-            cache: false
-        }).then(function(data) {
-            $('.errors-wrapper').html(data)
-        });
-
-        window.setTimeout(function() {
-            setMapHeight();
-        }, 2000);
-
-    }
-
-    function getTypeUrl(activeType, s3CampaignUrl) {
-        return s3CampaignUrl + '/render/' + activeType + '/';
-    }
-
-    function setMapHeight() {
-        var height = $('.map-side-panel').height();
-        $('.map-wrapper').height(height + 3);
-        $('#campaign-map-detail').height(height + 3);
-    }
-
-    function buildAjaxRequests(types, s3CampaignUrl, insight) {
-        var ajaxRequests = [];
-
-        for (var i = 0; i < types.length; i++) {
-            var type_id = types[i].replace(/ /g, '_');
-            var typeUrl = getTypeUrl(type_id, s3CampaignUrl);
-
-            ajaxRequests.push($.ajax({
-                url: typeUrl + insight + '.json',
-                dataType: 'json',
-                cache: false
-            }));
+    var chartDateOption = {
+      maintainAspectRatio: true,
+      elements: {
+        line: {
+          tension: 0.000001
         }
-        return ajaxRequests;
-    }
-
-    function countFeaturesCollected(types, s3CampaignUrl) {
-        var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
-        $.when.apply($, requests).then(function(){
-            var total = 0;
-            if (requests.length == 1) {
-                total = arguments[0].features_collected
-            } else {
-
-                for (var i = 0; i < arguments.length; i++) {
-                    total += arguments[i][0].features_collected;
-                }
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            displayFormats: {
+              'day': 'DD/MM',
+              'week': 'DD/MM',
+              'month': 'MM/YY',
+              'quarter': 'MM/YY',
+              'year': 'YY'
             }
-            $('#features-collected').html(total);
-        });
-    }
-    function loadMapperEngagement(types, s3CampaignUrl) {
-        var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
-        $.when.apply($, requests).then(function(){
-            var contributors = [];
-            if (requests.length == 1) {
-                contributors = arguments[0]
-            } else {
-                for (var i = 0; i < arguments.length; i++) {
-                    contributors = contributors.concat(arguments[i][0]);
-                }
+          }
+        }]
+      },
+      plugins: {
+        filler: {
+          propagate: false
+        }
+      },
+      legend: {
+        display: false
+      },
+      legendCallback: function (chart) {
+        var text = [];
+        text.push('<div>');
+        text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid ' + chart.data.datasets[0].borderColor + '"></i><span>' + chart.data.datasets[0].label + '</span>');
+        text.push('</div>');
+        return text.join("");
+      }
+    };
+
+    var frequencyOption = {
+      maintainAspectRatio: true,
+      elements: {
+        line: {
+          tension: 0.000001
+        }
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            displayFormats: {
+              'day': 'DD/MM',
+              'week': 'DD/MM',
+              'month': 'MM/YY',
+              'quarter': 'MM/YY',
+              'year': 'YY'
             }
-            updateMapperEngagementTotal(contributors);
-        });
-    }
+          }
+        }]
+      },
+      plugins: {
+        filler: {
+          propagate: false
+        }
+      },
+      legend: {
+        display: false
+      },
+      legendCallback: function (chart) {
+        var text = [];
+        text.push('<div>');
+        for (var i = 0; i < chart.data.datasets.length; i++) {
+          text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid ' + chart.data.datasets[i].borderColor + '"></i><span>' + chart.data.datasets[i].label + '</span>');
+        }
+        text.push('</div>');
+        return text.join("");
+      }
+    };
 
-    function openOtherDataCollectonForm(app) {
-        let campaign_data = {
-            'uuid': '{{ uuid }}',
-            'campaign_name': '{{ name }}'
-        };
+    // Clean up data
+    var cleanedContributor = {};
+    var contributionsAmount = {};
 
-        $.ajax({
-            type: 'POST',
-            url: '/generate_kml',
-            dataType: 'json',
-            data: campaign_data,
+    $.each(contributors, function (index, contributor) {
+      var contributorId = contributor.name.replace(/\s+/g, '_');
+      if (contributorId in cleanedContributor) {
+        cleanedContributor[contributorId]['ways'] += contributor['ways'];
+        cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
+        var timeline = JSON.parse(contributor.timeline);
+        cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
+      } else {
+        cleanedContributor[contributorId] = contributor;
+        try {
+          cleanedContributor[contributorId]['timeline'] = JSON.parse(contributor.timeline);
+        } catch (e) {
+          cleanedContributor[contributorId]['timeline'] = contributor.timeline;
+        }
+      }
+    });
 
-            success: function (kml_data) {
-                //$('#download_div').show()
-                let url = '/download_kml/'+campaign_data.uuid+'/' + kml_data.file_name;
-                $('#download_div').html('Your Maps.me file is downloading. If not, click <a id="download_kml" href="' + url + '">Here</a>');
-                $('#download_div').addClass('alert-success').show();
-                $('#download_kml').get(0).click();
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                let err_str = thrownError + ' error. Please contact MapCampaigner administrator'
-                $('#download_div').html(err_str).addClass('alert-danger').show();
-            }
-        });
+    var allFrequencyDatasets = [];
+    var allLabels = [];
+    var color = Chart.helpers.color;
 
-    }
+    $.each(cleanedContributor, function (key, contributor) {
 
+      var frequencyDatasets = {
+        label: contributor.name,
+        borderColor: '#' + intToRGB(hashCode(contributor.name)),
+        backgroundColor: color('#' + intToRGB(hashCode(contributor.name))).alpha(0.1).rgbString(),
+        data: []
+      };
 
-    function updateMapperEngagementTotal(contributors) {
-        var start_date = "{{ start_date }}";
-        var end_date = "{{ end_date }}";
+      for (var i = 0; i < contributor.timeline.length; i++) {
+        var pair = contributor.timeline[i];
+        var dateString = pair[0];
+        var date = moment.utc(dateString, "YYYY-MM-DD");
+        pair[0] = date.valueOf();
+        contributor.timeline[i] = pair;
 
-        $('.user-engagement-loading').hide();
-        $('#user-engagement-wrapper').show();
+        if ($.inArray(date, allLabels) === -1) {
+          allLabels.push(date);
+          frequencyDatasets.data.push({
+            x: date,
+            y: pair[1]
+          })
+        }
 
-        if(contributors.length > 0) {
-            $('#total-users-engaged').html(contributors.length);
-            $('#contributors').html(contributors.length);
+        var timeStamp = (date.unix()).toString();
+        var isContributionDateExist = contributionsAmount[timeStamp] !== undefined;
+        if (isContributionDateExist) {
+          contributionsAmount[timeStamp] += pair[1];
         } else {
-            $('#user-engagement-wrapper').html('<div class="no-data" style="padding-top: 20px;"> No users contribution </div>');
-            $('#user-engagement-wrapper').css({
-                height: '80px'
-            });
-            $('#total-users-engaged').html(0);
-            $('#contributors').html(0);
-            return;
+          contributionsAmount[timeStamp] = pair[1];
         }
+      }
 
-        var chartDateOption = {
-            maintainAspectRatio: true,
-            elements: {
-                line: {
-                    tension: 0.000001
-                }
-            },
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        displayFormats: {
-                            'day': 'DD/MM',
-                            'week': 'DD/MM',
-                            'month': 'MM/YY',
-                            'quarter': 'MM/YY',
-                            'year': 'YY'
-                        }
-                    }
-                }]
-            },
-            plugins: {
-                filler: {
-                    propagate: false
-                }
-            },
-            legend: {
-                display: false
-            },
-            legendCallback: function(chart) {
-                var text = [];
-                text.push('<div>');
-                text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid '+ chart.data.datasets[0].borderColor +'"></i><span>' + chart.data.datasets[0].label + '</span>');
-                    text.push('</div>');
-                    return text.join("");
-            }
-        };
+      if ($.inArray(start_date, allLabels) === -1) {
+        allLabels.push(start_date);
+      }
 
-        var frequencyOption = {
-            maintainAspectRatio: true,
-            elements: {
-                line: {
-                    tension: 0.000001
-                }
-            },
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        displayFormats: {
-                            'day': 'DD/MM',
-                            'week': 'DD/MM',
-                            'month': 'MM/YY',
-                            'quarter': 'MM/YY',
-                            'year': 'YY'
-                        }
-                    }
-                }]
-            },
-            plugins: {
-                filler: {
-                    propagate: false
-                }
-            },
-            legend: {
-                display: false
-            },
-            legendCallback: function(chart) {
-                var text = [];
-                text.push('<div>');
-                for (var i=0; i<chart.data.datasets.length; i++) {
-                    text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid '+ chart.data.datasets[i].borderColor +'"></i><span>' + chart.data.datasets[i].label + '</span>');
-                }
-                text.push('</div>');
-                return text.join("");
-            }
-        };
+      if ($.inArray(end_date, allLabels) === -1) {
+        allLabels.push(end_date);
+      }
 
-        // Clean up data
-        var cleanedContributor = {};
-        var contributionsAmount = {};
+      allFrequencyDatasets.push(frequencyDatasets);
+    });
 
-        $.each(contributors, function (index, contributor) {
-            var contributorId = contributor.name.replace(/\s+/g, '_');
-            if(contributorId in cleanedContributor) {
-                cleanedContributor[contributorId]['ways'] += contributor['ways'];
-                cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
-                var timeline = JSON.parse(contributor.timeline);
-                cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
-            } else {
-                cleanedContributor[contributorId] = contributor;
-                try {
-                    cleanedContributor[contributorId]['timeline'] =  JSON.parse(contributor.timeline);
-                } catch(e) {
-                    cleanedContributor[contributorId]['timeline'] =  contributor.timeline;
-                }
-            }
-        });
+    allLabels = sortDate(allLabels);
 
-        var allFrequencyDatasets = [];
-        var allLabels = [];
-        var color = Chart.helpers.color;
+    var frequencyDatasets = new Chart($('#user-frequency'), {
+      type: 'line',
+      options: frequencyOption,
+      data: {
+        labels: allLabels,
+        datasets: allFrequencyDatasets
+      }
+    });
 
-        $.each(cleanedContributor, function (key, contributor) {
+    $('#frequency-legend').html(frequencyDatasets.generateLegend());
 
-            var frequencyDatasets = {
-                    label: contributor.name,
-                    borderColor : '#' + intToRGB(hashCode(contributor.name)),
-                    backgroundColor : color('#' + intToRGB(hashCode(contributor.name))).alpha(0.1).rgbString(),
-                    data: []
-                };
+    contributionsAmount = sortObject(contributionsAmount);
+    var contributionCtx = $('#contribution-amount');
+    var contributionDatasets = {
+      labels: allLabels,
+      datasets: [{
+        label: 'Contributors',
+        borderColor: '#82afb8',
+        backgroundColor: color('#82afb8').alpha(0.1).rgbString(),
+        data: []
+      }]
+    };
 
-            for(var i=0; i<contributor.timeline.length; i++) {
-                var pair = contributor.timeline[i];
-                var dateString = pair[0];
-                var date = moment.utc(dateString, "YYYY-MM-DD");
-                pair[0] = date.valueOf();
-                contributor.timeline[i] = pair;
+    $.each(contributionsAmount, function (key, value) {
+      var date = moment.unix(key);
+      contributionDatasets.datasets[0].data.push({
+        x: date,
+        y: value
+      });
+    });
 
-                if($.inArray(date, allLabels) === -1) {
-                    allLabels.push(date);
-                    frequencyDatasets.data.push({
-                        x:date,
-                        y:pair[1]
-                    })
-                }
+    var contribution_chart = new Chart(contributionCtx, {
+      type: 'line',
+      data: contributionDatasets,
+      options: chartDateOption
+    });
 
-                var timeStamp = (date.unix()).toString();
-                var isContributionDateExist = contributionsAmount[timeStamp]  !== undefined;
-                if(isContributionDateExist) {
-                    contributionsAmount[timeStamp] += pair[1];
-                } else {
-                    contributionsAmount[timeStamp] = pair[1];
-                }
-            }
+    $('#contribution-legend').html(contribution_chart.generateLegend());
+    $('#contribution-legend').css('margin-top', $('#frequency-legend').height() + 'px')
 
-            if($.inArray(start_date,allLabels) === -1){
-                allLabels.push(start_date);
-            }
+  }
 
-            if($.inArray(end_date,allLabels) === -1){
-                allLabels.push(end_date);
-            }
-
-            allFrequencyDatasets.push(frequencyDatasets);
-        });
-
-        allLabels = sortDate(allLabels);
-
-        var frequencyDatasets = new Chart($('#user-frequency'), {
-            type: 'line',
-            options: frequencyOption,
-            data: {
-                labels: allLabels,
-                datasets: allFrequencyDatasets
-            }
-        });
-
-        $('#frequency-legend').html(frequencyDatasets.generateLegend());
-
-        contributionsAmount = sortObject(contributionsAmount);
-        var contributionCtx = $('#contribution-amount');
-        var contributionDatasets = {
-            labels: allLabels,
-            datasets: [{
-                label: 'Contributors',
-                borderColor : '#82afb8',
-                backgroundColor : color('#82afb8').alpha(0.1).rgbString(),
-                data: []
-            }]
-        };
-
-        $.each(contributionsAmount, function (key, value) {
-            var date = moment.unix(key);
-            contributionDatasets.datasets[0].data.push({
-                        x:date,
-                        y:value
-                    });
-        });
-
-        var contribution_chart = new Chart(contributionCtx, {
-            type: 'line',
-            data: contributionDatasets,
-            options: chartDateOption
-        });
-
-        $('#contribution-legend').html(contribution_chart.generateLegend());
-        $('#contribution-legend').css('margin-top', $('#frequency-legend').height() + 'px')
-
+  function sortDate(dateArray) {
+    if (dateArray.length <= 1) {
+      return dateArray;
     }
 
-    function sortDate(dateArray) {
-        if(dateArray.length <= 1) {
-            return dateArray;
-        }
+    var pivot = dateArray[0];
 
-        var pivot = dateArray[0];
+    var left = [];
+    var right = [];
 
-        var left = [];
-        var right = [];
-
-        for (var i=1; i < dateArray.length; i++) {
-            dateArray[i] < pivot ? left.push(dateArray[i]) : right.push(dateArray[i]);
-        }
-
-        return sortDate(left).concat(pivot, sortDate(right))
+    for (var i = 1; i < dateArray.length; i++) {
+      dateArray[i] < pivot ? left.push(dateArray[i]) : right.push(dateArray[i]);
     }
 
-    function sortObject(o) {
-        return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
-    }
+    return sortDate(left).concat(pivot, sortDate(right))
+  }
+
+  function sortObject(o) {
+    return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
+  }
 
 
-    main();
-    </script>
+  main();
+</script>
 {% endblock %}
