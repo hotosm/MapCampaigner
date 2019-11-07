@@ -135,6 +135,13 @@ class Campaign(JsonModel):
         geocampaign_body = json.dumps(geometry)
         S3Data().create(geocampaign_key, geocampaign_body)
 
+    def delete(self):
+        """Get a uuid and delete the S3 folder for this specific
+        campaign. To come: delete from users' profiles on S3."""
+        uuid = self.uuid
+        folder_path = f"campaings/{uuid}"
+        S3Data().delete_folder(folder_path)
+
     def generate_static_map_url(self, simplify):
         """
         Generate a MapBox static map URL in production/staging.
