@@ -361,20 +361,7 @@ def campaign_boundary_upload_chunk(uuid):
         abort(404)
 
 
-@campaign_manager.route('/campaign/<uuid>', methods=('DELETE'))
-def delete_campaign(uuid):
-    try:
-        campaign = Campaign.get(uuid)
-        # Get function from the model to delete S3 folders
-        campaign.delete()
-        # Redirect to the user's page
-        flash('You successfully delete a campaign')
-        return redirect(url_for("campaigns_all"))
-    except Campaign.DoesNotExist:
-        abort(404)
-
-
-@campaign_manager.route('/campaign/<uuid>', , methods=('GET'))
+@campaign_manager.route('/campaign/<uuid>', methods=['GET'])
 def get_campaign(uuid):
     from campaign_manager.aws import S3Data
     """Get campaign details.
@@ -437,6 +424,19 @@ def get_campaign(uuid):
         context['end_date_year'] = '-'
 
     return render_template('campaign_detail.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>', methods=['DELETE'])
+def delete_campaign(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        # Get function from the model to delete S3 folders
+        campaign.delete()
+        # Redirect to the user's page
+        flash('You successfully delete a campaign')
+        return redirect(url_for("campaigns_all"))
+    except Campaign.DoesNotExist:
+        abort(404)
 
 
 @campaign_manager.route('/participate')
