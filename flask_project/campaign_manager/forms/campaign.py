@@ -84,6 +84,7 @@ class CampaignForm(FlaskForm):
         validators=[Optional()]
     )
     types = HiddenField(u'Types that selected for this campaign')
+    user_id = HiddenField(u'User id')
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',
