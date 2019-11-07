@@ -13,16 +13,16 @@
 <div class="row search-ui">
   <div class="col-xs-12 col-md-6">
     <div class="row">
-      <div class="col-xs-12 col-sm-9" id="search-campaign">
+      <div class="col-xs-12 col-sm-8" id="search-campaign">
         <input class="search form-control form-control-subtle" placeholder="Search" />
       </div>
-      <div class="col-xs-12 col-sm-3">
-        <label class="form-control-wrapper pull-right">
+      <div class="col-xs-12 col-sm-4">
+        <label class="form-control-wrapper">
           <select id="campaigns-select" class="form-control form-control-subtle">
-            <option>Filter by</option>
+            <option disabled selected>Filter by</option>
             <option value="all">All</option>
-            <option value="all">Projects I manage</option>
-            <option value="all">Projects I can view</option>
+            <option value="manage">Projects I manage</option>
+            <option value="view">Projects I can view</option>
             <option value="active">Active projects</option>
             <option value="inactive">Finished projects</option>
           </select>
@@ -189,89 +189,28 @@
   $('#campaigns-select').change(function () {
     switch (this.value) {
       case 'active':
+        $('.campaign').hide();
         $('.active-campaign').show();
-        $('.inactive-campaign').hide();
         break;
       case 'inactive':
+        $('.campaign').hide();
         $('.inactive-campaign').show();
-        $('.active-campaign').hide();
         break;
       case 'manage':
+        $('.campaign').hide();
+        $('.editable-campaign').show();
         break;
       case 'view':
+        $('.campaign').hide();
+        $('.viewable-campaign').show();
         break;
       case 'all':
-        Cookies.set('user_location_setting', 'all');
-        Cookies.set('campaign-status', 'active');
-        $('.active-campaign').show();
-        $('.inactive-campaign').show();
+        $('.campaign').show();
         break;
       default:
-        $('.active-campaign').show();
-        $('.inactive-campaign').show();
+        $('.campaign').show();
     }
   });
-
-  $("#limit-page").on('keyup', function (e) {
-    if (e.keyCode == 13) {
-      updateLimitPage();
-    }
-  });
-
-  function displayInactive() {
-    Cookies.set('campaign-status', 'inactive');
-    clearMap();
-    {% if all %}
-    getCampaigns(currentUrl, currentUser);
-    {% else %}
-    var limitPage = Cookies.get('limit_page');
-    if (!limitPage) {
-      limitPage = 5;
-    }
-    getCampaigns(currentUrl, currentUser, limitPage);
-    {% endif %}
-  }
-
-  $('#hide-inactive').click(function () {
-    Cookies.set('campaign-status', 'active');
-    clearMap();
-    {% if all %}
-    getCampaigns(currentUrl, currentUser);
-    {% else %}
-    var limitPage = Cookies.get('limit_page');
-    if (!limitPage) {
-      limitPage = 5;
-    }
-    getCampaigns(currentUrl, currentUser, limitPage);
-    {% endif %}
-
-    $('#display-inactive').show();
-    $('#hide-inactive').hide();
-  })
-
-  $('#limit-page').focusout(function (e) {
-    updateLimitPage();
-  });
-
-  function updateLimitPage() {
-    var limitPage = $("#limit-page").val();
-    var oldLimitPage = Cookies.get('limit_page');
-    var shouldUpdate = false;
-
-    if (oldLimitPage) {
-      if (oldLimitPage != limitPage) {
-        shouldUpdate = true;
-      }
-    } else {
-      shouldUpdate = true;
-    }
-
-    if (shouldUpdate) {
-      clearMap();
-      getCampaigns(currentUrl, currentUser, limitPage);
-      Cookies.set('limit_page', limitPage);
-    }
-  }
 
   function participate() {
     var participateUrl = "/participate"
@@ -302,7 +241,6 @@
     $('.active-campaign-number').html('');
   }
 
-
   $('.remove-tag').click(function () {
     location.href = '/'
   });
@@ -320,10 +258,6 @@
     getCampaigns(null, null, null)
   }
 
-  function loginError() {
-    getBrowserLocation();
-  }
-
   function clearMap() {
     map.removeLayer(mapMarkers);
     map.removeLayer(mapLayers);
@@ -334,69 +268,6 @@
   }
 
   function clearTable() {
-  }
-
-  function getBrowserLocation() {
-    // Get user location
-    navigator.geolocation.getCurrentPosition(successGetBrowserLocation, errorGetBrowserLocation);
-
-    function successGetBrowserLocation(position) {
-
-      if (Object.keys(userLocation).length > 0) {
-        return;
-      }
-
-      var zoom = 10;
-      userLocation = {
-        'lat': position.coords.latitude,
-        'lon': position.coords.longitude
-      }
-      var url = '/';
-      var limitPage = Cookies.get('limit_page');
-      if (!limitPage) {
-        limitPage = $('#limit-page').val();
-      }
-      $('#limit-page').val(limitPage);
-
-      clearMap();
-      {% if not all %}
-      url += "nearest_campaigns";
-      getCampaigns(url, null, limitPage)
-      {% else %}
-      url += "campaigns";
-      getCampaigns(url, null, null)
-      {% endif %}
-    }
-
-    function errorGetBrowserLocation() {
-      var url = '/';
-      var limitPage = Cookies.get('limit_page');
-      userLocation = {};
-      if (!limitPage) {
-        limitPage = $('#limit-page').val();
-      }
-      $('#limit-page').val(limitPage);
-
-      clearMap();
-
-      {% if not all %}
-      url += "nearest_campaigns";
-      $.getJSON('https://ipapi.co/json/', function (data) {
-        var latitude = data['latitude'];
-        var longitude = data['longitude'];
-        userLocation = {
-          'lat': latitude,
-          'lon': longitude
-        }
-        getCampaigns(url, null, limitPage);
-      });
-      {% else %}
-      url += "campaigns";
-      getCampaigns(url, null, null);
-      {% endif %}
-
-      console.log('Error get browser location');
-    }
   }
 
   function getTotalCampaigns() {
@@ -441,8 +312,9 @@
     var isActive = campaignStatus(campaign);
     var daysLeft = getDaysLeft(campaign);
     var warning = daysLeft > 0 ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
+    var isManager = $.inArray(user, campaign.campaign_managers) > -1;
     return `
-    <li class="${!isActive ? 'in' : ''}active-campaign">
+    <li class="campaign ${!isActive ? 'in' : ''}active-campaign ${isManager ? 'editable-campaign' : 'viewable-campaign'}">
       <div class="campaign-card panel ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">
         <div class="row">
           <div class="col-xs-9">
@@ -451,7 +323,7 @@
             </a>
           </div>
           <div class="col-xs-3">
-            ${actionCampaignButton(campaign, user)}
+            ${actionCampaignButton(campaign.uuid, isManager)}
           </div>
         </div>
         <div class="row">
@@ -487,9 +359,9 @@
   </li>`
   }
 
-  function actionCampaignButton(campaign, user) {
-    if ($.inArray(user, campaign.campaign_managers) > -1) {
-      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right" onclick="openManageCampaign(event, this, '${campaign.uuid}')">
+  function actionCampaignButton(uuid, isManager) {
+    if (isManager) {
+      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right" onclick="openManageCampaign(event, this, '${uuid}')">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
           <g fill="none" fill-rule="nonzero" stroke="#D73F3F" stroke-width=".85">
             <path d="M15.442 7.44c-.023-.204-.26-.357-.466-.357-.664 0-1.253-.39-1.5-.993a1.613 1.613 0 0 1 .405-1.791.402.402 0 0 0 .044-.546 7.168 7.168 0 0 0-1.147-1.16.403.403 0 0 0-.55.045c-.433.478-1.208.656-1.807.406a1.609 1.609 0 0 1-.979-1.573.402.402 0 0 0-.355-.423 7.232 7.232 0 0 0-1.63-.004.403.403 0 0 0-.359.414 1.612 1.612 0 0 1-.991 1.546c-.593.242-1.363.066-1.794-.408a.404.404 0 0 0-.546-.046c-.434.34-.83.73-1.172 1.158a.403.403 0 0 0 .043.55c.504.457.667 1.184.405 1.808-.25.596-.868.98-1.576.98a.394.394 0 0 0-.418.355 7.256 7.256 0 0 0-.004 1.647c.023.205.268.356.475.356a1.589 1.589 0 0 1 1.49.993 1.61 1.61 0 0 1-.404 1.791.403.403 0 0 0-.044.546c.336.429.723.819 1.146 1.16a.403.403 0 0 0 .551-.044c.433-.48 1.209-.657 1.806-.406.625.261 1.018.893.98 1.572a.402.402 0 0 0 .355.423 7.2 7.2 0 0 0 1.63.004.403.403 0 0 0 .359-.415 1.61 1.61 0 0 1 .99-1.544c.597-.244 1.364-.066 1.795.408.143.156.38.174.546.046.434-.34.828-.73 1.172-1.159a.402.402 0 0 0-.043-.55 1.605 1.605 0 0 1-.406-1.808 1.622 1.622 0 0 1 1.482-.982l.09.003a.403.403 0 0 0 .424-.355 7.25 7.25 0 0 0 .003-1.648z"/>
@@ -499,7 +371,7 @@
         Manage
       </button>`;
     } else {
-      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right" onclick="openCampaign(event, this, '${campaign.uuid}')">
+      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right" onclick="openCampaign(event, this, '${uuid}')">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="11" viewBox="0 0 15 11">
           <path fill="#929DB3" fill-rule="nonzero" d="M7.5.5A8.033 8.033 0 0 0 0 5.614c1.16 3 4.09 5.113 7.5 5.113s6.34-2.113 7.5-5.113A8.033 8.033 0 0 0 7.5.5zm0 8.523c-1.91 0-3.41-1.5-3.41-3.41 0-1.908 1.5-3.408 3.41-3.408 1.91 0 3.41 1.5 3.41 3.409 0 1.909-1.5 3.409-3.41 3.409zm0-5.455c-1.16 0-2.045.887-2.045 2.046 0 1.159.886 2.045 2.045 2.045 1.16 0 2.045-.886 2.045-2.045 0-1.16-.886-2.046-2.045-2.046z" />
         </svg>
