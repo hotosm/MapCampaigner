@@ -176,7 +176,8 @@
 
         $('#profile-name').html('');
         $('#nav-projects').attr("href", "/user/0");
-        if (window.location.pathname === "/user/" + o.id) {
+        var osmId = parseInt("{{osm_id}}", 10);
+        if (osmId > 0 && window.location.pathname === "/user/" + osmId) {
           window.location = window.location.origin + "/user/0";
         }
 
