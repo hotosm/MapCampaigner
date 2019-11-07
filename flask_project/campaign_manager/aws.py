@@ -179,7 +179,7 @@ class S3Data(object):
         :returns:
         """
         for key in self.list(folder_key):
-            self.delete('{}/{}'.format(folder_key, key['uuid']))
+            self.delete(f'{folder_key}/{key['uuid']}')
 
     def get_last_modified_date(self, key):
         obj = self.s3.get_object(

@@ -361,7 +361,7 @@ def campaign_boundary_upload_chunk(uuid):
         abort(404)
 
 
-@campaign_manager.route('/campaign/<uuid>', methods=['GET'])
+@campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     from campaign_manager.aws import S3Data
     """Get campaign details.
@@ -426,7 +426,7 @@ def get_campaign(uuid):
     return render_template('campaign_detail.html', **context)
 
 
-@campaign_manager.route('/campaign/<uuid>', methods=['DELETE'])
+@campaign_manager.route('/campaign/<uuid>/delete', methods=['POST'])
 def delete_campaign(uuid):
     try:
         campaign = Campaign.get(uuid)

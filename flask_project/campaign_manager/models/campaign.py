@@ -139,7 +139,7 @@ class Campaign(JsonModel):
         """Get a uuid and delete the S3 folder for this specific
         campaign. To come: delete from users' profiles on S3."""
         uuid = self.uuid
-        folder_path = f"campaings/{uuid}"
+        folder_path = f"campaigns/{uuid}"
         S3Data().delete_folder(folder_path)
 
     def generate_static_map_url(self, simplify):
