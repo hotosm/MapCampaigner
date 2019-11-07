@@ -86,7 +86,7 @@ def home():
 def learn():
     """MapCampaigner Docs
 
-    Information about MapCampaigner.
+    Information about to use MapCampaigner.
     """
 
     context = dict(
@@ -988,19 +988,9 @@ if __name__ == '__main__':
     campaign_manager.run()
 
 
-@campaign_manager.route('/about')
-def about():
-    return render_template('about.html')
-
-
 @campaign_manager.route('/resources')
 def resources():
     return render_template('resources.html')
-
-
-@campaign_manager.route('/how-it-works')
-def how_it_works():
-    return render_template('how_it_works.html')
 
 
 @campaign_manager.route('/403')
