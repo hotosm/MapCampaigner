@@ -20,9 +20,11 @@
         <label class="form-control-wrapper pull-right">
           <select id="campaigns-select" class="form-control form-control-subtle">
             <option>Filter by</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
             <option value="all">All</option>
+            <option value="all">Projects I manage</option>
+            <option value="all">Projects I can view</option>
+            <option value="active">Active projects</option>
+            <option value="inactive">Finished projects</option>
           </select>
         </label>
       </div>
@@ -185,20 +187,28 @@
   });
 
   $('#campaigns-select').change(function () {
-    var value = this.value;
-    if (value === 'all') {
-      Cookies.set('user_location_setting', 'all');
-      Cookies.set('campaign-status', 'active');
-      $('.active-campaign').show();
-      $('.inactive-campaign').show();
-      // location.href='/all'
-    } else if (value === 'active') {
-      $('.active-campaign').show();
-      $('.inactive-campaign').hide();
-    } else if (value === 'nearest') {
-    } else if (value === 'inactive') {
-      $('.inactive-campaign').show();
-      $('.active-campaign').hide();
+    switch (this.value) {
+      case 'active':
+        $('.active-campaign').show();
+        $('.inactive-campaign').hide();
+        break;
+      case 'inactive':
+        $('.inactive-campaign').show();
+        $('.active-campaign').hide();
+        break;
+      case 'manage':
+        break;
+      case 'view':
+        break;
+      case 'all':
+        Cookies.set('user_location_setting', 'all');
+        Cookies.set('campaign-status', 'active');
+        $('.active-campaign').show();
+        $('.inactive-campaign').show();
+        break;
+      default:
+        $('.active-campaign').show();
+        $('.inactive-campaign').show();
     }
   });
 
@@ -285,7 +295,6 @@
     clearMap();
     clearCampaigns();
     getCampaigns(currentUser);
-    $('#campaigns-select').val("active");
   }
 
   function clearCampaigns() {
@@ -352,12 +361,9 @@
       clearMap();
       {% if not all %}
       url += "nearest_campaigns";
-      $('#campaigns-select').val('nearest');
-      $('.nearest-option').show();
       getCampaigns(url, null, limitPage)
       {% else %}
       url += "campaigns";
-      $('#campaigns-select').val('all');
       getCampaigns(url, null, null)
       {% endif %}
     }
@@ -384,11 +390,8 @@
         }
         getCampaigns(url, null, limitPage);
       });
-      $('#campaigns-select').val('nearest');
-      $('.nearest-option').show();
       {% else %}
       url += "campaigns";
-      $('#campaigns-select').val('all');
       getCampaigns(url, null, null);
       {% endif %}
 
@@ -437,7 +440,7 @@
     var completeness = campaignProgress(campaign);
     var isActive = campaignStatus(campaign);
     var daysLeft = getDaysLeft(campaign);
-    var warning = daysLeft ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
+    var warning = daysLeft > 0 ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
     return `
     <li class="${!isActive ? 'in' : ''}active-campaign">
       <div class="campaign-card panel ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">
