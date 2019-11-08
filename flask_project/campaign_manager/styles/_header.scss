@@ -127,8 +127,12 @@
   margin: 0;
   padding: 0;
   border-radius: 0;
-  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAX0lEQVQoU2NcvWb9f3YODgZra2sGbODo0aMMP3/8YGDctGX7fw0NDQZhYWGsCt++fctw48YNBsa37z/9x6oCTRBFIUw3SA26LSgKYe4BKUR3N3kKibYan6eIDx5iAxwAKDFTG6QviGsAAAAASUVORK5CYII=');
-  background-size: 5px;
+  background-color: rgb(237,239,242);
+  background-image:
+  radial-gradient(rgb(171,173,176) 0.63px, transparent 1.26px),
+  radial-gradient(rgb(171,173,176) 0.63px, transparent 1.26px);
+  background-size: 4.725px 4.725px;
+  background-position: 0 0, 2.3625px 2.3625px;
   font-family: 'Barlow Condensed', sans-serif;
   .container {
     position: relative;
