@@ -1,17 +1,17 @@
-{% extends 'new_base.html' %}
+{% extends 'base.html' %}
+
 {% block extra_head %}
-    <title>404 Not Found</title>
+<title>MapCampaigner - Not Found</title>
 {% endblock %}
-{% block extra_css %}
-{% endblock %}
+
 {% block content %}
-    <div style="height: 100%; width: 100%; text-align: center; margin-top: 100px">
-        <div>
-            <h1 style="margin-bottom: 50px">Sorry!</h1>
-            <h2 style="margin-bottom: 50px">The page you are looking for could not be found</h2>
-            <h2 style="margin-bottom: 50px">Please back to <a href="/">Home</a></h2>
-        </div>
+<div class="container container-fluid">
+  <div class="row">
+    <div class="col-xs-6 col-xs-offset-3 text-center">
+      <h1>Sorry!</h1>
+      <p>The page you are looking for could not be found.</p>
+      <p>Please go back <a href="{{url_for('campaign_manager.home')}}">home</a>.</p>
     </div>
-{% endblock %}
-{% block extra_js %}
+  </div>
+</div>
 {% endblock %}
