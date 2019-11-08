@@ -1,0 +1,14 @@
+.details-list {
+  p {
+    font-size: 16px;
+    .label {
+      vertical-align: middle;
+      margin-left: 16px;
+    }
+    >svg {
+      vertical-align: middle;
+      margin-top: -4px;
+      margin-right: 16px;
+    }
+  }
+}
