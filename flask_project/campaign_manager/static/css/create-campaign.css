@@ -109,7 +109,7 @@
     padding-top: 10px;
 }
 
-.dashboard-settings, .campaign-name-header, .campaign-status, .form-group > label {
+.dashboard-settings, .campaign-name-header, .campaign-status, .form-group>label {
     font-weight: 700;
     font-size: 12pt;
 }
@@ -140,8 +140,6 @@
 
 .btn-next, .btn-prev {
     background-color: #9E9E9E;
-    height: 40px !important;
-    width: 150px !important;
 }
 
 .btn-red:hover {
@@ -179,8 +177,6 @@ input#btn-add:hover {
     margin: 20px auto;
     display: table;
     color: white;
-    width: 150px !important;
-    height: 40px !important;
     font-weight: bold;
 }
 
@@ -378,13 +374,6 @@ input#btn-add:hover {
     margin-top: 50px;
 }
 
-.help-block {
-    font-size: 10pt;
-    display: inline;
-    width: 635px;
-    margin-top: 2px;
-}
-
 #campaign-form input::placeholder, #campaign-form textarea::placeholder {
     font-size: 11pt;
     font-weight: normal !important;
@@ -461,8 +450,7 @@ select.dashboard-settings {
     margin-top: 10px;
 }
 
-input#start_date.form-control.error::placeholder,
-input#end_date.form-control.error::placeholder {
+input#start_date.form-control.error::placeholder, input#end_date.form-control.error::placeholder {
     font-size: 7.5pt !important;
 }
 
@@ -510,10 +498,10 @@ input#map_type {
 }
 
 .edit-custom-type {
-    position:absolute;
+    position: absolute;
     margin-top: 3%;
     margin-left: 80%;
-    z-index:1001;
+    z-index: 1001;
     cursor: pointer;
     font-size: 20px;
 }
@@ -525,19 +513,19 @@ input#map_type {
     border: 1px solid #CCCCCC;
     color: #898989;
     font-size: 8pt !important;
-    position:absolute;
+    position: absolute;
     margin-top: 2.5%;
     margin-left: 2.5%;
-    z-index:1001;
+    z-index: 1001;
 }
 
 .type-selection {
-    z-index:1000;
+    z-index: 1000;
     margin-right: 15px;
     padding-left: 10px !important;
 }
 
-.type-selection select  {
+.type-selection select {
     padding-left: 30px !important;
     font-size: 12pt !important;
 }
@@ -623,7 +611,6 @@ input#btn-add {
     min-height: 500px;
     margin-top: 30px;
     margin-bottom: 30px;
-
 }
 
 .fa-times {
@@ -644,28 +631,6 @@ input#btn-add {
 
 .times-red:hover {
     color: #832424 !important;
-}
-
-.btn-icon-next {
-    float: right;
-    margin: auto 5px;
-}
-
-.btn-icon-prev {
-    float: left;
-    margin: auto 5px;
-}
-
-.btn-step-next {
-    float: left;
-    position: relative;
-    right: -35%;
-}
-
-.btn-step-prev {
-    float: right;
-    position: relative;
-    left: -35%;
 }
 
 .area-table-title {
@@ -703,8 +668,8 @@ input#link_to_omk {
     color: #FB6624 !important;
 }
 
-input[type="checkbox"]{
-  width: 18px;
+input[type="checkbox"] {
+    width: 18px;
 }
 
 .fa-calendar {
@@ -779,4 +744,3 @@ input#start_date.form-control, input#end_date.form-control {
     margin-top: 20px;
     width: 100%;
 }
-
