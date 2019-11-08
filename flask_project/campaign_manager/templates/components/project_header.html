@@ -25,7 +25,7 @@
               <path d="M5.448 3.38H4.006A2.003 2.003 0 0 0 2 5.371v14.635C2 21.107 2.898 22 3.99 22h16.02c1.099 0 1.99-.898 1.99-1.993V5.372c0-1.1-.888-1.993-2.006-1.993h-1.442" />
               <path d="M8.207 5.448H5.448V2h2.759zM18.552 5.448h-2.759V2h2.759zM8.207 3.38h7.586M2 8.207h20" />
             </g>
-          </svg>{{ start_date_date }} {{ start_date_year }} — {{ end_date_date }} {{ end_date_year }}
+          </svg><span class="moment-date">{{ start_date }}</span>&mdash;<span class="moment-date">{{ end_date }}</span>
           <span class="label label-warning">
             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
               <g fill="#2C3038" fill-rule="nonzero">
@@ -43,7 +43,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.381 16.25h5.238M9.254 9.326H11v6.538M11 6.67c0 .213-.196.385-.437.385s-.436-.172-.436-.385c0-.212.195-.384.436-.384.24 0 .437.172.437.384z" />
               <rect width="21" height="21" x=".5" y=".5" rx="10.5" />
             </g>
-          </svg>{{description}}
+          </svg>{% if description %}{{ description }}{% else %}No description{% endif %}
         </p>
       </div>
     </div>
@@ -56,7 +56,17 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z" />
               <rect width="21" height="19" x=".5" y=".5" rx="4" />
             </g>
-          </svg>Managers: <i>user1</i> Viewers: <i>user2, user3</i></p>
+          </svg>Managers: <i>{% if campaign_managers %}
+            {% for campaign_manager in campaign_managers %}
+            <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
+            {% if campaign_manager != campaign_managers[-1] %}
+            ,
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            -
+            {% endif %}</i>
+          Viewers: <i>user2, user3</i></p>
       </div>
       <div class="col-xs-12 col-md-6">
         <p>

@@ -93,6 +93,11 @@
         $('#logout-button').click(function () {
           logout();
         });
+        var momentDates = $('.moment-date');
+        momentDates.each(function (el) {
+          var dateString = $(this).text();
+          $(this).text(moment(dateString, 'YYYY-MM-DD', true).format('YYYY.MM.DD'));
+        })
       });
 
       function login() {

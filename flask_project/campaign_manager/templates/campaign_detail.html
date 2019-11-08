@@ -39,42 +39,7 @@
         {% endif %}
       </div>
       <div class='col-lg-12'>
-        <div class='detail-creator-info'>
-          <p>
-            <span>Started</span>: {{ start_date_date }} {{ start_date_year }}
-          </p>
-          <p>
-            <span>Ends</span>: {{ end_date_date }} {{ end_date_year }}
-          </p>
-        </div>
-      </div>
-      <div class='col-lg-12'>
-        <p>
-          {% if description %}
-          {{ description }}
-          {% else %}
-          <span>No description</span>
-          {% endif %}
-        </p>
-      </div>
-      <div class='col-lg-12'>
         <div class="detail-creator-info">
-          <p>
-            <span>Campaign Manager : </span>
-            <span class="text-muted">
-              {% if campaign_managers %}
-              {% for campaign_manager in campaign_managers %}
-              <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
-              {% if campaign_manager != campaign_managers[-1] %}
-              ,
-              {% endif %}
-              {% endfor %}
-              {% else %}
-              -
-              {% endif %}
-            </span>
-          </p>
-
           <p>
             <span>Creator : </span>
             <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">{{ campaign_creator }}</a>
@@ -135,6 +100,7 @@
 </div>
 <div class='row' id="campaign-feature-details" style="display:none">
   <div class='col-lg-12'>
+    <h2>Project Overview</h2>
     <div class="panel panel-default detail-panel-information">
       <div class="panel-body summary-stats">
         <div class="row">
@@ -169,6 +135,7 @@
     </div>
   </div>
   <div class='col-lg-12'>
+    <h2>Details</h2>
     <div class='panel panel-default detail-panel-insights'>
       <div class="panel-heading">
         <i class="glyphicon glyphicon-info-sign"></i>
