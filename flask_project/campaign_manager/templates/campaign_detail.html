@@ -159,7 +159,9 @@
             <div class="content-wrapper"></div>
           </div>
           <div class='col-lg-8'>
-            <div class='map-wrapper'></div>
+            <div class='map-wrapper'>
+              {% include 'campaign_detail/map.html' %}
+            </div>
           </div>
 
         </div>
@@ -316,6 +318,48 @@
   });
   }
 
+  function addMapElements(activeType) {
+    var url_vt =  "{{ s3_campaign_url | safe }}/render/" + activeType + "/tiles/{z}/{x}/{y}.pbf";
+    map.addSource('tiles', {
+      "type": "vector",
+      "minzoom": 10,
+      "maxzoom": 17,
+      "tiles": [url_vt]
+    });
+    map.addLayer({
+      "id": "campaign-polygons",
+      "type": "fill",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "Polygon"],
+      "paint": {
+        "fill-color": ['get', 'completeness_color'],
+        "fill-opacity": 1
+      }
+    });
+    map.addLayer({
+      "id": "campaign-lines",
+      "type": "line",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "LineString"],
+      "paint": {
+        "line-color": ['get', 'completeness_color'],
+        "line-opacity": 0.7
+      }
+    });
+    map.addLayer({
+      "id": "campaign-points",
+      "type": "circle",
+      "source": "tiles",
+      "source-layer": "campaign",
+      "filter": ["in", "$type", "Point"],
+      "paint": {
+        "circle-color": ['get', 'completeness_color'],
+      }
+    });
+  }
+
   function loadType(activeType, s3CampaignUrl) {
     activeType = activeType.replace(/ /g, '_')
     var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
@@ -342,13 +386,6 @@
     });
 
     $.get({
-      url: typeUrl + 'map.html',
-      cache: false
-    }).then(function (data) {
-      $('.map-wrapper').html(data)
-    });
-
-    $.get({
       url: typeUrl + 'errors.html',
       cache: false
     }).then(function (data) {
@@ -358,6 +395,16 @@
     window.setTimeout(function () {
       setMapHeight();
     }, 2000);
+
+    // Load data into map.
+    let source = map.getSource('tiles');
+    if (source) {
+      map.removeLayer("campaign-polygons");
+      map.removeLayer("campaign-lines");
+      map.removeLayer("campaign-points");
+      map.removeSource('tiles');
+    }
+    addMapElements(activeType);
 
   }
 
