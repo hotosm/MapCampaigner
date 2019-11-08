@@ -1,3 +1,4 @@
+import base64
 import csv
 import inspect
 import json
@@ -46,13 +47,14 @@ from campaign_manager.insights_functions.osmcha_changesets import \
 from campaign_manager.data_providers.overpass_provider import OverpassProvider
 from reporter import config
 from campaign_manager.utilities import (
-    load_osm_document_cached, get_contribs
+    load_osm_document_cached, get_contribs, geojson_to_gpx
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.aws import S3Data
 
 from xml.sax.saxutils import escape
+
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -82,6 +84,7 @@ def home():
 
     return render_template('home.html', **context)
 
+
 @campaign_manager.route('/learn')
 def learn():
     """MapCampaigner Docs
@@ -96,6 +99,7 @@ def learn():
     )
 
     return render_template('learn.html', **context)
+
 
 @campaign_manager.route('/styleguide')
 def styleguide():
@@ -455,6 +459,25 @@ def participate():
         )
     else:
         abort(404)
+
+
+@campaign_manager.route('/gpx/<json_data>', methods=['GET'])
+def generate_gpx(json_data):
+    # decoding to geojson
+    try:
+        decoded_json = base64.b64decode(json_data).decode('utf-8')
+    except UnicodeDecodeError:
+        abort(400)
+
+    geojson = json.loads(decoded_json)
+    xml_gpx = geojson_to_gpx(geojson)
+
+    resp = Response(xml_gpx, mimetype='text/xml', status=200)
+
+    # Disable CORS.
+    resp.headers['Access-Control-Allow-Origin'] = 'https://www.openstreetmap.org'
+
+    return resp
 
 
 @campaign_manager.route('/generate_josm', methods=['POST'])

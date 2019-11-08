@@ -24,6 +24,9 @@ from campaign_manager.aws import S3Data
 from campaign_manager.models.survey import Survey
 
 from glob import glob
+from datetime import datetime
+
+import xml.etree.ElementTree as ET
 
 
 def module_path(*args):
@@ -344,3 +347,38 @@ def get_contribs(url, ctype):
     data = [item for sublist in data for item in sublist]
 
     return data
+
+
+def geojson_to_gpx(geojson):
+    root = ET.Element(
+            "gpx",
+            attrib=dict(
+                xmlns="http://www.topografix.com/GPX/1/1",
+                version="1.1",
+                creator="HOT MapCampaigner",
+            ),
+    )
+    # Create GPX Metadata element
+    metadata = ET.Element("metadata")
+    link = ET.SubElement(
+        metadata,
+        "link",
+        attrib={'href': "https://github.com/hotosm/mapcampaigner"},
+    )
+    ET.SubElement(link, "text").text = "HOT MapCampaigner"
+    ET.SubElement(metadata, "time").text = datetime.today().isoformat()
+    root.append(metadata)
+    # Create trk element
+    trk = ET.Element("trk")
+    root.append(trk)
+
+    trkseg = ET.SubElement(trk, "trkseg")
+    for coord in geojson['geometry']['coordinates'][0]:
+        coord_dict = dict(lon=str(coord[0]), lat=str(coord[1]))
+        ET.SubElement(trkseg, "trkpt", attrib=coord_dict,)
+
+        # Append wpt elements to end of doc
+        wpt = ET.Element("wpt", attrib=coord_dict)
+        root.append(wpt)
+
+    return ET.tostring(root, encoding="utf8")
