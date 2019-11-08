@@ -77,6 +77,32 @@ def invoke_process_make_vector_tiles(uuid, type_name):
         InvocationType='RequestResponse')
 
 
+def update_campaign(campaign, params):
+    FIELD = 'attribute_completeness'
+    type_id = params['type_id']
+
+    if FIELD not in campaign.keys():
+        campaign[FIELD] = {}
+
+    # Check that attribute exists. If yes, remove it.
+    if type_id in campaign[FIELD].keys():
+        campaign[FIELD].pop(type_id, None)
+    campaign[FIELD][type_id] = {
+        'features_collected': params['features_collected'],
+        'features_completed': params['features_completed'],
+        'name': params['type_name']
+    }
+
+    # Save new file into S3.
+    key = os.path.join('campaigns',
+        campaign['uuid'],
+        'campaign_2.json'
+    )
+    S3Data().create(key=key, body=json.dumps(campaign))
+
+    return True
+
+
 def save_data(uuid, type_id, data):
     with open('/tmp/data.json', 'w') as file:
         json.dump(data, file)

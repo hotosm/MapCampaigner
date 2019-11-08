@@ -1,7 +1,7 @@
 import os
 import json
 import boto3
-from dependencies import yaml
+import yaml
 
 
 class S3Data(object):

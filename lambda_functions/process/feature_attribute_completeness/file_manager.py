@@ -48,7 +48,7 @@ class FileManager(object):
     def write(self, data):
         if (self.size() + len(data)) >= self.SIZE_LIMIT:
             self.close()
-            self.save()
+            # self.save()
             self.remove()
             self.count += 1
             self.open()

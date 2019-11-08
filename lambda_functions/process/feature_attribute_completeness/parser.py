@@ -36,9 +36,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def endDocument(self):
         self.geojson_file_manager.close()
-        self.geojson_file_manager.save()
+        # self.geojson_file_manager.save()
         self.errors_file_manager.close()
-        self.errors_file_manager.save()
+        # self.errors_file_manager.save()
 
     def startElement(self, name, attrs):
         if name in ['node', 'way']:
