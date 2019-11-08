@@ -1,17 +1,15 @@
-{% extends 'new_base.html' %}
+{% extends 'base.html' %}
+{% set active_page = "create" %}
 
 {% block extra_head %}
-
-    <!-- Custom CSS -->
-    <link href="/static/css/create-campaign.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
-
+  <link href="/static/css/create-campaign.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
 {% endblock %}
 
 {% block content %}
     <div id="form-panel">
     <div class="row form-border">
-        <div class="col-lg-2">
+        <div class="col-sm-3">
             <div class="panel panel-default panel-header">
                 <span class="panel-header-info">STATUS</span><br/>
                 <div id="campaign-active">
@@ -46,7 +44,7 @@
                 <p>Explore an <a href="/resources">example campaign</a> to understand how collecting and monitoring features in an area can be organized.</p>
             </div>
         </div>
-        <div class="col-lg-10">
+        <div class="col-sm-9">
             <div class="panel panel-default cc-panel">
                 <div class="panel-body cc" id="campaign-panel" style="display: none">
                     <form id="campaign-form" method="POST" action="{{ url }}" role="form">
@@ -204,14 +202,6 @@
                             </div>
                             <div class="col-lg-4">
                                 <ul class="upload">
-                   <!--                  <li class="upload">
-                                        <div class="form-body col-lg-6 upload">
-                                            <div class="form-group">
-                                                <label>Upload Shapefiles</label>
-                                                {% include 'campaign_widget/ui/upload_boundary.html' %}
-                                            </div>
-                                        </div>
-                                    </li> -->
                                     <li>
                                         <div class="form-body col-lg-6 upload">
                                             <div class="form-group">
@@ -294,8 +284,7 @@
                                 <div class="form-group" style="padding-bottom: 25px;">
                                     <div id="insight-function" class="function-wrapper">
                                         <label class="category-label">Insight Functions</label>
-                                        <div class="function-form">
-                                        </div>
+                                        <div class="function-form"></div>
                                         <button id="insight-function-add" class="btn btn-outline btn-add-coverage"
                                                 type=button onclick="addFunction(this)" style="margin-top: 5px;">
                                             <i class="fa fa-plus"></i> Add Function
@@ -534,13 +523,6 @@
 
 
         //------------------ BUTTONS ------------------//
-
-        function scrollToClass(element_class, removed_height) {
-            var scrollTo = $(element_class).offset().top - removed_height;
-            if ($(window).scrollTop() !== scrollTo) {
-                $('html, body').stop().animate({scrollTop: scrollTo}, 0);
-            }
-        }
 
         $('.btn-next').click(function () {
             nextStep(this);
@@ -844,7 +826,7 @@
             }
 
             // scroll window to beginning of the form
-            scrollToClass($('#wrapper'), 20);
+            $('html, body').stop().animate({scrollTop: 0}, 0);
         }
 
         function nextStep(elm) {
@@ -862,7 +844,7 @@
             var nameDateValid = checkFormHeader();
 
             // scroll window to beginning of the form
-            scrollToClass($('#wrapper'), 20);
+            $('html, body').stop().animate({scrollTop: 0}, 0);
 
             if (isNextStep && nameDateValid) {
                 $(parentFieldset).children().find('button').attr('disabled', 'disabled');
@@ -980,10 +962,6 @@
                 $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
             });
 
-            if (!auth.authenticated() || !$("#uploader").val()) {
-                window.location.replace("/not-logged-in.html");
-            }
-
             $('#campaign_status').val('Start');
 
             // Processing selected function
@@ -993,6 +971,10 @@
 
         }
         $("#campaign-form").submit(function (event) {
+            if (!auth.authenticated()) {
+                event.preventDefault();
+                return alert('You are not logged in. Please log in before submitting this form.');
+            }
             var allValid = checkingAllStep();
             if (!allValid) {
                 return false;

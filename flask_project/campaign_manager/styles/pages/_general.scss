@@ -1,0 +1,14 @@
+body {
+  background: $page-background;
+  color: $blue-dark;
+  a {
+    color: $red;
+    &:hover, &:focus {
+      color: $red;
+    }
+  }
+}
+.page-content {
+  margin-top: 80px;
+  min-height: 50vh;
+}

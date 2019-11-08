@@ -86,7 +86,7 @@ def home():
 def learn():
     """MapCampaigner Docs
 
-    Information about MapCampaigner.
+    Information about to use MapCampaigner.
     """
 
     context = dict(
@@ -113,11 +113,11 @@ def styleguide():
     return render_template('styleguide.html', **context)
 
 
-@campaign_manager.route('/all')
-def campaigns_all():
-    """All campaigns view
+@campaign_manager.route('/user/<osm_id>')
+def campaigns_list(osm_id):
+    """List the user's campaigns
 
-    On this page a summary campaign manager view will shown with all campaigns.
+    A summary campaign manager view with all the users campaigns
     """
 
     context = dict(
@@ -125,7 +125,8 @@ def campaigns_all():
         oauth_secret=OAUTH_SECRET,
         all=True,
         map_provider=map_provider(),
-        bucket_url=S3Data().bucket_url()
+        bucket_url=S3Data().bucket_url(),
+        osm_id=osm_id
     )
 
     return render_template('campaign_index.html', **context)
@@ -155,15 +156,6 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
     return Response("", 200)
-    # try:
-    #     campaign = Campaign.get(uuid)
-    #     rendered_html = campaign.render_insights_function(
-    #         insight_function_id,
-    #         additional_data=clean_argument(request.args)
-    #     )
-    #     return Response(rendered_html)
-    # except Campaign.DoesNotExist:
-    #     abort(404)
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')
@@ -932,18 +924,11 @@ def get_osm_names(query_name):
     return Response(json.dumps(osm_usernames))
 
 
-@campaign_manager.route('/land')
+@campaign_manager.route('/osm_auth')
 def landing_auth():
-    """OSM auth landing page.
+    """Redirect page used for OSM login
     """
-    return render_template('land.html')
-
-
-@campaign_manager.route('/not-logged-in.html')
-def not_logged_in():
-    """Not logged in page.
-    """
-    return render_template('not_authenticated.html')
+    return render_template('osm_auth.html')
 
 
 @campaign_manager.route('/search-remote')
@@ -989,21 +974,6 @@ if __name__ == '__main__':
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()
-
-
-@campaign_manager.route('/about')
-def about():
-    return render_template('about.html')
-
-
-@campaign_manager.route('/resources')
-def resources():
-    return render_template('resources.html')
-
-
-@campaign_manager.route('/how-it-works')
-def how_it_works():
-    return render_template('how_it_works.html')
 
 
 @campaign_manager.route('/403')

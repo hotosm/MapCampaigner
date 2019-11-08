@@ -10,7 +10,20 @@
 @import "variables";
 @import "media-queries";
 
-@import "header";
-@import "footer";
-@import "buttons";
-@import "pages";
+// Styles for reusable components
+@import "components/buttons";
+@import "components/headings";
+@import "components/labels";
+@import "components/details-list";
+@import "components/complex"; // Styles made up of compound components
+
+// Styles for template partial layouts
+@import "templates/header";
+@import "templates/project-header";
+@import "templates/footer";
+
+// Styles for page specific adjustments to layout and spacing
+@import "pages/general";
+@import "pages/home";
+@import "pages/styleguide";
+@import "pages/campaigns";

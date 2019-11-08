@@ -16,22 +16,24 @@
     <link href="/static/dist/main.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Archivo|Barlow+Condensed:400,500&display=swap" rel="stylesheet">
 
+    <script type="application/javascript">
+      var site_id = "10"; // site_id is for the HOTOSM tracking code below
+    </script>
+    <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
+
     <script src="/static/dist/vendor.js"></script>
     <script src="/static/dist/legacy.js"></script>
     <script src="/static/dist/main.js"></script>
 
     {% block extra_head %}{% endblock %}
 
-    <script type="application/javascript">
-      var site_id = "10"; // site_id is for the HOTOSM tracking code below
-    </script>
-    <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
     <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
   </head>
 
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
-    <div class="container container-fluid">
+    {% block subhead %}{% endblock %}
+    <div class="container container-fluid page-content">
       {% block header_content %}{% endblock %}
       {% block content %}{% endblock %}
     </div>
@@ -73,7 +75,7 @@
         oauth_secret: '{{ oauth_secret }}',
         oauth_consumer_key: '{{ oauth_consumer_key }}',
         auto: true,
-        landing: window.location.origin + '/land',
+        landing: window.location.origin + '/osm_auth',
         loading: function () {
           showLoading();
         },
@@ -84,13 +86,18 @@
       });
 
       $(document).ready(function () {
-        $('#login-button').click(function (e) {
+        $('.login-button').click(function (e) {
           e.preventDefault();
           login();
         });
         $('#logout-button').click(function () {
           logout();
         });
+        var momentDates = $('.moment-date');
+        momentDates.each(function (el) {
+          var dateString = $(this).text();
+          $(this).text(moment(dateString, 'YYYY-MM-DD', true).format('YYYY.MM.DD'));
+        })
       });
 
       function login() {
@@ -144,6 +151,10 @@
           };
 
           $('#profile-name').html(o.display_name);
+          $('#nav-projects').attr("href", "/user/" + o.id);
+          if (window.location.pathname === "/user/0") {
+            window.location = window.location.origin + "/user/" + o.id;
+          }
 
           if (typeof location !== 'undefined') {
             var long = location.getAttribute('lon');
@@ -161,6 +172,7 @@
           if (loginProcess) {
             loginProcess = false;
           }
+          if ("updated" in window && typeof updated === 'function') updated(o)
 
         }, this);
       }
@@ -169,6 +181,11 @@
         $('#user-menu').hide();
 
         $('#profile-name').html('');
+        $('#nav-projects').attr("href", "/user/0");
+        var osmId = parseInt("{{osm_id}}", 10);
+        if (osmId > 0 && window.location.pathname === "/user/" + osmId) {
+          window.location = window.location.origin + "/user/0";
+        }
 
         if (map) {
           if (this.locationMarker) {

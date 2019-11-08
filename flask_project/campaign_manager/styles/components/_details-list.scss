@@ -1,0 +1,31 @@
+.details-list {
+  margin-bottom: 20px;
+  p {
+    font-size: 16px;
+    .label {
+      vertical-align: middle;
+      margin-left: 16px;
+    }
+    >svg {
+      vertical-align: middle;
+      margin-top: -4px;
+      margin-right: 16px;
+    }
+    i {
+      color: $blue-light;
+      font-style: normal;
+      margin-right: 16px;
+      a {
+        color: $blue-light;
+      }
+    }
+    a {
+      margin-right: 16px;
+      color: $blue-dark;
+      svg {
+        margin-left: 10px;
+        color: $red;
+      }
+    }
+  }
+}

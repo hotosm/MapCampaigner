@@ -1,0 +1,31 @@
+.media {
+  margin: 80px 0 100px 0;
+  .media-heading {
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+  h2.media-heading {
+    font-size: 40px;
+    text-transform: none;
+  }
+  h3.media-heading {
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-transform: none;
+  }
+  p {
+    font-size: 20px;
+    line-height: 28px;
+    color: $blue-dark;
+  }
+  >.pull-right {
+    padding-left: 42px;
+  }
+  >.pull-left {
+    padding-right: 100px;
+  }
+  .btn {
+    margin-top: 24px;
+    margin-right: 30px;
+  }
+}
