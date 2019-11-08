@@ -1,14 +1,20 @@
 <div class="project-header">
   <div class="container container-fluid">
     <div class='row'>
-      <div class='col-lg-10'>
+      <div class='col-sm-8'>
         <h1>{{ name }}</h1>
       </div>
-      <div class='col-lg-2 text-right'>
-        <span title="Edit" class="button-manage">
-          <button class="btn btn-primary btn-xs" onclick="location.href='/edit/{{ uuid }}'">Edit</button>
-        </span>
-        <button class="btn btn-primary btn-xs">Delete</button>
+      <div class='col-sm-4 text-right'>
+        <button class="btn btn-primary btn-xs button-manage" onclick="location.href='/edit/{{ uuid }}'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+            <path fill="#D73F3F" fill-rule="nonzero" d="M13.79 6.786a1.202 1.202 0 0 0-1.705 0l-.427.429-5.971 6.004.001.001-.188.19s-.6.607-1.955 5a56.6 56.6 0 0 0-.168.55l-.056.187-.13.441c-.098.332-.336 1.08-.067 1.35.259.262 1.012.032 1.341-.066.15-.044.294-.088.436-.131l.194-.059.205-.063.25-.078.074-.022c4.161-1.302 4.908-1.913 4.97-1.968l.001-.001.005-.004.192-.194.013.013 5.972-6.004.426-.429a1.218 1.218 0 0 0 0-1.715l-3.412-3.431zM9.914 17.77a.792.792 0 0 1-.05.032l-.017.01c-.199.12-.782.428-2.197.942-.165.06-.345.124-.534.19L5.104 16.92c.065-.19.129-.373.189-.54.511-1.427.818-2.014.936-2.214l.008-.013a2.448 2.448 0 0 1 .033-.053l.147-.148 3.646 3.666-.15.151zM20.616 6.786l-3.413-3.43a1.202 1.202 0 0 0-1.706 0l-.853.857a1.218 1.218 0 0 0 0 1.715l3.412 3.431a1.202 1.202 0 0 0 1.707 0l.853-.858a1.218 1.218 0 0 0 0-1.715z" />
+          </svg>
+          Edit</button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
+            <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z" />
+          </svg>
+          Delete</button>
       </div>
     </div>
     <div class="row details-list">
@@ -50,7 +56,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z" />
               <rect width="21" height="19" x=".5" y=".5" rx="4" />
             </g>
-          </svg>Managers: [] Viewers: []</p>
+          </svg>Managers: <i>user1</i> Viewers: <i>user2, user3</i></p>
       </div>
       <div class="col-xs-12 col-md-6">
         <p>
@@ -59,11 +65,19 @@
               <path d="M19.895 13.138H23v-3.035h-3.106a8.4 8.4 0 0 0-.96-2.332l2.197-2.197-2.706-2.705-2.197 2.196c-.709-.432-1.905-.877-2.331-.96V1h-3.794v3.106c-.492.106-1.624.527-2.332.96L5.574 2.868 2.868 5.574l2.197 2.197c-.433.709-.847 1.864-.96 2.332H1v3.035h3.104c.155 1.156.528 2.382.96 3.09l-2.196 2.198 2.706 2.705 2.196-2.197c.71.433 1.966.76 2.333.961V23h3.794v-3.105c.367-.2 1.623-.528 2.331-.96l2.198 2.196 2.705-2.705-2.196-2.197c.432-.709.759-1.206.96-3.091z" />
               <path d="M16.172 12a4.172 4.172 0 1 1-8.345 0 4.172 4.172 0 0 1 8.345 0z" />
             </g>
-          </svg><a href="#">Manage in Tasking Manager</a>
-          <a href="#">Create PDF Maps</a></p>
+          </svg><a href="#">Manage in Tasking Manager <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+              <path fill="#D73F3F" fill-rule="nonzero" d="M12.444 12.444H1.556V1.556H7V0H1.556C.692 0 0 .7 0 1.556v10.888C0 13.3.692 14 1.556 14h10.888C13.3 14 14 13.3 14 12.444V7h-1.556v5.444zM8.556 0v1.556h2.792L3.702 9.2 4.8 10.298l7.645-7.646v2.792H14V0H8.556z" />
+            </svg>
+          </a>
+          <a href="#">Create PDF Maps <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+              <path fill="#D73F3F" fill-rule="nonzero" d="M12.444 12.444H1.556V1.556H7V0H1.556C.692 0 0 .7 0 1.556v10.888C0 13.3.692 14 1.556 14h10.888C13.3 14 14 13.3 14 12.444V7h-1.556v5.444zM8.556 0v1.556h2.792L3.702 9.2 4.8 10.298l7.645-7.646v2.792H14V0H8.556z" />
+            </svg>
+          </a></p>
       </div>
     </div>
   </div>
+</div>
+<div class="project-header-nav">
   <div class="container container-fluid">
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">Project Overview</a></li>
