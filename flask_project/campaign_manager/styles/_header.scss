@@ -91,6 +91,13 @@
     }
     >a.dropdown-toggle {
       border: none !important;
+      text-transform: none;
+      font-size: 16px;
+      font-weight: normal;
+      font-family: 'Archivo', sans-serif;
+      .caret {
+        margin-left: 16px;
+      }
     }
     &.dropdown.open {
       background: none;
