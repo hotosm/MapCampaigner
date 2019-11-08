@@ -972,11 +972,6 @@ if __name__ == '__main__':
     campaign_manager.run()
 
 
-@campaign_manager.route('/resources')
-def resources():
-    return render_template('resources.html')
-
-
 @campaign_manager.route('/403')
 def forbidden():
     return forbidden_page(None)
