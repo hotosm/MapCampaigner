@@ -760,8 +760,8 @@ def create_campaign():
         Campaign.compute(data["uuid"])
         campaign = Campaign(data['uuid'])
         campaign.save()
-        campaign.save_to_user_campaigns(data['uuid'],
-            data['user_id'],
+        campaign.save_to_user_campaigns(data['user_id'],
+            data['uuid'],
             Permission.ADMIN.name
         )
 
