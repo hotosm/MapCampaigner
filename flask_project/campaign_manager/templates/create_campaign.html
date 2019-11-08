@@ -961,10 +961,6 @@
                 $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
             });
 
-            if (!auth.authenticated() || !$("#uploader").val()) {
-                window.location.replace("/not-logged-in.html");
-            }
-
             $('#campaign_status').val('Start');
 
             // Processing selected function
@@ -974,6 +970,10 @@
 
         }
         $("#campaign-form").submit(function (event) {
+            if (!auth.authenticated()) {
+                event.preventDefault();
+                return alert('You are not logged in. Please log in before submitting this form.');
+            }
             var allValid = checkingAllStep();
             if (!allValid) {
                 return false;

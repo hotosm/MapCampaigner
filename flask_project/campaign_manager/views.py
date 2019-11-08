@@ -920,18 +920,11 @@ def get_osm_names(query_name):
     return Response(json.dumps(osm_usernames))
 
 
-@campaign_manager.route('/land')
+@campaign_manager.route('/osm_auth')
 def landing_auth():
-    """OSM auth landing page.
+    """Redirect page used for OSM login
     """
-    return render_template('land.html')
-
-
-@campaign_manager.route('/not-logged-in.html')
-def not_logged_in():
-    """Not logged in page.
-    """
-    return render_template('not_authenticated.html')
+    return render_template('osm_auth.html')
 
 
 @campaign_manager.route('/search-remote')
