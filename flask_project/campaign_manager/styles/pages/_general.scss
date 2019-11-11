@@ -12,3 +12,12 @@ body {
   margin-top: 80px;
   min-height: 50vh;
 }
+#page-learn {
+  .panel {
+    margin: 10px 0;
+    border: 1px solid $blue-light;
+    padding: 0;
+    min-height: 0;
+    border-radius: 5px;
+  }
+}

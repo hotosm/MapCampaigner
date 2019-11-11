@@ -1,76 +1,192 @@
 {% extends 'base.html' %}
 {% set active_page = "styleguide" %}
+{% set page_title = "Styleguide" %}
 
 {% block content %}
 <div class="row">
   <div class="col-xs-12">
-    <div class="row">
-      <p>This page shows reusable component examples with the available CSS. The HTML can be copied and pasted to use a component elsewhere in the app. This page can also be used as a reference when making changes to the CSS to prevent regressions and help remove unused rules.</p>
-      <h2>Buttons</h2>
-      <a href="" class="btn btn-primary" role="button">Primary</a>
-      <a href="" class="btn btn-default" role="button">Secondary</a>
-      <a href="" class="btn btn-primary btn-sm" role="button">Primary Small</a>
-      <a href="" class="btn btn-info btn-sm" role="button">Secondary Small</a>
-      <h3>Disabled</h3>
-      <a href="" class="btn btn-primary" disabled role="button">Primary</a>
-      <a href="" class="btn btn-default" disabled role="button">Secondary</a>
-      <a href="" class="btn btn-primary btn-sm" disabled role="button">Primary Small</a>
-      <a href="" class="btn btn-info btn-sm" disabled role="button">Secondary Small</a>
-      <h3>Special</h3>
-      <button type="button" class="btn btn-primary btn-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-          <g fill="none" fill-rule="nonzero" stroke="#D73F3F" stroke-width=".85">
-            <path d="M15.442 7.44c-.023-.204-.26-.357-.466-.357-.664 0-1.253-.39-1.5-.993a1.613 1.613 0 0 1 .405-1.791.402.402 0 0 0 .044-.546 7.168 7.168 0 0 0-1.147-1.16.403.403 0 0 0-.55.045c-.433.478-1.208.656-1.807.406a1.609 1.609 0 0 1-.979-1.573.402.402 0 0 0-.355-.423 7.232 7.232 0 0 0-1.63-.004.403.403 0 0 0-.359.414 1.612 1.612 0 0 1-.991 1.546c-.593.242-1.363.066-1.794-.408a.404.404 0 0 0-.546-.046c-.434.34-.83.73-1.172 1.158a.403.403 0 0 0 .043.55c.504.457.667 1.184.405 1.808-.25.596-.868.98-1.576.98a.394.394 0 0 0-.418.355 7.256 7.256 0 0 0-.004 1.647c.023.205.268.356.475.356a1.589 1.589 0 0 1 1.49.993 1.61 1.61 0 0 1-.404 1.791.403.403 0 0 0-.044.546c.336.429.723.819 1.146 1.16a.403.403 0 0 0 .551-.044c.433-.48 1.209-.657 1.806-.406.625.261 1.018.893.98 1.572a.402.402 0 0 0 .355.423 7.2 7.2 0 0 0 1.63.004.403.403 0 0 0 .359-.415 1.61 1.61 0 0 1 .99-1.544c.597-.244 1.364-.066 1.795.408.143.156.38.174.546.046.434-.34.828-.73 1.172-1.159a.402.402 0 0 0-.043-.55 1.605 1.605 0 0 1-.406-1.808 1.622 1.622 0 0 1 1.482-.982l.09.003a.403.403 0 0 0 .424-.355 7.25 7.25 0 0 0 .003-1.648z" />
-            <path d="M8.255 10.675A2.419 2.419 0 0 1 5.84 8.26a2.419 2.419 0 0 1 2.416-2.416 2.419 2.419 0 0 1 2.416 2.416 2.419 2.419 0 0 1-2.416 2.416z" />
-          </g>
-        </svg>
-        Manage
-      </button>
-      <button type="button" class="btn btn-default btn-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="11" viewBox="0 0 15 11">
-          <path fill="#929DB3" fill-rule="nonzero" d="M7.5.5A8.033 8.033 0 0 0 0 5.614c1.16 3 4.09 5.113 7.5 5.113s6.34-2.113 7.5-5.113A8.033 8.033 0 0 0 7.5.5zm0 8.523c-1.91 0-3.41-1.5-3.41-3.41 0-1.908 1.5-3.408 3.41-3.408 1.91 0 3.41 1.5 3.41 3.409 0 1.909-1.5 3.409-3.41 3.409zm0-5.455c-1.16 0-2.045.887-2.045 2.046 0 1.159.886 2.045 2.045 2.045 1.16 0 2.045-.886 2.045-2.045 0-1.16-.886-2.046-2.045-2.046z" />
-        </svg>
-        View
-      </button>
-      <br />
-      <label class="toggle-switch active">
-        <input type="checkbox" checked> Switch on
-      </label>
-      <br />
-      <label class="toggle-switch">
-        <input type="checkbox"> Switch off
-      </label>
+    <p>This page shows reusable component examples with the available CSS. The HTML can be copied and pasted to use a component elsewhere in the app. This page can also be used as a reference when making changes to the CSS to prevent regressions and help remove unused rules.</p>
+    <div class="row button-row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Headings</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <h1>H1 Example</h1>
+        <h2>H2 Example</h2>
+        <h3>H3 Example</h3>
+        <h4>H4 Example</h4>
+      </div>
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Buttons</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <a href="" class="btn btn-primary" role="button">Primary</a>
+        <a href="" class="btn btn-default" role="button">Secondary</a>
+        <a href="" class="btn btn-primary btn-sm" role="button">Primary Small</a>
+        <a href="" class="btn btn-info btn-sm" role="button">Secondary Small</a>
+        <h3>Disabled</h3>
+        <a href="" class="btn btn-primary" disabled role="button">Primary</a>
+        <a href="" class="btn btn-default" disabled role="button">Secondary</a>
+        <a href="" class="btn btn-primary btn-sm" disabled role="button">Primary Small</a>
+        <a href="" class="btn btn-info btn-sm" disabled role="button">Secondary Small</a>
+        <h3>Special</h3>
+        <button type="button" class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+            <g fill="none" fill-rule="nonzero" stroke="#D73F3F" stroke-width=".85">
+              <path d="M15.442 7.44c-.023-.204-.26-.357-.466-.357-.664 0-1.253-.39-1.5-.993a1.613 1.613 0 0 1 .405-1.791.402.402 0 0 0 .044-.546 7.168 7.168 0 0 0-1.147-1.16.403.403 0 0 0-.55.045c-.433.478-1.208.656-1.807.406a1.609 1.609 0 0 1-.979-1.573.402.402 0 0 0-.355-.423 7.232 7.232 0 0 0-1.63-.004.403.403 0 0 0-.359.414 1.612 1.612 0 0 1-.991 1.546c-.593.242-1.363.066-1.794-.408a.404.404 0 0 0-.546-.046c-.434.34-.83.73-1.172 1.158a.403.403 0 0 0 .043.55c.504.457.667 1.184.405 1.808-.25.596-.868.98-1.576.98a.394.394 0 0 0-.418.355 7.256 7.256 0 0 0-.004 1.647c.023.205.268.356.475.356a1.589 1.589 0 0 1 1.49.993 1.61 1.61 0 0 1-.404 1.791.403.403 0 0 0-.044.546c.336.429.723.819 1.146 1.16a.403.403 0 0 0 .551-.044c.433-.48 1.209-.657 1.806-.406.625.261 1.018.893.98 1.572a.402.402 0 0 0 .355.423 7.2 7.2 0 0 0 1.63.004.403.403 0 0 0 .359-.415 1.61 1.61 0 0 1 .99-1.544c.597-.244 1.364-.066 1.795.408.143.156.38.174.546.046.434-.34.828-.73 1.172-1.159a.402.402 0 0 0-.043-.55 1.605 1.605 0 0 1-.406-1.808 1.622 1.622 0 0 1 1.482-.982l.09.003a.403.403 0 0 0 .424-.355 7.25 7.25 0 0 0 .003-1.648z" />
+              <path d="M8.255 10.675A2.419 2.419 0 0 1 5.84 8.26a2.419 2.419 0 0 1 2.416-2.416 2.419 2.419 0 0 1 2.416 2.416 2.419 2.419 0 0 1-2.416 2.416z" />
+            </g>
+          </svg>
+          Manage
+        </button>
+        <button type="button" class="btn btn-default btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="11" viewBox="0 0 15 11">
+            <path fill="#929DB3" fill-rule="nonzero" d="M7.5.5A8.033 8.033 0 0 0 0 5.614c1.16 3 4.09 5.113 7.5 5.113s6.34-2.113 7.5-5.113A8.033 8.033 0 0 0 7.5.5zm0 8.523c-1.91 0-3.41-1.5-3.41-3.41 0-1.908 1.5-3.408 3.41-3.408 1.91 0 3.41 1.5 3.41 3.409 0 1.909-1.5 3.409-3.41 3.409zm0-5.455c-1.16 0-2.045.887-2.045 2.046 0 1.159.886 2.045 2.045 2.045 1.16 0 2.045-.886 2.045-2.045 0-1.16-.886-2.046-2.045-2.046z" />
+          </svg>
+          View
+        </button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+            <path fill="#D73F3F" fill-rule="nonzero" d="M13.79 6.786a1.202 1.202 0 0 0-1.705 0l-.427.429-5.971 6.004.001.001-.188.19s-.6.607-1.955 5a56.6 56.6 0 0 0-.168.55l-.056.187-.13.441c-.098.332-.336 1.08-.067 1.35.259.262 1.012.032 1.341-.066.15-.044.294-.088.436-.131l.194-.059.205-.063.25-.078.074-.022c4.161-1.302 4.908-1.913 4.97-1.968l.001-.001.005-.004.192-.194.013.013 5.972-6.004.426-.429a1.218 1.218 0 0 0 0-1.715l-3.412-3.431zM9.914 17.77a.792.792 0 0 1-.05.032l-.017.01c-.199.12-.782.428-2.197.942-.165.06-.345.124-.534.19L5.104 16.92c.065-.19.129-.373.189-.54.511-1.427.818-2.014.936-2.214l.008-.013a2.448 2.448 0 0 1 .033-.053l.147-.148 3.646 3.666-.15.151zM20.616 6.786l-3.413-3.43a1.202 1.202 0 0 0-1.706 0l-.853.857a1.218 1.218 0 0 0 0 1.715l3.412 3.431a1.202 1.202 0 0 0 1.707 0l.853-.858a1.218 1.218 0 0 0 0-1.715z"></path>
+          </svg>
+          Edit
+        </button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
+            <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z"></path>
+          </svg>
+          Delete
+        </button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.4 5H3l8 8.07V21l2.4-2.4v-5.53z" />
+          </svg>
+          Filter
+        </button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="round" stroke-linejoin="round">
+              <path fill="#D73F3F" stroke-width=".5" d="M7.034 11.724l4.87 4.966 4.87-4.966h-2.387V4H9.42v7.724z" />
+              <path stroke-width="2" d="M20 16.414V20H4v-3.586" />
+            </g>
+          </svg>
+          Download File
+        </button>
+        <button class="btn btn-primary btn-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M1.5 10.326l2.615 3.895 3.007-3.601M22.75 14.593l-2.613-3.895-3.01 3.601" />
+              <path d="M19.912 10.698c.783 4.136-2.16 8.194-6.134 9.133a7.972 7.972 0 0 1-7.44-2.087M4.006 14.28C2.773 9.7 5.869 5.23 10.156 4.217c2.96-.7 5.926.35 7.811 2.478" />
+            </g>
+          </svg>
+          Reset Filters
+        </button>
+        <br />
+        <label class="toggle-switch active">
+          <input type="checkbox" checked> Switch on
+        </label>
+        <br />
+        <label class="toggle-switch">
+          <input type="checkbox"> Switch off
+        </label>
+      </div>
     </div>
     <div class="row">
-      <h2>Labels</h2>
-      <span class="label label-warning">
-        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
-          <g fill="#2C3038" fill-rule="nonzero">
-            <path d="M0 6.533C0 3.723 2.174 1.415 4.944 1.2V.841h-.995a.416.416 0 0 1-.42-.42c0-.236.184-.421.42-.421h2.769c.236 0 .42.185.42.42 0 .236-.184.421-.42.421h-.933V1.2a5.298 5.298 0 0 1 2.738 1.015l.462-.461-.195-.195a.42.42 0 0 1 .595-.595l.974.974a.42.42 0 0 1-.595.595l-.195-.195-.42.421a5.335 5.335 0 0 1 1.559 3.774c0 2.954-2.4 5.354-5.354 5.354A5.358 5.358 0 0 1 0 6.533zm5.354-4.512A4.524 4.524 0 0 0 .83 6.544a4.53 4.53 0 0 0 4.523 4.523 4.53 4.53 0 0 0 4.523-4.523A4.53 4.53 0 0 0 5.354 2.02z" />
-            <path d="M5.354 6.882h1.795c.236 0 .42-.185.42-.42a.416.416 0 0 0-.42-.421H5.774V3.877a.416.416 0 0 0-.42-.42.416.416 0 0 0-.42.42v2.595c0 .225.184.41.42.41z" />
-          </g>
-        </svg>
-        x days left!
-      </span>
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">labels</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <span class="label label-danger">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
+            <g fill="#2C3038" fill-rule="nonzero">
+              <path d="M0 6.533C0 3.723 2.174 1.415 4.944 1.2V.841h-.995a.416.416 0 0 1-.42-.42c0-.236.184-.421.42-.421h2.769c.236 0 .42.185.42.42 0 .236-.184.421-.42.421h-.933V1.2a5.298 5.298 0 0 1 2.738 1.015l.462-.461-.195-.195a.42.42 0 0 1 .595-.595l.974.974a.42.42 0 0 1-.595.595l-.195-.195-.42.421a5.335 5.335 0 0 1 1.559 3.774c0 2.954-2.4 5.354-5.354 5.354A5.358 5.358 0 0 1 0 6.533zm5.354-4.512A4.524 4.524 0 0 0 .83 6.544a4.53 4.53 0 0 0 4.523 4.523 4.53 4.53 0 0 0 4.523-4.523A4.53 4.53 0 0 0 5.354 2.02z" />
+              <path d="M5.354 6.882h1.795c.236 0 .42-.185.42-.42a.416.416 0 0 0-.42-.421H5.774V3.877a.416.416 0 0 0-.42-.42.416.416 0 0 0-.42.42v2.595c0 .225.184.41.42.41z" />
+            </g>
+          </svg>
+          x days left!
+        </span>
+        <span class="label label-success">school: type_idn</span>
+        <span class="label label-warning">school: type_idn</span>
+      </div>
     </div>
     <div class="row">
-      <h2>Colors</h2>
-      <div class="swatch red"></div>
-      <div class="swatch red-light"></div>
-      <div class="swatch orange"></div>
-      <div class="swatch blue-dark"></div>
-      <div class="swatch blue-light"></div>
-      <div class="swatch blue-grey"></div>
-      <div class="swatch grey-light"></div>
-      <div class="swatch tan"></div>
-      <div class="swatch page-background"></div>
-      <div class="swatch grey1"></div>
-      <div class="swatch black"></div>
-      <div class="swatch white"></div>
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Colors</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="swatch red"></div>
+        <div class="swatch red-light"></div>
+        <div class="swatch orange"></div>
+        <div class="swatch blue-dark"></div>
+        <div class="swatch blue-light"></div>
+        <div class="swatch blue-grey"></div>
+        <div class="swatch grey-light"></div>
+        <div class="swatch tan"></div>
+        <div class="swatch page-background"></div>
+        <div class="swatch grey1"></div>
+        <div class="swatch black"></div>
+        <div class="swatch white"></div>
+      </div>
     </div>
     <div class="row">
-      <h2>Other Components</h2>
-      <div class="col-xs-6">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Lists</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="row details-list">
+          <div class="col-xs-12 col-md-6">
+            <p class="campaign-date">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5.448 3.38H4.006A2.003 2.003 0 0 0 2 5.371v14.635C2 21.107 2.898 22 3.99 22h16.02c1.099 0 1.99-.898 1.99-1.993V5.372c0-1.1-.888-1.993-2.006-1.993h-1.442"></path>
+                  <path d="M8.207 5.448H5.448V2h2.759zM18.552 5.448h-2.759V2h2.759zM8.207 3.38h7.586M2 8.207h20"></path>
+                </g>
+              </svg><span class="moment-date">2019-10-27</span>—<span class="moment-date">2019-12-31</span>
+            </p>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd" stroke="#929DB3" transform="translate(1 1)">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.381 16.25h5.238M9.254 9.326H11v6.538M11 6.67c0 .213-.196.385-.437.385s-.436-.172-.436-.385c0-.212.195-.384.436-.384.24 0 .437.172.437.384z"></path>
+                  <rect width="21" height="21" x=".5" y=".5" rx="10.5"></rect>
+                </g>
+              </svg>Information or description
+            </p>
+          </div>
+        </div>
+        <div class="row details-list">
+          <div class="col-xs-12 col-md-6">
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd" stroke="#929DB3" transform="translate(1 2)">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.894 7.46a2.96 2.96 0 1 1-5.92 0 2.96 2.96 0 0 1 5.92 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z"></path>
+                  <rect width="21" height="19" x=".5" y=".5" rx="4"></rect>
+                </g>
+              </svg>Managers: <i><a href="https://www.openstreetmap.org/user/username">username</a></i>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19.895 13.138H23v-3.035h-3.106a8.4 8.4 0 0 0-.96-2.332l2.197-2.197-2.706-2.705-2.197 2.196c-.709-.432-1.905-.877-2.331-.96V1h-3.794v3.106c-.492.106-1.624.527-2.332.96L5.574 2.868 2.868 5.574l2.197 2.197c-.433.709-.847 1.864-.96 2.332H1v3.035h3.104c.155 1.156.528 2.382.96 3.09l-2.196 2.198 2.706 2.705 2.196-2.197c.71.433 1.966.76 2.333.961V23h3.794v-3.105c.367-.2 1.623-.528 2.331-.96l2.198 2.196 2.705-2.705-2.196-2.197c.432-.709.759-1.206.96-3.091z"></path>
+                  <path d="M16.172 12a4.172 4.172 0 1 1-8.345 0 4.172 4.172 0 0 1 8.345 0z"></path>
+                </g>
+              </svg><a href="#">External Link <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+                  <path fill="#D73F3F" fill-rule="nonzero" d="M12.444 12.444H1.556V1.556H7V0H1.556C.692 0 0 .7 0 1.556v10.888C0 13.3.692 14 1.556 14h10.888C13.3 14 14 13.3 14 12.444V7h-1.556v5.444zM8.556 0v1.556h2.792L3.702 9.2 4.8 10.298l7.645-7.646v2.792H14V0H8.556z"></path>
+                </svg>
+              </a></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Media Components</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
         <div class="media">
           <a class="pull-right" href="#">
             <img class="media-object" src="https://placehold.it/200x150/A8B7C1" alt="">
@@ -92,6 +208,314 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Campaign Card</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="campaign-card panel active">
+          <div class="row">
+            <div class="col-xs-9">
+              <a href="/campaign/496f2053be0f4c51bde56b0114a58ed4" data-toggle="tooltip" data-placement="top" data-container="body" title="" data-original-title="Campaign Title">
+                <div class="panel-name ellipsis multiline">Campaign Title</div>
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <button type="button" class="btn btn-primary btn-xs pull-right">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                  <g fill="none" fill-rule="nonzero" stroke="#D73F3F" stroke-width=".85">
+                    <path d="M15.442 7.44c-.023-.204-.26-.357-.466-.357-.664 0-1.253-.39-1.5-.993a1.613 1.613 0 0 1 .405-1.791.402.402 0 0 0 .044-.546 7.168 7.168 0 0 0-1.147-1.16.403.403 0 0 0-.55.045c-.433.478-1.208.656-1.807.406a1.609 1.609 0 0 1-.979-1.573.402.402 0 0 0-.355-.423 7.232 7.232 0 0 0-1.63-.004.403.403 0 0 0-.359.414 1.612 1.612 0 0 1-.991 1.546c-.593.242-1.363.066-1.794-.408a.404.404 0 0 0-.546-.046c-.434.34-.83.73-1.172 1.158a.403.403 0 0 0 .043.55c.504.457.667 1.184.405 1.808-.25.596-.868.98-1.576.98a.394.394 0 0 0-.418.355 7.256 7.256 0 0 0-.004 1.647c.023.205.268.356.475.356a1.589 1.589 0 0 1 1.49.993 1.61 1.61 0 0 1-.404 1.791.403.403 0 0 0-.044.546c.336.429.723.819 1.146 1.16a.403.403 0 0 0 .551-.044c.433-.48 1.209-.657 1.806-.406.625.261 1.018.893.98 1.572a.402.402 0 0 0 .355.423 7.2 7.2 0 0 0 1.63.004.403.403 0 0 0 .359-.415 1.61 1.61 0 0 1 .99-1.544c.597-.244 1.364-.066 1.795.408.143.156.38.174.546.046.434-.34.828-.73 1.172-1.159a.402.402 0 0 0-.043-.55 1.605 1.605 0 0 1-.406-1.808 1.622 1.622 0 0 1 1.482-.982l.09.003a.403.403 0 0 0 .424-.355 7.25 7.25 0 0 0 .003-1.648z"></path>
+                    <path d="M8.255 10.675A2.419 2.419 0 0 1 5.84 8.26a2.419 2.419 0 0 1 2.416-2.416 2.419 2.419 0 0 1 2.416 2.416 2.419 2.419 0 0 1-2.416 2.416z"></path>
+                  </g>
+                </svg>
+                Manage
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-7">
+              <p class="campaign-date">2019.10.27—2019.12.31
+              </p>
+              <p><b>24%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+              <div class="campaign-progress-bar">
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                </div>
+              </div>
+              <p><b>2</b> Feature types monitored</p>
+              <div class="campaign-tags-list ellipsis multiline">
+                <span class="campaign-tags">Educational Facilities</span> <span class="campaign-tags">Roads</span>
+              </div>
+            </div>
+            <div class="col-xs-5 campaign-thumbnail"><img src="https://placehold.it/400">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Feature Tiles</h2>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.4915 9.44916V18.6363" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M13.5271 17.4662C18.1481 17.6045 21.661 18.2994 21.661 19.1357C21.661 20.0719 17.26 20.8306 11.8305 20.8306C6.40102 20.8306 2 20.0719 2 19.1357C2 18.3418 5.16746 17.675 9.44271 17.4913" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.8815 6.05933C14.8815 7.93153 13.3635 9.44916 11.4916 9.44916C9.61977 9.44916 8.10181 7.93153 8.10181 6.05933C8.10181 4.18746 9.61977 2.66949 11.4916 2.66949C13.3635 2.66949 14.8815 4.18746 14.8815 6.05933V6.05933Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M11.4915 4.36438C12.4277 4.36438 13.1864 5.12336 13.1864 6.0593" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  building-point
+                </h4>
+                <a href="" class="panel-more-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <span class="panel-total-label">Total features checked</span>
+                <strong class="panel-total text-center">42%</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p><b>42%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:42%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="icon / 24 / polygon">
+                      <g id="Group 14">
+                        <path id="Stroke 2355" fill-rule="evenodd" clip-rule="evenodd" d="M13.75 19.1786C13.75 20.1846 12.9346 21 11.9286 21C10.9226 21 10.1072 20.1846 10.1072 19.1786C10.1072 18.1726 10.9226 17.3572 11.9286 17.3572C12.9346 17.3572 13.75 18.1726 13.75 19.1786V19.1786Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2356" fill-rule="evenodd" clip-rule="evenodd" d="M22.25 9.46425C22.25 10.4703 21.4346 11.2857 20.4286 11.2857C19.4226 11.2857 18.6072 10.4703 18.6072 9.46425C18.6072 8.45822 19.4226 7.64282 20.4286 7.64282C21.4346 7.64282 22.25 8.45822 22.25 9.46425V9.46425Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2357" fill-rule="evenodd" clip-rule="evenodd" d="M13.75 5.82143C13.75 6.82746 12.9346 7.64286 11.9286 7.64286C10.9226 7.64286 10.1072 6.82746 10.1072 5.82143C10.1072 4.81539 10.9226 4 11.9286 4C12.9346 4 13.75 4.81539 13.75 5.82143V5.82143Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2358" fill-rule="evenodd" clip-rule="evenodd" d="M4.64286 13.1072C4.64286 14.1132 3.82746 14.9286 2.82143 14.9286C1.81539 14.9286 1 14.1132 1 13.1072C1 12.1012 1.81539 11.2858 2.82143 11.2858C3.82746 11.2858 4.64286 12.1012 4.64286 13.1072V13.1072Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2359" d="M4.64279 11.6905L10.1071 7.03577" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2360" d="M13.75 6.83335L18.6071 8.85716" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2360 Copy" d="M4.64282 14.3214L10.5551 17.9643" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path id="Stroke 2361" d="M13.1428 17.3572L19.2143 10.881" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round" />
+                      </g>
+                    </g>
+                  </svg>
+                  building-polygon
+                </h4>
+                <a href="" class="panel-more-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <span class="panel-total-label">Total features checked</span>
+                <strong class="panel-total text-center">42%</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p><b>42%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:42%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  Attributes completeness
+                </h4>
+                <a href="" class="panel-more-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <strong class="panel-total panel-total-primary text-center">42%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  Total Contributors
+                </h4>
+                <a href="" class="panel-more-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <strong class="panel-total panel-total-primary text-center">12</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Info Panels</h2>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">Total changesets made</h4>
+                <strong class="panel-total text-left">
+                  356
+                </strong>
+                <h4 class="panel-name">Attribute completeness</h4>
+                <strong class="panel-total text-left">
+                  65%
+                </strong>
+                <p class="pull-right">12/156</p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width:65%">
+                  </div>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width:80%">
+                  </div>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-6">
+        <div class="panel">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">Contribution Ranking</h4>
+                <p class="panel-subhead">Based on total changesets made</p>
+                <span class="progress-label">user366</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:90%">
+                  </div>
+                  <span class="progress-value">&nbsp;134</span>
+                </div>
+                <span class="progress-label">user7365</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100" style="width:79%">
+                  </div>
+                  <span class="progress-value">&nbsp;121</span>
+                </div>
+                <span class="progress-label">user2</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" style="width:64%">
+                  </div>
+                  <span class="progress-value">&nbsp;107</span>
+                </div>
+                <span class="progress-label">user2848</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                  </div>
+                  <span class="progress-value">&nbsp;96</span>
+                </div>
+                <span class="progress-label">user23</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                  <span class="progress-value">&nbsp;82</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Tables</h2>
+      </div>
+      <div class="col-xs-12">
+        <table class="table table-responsive">
+          <tr>
+            <th>OSM node ID</th>
+            <th style="width: 130px;">Feature Type</th>
+            <th>Status</th>
+            <th>Last edited by</th>
+            <th>Last edit date</th>
+            <th style="width: 250px;">Attributes found</th>
+            <th style="width: 230px;">Attributes not found</th>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 435476</td>
+            <td>Buildings</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user1</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">school: type_idn</span></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 46837</td>
+            <td>health-facilities</td>
+            <td><span class="status status-warn">Incomplete</span></td>
+            <td>user05348</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span> <span class="label label-success">addr: city</span> </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 35745</td>
+            <td>schools</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user546</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">name</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
+</div>
 </div>
 {% endblock %}

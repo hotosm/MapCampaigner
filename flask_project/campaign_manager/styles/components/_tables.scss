@@ -1,0 +1,20 @@
+.table {
+  background: $white;
+  td, th {
+    padding: 25px 12px !important;
+    border-top: 1px solid transparent !important;
+    border-bottom: 1px solid rgba($black, 0.2) !important;
+  }
+  th {
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  td {
+    font-size: 14px;
+    color: $blue-dark;
+  }
+  .cell-faded {
+    color: $blue-light;
+  }
+}

@@ -4,10 +4,26 @@
   font-weight: normal;
   padding: 7px 8px 6px 8px;
   border: none;
+  margin: 0 10px 10px 0;
+  display: inline-block;
   svg {
     vertical-align: text-bottom;
   }
+  &-warning, &-success {
+    color: $blue-dark;
+    border-radius: 2px;
+    border: 1px solid;
+    background: transparent;
+    font-size: inherit;
+    padding: 5px;
+  }
   &-warning {
+    border-color: $orange;
+  }
+  &-success {
+    border-color: $green;
+  }
+  &-danger {
     color: $black;
     background: $red-light;
   }
