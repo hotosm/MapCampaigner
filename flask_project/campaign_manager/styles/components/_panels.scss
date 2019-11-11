@@ -1,0 +1,74 @@
+.panel {
+  border: 1px solid $grey-light2;
+  padding: 16px 1px;
+  min-height: 185px;
+  border-radius: 2px;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  position: relative;
+  .panel-name {
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 5px;
+    svg {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+  }
+  .panel-more-button {
+    position: absolute;
+    right: 20px;
+    top: -2px;
+    border: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .panel-info  {
+    color: $blue-grey;
+  }
+  .panel-total {
+    width: 100%;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 72px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    line-height: 85px;
+    &-primary {
+      color: $red;
+      margin: 20px 0 40px;
+    }
+  }
+  .panel-total-label {
+    font-family: 'Archivo', sans-serif;
+    text-align: center;
+    font-size: 9px;
+    color: $blue-light;
+    display:block;
+  }
+  .panel-subhead {
+    margin-bottom: 26px;
+  }
+  p {
+    margin-bottom: 7px;
+    margin-top: 0;
+    font-size: 12px;
+    b {
+      font-size: 14px;
+    }
+  }
+  .progress {
+    clear: both;
+    &-rank {
+      clear: none;
+    }
+    margin-bottom:19px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
