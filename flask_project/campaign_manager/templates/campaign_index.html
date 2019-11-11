@@ -329,7 +329,7 @@
         <div class="row">
           <div class="col-xs-9">
             <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
-              <div class="campaign-name ellipsis multiline">${campaign.name}</div>
+              <div class="panel-name campaign-name ellipsis multiline">${campaign.name}</div>
             </a>
           </div>
           <div class="col-xs-3">
@@ -349,9 +349,9 @@
                   ${warning}
                 </span>`: ''}
             </p>
-            <p><b>${completeness}%</b> Attributes completeness</p>
+            <p><b>${completeness}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">?/?</span></p>
             <div class="campaign-progress-bar">
-              <div class="progress" style="width:82%;float:left;">
+              <div class="progress">
                 <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="${completeness}" aria-valuemin="0" aria-valuemax="100" style="width:${completeness}%">
                 </div>
               </div>
