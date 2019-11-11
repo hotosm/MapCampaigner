@@ -7,6 +7,20 @@
   svg {
     vertical-align: text-bottom;
   }
+  &-warning, &-success {
+    color: $blue-dark;
+    border-radius: 2px;
+    border: 1px solid;
+    background: transparent;
+    font-size: inherit;
+    padding: 5px;
+  }
+  &-warning {
+    border-color: $green;
+  }
+  &-success {
+    border-color: $orange;
+  }
   &-danger {
     color: $black;
     background: $red-light;
