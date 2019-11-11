@@ -67,8 +67,10 @@
       font-size: 14px;
     }
   }
-  .manage-campaign-button, .view-campaign-button {
-    margin-bottom: 4px;
+  .btn-xs {
+    margin-bottom: 7px;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
   }
   .campaign-name, .campaign-date, .campaign-description, .campaign-tags {
     margin-bottom: 5px;
