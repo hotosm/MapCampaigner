@@ -63,7 +63,12 @@
       </div>
     </div>
 
+
+    {% if active_page == "home" %}
     {% include 'components/footer.html' %}
+    {% else %}
+    {% include 'components/small_footer.html' %}
+    {% endif %}
 
     {% block before_base_js %}{% endblock %}
 

@@ -1,0 +1,14 @@
+.label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  padding: 7px 8px 6px 8px;
+  border: none;
+  svg {
+    vertical-align: text-bottom;
+  }
+  &-warning {
+    color: $black;
+    background: $red-light;
+  }
+}

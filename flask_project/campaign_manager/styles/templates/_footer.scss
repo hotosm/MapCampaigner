@@ -32,3 +32,16 @@
     border-top: 1px solid $white;
   }
 }
+.small-footer {
+  background: $red;
+  color: $white;
+  font-size: 12px;
+  margin-top: 80px;
+  a, a:hover, a:focus, a:active {
+    color: $white;
+    margin: 18px 0;
+    svg {
+      vertical-align: text-bottom;
+    }
+  }
+}
