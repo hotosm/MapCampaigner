@@ -470,6 +470,52 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Tables</h2>
+      </div>
+      <div class="col-xs-12">
+        <table class="table table-responsive">
+          <tr>
+            <th>OSM node ID</th>
+            <th style="width: 130px;">Feature Type</th>
+            <th>Status</th>
+            <th>Last edited by</th>
+            <th>Last edit date</th>
+            <th style="width: 250px;">Attributes found</th>
+            <th style="width: 230px;">Attributes not found</th>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 435476</td>
+            <td>Buildings</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user1</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">school: type_idn</span></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 46837</td>
+            <td>health-facilities</td>
+            <td><span class="status status-warn">Incomplete</span></td>
+            <td>user05348</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span> <span class="label label-success">addr: city</span> </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 35745</td>
+            <td>schools</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user546</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">name</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
+</div>
 </div>
 {% endblock %}
