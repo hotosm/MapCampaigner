@@ -952,11 +952,23 @@ tr.odd {
 #delete-pop .warning-msg span {
   color: #d73f3f;
 }
-#delete-pop .confirmation-msg input.delete-check {
+#delete-pop .confirmation-msg .delete-check {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
   border-radius: 2px;
   box-shadow: 0 7px 64px 0 rgba(0, 0, 0, 0.07);
+  border: solid 1px #e1e0e0;
+  background-color: #ffffff;
+  z-index: 102;
+}
+#delete-pop .confirmation-msg .delete-check:active, #delete-pop .confirmation-msg .delete-check:active:checked, #delete-pop .confirmation-msg .delete-check:checked {
   border: solid 1px #d73f3f;
   background-color: #ffffff;
+}
+#delete-pop .confirmation-msg .delete-check:checked:after {
+  content: "\2713";
+  color: #d73f3f;
 }
 #delete-pop .confirmation-msg {
   margin: 6.5%;
