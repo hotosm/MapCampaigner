@@ -935,7 +935,58 @@ tr.odd {
   z-index: 101;
   padding: 4% 4% 8% 6%;
 }
-#delete-pop .btn.cancel-del {
+#delete-pop .warning-img {
+  padding: 0 45% 5% 0;
+  object-fit: contain;
+}
+#delete-pop .warning-msg {
+  font-family: Archivo;
+  font-size: 24px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  text-align: center;
+}
+#delete-pop .warning-msg span {
+  color: #d73f3f;
+}
+#delete-pop .confirmation-msg input.delete-check {
+  border-radius: 2px;
+  box-shadow: 0 7px 64px 0 rgba(0, 0, 0, 0.07);
+  border: solid 1px #d73f3f;
+  background-color: #ffffff;
+}
+#delete-pop .confirmation-msg {
+  margin: 6.5%;
+  padding: 5%;
+  background-color: rgba(146, 157, 179, 0.18);
+  font-family: Archivo;
+  font-size: 18px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.78;
+  letter-spacing: normal;
+  color: #2c3038;
+  text-align: left;
+}
+#delete-pop .delete-btns{
+  margin: 2% 0 0 6%;
+  width: 87%;
+  text-align: center;
+}
+#delete-pop .delete-btns .btn {
+  width: 45%;
+  padding: 13px 0;
+  text-align: center;
+}
+#delete-pop .delete-btns .btn.del {
+  
+}
+#delete-pop .delete-btns .btn.cancel-del {
+  margin-left: 9%;
   border: solid 1px #e5e5e5;
 }
 
