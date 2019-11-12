@@ -41,7 +41,7 @@
   margin-bottom: 24px;
 }
 
-.campaign-card {
+.campaign-card, .campaign-card.panel-tile {
   padding: 24px;
   &.panel {
     cursor: pointer;

@@ -33,9 +33,11 @@
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
     {% block subhead %}{% endblock %}
-    <div class="container container-fluid page-content">
-      {% block header_content %}{% endblock %}
-      {% block content %}{% endblock %}
+    <div class="page-content">
+      <div class="container container-fluid">
+        {% block header_content %}{% endblock %}
+        {% block content %}{% endblock %}
+      </div>
     </div>
 
     <div id="auth-modal" class="modal fade" role="dialog">

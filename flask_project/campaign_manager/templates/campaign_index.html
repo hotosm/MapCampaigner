@@ -325,7 +325,7 @@
     var isManager = $.inArray(user, campaign.campaign_managers) > -1;
     return `
     <li class="campaign ${!isActive ? 'in' : ''}active-campaign ${isManager ? 'editable-campaign' : 'viewable-campaign'}">
-      <div class="campaign-card panel ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">
+      <div class="campaign-card panel panel-tile ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">
         <div class="row">
           <div class="col-xs-9">
             <a href="/campaign/${campaign.uuid}" data-toggle="tooltip" data-placement="top" data-container="body" title="${campaign.name}">
