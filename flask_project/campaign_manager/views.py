@@ -434,7 +434,7 @@ def delete_campaign(uuid):
         campaign.delete()
         # Redirect to the user's page
         flash('You successfully delete a campaign')
-        return redirect(url_for('campaign_manager.campaigns_all'))
+        return redirect(url_for('campaign_manager.campaigns_list'))
     except Campaign.DoesNotExist:
         abort(404)
 

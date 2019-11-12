@@ -18,3 +18,13 @@ function confirmDelete() {
    deleteBtn.setAttribute("disabled", " ");
   }
 }
+
+function executeDeletion(campaignId) {
+  console.log(campaignId);
+  const xhr = new XMLHttpRequest();
+  const url = '/campaign/' + campaignId + '/delete';
+  console.log(url);
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.send("");
+}
