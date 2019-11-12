@@ -322,24 +322,8 @@
 {% block after_base_js %}
 <script type="text/javascript">
 
-  var taskStatusFillColor = {
-    'READY': '#FFFFFF',
-    'unassigned': '#D3D3D3',
-    'MAPPED': '#FFE4B5',
-    'INVALIDATED': '#D3D3D3',
-    'VALIDATED': '#B0DE5C',
-    'complete': '#B0DE5C',
-    'incomplete': '#FFE4B5',
-    'BADIMAGERY': '#d2a29e'
-  };
-
-
   $('.btn-next').click(function () {
-    console.log('clicked next button!')
-    var activeTab = $('.step-tabs > .active');
-    var nextBtn = activeTab.next('li').find('a');
-    console.log({activeTab, nextBtn})
-    nextBtn.trigger('click');
+    $('.step-tabs > .active').next('li').find('a').trigger('click');
   });
   $('.btn-previous').click(function () {
     $('.step-tabs > .active').prev('li').find('a').trigger('click');
@@ -394,38 +378,33 @@
 <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
 <script type='text/template' id='_template-function-form'>
-        <div class="well well-sm" style="margin-bottom: 5px;">
-            <div class="function-form-row row tooltip-help" id="function-<%=index%>">
-                <div class="col-lg-1">
-                    <button class="btn btn-danger btn-sm btn-block"
-                            type=button onclick="removeFunction(this)">
-                        <i class="fa fa-minus"></i></button>
-                </div>
-                <div class="col-lg-3">
-                    <select class="form-control function-selection" data-toggle="tooltip" data-placement="top"
-                            data-original-title="Select insight function"
-                            onchange="functionOnSelected(this)">
-                        <option value="">-------------------</option>
-                        {% for key, value in functions.items() %}
-                            <option value="{{ key }}">{{ value.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-lg-2">
-                    <input class="form-control function-type" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Put feature to extract">
-                </div>
-                <div class="col-lg-2">
-                    <input class="form-control function-feature" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Put feature to extract">
-                </div>
-                <div class="col-lg-2">
-                    <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top"
-                           data-original-title="Additional attributes for this function">
-                </div>
-            </div>
-        </div>
-    </script>
+  <div class="well well-sm" style="margin-bottom: 5px;">
+    <div class="function-form-row row tooltip-help" id="function-<%=index%>">
+      <div class="col-lg-1">
+        <button class="btn btn-danger btn-sm btn-block" type=button onclick="removeFunction(this)">
+          <i class="fa fa-minus"></i>
+        </button>
+      </div>
+      <div class="col-lg-3">
+        <select class="form-control function-selection" data-toggle="tooltip" data-placement="top" data-original-title="Select insight function" onchange="functionOnSelected(this)">
+          <option value="">-------------------</option>
+            {% for key, value in functions.items() %}
+              <option value="{{ key }}">{{ value.name }}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-2">
+        <input class="form-control function-type" data-toggle="tooltip" data-placement="top" data-original-title="Put feature to extract">
+      </div>
+      <div class="col-lg-2">
+        <input class="form-control function-feature" data-toggle="tooltip" data-placement="top" data-original-title="Put feature to extract">
+      </div>
+      <div class="col-lg-2">
+        <input class="form-control function-attributes" data-toggle="tooltip" data-placement="top" data-original-title="Additional attributes for this function">
+      </div>
+    </div>
+  </div>
+</script>
 
 <script type="text/javascript">
   typesOptions = '{{ form.types_options }}';
@@ -544,18 +523,6 @@
     });
   }
 
-
-  //------------------ BUTTONS ------------------//
-
-  $('.btn-next').click(function () {
-    nextStep(this);
-  });
-
-  $('.btn-prev').click(function () {
-    // navigation steps / progress steps
-    prevStep(this);
-  });
-
   //------------------ EVENT ------------------//
 
   function reloadUser() {
@@ -602,14 +569,6 @@
     {% endif %}
   }
 
-  function loginSuccess(response) {
-    clearNotification();
-  }
-
-  function logoutSuccess() {
-    window.location.replace("/");
-  }
-
   if (!window.isAuthenticated) {
     window.location.replace("/");
   } else {
@@ -631,23 +590,11 @@
   }
   // remoteMap.invalidateSize();
 
-  //------------------ STEPS ------------------//
-
-  // If in edit mode, activate all steps
-  // if (!isInCreateMode) {
-  // var totalSteps = $('.cc-nav-steps').children('.cc-nav').length;
-  // for (var i = 1; i < totalSteps + 1; i++) {
-  // activateStep(i);
-  // }
-  // }
-
   if (!isEmpty(errors)) {
     showNotifications('Failed to create a campaign!', 'danger');
   }
 
   function checkSteps(step) {
-    console.log('checking', step)
-    // activateStep(step);
     var valid = true;
     if (step === 1) {
       valid = checkStep1();
@@ -780,26 +727,8 @@
     return valid;
   }
 
-  // function activateStep(step) {
-  // var currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
-  // change icons
-  // currentActiveStep.find('.cc-nav-icon').addClass('activated');
-  // currentActiveStep.removeClass('disabled');
-  // currentActiveStep.addClass('clickable-menu');
-  // currentActiveStep.click(function () {
-  // var nextStep = $(this).data('step');
-  // var currentStep = $('.cc-nav-steps').find('.active').data('step');
-  // var isNextStep = checkSteps(currentStep);
-  // var nameDateValid = checkFormHeader();
-  // showStep(currentStep, nextStep, false);
-  // })
-  // }
-
   function preparingStep(current_step) {
-    if (current_step === 3) {
-      // activateStep(4);
-    }
-    else if (current_step === 4) {
+    if (current_step === 4) {
       preprocessSubmitForm();
       $('#advanced-mode-textarea').LoadingOverlay("show", { image: "/campaign_manager/static/resources/loading-spinner.gif" });
       $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
@@ -834,16 +763,10 @@
     preparingStep(nextStep);
     $prevFieldset.hide();
     $prevNavStep.removeClass('active');
-    if (activatePrevStep) {
-      // activateStep(previousStep);
-    }
     $nextNavStep.addClass('active');
 
     $nextFieldset.fadeIn();
     $nextFieldset.children().find('button').removeAttr('disabled');
-
-    // scroll window to beginning of the form
-    $('html, body').stop().animate({ scrollTop: 0 }, 0);
   }
 
   function nextStep(elm) {
@@ -859,9 +782,6 @@
 
     var isNextStep = checkSteps(currentStep);
     var nameDateValid = checkFormHeader();
-
-    // scroll window to beginning of the form
-    $('html, body').stop().animate({ scrollTop: 0 }, 0);
 
     if (isNextStep && nameDateValid) {
       $(parentFieldset).children().find('button').attr('disabled', 'disabled');
@@ -934,8 +854,6 @@
         addFunction($('#insight-function-add'), functions);
       });
     }
-
-    $('.cc fieldset:first').fadeIn('slow');
 
   });
 
@@ -1052,10 +970,6 @@
   function removeFunction(event) {
     $(event).parent().parent().parent().remove();
   }
-
-  $("#submit").click(function () {
-    $("#form").submit();
-  });
 
   $("#start_date").attr('data-language', 'en');
   $("#end_date").attr('data-language', 'en');
