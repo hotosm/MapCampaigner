@@ -13,10 +13,21 @@
 
         <div id="delete-background" style="display:none;"></div>
           <div id="delete-pop" style="display:none;">
-            <p>Deleting a campaign is irrivesible.</p>
-            <p>Are you sure you want to delete?</p>
-            <button onclick="deleteRequest()">Cancel</button>
-            <button>Delete</button>
+            <div class="close-box" onclick="deleteRequest()">
+              <img src="/static/img/rectangle.svg" alt="close window">
+            </div>
+            <img src="/static/img/warning.svg" alt="warning sign" class="warning-img">
+            <div class="warning-msg">
+              Are you sure you want to delete the project
+              <span>{{ name }}</span>
+            </div>
+            <div class="confirmation-msg">
+              <input type="checkbox" class="delete-check" value="confirm"> I understand that all the information related to this project will be permanently deleted
+            </div>
+            <div class="delete-btns">
+              <a class="btn btn-primary" role="button" disabled="">Delete this project</a>
+              <a class="btn btn-default cancel-del" role="button" onclick="deleteRequest()">Cancel, keep this project</a>
+            </div>
           </div>
         <button class="btn btn-primary btn-xs" onclick="deleteRequest()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">

@@ -924,7 +924,8 @@ tr.odd {
   right: 0%;
   top: 0%;
   bottom: 0%;
-  /* width: 50em;*/
+  width: 563px;
+  height: 486px;
   position: absolute;
   background: #FFFFFF;
   margin: 10% 82% 0 -82%;
@@ -933,6 +934,9 @@ tr.odd {
   border-radius: 2px;
   z-index: 101;
   padding: 4% 4% 8% 6%;
+}
+#delete-pop .btn.cancel-del {
+  border: solid 1px #e5e5e5;
 }
 
 #delete-background {
@@ -946,4 +950,3 @@ tr.odd {
   opacity: 0.71;
   z-index: 100;
 }
-
