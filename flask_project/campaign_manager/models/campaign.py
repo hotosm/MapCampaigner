@@ -154,7 +154,7 @@ class Campaign(JsonModel):
 
     def delete(self):
         """Get a uuid and delete the S3 folder for this specific
-        campaign and delete from users (manager & viewers) 
+        campaign and delete from users (manager & viewers)
         profiles on S3."""
         # Delete files on S3
         uuid = self.uuid

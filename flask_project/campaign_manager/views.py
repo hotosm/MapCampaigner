@@ -22,7 +22,7 @@ from flask import (
     abort,
     send_file,
     send_from_directory,
-    url_for, 
+    url_for,
     redirect,
     flash
 )
