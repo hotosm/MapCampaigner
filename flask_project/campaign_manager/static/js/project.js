@@ -2,7 +2,7 @@ function deleteRequest() {
   const popup = document.getElementById("delete-pop");
   const background = document.getElementById("delete-background");
   if (popup.style.display == "none" && background.style.display == "none") {
-    popup.style.display = "inline-table";
+    popup.style.display = "block";
     background.style.display = "block";
   } else {
     popup.style.display = "none";

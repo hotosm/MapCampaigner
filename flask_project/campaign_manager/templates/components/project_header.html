@@ -23,7 +23,7 @@
             </div>
             <div  class="instruction">Check the box below to proceed with the deletion</div>
             <div class="confirmation-msg">
-              <input type="checkbox" name="delete-check" id="delete-check" class="delete-check" value="confirm" onclick="confirmDelete()"  autocomplete="off"> <div class="input-msg">I understand that all the information related to this project will be permanently deleted</div>
+              <input type="checkbox" name="delete-check" id="delete-check" class="delete-check" value="confirm" onclick="confirmDelete()"  autocomplete="off"> <div class="input-msg">I understand that all the information related to this project will be permanently deleted. This operation cannot be undone.</div>
             </div>
             <div class="delete-btns">
               <a class="btn btn-primary del" id="delete-btn" role="button" disabled="" onclick="executeDeletion('{{uuid}}', '{{user_id}}')">Delete this project</a>
