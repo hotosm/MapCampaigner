@@ -163,8 +163,11 @@ class Campaign(JsonModel):
         # Delete project in users json
         content = S3Data().fetch(self.json_path)
         content_json = parse_json_string(content)
-        project_users = content_json.get('campaign_managers', []) + \
-            content_json.get('campaign_viewers', [])
+        project_managers = content_json.get('campaign_managers', [])
+        project_managers = list(map(lambda x: x["osm_id"], project_managers))
+        project_viewers = content_json.get('campaign_viewers', [])
+        project_viewers = list(map(lambda x: x["osm_id"], project_viewers))
+        project_users = project_managers + project_viewers
         project_users = list(set(project_users))
         if project_users:
             for user_id in project_users:
