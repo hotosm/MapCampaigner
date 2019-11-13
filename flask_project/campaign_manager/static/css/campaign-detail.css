@@ -928,12 +928,15 @@ tr.odd {
   height: 486px;
   position: absolute;
   background: #FFFFFF;
-  margin: 10% 82% 0 -82%;
+  margin: 10% 50% 0 -122%;
   border: 1px solid #ECEBED;
   box-sizing: border-box;
   border-radius: 2px;
   z-index: 101;
   padding: 4% 4% 8% 6%;
+}
+#delete-pop .close-box {
+  cursor: pointer;
 }
 #delete-pop .warning-img {
   padding: 0 45% 5% 0;
@@ -952,8 +955,25 @@ tr.odd {
 #delete-pop .warning-msg span {
   color: #d73f3f;
 }
+#delete-pop .instruction {
+  font-family: Archivo;
+  font-size: 18px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.78;
+  letter-spacing: normal;
+  color: #2c3038;
+  text-align: left;
+  margin: 10% 0 0 7%;
+}
+#delete-pop .confirmation-msg .input-msg {
+  text-align: left;
+  margin: -1% 0 0 10%;
+}
 #delete-pop .confirmation-msg .delete-check {
   -webkit-appearance: none;
+  float: left;
   width: 18px;
   height: 18px;
   border-radius: 2px;
@@ -971,7 +991,7 @@ tr.odd {
   color: #d73f3f;
 }
 #delete-pop .confirmation-msg {
-  margin: 6.5%;
+  margin: 0 6.5% 6.5% 6.5%;
   padding: 5%;
   background-color: rgba(146, 157, 179, 0.18);
   font-family: Archivo;

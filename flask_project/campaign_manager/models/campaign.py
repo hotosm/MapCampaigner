@@ -107,6 +107,23 @@ class Campaign(JsonModel):
 
         return True
 
+    def delete_from_user_campaigns(self, user_id, uuid):
+        s3_obj = S3Data()
+
+        user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
+        user_campaigns = s3_obj.fetch(user_file)
+        projects = user_campaigns['projects']
+        index = None
+        for i in range(len(projects)):
+            if projects[i]['uuid'] == uuid:
+                index = i
+        del projects[i]
+        user_campaigns['projects'] = projects
+        body = json.dumps(user_campaigns)
+        s3_obj.create(user_file, body)
+
+        return True
+
     def save(self, uploader=None, save_to_git=True):
         """Save current campaign
 
@@ -137,10 +154,21 @@ class Campaign(JsonModel):
 
     def delete(self):
         """Get a uuid and delete the S3 folder for this specific
-        campaign. To come: delete from users' profiles on S3."""
+        campaign and delete from users (manager & viewers) 
+        profiles on S3."""
+        # Delete files on S3
         uuid = self.uuid
         folder_path = f"campaigns/{uuid}"
         S3Data().delete_folder(folder_path)
+        # Delete project in users json
+        content = S3Data().fetch(self.json_path)
+        content_json = parse_json_string(content)
+        project_users = content_json.get('campaign_managers', []) + \
+            content_json.get('campaign_viewers', [])
+        project_users = list(set(project_users))
+        if project_users:
+            for user_id in project_users:
+                self.delete_from_user_campaigns(user_id, uuid)
 
     def generate_static_map_url(self, simplify):
         """

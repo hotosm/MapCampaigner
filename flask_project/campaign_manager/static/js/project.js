@@ -19,12 +19,16 @@ function confirmDelete() {
   }
 }
 
-function executeDeletion(campaignId) {
-  console.log(campaignId);
+function executeDeletion(campaignId, userId) {
   const xhr = new XMLHttpRequest();
   const url = '/campaign/' + campaignId + '/delete';
-  console.log(url);
   xhr.open("POST", url, true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
+    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+      const urlRedirect = '/user/' + userId;
+      window.location.replace(urlRedirect);
+    }
+  }
   xhr.send("");
 }

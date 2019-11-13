@@ -21,7 +21,10 @@ from flask import (
     Response,
     abort,
     send_file,
-    send_from_directory
+    send_from_directory,
+    url_for, 
+    redirect,
+    flash
 )
 
 from app_config import Config
@@ -430,11 +433,14 @@ def get_campaign(uuid):
 def delete_campaign(uuid):
     try:
         campaign = Campaign.get(uuid)
-        # Get function from the model to delete S3 folders
+        context = campaign.to_dict()
+        # Get function from the model to delete S3 folders for the project
         campaign.delete()
-        # Redirect to the user's page
-        flash('You successfully delete a campaign')
-        return redirect(url_for('campaign_manager.campaigns_list'))
+        # Show a message to confirm the project is deleted
+        flash('You successfully deleted a project!')
+        # Return a status 200 to the frontend
+        response = Response(status=200)
+        return response
     except Campaign.DoesNotExist:
         abort(404)
 
