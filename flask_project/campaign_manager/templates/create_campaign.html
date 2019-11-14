@@ -7,7 +7,7 @@
   <div class="col-xs-12">
     <h1>Create Project</h1>
     <ul class="nav nav-tabs step-tabs">
-      <li class="active"><a href="#general-information" data-toggle="tab">General Information <span class="valid-icon" style="display: none;">[Valid]</span></a></li>
+      <li class="active"><a href="#general-information" data-toggle="tab">General Information</a></li>
       <li><a href="#area-of-interest" data-toggle="tab">Area of Interest (AOI)</a></li>
       <li><a href="#features-and-attributes" data-toggle="tab">Features &amp; Attributes</a></li>
       <li><a href="#settings" data-toggle="tab">Settings</a></li>
@@ -314,13 +314,45 @@
 {% block after_base_js %}
 <script type="text/javascript">
 
-  $('.nav-tabs').find('a[href="#general-information"]').on('hide.bs.tab', function (e) {
-    var isValid = checkStep1();
-    if (!isValid) {
-      e.preventDefault();
-    } else {
-      var validIcon = _.template($("#_template-valid-icon").html());
-      $(this).append(validIcon);
+  // Validate all inputs inside .tab-pane elements when they change
+  document.addEventListener("DOMContentLoaded", ()=>{
+    Array.from(document.querySelectorAll('input')).forEach(el=>{
+      const pane = el.closest('.tab-pane');
+      if (!pane) return;
+      const tab = document.querySelector('a[href="#' + pane.id + '"]');
+      const formGroup = el.closest('.form-group');
+      el.addEventListener('change', e=>{
+        const isValid = el.checkValidity();
+        if (!isValid) {
+          formGroup.classList.add('has-error');
+          thisTab.querySelector('.valid-icon').remove();
+        }
+      });
+      el.addEventListener('focus', removeError);
+    });
+  })
+
+  $('.step-tabs').find('a').on('hide.bs.tab', function (e) {
+    const tabId = e.target.href.split('#')[1];
+    const tabToValidate = document.querySelector('#'+tabId);
+    const currentFieldset = tabToValidate.querySelector('fieldset');
+    if (!currentFieldset) return;
+    const step = currentFieldset.dataset.fieldsetStep;
+    switch(step) {
+      case '1':
+        console.log('check 1')
+        return checkStep1();
+        break;
+      case '2':
+        console.log('check 2')
+        return checkStep2();
+        break;
+      case '5':
+        console.log('check 5')
+        return checkStep5();
+        break;
+      default:
+        console.log('Nothing to check')
     }
   });
 
@@ -397,10 +429,12 @@
 </script>
 
 <script type='text/template' id='_template-valid-icon'>
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#40BB95"/>
-    <path d="M18.5 8L10.5 16L5.5 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
-  </svg>
+  <span class="valid-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#40BB95"/>
+      <path d="M18.5 8L10.5 16L5.5 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </span>
 </script>
 
 <script type="text/javascript">
@@ -600,17 +634,6 @@
     } else if (step === 5) {
       valid = checkStep5();
     }
-
-    var $currentActiveStep = $(".cc-nav-steps").find('[data-step="' + step + '"]');
-    $currentActiveStep.addClass('clickable-menu');
-    $currentActiveStep.find('.cc-nav-icon').show();
-    if (!valid) {
-      $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-check');
-      $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-times times-red');
-    } else {
-      $currentActiveStep.find('.cc-nav-icon .fa').addClass('fa-check');
-      $currentActiveStep.find('.cc-nav-icon .fa').removeClass('fa-times times-red');
-    }
     return valid;
   }
 
@@ -623,7 +646,6 @@
       const isValid = el.checkValidity();
       if (!isValid) {
         el.closest('.form-group').classList.add('has-error');
-        el.addEventListener('focus', removeError);
       }
       return isValid;
     }).some(val=>!val);
