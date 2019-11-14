@@ -318,18 +318,20 @@
   })
 
   $('.step-tabs').find('a').on('hide.bs.tab', function (e) {
-    const tabId = e.target.href.split('#')[1];
+    const tabLink = e.target;
+    const tabId = tabLink.href.split('#')[1];
     const tabToValidate = document.querySelector('#'+tabId);
     const currentFieldset = tabToValidate.querySelector('fieldset');
     if (!currentFieldset) return;
+
+    const hasValidIcon = !!tabLink.querySelector('.valid-icon');
     const step = currentFieldset.dataset.fieldsetStep;
     const isStepValid = checkSteps(step);
     if (isStepValid) {
-      const hasValidIcon = !!e.target.querySelector('.valid-icon');
       if (!hasValidIcon) $(this).append($("#_template-valid-icon").html());
       return true;
     } else {
-      e.target.querySelector('.valid-icon').remove();
+      if (hasValidIcon) tabLink.querySelector('.valid-icon').remove();
       e.preventDefault();
       return false;
     }
