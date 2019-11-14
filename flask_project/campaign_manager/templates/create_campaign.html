@@ -591,10 +591,10 @@
     {% endif %}
   }
 
-  function updateMap(mapInstance, drawnLayers) {
+  function updateMap(mapInstance) {
     mapInstance.invalidateSize();
-    if (drawnLayers.getLayers().length > 0) {
-      mapInstance.fitBounds(drawnLayers.getBounds());
+    if (drawnItems.getLayers().length > 0) {
+      mapInstance.fitBounds(drawnItems.getBounds());
       getAreaSize();
       stringfyGeometry();
     } else {
@@ -602,14 +602,13 @@
     }
   }
 
-  updateMap(campaignDisplayMap, drawnItemsDisplay);
+  updateMap(campaignDisplayMap);
 
   if (!isEmpty(errors)) {
     showNotifications('Failed to create a campaign!', 'danger');
   }
 
   function checkSteps(step) {
-    console.log('checking', step)
     switch(step) {
       case '1':
         return checkStep1();
