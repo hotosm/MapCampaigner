@@ -947,7 +947,6 @@
   $("#end_date").datepicker({
     dateFormat: 'yyyy-mm-dd',
     autoClose: true,
-    position: 'bottom right',
     onSelect: function (date) {
       $("#start_date").val(date);
       $("#start_date").datepicker({ maxDate: new Date(date) })
