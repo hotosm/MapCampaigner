@@ -31,3 +31,14 @@
 @import "pages/home";
 @import "pages/styleguide";
 @import "pages/campaigns";
+
+form {
+  .help-block {
+    display: none;
+  }
+  .has-error {
+    .help-block {
+      display: block;
+    }
+  }
+}

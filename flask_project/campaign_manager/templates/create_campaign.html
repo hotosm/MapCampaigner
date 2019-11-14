@@ -1,17 +1,13 @@
 {% extends 'base.html' %}
 {% set active_page = "create" %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
-{% endblock %}
-
 {% block content %}
 
 <div class="row">
   <div class="col-xs-12">
     <h1>Create Project</h1>
     <ul class="nav nav-tabs step-tabs">
-      <li class="active"><a href="#general-information" data-toggle="tab">General Information</a></li>
+      <li class="active"><a href="#general-information" data-toggle="tab">General Information <span class="valid-icon" style="display: none;">[Valid]</span></a></li>
       <li><a href="#area-of-interest" data-toggle="tab">Area of Interest (AOI)</a></li>
       <li><a href="#features-and-attributes" data-toggle="tab">Features &amp; Attributes</a></li>
       <li><a href="#settings" data-toggle="tab">Settings</a></li>
@@ -29,17 +25,17 @@
             <div class="form-group">
               <label for="project-name">Project Name <span class="required">*</span></label>
               {{ form.name }}
-              <p class="help-block"></p>
+              <p class="help-block">A project name is required.</p>
             </div>
             <div class="form-group">
               <label for="start-date">Start Date</label> <span class="required">*</span></label>
               {{ form.start_date }}
-              <p class="help-block"></p>
+              <p class="help-block">A start date is required.</p>
             </div>
             <div class="form-group">
               <label for="end-date">End Date</label> <span class="required">*</span></label>
               {{ form.end_date }}
-              <p class="help-block"></p>
+              <p class="help-block">An end date is required.</p>
             </div>
             <div class="form-group">
               <label for="description">Description</label></label>
@@ -69,34 +65,6 @@
               </svg>
             </a>
           </div>
-
-          <fieldset id="fieldset-2" data-fieldset-step="2">
-            <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
-            <ul class="upload">
-              <li>
-                <div class="form-body col-lg-6 upload">
-                  <div class="form-group">
-                    <label>Upload GeoJSON file</label>
-                    {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
-                  </div>
-                </div>
-              </li>
-              <li>
-                <div class="form-body col-lg-6 upload">
-                  <div class="form-group">
-                    <label>Upload Shapefile</label>
-                    {% include 'campaign_widget/ui/upload_shapefile.html' %}
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div class="col-lg-8 area-table">
-              <div class="area-table-title row">
-                <label>Label and Assign Campaign Areas (Optional)</label>
-              </div>
-              <div class="area-table-list"></div>
-            </div>
-          </fieldset>
           <a class="btn btn-primary btn-previous pull-left">Previous</a>
           <a class="btn btn-primary btn-next pull-right">Next</a>
         </div>
@@ -111,7 +79,7 @@
             </a>
           </div>
           <div class="form-group">
-            <label>Option 2: Create your customized features & attributes</label>
+            <label>Option 2: Create your customized features &amp; attributes</label>
             <a class="btn btn-default btn-lg btn-expand">
               Fill a custom form
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -290,29 +258,53 @@
       </div>
     </div>
     <div class="col-xs-12 col-sm-6">
-      <label>Define Campaign Area</label>
-      <div>
-        The campaign area (AOI) is specified in one of the following ways: digitize a single area using the map, or upload multiple areas using a shapefile or geojson file.
-      </div>
-      <div id="campaign-map"></div>
+      <fieldset id="fieldset-2" data-fieldset-step="2">
+        <div id="campaign-map"></div>
+        <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
+        <ul class="upload">
+          <li>
+            <div class="form-body col-lg-6 upload">
+              <div class="form-group">
+                <label>Upload GeoJSON file</label>
+                {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="form-body col-lg-6 upload">
+              <div class="form-group">
+                <label>Upload Shapefile</label>
+                {% include 'campaign_widget/ui/upload_shapefile.html' %}
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="col-lg-8 area-table">
+          <div class="area-table-title row">
+            <label>Label and Assign Campaign Areas (Optional)</label>
+          </div>
+          <div class="area-table-list"></div>
+        </div>
+      </fieldset>
     </div>
   </div>
   <div class="row">
     <fieldset id="fieldset-5" data-fieldset-step="5" style="display: none;">
       <div class="row insight-functions">
         <div class="form-body col-lg-12">
-          <div class="form-group" style="padding-bottom: 25px;">
+          <div class="form-group">
             <div id="insight-function" class="function-wrapper">
               <label class="category-label">Insight Functions</label>
               <div class="function-form"></div>
-              <button id="insight-function-add" class="btn btn-outline btn-add-coverage"
-                      type=button onclick="addFunction(this)" style="margin-top: 5px;">
-                <i class="fa fa-plus"></i> Add Function
+              <button id="insight-function-add" class="btn btn-outline btn-add-coverage" type=button onclick="addFunction(this)">
+                Add Function
               </button>
             </div>
+          </div>
+        </div>
+      </div>
     </fieldset>
   </div>
-
 </form>
 
 {% include 'modals/modal_main.html' %}
@@ -322,6 +314,16 @@
 {% block after_base_js %}
 <script type="text/javascript">
 
+  $('.nav-tabs').find('a[href="#general-information"]').on('hide.bs.tab', function (e) {
+    var isValid = checkStep1();
+    if (!isValid) {
+      e.preventDefault();
+    } else {
+      var validIcon = _.template($("#_template-valid-icon").html());
+      $(this).append(validIcon);
+    }
+  });
+
   $('.btn-next').click(function () {
     $('.step-tabs > .active').next('li').find('a').trigger('click');
   });
@@ -329,27 +331,17 @@
     $('.step-tabs > .active').prev('li').find('a').trigger('click');
   });
 
-  var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
-  var errors = {{ form['errors'] | safe}};
-  var functions = {{ functions| safe }};
-  var map_provider = "{{ map_provider }}";
-  var oneTimeFunctions = [];
-  $.each(functions, function (key, value) {
-    if (!value['need_feature']) {
-      oneTimeFunctions.push(key)
-    }
-  });
+  var taskStatusFillColor = {
+    'READY': '#FFFFFF',
+    'unassigned': '#D3D3D3',
+    'MAPPED': '#FFE4B5',
+    'INVALIDATED': '#D3D3D3',
+    'VALIDATED': '#B0DE5C',
+    'complete': '#B0DE5C',
+    'incomplete': '#FFE4B5',
+    'BADIMAGERY': '#d2a29e'
+  };
 
-
-  var remote_projects_list = [];
-  {% if form.remote_projects.data %}
-  remote_projects_list = {{ form.remote_projects.data | safe }};
-  {% endif %}
-
-  var maxAreaSize = {{ maximum_area_size }};
-
-  var start_date = '{{ form.start_date.data }}';
-  var end_date = '{{ form.end_date.data }}';
   var remaining_days = 0;
 
   if (start_date === 'None' || end_date === 'None') {
@@ -364,8 +356,6 @@
   } else {
     $('#campaign-inactive').show();
   }
-
-
 </script>
 
 <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
@@ -378,7 +368,7 @@
 <script type="text/javascript" src="/static/js/create/campaign-json-handler.js"></script>
 
 <script type='text/template' id='_template-function-form'>
-  <div class="well well-sm" style="margin-bottom: 5px;">
+  <div class="well well-sm">
     <div class="function-form-row row tooltip-help" id="function-<%=index%>">
       <div class="col-lg-1">
         <button class="btn btn-danger btn-sm btn-block" type=button onclick="removeFunction(this)">
@@ -404,6 +394,13 @@
       </div>
     </div>
   </div>
+</script>
+
+<script type='text/template' id='_template-valid-icon'>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#40BB95"/>
+    <path d="M18.5 8L10.5 16L5.5 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </svg>
 </script>
 
 <script type="text/javascript">
@@ -617,60 +614,23 @@
     return valid;
   }
 
+  function removeError(e) {
+    e.target.closest('.form-group').classList.remove('has-error');
+  }
+
   function checkStep1() {
-    var valid = true;
-
-    var required_forms = $('#fieldset-1').find('.required-form');
-
-    $.each(required_forms, function (index, value) {
-      var input_form = $(value).find("[type=text]");
-      var radio_form = $(value).find("[type=radio]");
-      var select_form = $(value).find('select');
-
-      if (input_form.length > 0) {
-        input_form.removeClass('error');
-
-        input_form.click(function () {
-          $(this).removeClass('error');
-          $(this).attr('placeholder', '');
-        });
-
-        if (input_form.val() === '') {
-          input_form.addClass('error');
-          input_form.attr('placeholder', 'This field is required');
-          valid = false;
-        }
-      } else if (select_form.length > 0) {
-        select_form.removeClass('error');
-        select_form.parent().removeClass('error');
-
-        select_form.click(function () {
-          $(this).removeClass('error');
-        });
-
-        if (select_form.val().length === 0) {
-          select_form.addClass('error');
-          select_form.parent().addClass('error');
-          select_form.parent().prepend('This field is required');
-          valid = false;
-        }
-      } else if (radio_form.length > 0) {
-        var radio_checked = false;
-        for (var i = 0; i < radio_form.length; i++) {
-          if (!$(radio_form[i]).is(":checked")) {
-            valid = false;
-          } else {
-            radio_checked = true;
-            break;
-          }
-        }
-        var error = radio_form.parent().parent().find('.error-form');
-        $(error).remove();
-        if (!radio_checked) {
-          radio_form.parent().parent().prepend('<div class="error-form">This field is required</div>');
-        }
+    const hasInvalidFields = Array.from(document.querySelectorAll('#fieldset-1 [required]')).map(el=>{
+      const isValid = el.checkValidity();
+      if (!isValid) {
+        el.closest('.form-group').classList.add('has-error');
+        el.addEventListener('focus', removeError);
       }
-    });
+      return isValid;
+    }).some(val=>!val);
+
+    const startValue = moment(document.querySelector('#start_date').value);
+    const endValue = moment(document.querySelector('#end_date').value);
+    const isStartBeforeEnd = startValue.isBefore(endValue);
 
     if (managers_list.length === 0) {
       reloadUser();
@@ -683,8 +643,7 @@
       valid = false;
       $('.types-required-message').show();
     }
-
-    return valid;
+    return !hasInvalidFields && isStartBeforeEnd;
   }
 
   function checkStep2() {
@@ -874,8 +833,9 @@
   }
   function checkingAllStep() {
     var valid = true;
-    $("fieldset").each(function (index) {
-      var validStep = checkSteps(index + 1);
+    $("fieldset").each(function (index, el) {
+      var step = el.id.split('-')[1];
+      var validStep = checkSteps(step);
       if (!validStep) {
         valid = validStep;
       }
@@ -910,6 +870,7 @@
     }
     var allValid = checkingAllStep();
     if (!allValid) {
+      event.preventDefault();
       return false;
     }
     preprocessSubmitForm();
@@ -1031,4 +992,30 @@
 
 </script>
 
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/js/leaflet.draw-0.4.9/leaflet.draw.css" type="text/css">
+<script type="text/javascript">
+  var isInCreateMode = ("{{ form.name.data }}" === "None") ? true : false;
+  var errors = {{ form['errors'] | safe}};
+  var functions = {{ functions| safe }};
+  var map_provider = "{{ map_provider }}";
+  var oneTimeFunctions = [];
+  $.each(functions, function (key, value) {
+    if (!value['need_feature']) {
+      oneTimeFunctions.push(key)
+    }
+  });
+
+  var remote_projects_list = [];
+  {% if form.remote_projects.data %}
+  remote_projects_list = {{ form.remote_projects.data | safe }};
+  {% endif %}
+
+  var maxAreaSize = {{ maximum_area_size }};
+
+  var start_date = '{{ form.start_date.data }}';
+  var end_date = '{{ form.end_date.data }}';
+</script>
 {% endblock %}
