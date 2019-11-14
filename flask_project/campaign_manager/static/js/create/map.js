@@ -2,7 +2,6 @@ var campaignMap = L.map('campaign-map');
 var drawnItems = new L.geoJSON();
 var error_format_before = false;
 
-
 // Add search control
 var controlSearch = campaignMap.addControl( new L.Control.Search({
     url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
@@ -17,19 +16,13 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
 }));
 
 
-L.tileLayer(map_provider, {
+const mapTiles = L.tileLayer(map_provider, {
     attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
     'contributors',
     maxZoom: 18
-}).addTo(campaignMap);
+})
 
-function mapFitBound() {
-    var bounds = [
-        [-34.053726, 20.411482],
-        [-34.009483, 20.467358]
-    ];
-    campaignMap.fitBounds(bounds);
-}
+mapTiles.addTo(campaignMap);
 
 if ($("#geometry").val()) {
     drawnItems = L.geoJSON(
@@ -297,6 +290,56 @@ function getAreaSize() {
     }
 }
 
-function getAOIMap() {
-    return campaignMap;
+var campaignDisplayMap = L.map('campaign-map-display');
+var drawnItemsDisplay = new L.geoJSON();
+const mapTilesDisplay = L.tileLayer(map_provider, {
+    attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
+    'contributors',
+    maxZoom: 18
+})
+mapTilesDisplay.addTo(campaignDisplayMap);
+if ($("#geometry").val()) {
+    drawnItemsDisplay = L.geoJSON(
+        $.parseJSON($("#geometry").val()), {
+            style: function (feature) {
+                var status = 'unassigned';
+
+                if ('status' in feature.properties) {
+                    status = feature.properties['status'];
+                } else if ('date' in feature.properties) {
+                    var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
+                    var remainingDays = layerDate.diff(moment(), 'days') + 1;
+                    if (remainingDays <= 0) {
+                        status='complete';
+                    } else {
+                        status='incomplete';
+                    }
+                    feature.properties['status'] = status;
+                }
+
+                if (typeof taskStatusFillColor[status] !== 'undefined') {
+                    return {
+                        weight: 2,
+                        color: "#999",
+                        opacity: 1,
+                        fillColor: taskStatusFillColor[status],
+                        fillOpacity: 0.8
+                    }
+                }
+                return feature.properties && feature.properties.style;
+            }
+        }
+    );
+    campaignDisplayMap.fitBounds(drawnItemsDisplay.getBounds());
 }
+campaignDisplayMap.addLayer(drawnItemsDisplay);
+var drawControlDisplay = new L.Control.Draw({
+    draw: false,
+    edit: {
+        featureGroup: drawnItemsDisplay,
+        edit: false,
+        remove: false
+    }
+}, this);
+
+campaignDisplayMap.addControl(drawControlDisplay);

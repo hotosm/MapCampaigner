@@ -47,24 +47,36 @@
           <a class="btn btn-primary btn-next pull-right">Next</a>
         </div>
         <div class="tab-pane" id="area-of-interest">
-          <div class="form-group">
-            <label>Option 1: Set your AOI by using the drawing tools on the map</label>
-            <a class="btn btn-default btn-lg btn-expand">
-              Draw on the map
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-              </svg>
-            </a>
-          </div>
-          <div class="form-group">
-            <label>Option 2: Upload files (.dbf, .shop, .shx or GeoJSON) to define your AOI</label>
-            <a class="btn btn-default btn-lg btn-expand">
-              Upload files
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-              </svg>
-            </a>
-          </div>
+          <div id="map-notification-holder"></div>
+          <fieldset id="fieldset-2" data-fieldset-step="2">
+            <div class="form-group">
+              <label>Option 1: Set your AOI by using the drawing tools on the map</label>
+              <a class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#map-draw-modal">
+                Draw on the map
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                </svg>
+              </a>
+              {% include 'modals/modal_draw_on_map.html' %}
+            </div>
+            <div class="form-group">
+              <label>Option 2: Upload files (.dbf, .shop, .shx or GeoJSON) to define your AOI</label>
+              {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
+              {% include 'campaign_widget/ui/upload_shapefile.html' %}
+              <a class="btn btn-default btn-lg btn-expand">
+                Upload files
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                </svg>
+              </a>
+            </div>
+            <div style="display:none;" class="area-table">
+              <div class="area-table-title">
+                <label>Label and Assign Campaign Areas (Optional)</label>
+              </div>
+              <div class="area-table-list"></div>
+            </div>
+          </fieldset>
           <a class="btn btn-primary btn-previous pull-left">Previous</a>
           <a class="btn btn-primary btn-next pull-right">Next</a>
         </div>
@@ -258,34 +270,7 @@
       </div>
     </div>
     <div class="col-xs-12 col-sm-6">
-      <fieldset id="fieldset-2" data-fieldset-step="2">
-        <div id="campaign-map"></div>
-        <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
-        <ul class="upload">
-          <li>
-            <div class="form-body col-lg-6 upload">
-              <div class="form-group">
-                <label>Upload GeoJSON file</label>
-                {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="form-body col-lg-6 upload">
-              <div class="form-group">
-                <label>Upload Shapefile</label>
-                {% include 'campaign_widget/ui/upload_shapefile.html' %}
-              </div>
-            </div>
-          </li>
-        </ul>
-        <div class="col-lg-8 area-table">
-          <div class="area-table-title row">
-            <label>Label and Assign Campaign Areas (Optional)</label>
-          </div>
-          <div class="area-table-list"></div>
-        </div>
-      </fieldset>
+      <div id="campaign-map-display"></div>
     </div>
   </div>
   <div class="row">
@@ -344,6 +329,7 @@
       if (!hasValidIcon) $(this).append($("#_template-valid-icon").html());
       return true;
     } else {
+      e.target.querySelector('.valid-icon').remove();
       e.preventDefault();
       return false;
     }
@@ -603,22 +589,25 @@
     {% endif %}
   }
 
-  var aoiMap = getAOIMap();
-  aoiMap.invalidateSize();
-  if (drawnItems.getLayers().length > 0) {
-    aoiMap.fitBounds(drawnItems.getBounds());
-    getAreaSize();
-    stringfyGeometry();
-  } else {
-    aoiMap.setView([0, 0], 2);
+  function updateMap(mapInstance, drawnLayers) {
+    mapInstance.invalidateSize();
+    if (drawnLayers.getLayers().length > 0) {
+      mapInstance.fitBounds(drawnLayers.getBounds());
+      getAreaSize();
+      stringfyGeometry();
+    } else {
+      mapInstance.setView([0, 0], 2);
+    }
   }
-  // remoteMap.invalidateSize();
+
+  updateMap(campaignDisplayMap, drawnItemsDisplay);
 
   if (!isEmpty(errors)) {
     showNotifications('Failed to create a campaign!', 'danger');
   }
 
   function checkSteps(step) {
+    console.log('checking', step)
     switch(step) {
       case '1':
         return checkStep1();
@@ -668,18 +657,15 @@
   function checkStep2() {
     var valid = true;
     var mapErrorNotification = $('.map-wrapper').data('error');
-
     clearNotification();
-
     if (!!mapErrorNotification) {
-      showNotifications(mapErrorNotification, 'danger');
+      showNotifications(mapErrorNotification, 'danger', '#map-notification-holder');
       valid = false;
     }
     if (drawnItems.getLayers().length === 0) {
-      showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger');
+      showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger', '#map-notification-holder');
       valid = false;
     }
-
     return valid;
   }
 

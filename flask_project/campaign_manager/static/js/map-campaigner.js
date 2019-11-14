@@ -56,10 +56,10 @@ function hideLoading() {
     $.LoadingOverlay("hide");
 }
 
-function showNotifications(text, status) {
+function showNotifications(text, status, container) {
+    container = container || '#first-row';
     clearNotification();
-
-    $('#first-row').prepend(
+    $(container).prepend(
         '<div id="notification" class="alert alert-' + status + ' alert-dismissable" style="margin-bottom: 10px; margin-top: 0;">' +
         '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
         text +
