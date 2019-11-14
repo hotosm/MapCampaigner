@@ -325,7 +325,7 @@
         const isValid = el.checkValidity();
         if (!isValid) {
           formGroup.classList.add('has-error');
-          thisTab.querySelector('.valid-icon').remove();
+          tab.querySelector('.valid-icon').remove();
         }
       });
       el.addEventListener('focus', removeError);
@@ -338,21 +338,14 @@
     const currentFieldset = tabToValidate.querySelector('fieldset');
     if (!currentFieldset) return;
     const step = currentFieldset.dataset.fieldsetStep;
-    switch(step) {
-      case '1':
-        console.log('check 1')
-        return checkStep1();
-        break;
-      case '2':
-        console.log('check 2')
-        return checkStep2();
-        break;
-      case '5':
-        console.log('check 5')
-        return checkStep5();
-        break;
-      default:
-        console.log('Nothing to check')
+    const isStepValid = checkSteps(step);
+    if (isStepValid) {
+      const hasValidIcon = !!e.target.querySelector('.valid-icon');
+      if (!hasValidIcon) $(this).append($("#_template-valid-icon").html());
+      return true;
+    } else {
+      e.preventDefault();
+      return false;
     }
   });
 
@@ -626,15 +619,19 @@
   }
 
   function checkSteps(step) {
-    var valid = true;
-    if (step === 1) {
-      valid = checkStep1();
-    } else if (step === 2) {
-      valid = checkStep2();
-    } else if (step === 5) {
-      valid = checkStep5();
+    switch(step) {
+      case '1':
+        return checkStep1();
+        break;
+      case '2':
+        return checkStep2();
+        break;
+      case '5':
+        return checkStep5();
+        break;
+      default:
+        return true;
     }
-    return valid;
   }
 
   function removeError(e) {
