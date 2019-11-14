@@ -112,15 +112,17 @@ class Campaign(JsonModel):
 
         user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
         user_campaigns = s3_obj.fetch(user_file)
-        projects = user_campaigns['projects']
-        index = None
-        for i in range(len(projects)):
-            if projects[i]['uuid'] == uuid:
-                index = i
-        del projects[i]
-        user_campaigns['projects'] = projects
-        body = json.dumps(user_campaigns)
-        s3_obj.create(user_file, body)
+        if user_campaigns:
+            projects = user_campaigns.get('projects', [])
+            if projects:
+                index = None
+                for i in range(len(projects)):
+                    if projects[i]['uuid'] == uuid:
+                        index = i
+                del projects[i]
+                user_campaigns['projects'] = projects
+                body = json.dumps(user_campaigns)
+                s3_obj.create(user_file, body)
 
         return True
 
@@ -156,10 +158,8 @@ class Campaign(JsonModel):
         """Get a uuid and delete the S3 folder for this specific
         campaign and delete from users (manager & viewers)
         profiles on S3."""
-        # Delete files on S3
         uuid = self.uuid
         folder_path = f"campaigns/{uuid}"
-        S3Data().delete_folder(folder_path)
         # Delete project in users json
         content = S3Data().fetch(self.json_path)
         content_json = parse_json_string(content)
@@ -172,6 +172,8 @@ class Campaign(JsonModel):
         if project_users:
             for user_id in project_users:
                 self.delete_from_user_campaigns(user_id, uuid)
+        # Delete files on S3
+        S3Data().delete_folder(folder_path)
 
     def generate_static_map_url(self, simplify):
         """
