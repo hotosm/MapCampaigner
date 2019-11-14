@@ -60,15 +60,8 @@
               {% include 'modals/modal_draw_on_map.html' %}
             </div>
             <div class="form-group">
-              <label>Option 2: Upload files (.dbf, .shop, .shx or GeoJSON) to define your AOI</label>
-              {% include 'campaign_widget/ui/upload_fieldpaper.html' %}
-              {% include 'campaign_widget/ui/upload_shapefile.html' %}
-              <a class="btn btn-default btn-lg btn-expand">
-                Upload files
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-                </svg>
-              </a>
+              <label>Option 2: Upload files to define your AOI (.geojson or .zip containing .shp, .shx, .dbf)</label>
+              {% include 'campaign_widget/ui/upload_file.html' %}
             </div>
             <div style="display:none;" class="area-table">
               <div class="area-table-title">

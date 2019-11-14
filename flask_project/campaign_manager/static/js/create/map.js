@@ -24,7 +24,7 @@ const mapTiles = L.tileLayer(map_provider, {
 
 mapTiles.addTo(campaignMap);
 
-function drawGeometry (json) {
+function drawGeometry (json, isUpload) {
   return L.geoJSON(json, {
         style: function (feature) {
             var status = 'unassigned';
@@ -64,7 +64,8 @@ function drawGeometry (json) {
                         'Status : ' + capitalizeFirstLetter(feature.properties.status) +
                     '</div>'+
                 '</div>'
-            )
+            );
+            if (isUpload) drawnItems.addLayer(layer);
         }
     }
   );
