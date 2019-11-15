@@ -268,8 +268,8 @@
   function main() {
     updated();
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
-    var types = {{ types| safe
-  }};
+    var types = {{ types| tojson }};
+    console.log(types);
 
   $.get({
     url: s3CampaignUrl + '/failure.json',
@@ -382,6 +382,7 @@
   }
 
   function loadType(activeType, s3CampaignUrl) {
+    console.log(4);
     activeType = activeType.replace(/ /g, '_')
     var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
 
