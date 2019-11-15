@@ -59,16 +59,15 @@
  </div>
   
   <h2 class='details'>Details</h2>
-  <div class='row'>
-  <div class="col-lg-12">
-    <div class='panel panel-default detail-panel-insights'>
-      <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
-      <div class='panel-body'>
-        <div class="errors-wrapper"></div>
+    <div class='row'>
+      <div class="col-lg-12">
+        <div class='panel panel-default detail-panel-insights'>
+          <div class='panel-body'>
+            {% include 'campaign_detail/table.html' %}
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  </div>
 
   <div class='col-lg-12'>
     <div class='panel panel-default detail-panel-insights'>
@@ -162,7 +161,6 @@
     updated();
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
     var types = {{ types| tojson }};
-    console.log(types);
 
   $.get({
     url: s3CampaignUrl + '/failure.json',
@@ -276,7 +274,6 @@
   }
 
   function loadType(activeType, s3CampaignUrl) {
-    console.log(4);
     activeType = activeType.replace(/ /g, '_')
     var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
 
