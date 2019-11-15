@@ -34,6 +34,8 @@ from enum import Enum
 from os.path import join
 import visvalingamwyatt as vw
 
+from bs4 import BeautifulSoup
+import lxml
 
 USER_CAMPAIGNS = 'user_campaigns'
 
@@ -951,3 +953,18 @@ class Campaign(JsonModel):
             super(
                 Campaign.InsightsFunctionNotAssignedToCampaign, self). \
                 __init__(self.message)
+
+    def parse_feature_data(self, xml_data):
+        """Gets XML data from Overpass data on S3.
+        Returns data as JSON to be added to a Project 
+        Overview page."""
+        feature_data = [] 
+        soup = BeautifulSoup(xml_data, "lxml")
+        nodes = soup.find_all("nodes")
+        for node in nodes:
+            data = {"node_id": node["id"], 
+                    "edited_by": node["user"],
+                    "edited_date": node["timestamp"],
+                    "attributes_found": node["tag"]["key"]}
+            feature_data.append(data)
+        return feature_data
