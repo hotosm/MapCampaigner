@@ -23,60 +23,6 @@
 {% block content %}
 <div class="row header-panel">
   <div class="col-lg-12">
-    <div class='row'>
-      <div class='col-lg-2 text-right'>
-        <div class="detail-campaign-status {{ current_status }}">
-          <i class="fa fa-circle" aria-hidden="true"></i>
-          <label>{{ current_status }}</label>
-        </div>
-      </div>
-
-      <div class='col-lg-12'>
-        {% if types %}
-        {% for type in types %}
-        <label class="detail-tag"> {{ type }} </label>
-        {% endfor %}
-        {% endif %}
-      </div>
-      <div class='col-lg-12'>
-        <div class="detail-creator-info">
-          <p>
-            <span>Creator : </span>
-            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">{{ campaign_creator }}</a>
-          </p>
-          <p>
-            <span>Map:</span>
-            {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
-            <span id="map-default" style="display: none">
-              Default
-            </span>
-            <span id="map-custom">
-              Custom
-            </span>
-            {% else %}
-            <span id="map-default"></span>
-            Default
-            {% endif %}
-          </p>
-        </div>
-      </div>
-      <div class="col-lg-10 detail-button-wrapper participate-button" style="margin-top: 20px">
-        <span class="btn btn-label"><strong>Participate</strong></span>
-        <div class="btn-group btn-share-group" role="group" aria-label="...">
-          {% if link_to_omk %}
-          <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-          {% endif %}
-          <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-        </div>
-      </div>
-      <div class="col-lg-2 detail-button-wrapper" style="margin-top: 25px;">
-        <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
-          <span class="btn btn-default unclickable">Share</span>
-          <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
-          <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
-        </div>
-      </div>
-    </div>
     <div id="download_div" class="col-lg-12 alert"></div>
   </div>
 </div>
@@ -99,75 +45,21 @@
   </div>
 </div>
 <div class='row' id="campaign-feature-details" style="display:none">
-  <div class='col-lg-12'>
-    <h2>Project Overview</h2>
-    <div class="panel panel-default detail-panel-information">
-      <div class="panel-body summary-stats">
-        <div class="row">
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Features Collected
-            </div>
-            <div class="summary-stat-desc">
-              <span id="features-collected"></span>
-            </div>
-          </div>
-
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Users Engaged
-            </div>
-            <div class="summary-stat-desc">
-              <span id="contributors"></span>
-            </div>
-          </div>
-
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Areas Covered
-            </div>
-            <div class="summary-stat-desc">
-              <span id="areas-covered">{{ pct_covered_areas }}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+ <h2 class='overview'>Project Overview</h2>
+ <div class='row'>
+  <div class='col-lg-6'>
+    
+      {% include 'campaign_detail/overview.html' %}
   </div>
-  <div class='col-lg-12'>
-    <h2>Details</h2>
-    <div class='panel panel-default detail-panel-insights'>
-      <div class="panel-heading">
-        <i class="glyphicon glyphicon-info-sign"></i>
-        Feature details
+  <div class='col-lg-6'>
+      <div class='map-wrapper'>
+        {% include 'campaign_detail/map.html' %}
       </div>
-      <div class='panel-body'>
-        <div class='row side-panel-wrapper'>
-          <div class='col-lg-4 map-side-panel'>
-            <div class="btn-group feature-select">
-              <button type="button" class="btn btn-default active-type"></button>
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                {% for type in types %}
-                <li><a data-target="#">{{ type }}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="content-wrapper"></div>
-          </div>
-          <div class='col-lg-8'>
-            <div class='map-wrapper'>
-              {% include 'campaign_detail/map.html' %}
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
   </div>
+ </div>
+  
+  <h2 class='details'>Details</h2>
+  <div class='row'>
   <div class="col-lg-12">
     <div class='panel panel-default detail-panel-insights'>
       <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
@@ -175,6 +67,7 @@
         <div class="errors-wrapper"></div>
       </div>
     </div>
+  </div>
   </div>
 
   <div class='col-lg-12'>
@@ -283,6 +176,7 @@
   }).fail(function () {
     window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
     countFeaturesCollected(types, s3CampaignUrl);
+    loadFeatureTypes();
     var activeType = types[0];
     $('.active-type').html(activeType);
 
@@ -484,6 +378,10 @@
       }
       updateMapperEngagementTotal(contributors);
     });
+  }
+
+  function loadFeatureTypes() {
+    $('#feature-types').html(7)
   }
 
   function openOtherDataCollectonForm(app) {

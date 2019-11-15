@@ -1,3 +1,10 @@
+#campaign-feature-details h2.overview {
+    margin: -3% 0 4% 0;
+}
+#campaign-feature-details h2.details {
+    margin: 3% 0 3% 0;
+}
+
 .detail-campaign-name {
     font-weight: bold;
     color: #565656;
@@ -19,6 +26,12 @@
     border:1px solid #e6e6e6 !important;
 }
 
+.detail-panel-information {
+  width: 100%;
+}
+.detail-panel-information h4.panel-name {
+  font-size: 17px;
+}
 .detail-panel-information, .detail-panel-insights {
     border-radius: 5px !important;
 }
@@ -277,7 +290,10 @@
 }
 
 .map-wrapper {
-  margin-left: -15px;
+  width: 704px;
+  height: 422px;
+  /*width: 120%;*/
+  margin-top: -2px;
 }
 
 .mapboxgl-canvas {
