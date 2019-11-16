@@ -1,8 +1,8 @@
-<div id="total-feature-completeness-errors"></div>
-  <table id="pagination-errors" class="table">
+<div id="features-details"></div>
+  <table id="table_id" class="display">
     <thead>
       <tr>
-        <th>OSM node ID</th>
+        <th>OSM ID</th>
         <th>Feature Type</th>
         <th>Status</th>
         <th>Last edited by</th>
@@ -14,66 +14,35 @@
     <tbody>
     </tbody>
   </table>
-  <div class='pagination-nav'>
-    <nav>
-      <ul class="pager" style="text-align:left">
-        <li class='previous-page'><a data-target="#">Previous</a></li>
-        <li class='current-page'></li>
-        <li class='next-page'><a data-target="#">Next</a></li>
-      </ul>
-    </nav>
-  </div>
 
 <script type="text/javascript">
   function getDetails() {
     var uuid = '{{ uuid }}';
     var types = {{ types| tojson }};
 
-    // var details = [];
-
     $.ajax({
     type: 'GET',
     url: '/campaign/' + uuid + '/details/shop=supermarket',
     dataType: 'json',
     success: function (data) {
-      var totalPages =  Math.round(data.length / 10);
-      var currentPage = 1;
-      for(var i=0; i<data.length; i=i+10) {
-        var slice = data.slice(i, i+10);
-        renderPage(slice, currentPage, totalPages);
-        currentPage++;
-      }
-    },
-    });
-
-
-    // console.log(details);
-    // totalPages = Math.round(details.length / 10);
-    // console.log(totalPages);
-    // currentPage = 0;
-    // sliceStart = 0;
-    // sliceEnd = 10;
-    // renderPage(details.slice(sliceStart, sliceEnd));
-  }
- 
-  function renderPage(slicedData, currentPage, totalPages) {
-    $('#pagination-errors tbody').html('');
-    $('.current-page').html(currentPage + ' / ' + totalPages);
-    for (var i = 0; i < slicedData.length; i++) {
-      var row = `
+      $.each(data, function(i, d){
+        var row = `
       <tr>
-        <td>` + slicedData[i].node_id + `</td>
+        <td>` + d.node_id + `</td>
         <td>` + 'supermarket' + `</td>
         <td>` + '' + `</td>
-        <td>` + slicedData[i].edited_by + `</td>
-        <td>` + slicedData[i].edited_date + `</td>
+        <td>` + d.edited_by + `</td>
+        <td>` + d.edited_date + `</td>
         <td>` + '' + `</td>
         <td>` + '' + `</td>
       </tr>`;
-      $('#pagination-errors tbody').append(row);
-    }
+      $('#table_id tbody').append(row);
+      });
+      $('#table_id').DataTable();
+    }  
+   });
   }
 
-
-  getDetails();
+ getDetails();
+ 
 </script>
