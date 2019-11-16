@@ -140,23 +140,11 @@
   }).fail(function () {
     window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
     countFeaturesCollected(types, s3CampaignUrl);
-    loadFeatureTypes();
-    var activeType = types[0];
-    $('.active-type').html(activeType);
+    loadFeatureTypes(types);
 
-    loadType(activeType, s3CampaignUrl);
+    $('#campaign-feature-details').show();
+    $('#campaign-computing-status').hide();
 
-
-    $('.feature-select a').on('click', function (e) {
-      e.stopPropagation();
-      activeType = $(this).html();
-
-      $('.active-type').html(activeType);
-      $('.dropdown-toggle').attr('aria-expanded', false);
-      $('.feature-select').removeClass('open');
-
-      loadType(activeType, s3CampaignUrl);
-    });
   });
   $('#download_div').hide();
   }
@@ -239,54 +227,6 @@
     });
   }
 
-  function loadType(activeType, s3CampaignUrl) {
-    activeType = activeType.replace(/ /g, '_')
-    var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
-
-    $.get({
-      url: typeUrl + 'content.html',
-      cache: false
-    }).then(function (data) {
-      $('#campaign-feature-details').show();
-      $('#campaign-computing-status').hide();
-
-      // Provisional fix to change bars to horizontal.
-      data = data.replace("type: 'bar'", "type: 'horizontalBar'")
-
-      // Adjust font size.
-      let str_token = "options: {"
-      let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
-      let index_split = data.match(str_token).index + str_token.length
-
-      data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
-      data = data.replace(", 'backgroundColor': ['#4286f4']", '')
-
-      $('.content-wrapper').html(data);
-    });
-
-    $.get({
-      url: typeUrl + 'errors.html',
-      cache: false
-    }).then(function (data) {
-      $('.errors-wrapper').html(data)
-    });
-
-    window.setTimeout(function () {
-      setMapHeight();
-    }, 2000);
-
-    // Load data into map.
-    let source = map.getSource('tiles');
-    if (source) {
-      map.removeLayer("campaign-polygons");
-      map.removeLayer("campaign-lines");
-      map.removeLayer("campaign-points");
-      map.removeSource('tiles');
-    }
-    addMapElements(activeType);
-
-  }
-
   function getTypeUrl(activeType, s3CampaignUrl) {
     return s3CampaignUrl + '/render/' + activeType + '/';
   }
@@ -343,8 +283,8 @@
     });
   }
 
-  function loadFeatureTypes() {
-    $('#feature-types').html(7)
+  function loadFeatureTypes(types) {
+    $('#feature-types').html(types.length)
   }
 
   function openOtherDataCollectonForm(app) {
