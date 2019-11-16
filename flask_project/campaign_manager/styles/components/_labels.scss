@@ -9,7 +9,7 @@
   svg {
     vertical-align: text-bottom;
   }
-  &-warning, &-success {
+  &-warning, &-success, &-default {
     color: $blue-dark;
     border-radius: 2px;
     border: 1px solid;
@@ -22,6 +22,9 @@
   }
   &-success {
     border-color: $green;
+  }
+  &-default {
+    border-color: $blue-light;
   }
   &-danger {
     color: $black;

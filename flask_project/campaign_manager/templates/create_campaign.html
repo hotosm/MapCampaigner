@@ -44,7 +44,9 @@
             <input id="campaign_status" title="campaign_status" name="campaign_status" style="display: none;" />
             <input id="user_id" title="user_id" name="user_id" style="display: none;" />
           </fieldset>
+          <div class="form-footer">
           <a class="btn btn-primary btn-next pull-right">Next</a>
+        </div>
         </div>
         <div class="tab-pane" id="area-of-interest">
           <div id="map-notification-holder"></div>
@@ -70,39 +72,20 @@
               <div class="area-table-list"></div>
             </div>
           </fieldset>
-          <a class="btn btn-primary btn-previous pull-left">Previous</a>
+          <div class="form-footer">
+            <a class="btn btn-previous btn-default">Back</a>
           <a class="btn btn-primary btn-next pull-right">Next</a>
+        </div>
         </div>
         <div class="tab-pane" id="features-and-attributes">
           <div class="form-group">
-            <label>Option 1: Choose from pre-loaded templates</label>
-            <a class="btn btn-default btn-lg btn-expand">
-              Choose from templates
+            <a id="btn-add" class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#custom-types-tags">
+              Add a feature
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
               </svg>
             </a>
           </div>
-          <div class="form-group">
-            <label>Option 2: Create your customized features &amp; attributes</label>
-            <a class="btn btn-default btn-lg btn-expand">
-              Fill a custom form
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-              </svg>
-            </a>
-          </div>
-          <div class="form-group">
-            <label>Option 3: Use yaml editor to verify the elements of your types</label>
-            <a class="btn btn-default btn-lg btn-expand">
-              Use a yaml editor
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-              </svg>
-            </a>
-          </div>
-          <label for="types">Hidden: types</label>
-          <select id="types" multiple="" name="types"></select>
           <div class="row">
             <div class="form-body col-lg-4">
               <div class="form-group">
@@ -118,13 +101,10 @@
             </div>
           </div>
           <div id="typesTagsContainer"></div>
-          <div class="row">
-            <div class="form-body form-group col-lg-4" style="margin-top: 10px">
-              <input id="btn-add" type="button" value="+ Add type" style="margin-top: 10px" data-toggle="modal" data-target="#custom-types-tags">
-            </div>
-          </div>
-          <a class="btn btn-primary btn-previous pull-left">Previous</a>
+          <div class="form-footer">
+            <a class="btn btn-previous btn-default">Back</a>
           <a class="btn btn-primary btn-next pull-right">Next</a>
+        </div>
         </div>
         <div class="tab-pane" id="settings">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -257,10 +237,12 @@
               </div>
             </div>
           </div>
-          <a class="btn btn-primary btn-previous pull-left">Previous</a>
+          <div class="form-footer">
+            <a class="btn btn-previous btn-default">Back</a>
           <button id="submit" name="submit" type="submit" class="btn btn-primary pull-right submit-button">Submit</button>
         </div>
       </div>
+    </div>
     </div>
     <div class="col-xs-12 col-sm-6">
       <div id="campaign-map-display"></div>

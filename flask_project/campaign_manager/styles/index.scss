@@ -41,6 +41,15 @@ form {
       display: block;
     }
   }
+  .form-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    right: 0;
+    background: white;
+    text-align: right;
+  }
 }
 #campaign-map-display {
   height: 600px;
