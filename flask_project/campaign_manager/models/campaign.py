@@ -960,11 +960,11 @@ class Campaign(JsonModel):
         Overview page."""
         feature_data = [] 
         soup = BeautifulSoup(xml_data, "lxml")
-        nodes = soup.find_all("nodes")
+        nodes = soup.find_all("node")
+        # print(nodes)
         for node in nodes:
             data = {"node_id": node["id"], 
                     "edited_by": node["user"],
-                    "edited_date": node["timestamp"],
-                    "attributes_found": node["tag"]["key"]}
+                    "edited_date": node["timestamp"]}
             feature_data.append(data)
         return feature_data

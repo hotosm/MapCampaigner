@@ -366,13 +366,14 @@ def campaign_boundary_upload_chunk(uuid):
 
 @campaign_manager.route('/campaign/<uuid>/details/<type_id>')
 def get_details(uuid, type_id):
+    campaign = Campaign.get(uuid)
     print(f"UUID: {uuid}")
     print(f"Type ID: {type_id}")
     # Get the full XML data on S3
-    xml_data = S3Data.get_overpass_data(uuid, type_id)
-    print(xml_data)
+    xml_data = S3Data().get_overpass_data(uuid, type_id)
+    # print(xml_data)
     # Get nodes data in Python data structure
-    nodes_data = Campaign.parse_feature_data(xml_data)
+    nodes_data = campaign.parse_feature_data(xml_data)
     print(nodes_data)
     # convert into json
     json_data = jsonify(nodes_data)
