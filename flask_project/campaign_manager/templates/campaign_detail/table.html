@@ -29,98 +29,40 @@
     var uuid = '{{ uuid }}';
     var types = {{ types| tojson }};
 
-    var details = [];
+    // var details = [];
 
-    details.push($.ajax({
+    $.ajax({
     type: 'GET',
     url: '/campaign/' + uuid + '/details/shop=supermarket',
     dataType: 'json',
     success: function (data) {
       for(var i=0; i<data.length; i++) {
-        d = {node_id: data[i].node_id, 
-             feature_type: "supermarket",
-             status: '', 
-             editor: data[i].edited_by, 
-             date: data[i].edited_date,
-             attribute_found: '', 
-             attribute_not_found: ''};
-        // console.log(d);
-        details.push(d);
-      }
-    },
-    }));
-
-    details = details.slice(1)
-    console.log(details);
-    totalPages = Math.round(details.length / 10);
-    console.log(totalPages);
-    currentPage = 0;
-    sliceStart = 0;
-    sliceEnd = 10;
-    renderPage(details.slice(sliceStart, sliceEnd));
-  }
-
-    function renderPage(slicedData) {
-    $('#pagination-errors tbody').html('');
-    $('.current-page').html(`${currentPage + 1}/${totalPages}`);
-    var prout = slicedData;
-    for (var i = 0; i < prout.length; i++) {
-      var dataRow = buildData(prout[i]);
-      var row = `
+        
+        var row = `
       <tr>
-        <td>${dataRow.node_id}</td>
-        <td>${dataRow.feature_type}</td>
-        <td>${dataRow.status}</td>
-        <td>${dataRow.editor}</td>
-        <td>${dataRow.edited_date}</td>
-        <td>${dataRow.attribute_found}</td>
-        <td>${dataRow.attribute_not_found}</td>
+        <td>` + data[i].node_id + `</td>
+        <td>` + 'supermarket' + `</td>
+        <td>` + '' + `</td>
+        <td>` + data[i].edited_by + `</td>
+        <td>` + data[i].edited_date + `</td>
+        <td>` + '' + `</td>
+        <td>` + '' + `</td>
       </tr>`;
       $('#pagination-errors tbody').append(row);
-    }
+      }
+    },
+    });
+
+    // details = details.slice(1)
+    // console.log(details);
+    // totalPages = Math.round(details.length / 10);
+    // console.log(totalPages);
+    // currentPage = 0;
+    // sliceStart = 0;
+    // sliceEnd = 10;
+    // renderPage(details.slice(sliceStart, sliceEnd));
   }
 
-    function buildData(data) {    
-    return {
-      node_id: data.node_id, 
-      feature_type: data.type,
-      status: data.status, 
-      editor: data.edited_by, 
-      date: data.edited_date,
-      attribute_found: data.attribute_found, 
-      attribute_not_found: data.attribute_not_found
-    }
-  }
-
-   $('.next-page').click(function() {
-    currentPage += 1;
-    sliceStart += 10;
-    sliceEnd += 10;
-
-    if (currentPage === totalPages)
-      resetIndexes();
-
-    renderPage(data.slice(sliceStart, sliceEnd));
-  });
-
-  $('.previous-page').click(function() {
-    if (currentPage === 0)
-      return
-    currentPage -= 1;
-    sliceStart -= 10;
-    sliceEnd -= 10;
-
-    if (currentPage < 0)
-      resetIndexes();
-
-    renderPage(data.slice(sliceStart, sliceEnd));
-  });    
-
-  function resetIndexes() {
-    currentPage = 0;
-    sliceStart = 0;
-    slicedEnd = 10;
-  }
 
   getDetails();
 </script>
