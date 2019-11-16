@@ -36,24 +36,17 @@
     url: '/campaign/' + uuid + '/details/shop=supermarket',
     dataType: 'json',
     success: function (data) {
-      for(var i=0; i<data.length; i++) {
-        
-        var row = `
-      <tr>
-        <td>` + data[i].node_id + `</td>
-        <td>` + 'supermarket' + `</td>
-        <td>` + '' + `</td>
-        <td>` + data[i].edited_by + `</td>
-        <td>` + data[i].edited_date + `</td>
-        <td>` + '' + `</td>
-        <td>` + '' + `</td>
-      </tr>`;
-      $('#pagination-errors tbody').append(row);
+      var totalPages =  Math.round(data.length / 10);
+      var currentPage = 1;
+      for(var i=0; i<data.length; i=i+10) {
+        var slice = data.slice(i, i+10);
+        renderPage(slice, currentPage, totalPages);
+        currentPage++;
       }
     },
     });
 
-    // details = details.slice(1)
+
     // console.log(details);
     // totalPages = Math.round(details.length / 10);
     // console.log(totalPages);
@@ -61,6 +54,24 @@
     // sliceStart = 0;
     // sliceEnd = 10;
     // renderPage(details.slice(sliceStart, sliceEnd));
+  }
+ 
+  function renderPage(slicedData, currentPage, totalPages) {
+    $('#pagination-errors tbody').html('');
+    $('.current-page').html(currentPage + ' / ' + totalPages);
+    for (var i = 0; i < slicedData.length; i++) {
+      var row = `
+      <tr>
+        <td>` + slicedData[i].node_id + `</td>
+        <td>` + 'supermarket' + `</td>
+        <td>` + '' + `</td>
+        <td>` + slicedData[i].edited_by + `</td>
+        <td>` + slicedData[i].edited_date + `</td>
+        <td>` + '' + `</td>
+        <td>` + '' + `</td>
+      </tr>`;
+      $('#pagination-errors tbody').append(row);
+    }
   }
 
 
