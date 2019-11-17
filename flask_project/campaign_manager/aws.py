@@ -199,8 +199,8 @@ class S3Data(object):
     def thumbnail_url(self, uuid):
         return "{url}/thumbnail.png".format(url=self.url(uuid))
 
-    def get_overpass_data(self, uuid, type_id):
-        overpass_url = f"campaigns/{uuid}/raw_data/overpass"
-        key = f"{overpass_url}/{type_id}.xml"
+    def get_data(self, key):
+        # overpass_url = f"campaigns/{uuid}/raw_data/overpass"
+        # key = f"{overpass_url}/{type_id}.xml"
         file_content = self.s3.get_object(Bucket=self.bucket, Key=key)['Body']
         return file_content.read()

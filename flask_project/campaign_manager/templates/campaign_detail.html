@@ -237,12 +237,13 @@
 
   function getOverviewData(uuid) {
     var uuid = '{{ uuid }}';
-
+    // console.log(uuid);
     $.ajax({
       type: 'GET',
       url: '/campaign/' + uuid + '/overview',
       dataType: 'json',
       success: function (data) {
+        // console.log("FOO");
         features = data.feature_collected
         $('#features-collected').html(features);
         mappers = data.total_contributors

@@ -367,20 +367,19 @@ def campaign_boundary_upload_chunk(uuid):
 def get_overview_data(uuid):
     campaign = Campaign.get(uuid)
     types = campaign.get_s3_types()
-    print(types)
-    url = f'campaigns/{uuid}/render'
     feature_collected = []
     total_contributors = []
     
     # For easch feature type
     for feature_type in types:
         # Get feature_completeness.json
-        json_feat = S3Data().fetch(f'{url}/{feature_type}/feature_completeness.json')
-        print(json_feat)
+        feat_file = f'{feature_type}feature_completeness.json'
+        json_feat = json.loads(S3Data().get_data(feat_file))
         collected = json_feat["features_collected"]
         feature_collected.append(collected)
         # Get user_engagement.json
-        json_mappers = S3Data().fetch(f'{url}/{feature_type}/user_engagement.json')
+        user_file = f'{feature_type}mapper_engagement.json'
+        json_mappers = json.loads(S3Data().get_data(user_file))
         unique_mappers = set(list(map(lambda x:x["name"], json_mappers)))
         num_mappers = len(unique_mappers)
         total_contributors.append(num_mappers)
@@ -396,7 +395,8 @@ def get_overview_data(uuid):
 def get_details(uuid, type_id):
     campaign = Campaign.get(uuid)
     # Get the full XML data on S3
-    xml_data = S3Data().get_overpass_data(uuid, type_id)
+    xml_file = f"campaigns/{uuid}/raw_data/overpass/{type_id}.xml"
+    xml_data = S3Data().get_data(xml_file)
     # print(xml_data)
     # Get nodes data in Python data structure
     nodes_data = campaign.parse_feature_data(xml_data)
