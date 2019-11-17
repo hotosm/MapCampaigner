@@ -13,6 +13,7 @@ import yaml
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
+from functools import reduce
 
 from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
@@ -389,6 +390,13 @@ def geojson_to_gpx(geojson):
 
     return ET.tostring(root, encoding="utf8")
 
+def get_all_attributes(osm_elements):
+    attrs = list(map(get_attributes, osm_elements))
+    attrs_len = [len(a) for a in attrs]
+    max_num_attrs = reduce(max, attrs_len)
+    idx_max_num_attrs = attrs_len.index(max_num_attrs)
+    all_attrs = attrs[idx_max_num_attrs]
+    return all_attrs
 
 def get_attributes(osm_element):
     tags = [desc for desc in osm_element.descendants if desc != ' ']

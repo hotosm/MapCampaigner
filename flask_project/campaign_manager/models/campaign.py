@@ -29,7 +29,8 @@ from campaign_manager.utilities import (
     get_survey_json,
     parse_json_string,
     simplify_polygon,
-    get_attributes
+    get_attributes,
+    get_all_attributes
 )
 from campaign_manager.aws import S3Data
 from enum import Enum
@@ -965,7 +966,8 @@ class Campaign(JsonModel):
         # osm elements can be nodes, ways, relations
         nodes = soup.find_all("node")
         # print(nodes)
-        all_attrs = set()
+        all_attrs = get_all_attributes(nodes)
+        print(f"all_attrs: {all_attrs}")
         for node in nodes:
             # print(f"node: {node}")
             # Retrieve attributes
@@ -975,6 +977,6 @@ class Campaign(JsonModel):
                     "edited_by": node["user"],
                     "edited_date": node["timestamp"],
                     "attributes_found": attributes_found}
-            print(data)
+            # print(data)
             feature_data.append(data)
         return feature_data
