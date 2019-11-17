@@ -960,10 +960,11 @@ class Campaign(JsonModel):
         Overview page."""
         feature_data = [] 
         soup = BeautifulSoup(xml_data, "lxml")
+        # osm elements can be nodes, ways, relations
         nodes = soup.find_all("node")
         # print(nodes)
         for node in nodes:
-            data = {"node_id": node["id"], 
+            data = {"node_id": f'node:{node["id"]}', 
                     "edited_by": node["user"],
                     "edited_date": node["timestamp"]}
             feature_data.append(data)

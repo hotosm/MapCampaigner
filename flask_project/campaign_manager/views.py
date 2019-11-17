@@ -363,21 +363,47 @@ def campaign_boundary_upload_chunk(uuid):
     except Campaign.DoesNotExist:
         abort(404)
 
+@campaign_manager.route('/campaign/<uuid>/overview')
+def get_overview_data(uuid):
+    campaign = Campaign.get(uuid)
+    types = campaign.get_s3_types()
+    print(types)
+    url = f'campaigns/{uuid}/render'
+    feature_collected = []
+    total_contributors = []
+    
+    # For easch feature type
+    for feature_type in types:
+        # Get feature_completeness.json
+        json_feat = S3Data().fetch(f'{url}/{feature_type}/feature_completeness.json')
+        print(json_feat)
+        collected = json_feat["features_collected"]
+        feature_collected.append(collected)
+        # Get user_engagement.json
+        json_mappers = S3Data().fetch(f'{url}/{feature_type}/user_engagement.json')
+        unique_mappers = set(list(map(lambda x:x["name"], json_mappers)))
+        num_mappers = len(unique_mappers)
+        total_contributors.append(num_mappers)
+    # Combine data into a json object
+    json_data = { 
+        "feature_collected": sum(feature_collected),
+        "total_contributors": sum(total_contributors)
+    }
+    # Serve it
+    return json_data
 
 @campaign_manager.route('/campaign/<uuid>/details/<type_id>')
 def get_details(uuid, type_id):
     campaign = Campaign.get(uuid)
-    print(f"UUID: {uuid}")
-    print(f"Type ID: {type_id}")
     # Get the full XML data on S3
     xml_data = S3Data().get_overpass_data(uuid, type_id)
     # print(xml_data)
     # Get nodes data in Python data structure
     nodes_data = campaign.parse_feature_data(xml_data)
-    print(nodes_data)
+    # print(nodes_data)
     # convert into json
     json_data = jsonify(nodes_data)
-    print(json_data)
+    # print(json_data)
     # serve it
     return json_data
         

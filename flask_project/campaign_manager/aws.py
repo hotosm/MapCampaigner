@@ -202,7 +202,5 @@ class S3Data(object):
     def get_overpass_data(self, uuid, type_id):
         overpass_url = f"campaigns/{uuid}/raw_data/overpass"
         key = f"{overpass_url}/{type_id}.xml"
-        print(key)
-
         file_content = self.s3.get_object(Bucket=self.bucket, Key=key)['Body']
         return file_content.read()
