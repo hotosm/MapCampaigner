@@ -388,3 +388,12 @@ def geojson_to_gpx(geojson):
         root.append(wpt)
 
     return ET.tostring(root, encoding="utf8")
+
+
+def get_attributes(osm_element):
+    tags = [desc for desc in osm_element.descendants if desc != ' ']
+    attr = [tag["k"] for tag in tags]
+    attributes_found = []
+    if attr:
+        attributes_found = attr
+    return attributes_found

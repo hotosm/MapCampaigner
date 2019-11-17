@@ -13,6 +13,7 @@ import os
 import pygeoj
 import time
 import zlib
+import string as str
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
@@ -27,7 +28,8 @@ from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
     get_survey_json,
     parse_json_string,
-    simplify_polygon
+    simplify_polygon,
+    get_attributes
 )
 from campaign_manager.aws import S3Data
 from enum import Enum
@@ -963,9 +965,16 @@ class Campaign(JsonModel):
         # osm elements can be nodes, ways, relations
         nodes = soup.find_all("node")
         # print(nodes)
+        all_attrs = set()
         for node in nodes:
+            # print(f"node: {node}")
+            # Retrieve attributes
+            attributes_found = get_attributes(node)
+            # print(attributes_found)
             data = {"node_id": f'node:{node["id"]}', 
                     "edited_by": node["user"],
-                    "edited_date": node["timestamp"]}
+                    "edited_date": node["timestamp"],
+                    "attributes_found": attributes_found}
+            print(data)
             feature_data.append(data)
         return feature_data

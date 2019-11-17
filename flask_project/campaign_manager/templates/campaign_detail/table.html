@@ -26,6 +26,10 @@
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
+        //console.log(d.attributes_found);
+        var attrs = displayTags(d.attributes_found);
+        //console.log(typeof attrs)
+        console.log(attrs);
         var row = `
       <tr>
         <td>` + d.node_id + `</td>
@@ -33,7 +37,7 @@
         <td>` + '' + `</td>
         <td>` + d.edited_by + `</td>
         <td>` + d.edited_date + `</td>
-        <td>` + '' + `</td>
+        <td>` + attrs + `</td>
         <td>` + '' + `</td>
       </tr>`;
       $('#table_id tbody').append(row);
@@ -41,6 +45,15 @@
       $('#table_id').DataTable();
     }  
    });
+  }
+
+  function displayTags(tags) {
+    var listTags = '';
+    $.each(tags, function(i, t){
+      tag = '<span class="badge badge-light">' + t + '</span> '
+      listTags = listTags + tag;
+    });
+    return listTags
   }
 
  getDetails();
