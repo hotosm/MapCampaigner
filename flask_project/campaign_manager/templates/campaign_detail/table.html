@@ -26,10 +26,8 @@
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
-        //console.log(d.attributes_found);
-        attrsFound = displayTags(d.attributes_found)
-        attrsNotFound = displayTags(d.attributes_not_found)
-        // console.log(attrsFound);
+        var attrsFound = displayTags(d.attributes_found);
+        var attrsNotFound = displayTags(d.attributes_not_found);
         var row = `
       <tr>
         <td>` + d.node_id + `</td>
