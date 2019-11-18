@@ -807,6 +807,7 @@ def create_campaign():
     context['uuid'] = uuid.uuid4().hex
     context['types'] = {}
     context['link_to_omk'] = False
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')

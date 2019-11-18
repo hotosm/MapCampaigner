@@ -91,7 +91,9 @@ function addMultipleTypes(typeList) {
     });
 }
 
-function addTypes(value) {
+function addTypes(featureName) {
+    var template = _.template($("#_template-feature-tile").html());
+    var html = template({ name: featureName });
     var row = $("<div/>");
     row.addClass("row");
 
@@ -100,6 +102,7 @@ function addTypes(value) {
     column.addClass("form-group");
     column.addClass("type-selection");
     row.append(column);
+    row.hide(); // Keeping `row` because the form depends on it, but hiding it because the user doesn't need to see it
 
     var select = $("<select />");
     select.addClass('select-types');
@@ -110,50 +113,57 @@ function addTypes(value) {
     column.append(select);
     select.change(onTypesChange);
 
-    if (value) {
+    if (featureName) {
         // Add empty value with no default selection
-        if (select.find('option[value="' + value + '"]').length === 0) {
+        if (select.find('option[value="' + featureName + '"]').length === 0) {
             column.append('' +
                 '<div class="edit-custom-type">' +
                 '<i class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal" data-target="#custom-types-tags"></i>' +
                 '</div>');
-            select.prepend('<option value="' + value + '">' + value + '</option>');
+            select.prepend('<option value="' + featureName + '">' + featureName + '</option>');
             select.prop("disabled", true);
         }
         select.prepend('<option value="">Select type</option>');
         select.children().removeAttr('selected');
-        select.find('option[value="' + value + '"]').prop('selected', true);
+        select.find('option[value="' + featureName + '"]').prop('selected', true);
         select.trigger('change');
     } else {
         // Add empty value with default selection
         select.prepend('<option value="" selected="selected">Select type</option>');
     }
 
+    $("#typesTagsContainer").append(html);
     $("#typesTagsContainer").append(row);
+    addTagsToFeature(featureName);
+}
+
+function addTagsToFeature(featureName) {
+    if (typeof featureName !== 'string') return;
+    const hasTagsForFeature = types && types[featureName] && types[featureName]['tags'];
+    if (!hasTagsForFeature) return;
+    const featureTile = $('#' + featureName + '-feature-tile');
+    const featureTags = featureTile.find('.feature-tags');
+    const tags = types[featureName]['tags'];
+    const tagNames = Object.keys(tags);
+    featureTags.empty();
+    tagNames.forEach(name => {
+        const label = $('<span class="label label-default key-tags">' + name + '</span>');
+        featureTags.append(label);
+    });
 }
 
 function onTypesChange() {
     $('.types-required-message').hide();
-
     var selected_type = this.value;
-
     var row = $(this).parent().parent();
-
     var row_tags = row.children('.row-tags');
-
-    if (row_tags) {
-        row_tags.remove();
-    }
-
+    if (row_tags) row_tags.remove();
     var column = $("<div/>");
     column.addClass("row-tags");
     column.addClass("col-lg-6");
-
     row.append(column);
-
     var div = $("<div />");
     div.addClass("row-tags-wrapper");
-
     var selected_tags;
     if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {

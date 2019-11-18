@@ -91,7 +91,7 @@ function addCustomType(typeData) {
 
 function modalReset() {
     rowElements = {};
-    $('#custom-types-tags .modal-title').html('+ Add type');
+    $('#custom-types-tags .modal-title').html('Add a feature');
     $('#btn-add-custom-type').html('Add');
     $('#custom_type_name').val('');
     $('#custom_type_feature').val('');

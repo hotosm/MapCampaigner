@@ -55,32 +55,35 @@
 </style>
 
 <div id="custom-types-tags" class="modal fade" role="dialog">
-    <div id="easy-format" class="modal-dialog">
-        <!-- Modal content-->
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">+ Add type</h4>
+                <h4 class="modal-title">Add a feature</h4>
+                <br />
+                <p>Choose one of the following methods to add a feature and attributes.</p>
             </div>
 
 			<div class="modal-body">
 				<ul class="nav nav-tabs">
-				<li id="li-home" class="active"><a data-toggle="tab" href="#modal-home">Home</a></li>
-					<li id="li-template"><a data-toggle="tab"  href="#modal-template">Choose from template</a></li>
+					<li id="li-template" class="active"><a data-toggle="tab"  href="#modal-template">Choose from template</a></li>
 					<li id="li-custom"><a data-toggle="tab"  href="#modal-custom">Custom Form</a></li>
 					<li id="li-yaml"><a data-toggle="tab"  href="#modal-yaml">Yaml editor</a></li>
 				</ul>
 
 				<div class="tab-content">
-                    <div id="modal-home" class="tab-pane fade in active">
-    					{% include 'modals/modal_home.html' %}
-                    </div>
-    				<div id="modal-template" class="tab-pane fade">
+    				<div id="modal-template" class="tab-pane fade in active">
+                        <div class="container-fluid">
+                                {% for feature in feature_templates %}
+                                {% include 'components/feature_tile.html' %}
+                                 {% endfor %}
+                        </div>
     				</div>
     				<div id="modal-custom" class="tab-pane fade">
     					{% include 'modals/modal_form.html' %}
     				</div>
     				<div id="modal-yaml" class="tab-pane fade">
+                        <p><b>Note:</b> In the YAML editor, you can add more than one feature type at a time.</p>
     					{% include 'modals/modal_yaml.html' %}
     				</div>
 				</div>
@@ -116,27 +119,6 @@
 <script>
     var rowElements = {};
     $('#custom-types-tags').on('show.bs.modal', function (e) {
-        // Add classes and attributes.
-        $('#modal-home').addClass('active').addClass('in');
-        $('#li-home').addClass('active');
-
-        $('#li-custom').removeClass('active');
-        $('#modal-custom').removeClass('active').removeClass('in');
-
-        $('#li-yaml').removeClass('active');
-        $('#modal-yaml').removeClass('active').removeClass('in');
-
-        $('#li-template').removeClass('active');
-        $('#modal-template').removeClass('active').removeClass('in').empty();
-
-        $('#li-template').removeClass('disabled');
-        $('#li-home').removeClass('disabled');
-        $('#li-yaml').removeClass('disabled');
-
-        $('#li-template a').attr('data-toggle', 'tab');
-        $('#li-home a').attr('data-toggle', 'tab');
-        $('#li-yaml a').attr('data-toggle', 'tab');
-
         rowElements = null;
         var relatedTarget = e.relatedTarget;
         var type_selected = $(relatedTarget).closest('.form-group').find('select').val();
@@ -150,8 +132,8 @@
 
     // Check types option.
     $('#li-template').click(function() {
-        addTypes();
-        $('#custom-types-tags').modal('toggle');
+        // addTypes();
+        // $('#custom-types-tags').modal('toggle');
     });
 
 </script>
