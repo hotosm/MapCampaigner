@@ -394,18 +394,33 @@ def get_all_attributes(osm_elements):
     """Takes in a list of OSM elements and returns a list
     of the most attributes added by mappers"""
     attrs = list(map(get_attributes, osm_elements))
-    attrs_len = [len(a) for a in attrs]
-    max_num_attrs = reduce(max, attrs_len)
-    idx_max_num_attrs = attrs_len.index(max_num_attrs)
-    all_attrs = attrs[idx_max_num_attrs]
+    attrs = [tag for tags in attrs for tag in tags]
+    all_attrs = list(set(attrs))
     return all_attrs
 
 def get_attributes(osm_element):
     """Takes in one OSM element and returns the attributes
     added by the mapper."""
-    tags = [desc for desc in osm_element.descendants if desc != ' ']
-    attr = [tag["k"] for tag in tags]
     attributes_found = []
-    if attr:
-        attributes_found = attr
+    tags = [desc for desc in osm_element.descendants if desc != ' ']
+    if tags:
+        attr = [tag["k"] for tag in tags if tag and tag.has_attr("k")]
+        if attr:
+            attributes_found = attr
     return attributes_found
+
+def parse_osm_element(element, element_type, all_attrs):
+    # Retrieve attributes
+    attributes_found = get_attributes(element)
+    attributes_not_found = list(set(all_attrs) - set(attributes_found))
+    if not attributes_not_found:
+        status = "Complete"
+    else:
+        status = "Incomplete"
+    data = {"node_id": f'{element_type}:{element["id"]}',
+            "status": status,
+            "edited_by": element["user"],
+            "edited_date": element["timestamp"],
+            "attributes_found": attributes_found,
+            "attributes_not_found": attributes_not_found}
+    return data

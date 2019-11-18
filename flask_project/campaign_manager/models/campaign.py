@@ -30,7 +30,8 @@ from campaign_manager.utilities import (
     parse_json_string,
     simplify_polygon,
     get_attributes,
-    get_all_attributes
+    get_all_attributes,
+    parse_osm_element
 )
 from campaign_manager.aws import S3Data
 from enum import Enum
@@ -964,24 +965,14 @@ class Campaign(JsonModel):
         feature_data = [] 
         soup = BeautifulSoup(xml_data, "lxml")
         # osm elements can be nodes, ways, relations
-        nodes = soup.find_all("node")
-        # print(nodes)
-        all_attrs = get_all_attributes(nodes)
-        for node in nodes:
-            # print(f"node: {node}")
-            # Retrieve attributes
-            attributes_found = get_attributes(node)
-            attributes_not_found = list(set(all_attrs) - set(attributes_found))
-            if not attributes_not_found:
-                status = "Complete"
-            else:
-                status = "Incomplete"
-            # print(attributes_found)
-            data = {"node_id": f'node:{node["id"]}',
-                    "status": status,
-                    "edited_by": node["user"],
-                    "edited_date": node["timestamp"],
-                    "attributes_found": attributes_found,
-                    "attributes_not_found": attributes_not_found}
-            feature_data.append(data)
+        osm_elements = {"node": soup.find_all("node"), 
+                        "way": soup.find_all("way"), 
+                        "relation": soup.find_all("relation")}
+        all_attrs = get_all_attributes(osm_elements["node"] + \
+                                       osm_elements["way"] + \
+                                       osm_elements["relation"])
+        for element_type, elements in osm_elements.items():
+            for element in elements:
+                data = parse_osm_element(element, element_type, all_attrs)
+                feature_data.append(data)
         return feature_data
