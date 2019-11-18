@@ -967,16 +967,21 @@ class Campaign(JsonModel):
         nodes = soup.find_all("node")
         # print(nodes)
         all_attrs = get_all_attributes(nodes)
-        print(f"all_attrs: {all_attrs}")
         for node in nodes:
             # print(f"node: {node}")
             # Retrieve attributes
             attributes_found = get_attributes(node)
+            attributes_not_found = list(set(all_attrs) - set(attributes_found))
+            if not attributes_not_found:
+                status = "Complete"
+            else:
+                status = "Incomplete"
             # print(attributes_found)
-            data = {"node_id": f'node:{node["id"]}', 
+            data = {"node_id": f'node:{node["id"]}',
+                    "status": status,
                     "edited_by": node["user"],
                     "edited_date": node["timestamp"],
-                    "attributes_found": attributes_found}
-            # print(data)
+                    "attributes_found": attributes_found,
+                    "attributes_not_found": attributes_not_found}
             feature_data.append(data)
         return feature_data

@@ -27,18 +27,18 @@
     success: function (data) {
       $.each(data, function(i, d){
         //console.log(d.attributes_found);
-        var attrs = displayTags(d.attributes_found);
-        //console.log(typeof attrs)
-        console.log(attrs);
+        attrsFound = displayTags(d.attributes_found)
+        attrsNotFound = displayTags(d.attributes_not_found)
+        // console.log(attrsFound);
         var row = `
       <tr>
         <td>` + d.node_id + `</td>
         <td>` + 'supermarket' + `</td>
-        <td>` + '' + `</td>
+        <td>` + d.status + `</td>
         <td>` + d.edited_by + `</td>
         <td>` + d.edited_date + `</td>
-        <td>` + attrs + `</td>
-        <td>` + '' + `</td>
+        <td>` + attrsFound + `</td>
+        <td>` + attrsNotFound + `</td>
       </tr>`;
       $('#table_id tbody').append(row);
       });

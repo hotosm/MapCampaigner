@@ -391,6 +391,8 @@ def geojson_to_gpx(geojson):
     return ET.tostring(root, encoding="utf8")
 
 def get_all_attributes(osm_elements):
+    """Takes in a list of OSM elements and returns a list
+    of the most attributes added by mappers"""
     attrs = list(map(get_attributes, osm_elements))
     attrs_len = [len(a) for a in attrs]
     max_num_attrs = reduce(max, attrs_len)
@@ -399,6 +401,8 @@ def get_all_attributes(osm_elements):
     return all_attrs
 
 def get_attributes(osm_element):
+    """Takes in one OSM element and returns the attributes
+    added by the mapper."""
     tags = [desc for desc in osm_element.descendants if desc != ' ']
     attr = [tag["k"] for tag in tags]
     attributes_found = []
