@@ -61,6 +61,12 @@
       font-size: 14px;
     }
   }
+  .label-default {
+    overflow: hidden;
+    max-height: 2em;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
   .progress {
     clear: both;
     &-rank {
