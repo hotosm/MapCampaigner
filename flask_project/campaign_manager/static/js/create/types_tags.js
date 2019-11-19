@@ -90,10 +90,28 @@ function addMultipleTypes(typeList) {
         addTypes(selected_type);
     });
 }
+function slugify(string) {
+    const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+    const p = new RegExp(a.split('').join('|'), 'g')
+  
+    return string.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, '-and-') // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start of text
+      .replace(/-+$/, '') // Trim - from end of text
+  }
 
 function addTypes(featureName) {
     var template = _.template($("#_template-feature-tile").html());
-    var html = template({ name: featureName });
+    var html = template({
+        name: featureName,
+        slug: slugify(featureName),
+        osmFeature: types[featureName]['feature']
+    });
     var row = $("<div/>");
     row.addClass("row");
 
@@ -141,14 +159,15 @@ function addTagsToFeature(featureName) {
     if (typeof featureName !== 'string') return;
     const hasTagsForFeature = types && types[featureName] && types[featureName]['tags'];
     if (!hasTagsForFeature) return;
-    const featureTile = $('#' + featureName + '-feature-tile');
+    const idString = '#' + slugify(featureName) + '-feature-tile';
+    const featureTile = $(idString);
     const featureTags = featureTile.find('.feature-tags');
     const tags = types[featureName]['tags'];
     const tagNames = Object.keys(tags);
     featureTags.empty();
     tagNames.forEach(name => {
         const subtags = tags[name];
-        const subtagStr = subtags.length >=0 ? ": " + subtags.join(', ') : '';
+        const subtagStr = subtags.length >=1 ? ": " + subtags.join(', ') : '';
         const tagName = name + subtagStr;
         const label = $('<span class="label label-default key-tags" title="' + tagName + '">' + tagName + '</span>');
         featureTags.append(label);
