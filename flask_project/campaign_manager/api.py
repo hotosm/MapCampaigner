@@ -14,6 +14,7 @@ from reporter import config
 
 api = Api(campaign_manager)
 
+
 class UserCampaigns(Resource):
     """Shows a list of all campaigns"""
     def get(self, osm_id):
