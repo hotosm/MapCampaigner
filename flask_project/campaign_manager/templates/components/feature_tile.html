@@ -26,7 +26,7 @@
           <div class="col-xs-12 row-tags-wrapper">
             <div class="row-tags">
               {% for tag in feature_templates[feature]['tags'] %}
-                <span class="label label-default">{{tag}}</span>
+                <span class="label label-default">{{tag}}: {{ feature_templates[feature]['tags'][tag]|join(', ') }}</span>
               {% endfor %}
             </div>
           </div>
