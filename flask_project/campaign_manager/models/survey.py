@@ -1,10 +1,12 @@
 from campaign_manager.aws import S3Data
+import yaml, os
+from glob import glob
 
 
 class Survey():
 
-    def __init__(self, survey_name):
-        self.data = S3Data().fetch('surveys/{}'.format(survey_name))
+    def __init__(self, file):
+        self.data = self.read_yaml_file(file)
         self.do_tags()
         self.feature = self.feature()
 
@@ -27,12 +29,12 @@ class Survey():
 
     @staticmethod
     def all():
-        surveys = S3Data().list('surveys')
+        path = os.path.join(os.getcwd(), 'flask_project/campaign_manager/feature_templates', '*.yml')
+        files = glob(path)
 
-        # Remove modified value when listing surveys.
-        surveys = [s['uuid'] for s in surveys]
+        files = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]
 
-        return surveys
+        return files
 
     @staticmethod
     def find_by_name(survey_name):
@@ -41,3 +43,11 @@ class Survey():
     @staticmethod
     def to_form():
         return [(survey, survey) for survey in Survey.all()]
+
+    @staticmethod
+    def read_yaml_file(filename):
+        with open(filename, 'r') as stream:
+            try:
+                return yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)

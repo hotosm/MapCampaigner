@@ -1,0 +1,10 @@
+feature: amenity=cafe
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+tags:
+    - name
+    - cuisine
+    - operator
+    - opening_hours
