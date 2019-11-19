@@ -1,15 +1,13 @@
+import os
 from flask_restful import Resource, Api
 from flask import request
-import logging
-import os
-from flask import current_app
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.mapper_engagement import \
     MapperEngagement
 from campaign_manager.utilities import get_coordinate_from_ip, \
-    get_uuids_from_cache, get_data,get_data_from_s3
+    get_uuids_from_cache, get_data, get_data_from_s3
 from campaign_manager.aws import S3Data
 
 from reporter import config
@@ -17,7 +15,7 @@ from reporter import config
 api = Api(campaign_manager)
 
 class UserCampaigns(Resource):
-    """Shows a list of all campaigns by osm_id"""
+    """Shows a list of all campaigns"""
     def get(self, osm_id):
         user = S3Data().fetch(f'user_campaigns/{osm_id}.json')
         campaigns = [
