@@ -75,9 +75,9 @@ class CampaignNearestList(Resource):
         else:
             coordinate = get_coordinate_from_ip()
         campaigns = self.get_nearest_campaigns(
-                coordinate,
-                campaign_status,
-                args
+            coordinate,
+            campaign_status,
+            args
         )
         campaigns_json = []
 
@@ -100,7 +100,7 @@ class CampaignNearestWithTagList(Resource):
         :type tag: str
         """
         campaigns = Campaign.nearest_campaigns(coordinate, **{
-                'tags': tag
+            'tags': tag
         })
         campaigns_json = []
 
@@ -120,7 +120,7 @@ class CampaignTagList(Resource):
         :type tag: str
         """
         return Campaign.all(**{
-                    'tags': tag
+            'tags': tag
                 })
 
     def get(self, tag):
