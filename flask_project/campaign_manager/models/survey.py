@@ -29,7 +29,11 @@ class Survey():
 
     @staticmethod
     def all():
-        path = os.path.join(os.getcwd(), 'flask_project/campaign_manager/feature_templates', '*.yml')
+        path = os.path.join(
+            os.getcwd(),
+            'flask_project/campaign_manager/feature_templates',
+            '*.yml'
+        )
         files = glob(path)
 
         files = [os.path.splitext(os.path.split(f)[-1])[0] for f in files]

@@ -77,7 +77,11 @@ def get_types():
     :rtype: dict
     """
     surveys = {}
-    path = os.path.join(os.getcwd(), 'flask_project/campaign_manager/feature_templates', '*.yml')
+    path = os.path.join(
+        os.getcwd(),
+        'flask_project/campaign_manager/feature_templates',
+        '*.yml'
+    )
     files = glob(path)
     for file in files:
         filename = os.path.splitext(os.path.split(file)[-1])[0]

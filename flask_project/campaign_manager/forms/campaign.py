@@ -50,7 +50,8 @@ class CampaignForm(FlaskForm):
     description = TextAreaField(
         u'Campaign description',
         description='Description for the campaign',
-        render_kw={'placeholder': 'Describe the type of features that are being collected and any other participation details.'}
+        render_kw={'placeholder': 'Describe the type of features that ' +	
+                   'are beng collected and any other participation details.'}
     )
     campaign_status = RadioField(
         u'Campaign status',
