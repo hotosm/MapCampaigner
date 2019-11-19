@@ -2,7 +2,8 @@ import xml.sax
 import json
 from file_manager import (
     GeojsonFileManager,
-    ErrorsFileManager
+    ErrorsFileManager,
+    FeatureFileManager
 )
 
 
@@ -24,6 +25,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             destination=render_data_path)
         self.errors_file_manager = ErrorsFileManager(
             destination=render_data_path)
+        self.feature_file_manager = FeatureFileManager(
+            destination=render_data_path)
         self.error_ids = {
             'node': [],
             'way': [],
@@ -39,6 +42,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.geojson_file_manager.save()
         self.errors_file_manager.close()
         self.errors_file_manager.save()
+        self.feature_file_manager.close()
+        self.feature_file_manager.save()
 
     def startElement(self, name, attrs):
         if name in ['node', 'way']:
@@ -55,6 +60,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 self.has_tags = False
 
         if self.is_element and self.element['type'] == 'way':
+            if name == 'tag':
+                self.has_tags = True
+                self.tags[attrs.getValue('k')] = attrs.getValue('v')
             if name == 'nd':
                 ref = attrs.getValue('ref')
                 if ref in self.unused_nodes:
@@ -79,14 +87,17 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         if name == 'node':
             if self.has_tags is True and self.element_type == 'Point':
                 self.build_feature('node')
+                self.build_feature_details('node')
                 self.tags = {}
             elif self.has_tags is False:
+                self.build_feature_details('node')
                 self.unused_nodes[self.element['id']] = [
                     float(self.element['lon']),
                     float(self.element['lat'])
                 ]
         if name == 'way' and self.element_type in ['Polygon', 'Line']:
             self.build_feature('way')
+            self.build_feature_details('way')
             self.tags = {}
 
     def has_no_required_tags(self):
@@ -99,6 +110,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
+            'edited_by': attrs.getValue("user")
             'nodes': []
         }
         if name == 'node':
@@ -161,6 +173,15 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         }
         self.errors_file_manager.write(json.dumps(payload))
         self.errors_warnings += 1
+
+    def build_feature_details(self, osm_type):
+        feature = {"osm_id": f"{osm_type}:{self.element['id']}",
+                   "status": "status",
+                   "edited_by": self.element["user"],
+                   "edited_date": self.element["timestamp"],
+                   "attributes_found": "attributes found",
+                   "attributes_not_found": "attributes notfound"}
+        self.feature_file_manager.write(json.dumps(feature))
 
     def build_feature(self, osm_type):
         # geo_type = 'Polygon'
