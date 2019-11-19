@@ -9,25 +9,28 @@ from campaign_manager.models.campaign import Campaign
 from campaign_manager.insights_functions.mapper_engagement import \
     MapperEngagement
 from campaign_manager.utilities import get_coordinate_from_ip, \
-    get_uuids_from_cache, get_data
+    get_uuids_from_cache, get_data,get_data_from_s3
 from campaign_manager.aws import S3Data
 
 from reporter import config
 
 api = Api(campaign_manager)
 
+class UserCampaigns(Resource):
+    """Shows a list of all campaigns by osm_id"""
+    def get(self, osm_id):
+        user = S3Data().fetch(f'user_campaigns/{osm_id}.json')
+        campaigns = [
+            get_data_from_s3(campaign["uuid"], "")
+            for campaign in user['projects']
+        ]
+        return campaigns
+
 
 class CampaignList(Resource):
     """Shows a list of all campaigns"""
 
-    def get_all_campaign(self, campaign_status, args):
-        """Returns all campaign from model.
-        """
-        return Campaign.all(campaign_status=campaign_status, **args)
-
-    # def get(self, campaign_status):
     def get(self):
-        # List all campaigns.
         campaign_uuids = S3Data().list('campaigns')
 
         folder_path = os.path.join(config.CACHE_DIR, 'campaigns')
@@ -192,9 +195,9 @@ class CampaignContributors(Resource):
 api.add_resource(
         CampaignList,
         '/campaigns')
-# api.add_resource(
-#         CampaignList,
-#         '/campaigns/<string:campaign_status>')
+api.add_resource(
+        UserCampaigns,
+        '/user/<string:osm_id>/campaigns')
 api.add_resource(
         CampaignTagList,
         '/campaigns/<string:tag>')
