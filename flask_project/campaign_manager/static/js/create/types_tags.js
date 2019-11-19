@@ -147,7 +147,10 @@ function addTagsToFeature(featureName) {
     const tagNames = Object.keys(tags);
     featureTags.empty();
     tagNames.forEach(name => {
-        const label = $('<span class="label label-default key-tags">' + name + '</span>');
+        const subtags = tags[name];
+        const subtagStr = subtags.length >=0 ? ": " + subtags.join(', ') : '';
+        const tagName = name + subtagStr;
+        const label = $('<span class="label label-default key-tags" title="' + tagName + '">' + tagName + '</span>');
         featureTags.append(label);
     });
 }
