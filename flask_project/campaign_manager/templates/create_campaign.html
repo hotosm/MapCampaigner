@@ -78,32 +78,35 @@
           </div>
         </div>
         <div class="tab-pane" id="features-and-attributes">
-          <div class="form-group">
-            <a id="btn-add" class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#custom-types-tags">
-              Add a feature
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-              </svg>
-            </a>
-          </div>
-          <div class="row">
-            <div class="col-xs-12">
-              <select style="display:none;" id="types" multiple="" name="types"></select>
-              <div class="row">
-                <div class="form-body col-lg-4">
-                  <div class="form-group">
-                    <label for="types">Types</label><span class="help-block">Add at least one campaign type</span>
-                    <div class="types-required-message">This field is required</div>
+          <div id="features-notification-holder"></div>
+          <fieldset id="fieldset-3" data-fieldset-step="3">
+            <div class="form-group">
+              <a id="btn-add" class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#custom-types-tags">
+                Add a feature
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+                </svg>
+              </a>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <select style="display:none;" id="types" multiple="" name="types"></select>
+                <div class="row">
+                  <div class="form-body col-lg-4">
+                    <div class="form-group">
+                      <label for="types">Types</label><span class="help-block">Add at least one campaign type</span>
+                      <div class="types-required-message">This field is required</div>
+                    </div>
                   </div>
                 </div>
+                <div id="typesTagsContainer"></div>
               </div>
-              <div id="typesTagsContainer"></div>
             </div>
-          </div>
-          <div class="form-footer">
-            <a class="btn btn-previous btn-default">Back</a>
-            <a class="btn btn-primary btn-next pull-right">Next</a>
-          </div>
+            <div class="form-footer">
+              <a class="btn btn-previous btn-default">Back</a>
+              <a class="btn btn-primary btn-next pull-right">Next</a>
+            </div>
+          </fieldset>
         </div>
         <div class="tab-pane" id="settings">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -626,6 +629,9 @@
       case '2':
         return checkStep2();
         break;
+      case '3':
+        return checkStep3();
+        break;
       case '5':
         return checkStep5();
         break;
@@ -654,14 +660,6 @@
     if (managers_list.length === 0) {
       reloadUser();
     }
-
-    var types_value = getTypesSelectionValue();
-    $("#types").val(JSON.stringify(types_value));
-    rerenderFunction();
-    if (jQuery.isEmptyObject(types_value)) {
-      valid = false;
-      $('.types-required-message').show();
-    }
     return !hasInvalidFields && isStartBeforeEnd;
   }
 
@@ -676,6 +674,18 @@
     if (drawnItems.getLayers().length === 0) {
       showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger', '#map-notification-holder');
       valid = false;
+    }
+    return valid;
+  }
+
+  function checkStep3() {
+    let valid = true;
+    var types_value = getTypesSelectionValue();
+    $("#types").val(JSON.stringify(types_value));
+    rerenderFunction();
+    if (jQuery.isEmptyObject(types_value)) {
+      valid = false;
+      showNotifications('You must add at least one feature to the project.', 'danger', '#features-notification-holder');
     }
     return valid;
   }
@@ -702,48 +712,6 @@
     return valid;
   }
 
-  function preparingStep(current_step) {
-    if (current_step === 4) {
-      preprocessSubmitForm();
-      $('#advanced-mode-textarea').LoadingOverlay("show", { image: "/campaign_manager/static/resources/loading-spinner.gif" });
-      $.post("/submit_campaign_data_to_json", $("#campaign-form").serialize()).done(
-        function (data) {
-          $('#advanced-mode-textarea').LoadingOverlay("hide");
-          var form_data = JSON.parse(data);
-          var geometry_data = JSON.parse(form_data['geometry']);
-          form_data['geometry'] = geometry_data;
-          var form_str = JSON.stringify(form_data, null, 4);
-          $('#advanced-mode-textarea').val(form_str);
-        }).fail(
-          function () {
-            $('#advanced-mode-textarea').LoadingOverlay("hide");
-            showNotifications('Some of form is not filled.', 'danger');
-          }
-        );
-    }
-  }
-
-  function showStep(previousStep, nextStep, activatePrevStep) {
-    if (previousStep === nextStep) {
-      return false;
-    }
-    var $prevFieldset = $('#fieldset-' + previousStep);
-    var $nextFieldset = $('#fieldset-' + nextStep);
-
-    var $nextNavStep = $(".cc-nav-steps").find('[data-step="' + nextStep + '"]');
-    var $prevNavStep = $(".cc-nav-steps").find('[data-step="' + previousStep + '"]');
-
-    $nextNavStep.removeClass('disabled');
-
-    preparingStep(nextStep);
-    $prevFieldset.hide();
-    $prevNavStep.removeClass('active');
-    $nextNavStep.addClass('active');
-
-    $nextFieldset.fadeIn();
-    $nextFieldset.children().find('button').removeAttr('disabled');
-  }
-
   function nextStep(elm) {
     var currentActiveStep = $('.cc-nav-steps').find('.cc-nav.active');
     var progressLine = $(elm).parents('.cc').find('.cc-progress-line');
@@ -760,7 +728,6 @@
 
     if (isNextStep && nameDateValid) {
       $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-      showStep(currentFieldsetNumber, currentFieldsetNumber + 1, true);
     }
   }
 
@@ -774,7 +741,6 @@
     if (currentStep === 1) return;
 
     $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-    showStep(currentFieldsetNumber, currentFieldsetNumber - 1, false);
   }
 
   function checkFormHeader() {

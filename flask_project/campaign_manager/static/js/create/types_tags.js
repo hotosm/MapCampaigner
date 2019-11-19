@@ -51,11 +51,11 @@ function rerenderFunction() {
     });
 }
 function getTypesSelectionValue() {
-    // GET SELECTED TYPES
     var types_value = {};
     $.each(getSelectedTypes(), function (index, addedType) {
         if (addedType) {
-            var $wrapper = $('#typesTagsContainer').children().eq(index);
+            const idString = '#' + slugify(addedType) + '-feature-tile';
+            const $wrapper = $(idString);
             var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
             var tags = [];
             $.each($tags, function (index, value) {
