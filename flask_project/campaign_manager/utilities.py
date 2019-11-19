@@ -412,7 +412,11 @@ def get_attributes(osm_element):
 def parse_osm_element(element, element_type, all_attrs):
     # Retrieve attributes
     attributes_found = get_attributes(element)
+    #attributes_found.sort()
     attributes_not_found = list(set(all_attrs) - set(attributes_found))
+    #attributes_not_found.sort()
+    limit_af = attributes_found if len(attributes_found) < 6 else attributes_found[:6]
+    limit_anf = attributes_not_found if len(attributes_not_found) < 6 else attributes_not_found[:6]
     if not attributes_not_found:
         status = "Complete"
     else:
@@ -421,6 +425,6 @@ def parse_osm_element(element, element_type, all_attrs):
             "status": status,
             "edited_by": element["user"],
             "edited_date": element["timestamp"],
-            "attributes_found": attributes_found,
-            "attributes_not_found": attributes_not_found}
+            "attributes_found": sorted(limit_af),
+            "attributes_not_found": sorted(limit_anf)}
     return data

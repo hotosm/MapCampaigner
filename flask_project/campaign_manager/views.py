@@ -391,18 +391,28 @@ def get_overview_data(uuid):
     # Serve it
     return json_data
 
-@campaign_manager.route('/campaign/<uuid>/details/<type_id>')
-def get_details(uuid, type_id):
+@campaign_manager.route('/campaign/<uuid>/details')
+def get_details(uuid):
     campaign = Campaign.get(uuid)
-    # Get the full XML data on S3
-    xml_file = f"campaigns/{uuid}/raw_data/overpass/{type_id}.xml"
+    features_data = []
+    feature_types = campaign.types
+    xml_file = f"campaigns/{uuid}/overpass/supermarket.xml"
+    print(xml_file)
     xml_data = S3Data().get_data(xml_file)
-    # print(xml_data)
-    # Get nodes data in Python data structure
-    nodes_data = campaign.parse_feature_data(xml_data)
-    # print(nodes_data)
+    data = campaign.parse_feature_data(xml_data)
+    # for k, v in .items():
+    #     type_id = v["type"].replace(" ", "_")
+    #     print(type_id)
+    #     # Get the full XML data on S3
+    #     xml_file = f"campaigns/{uuid}/overpass/{type_id}.xml"
+    #     print(xml_file)
+    #     xml_data = S3Data().get_data(xml_file)
+    #     # print(xml_data)
+    #     # Get nodes data in Python data structure
+    #     features_data += campaign.parse_feature_data(xml_data)
+    # print(features_data)
     # convert into json
-    json_data = jsonify(nodes_data)
+    json_data = jsonify(data)
     # print(json_data)
     # serve it
     return json_data

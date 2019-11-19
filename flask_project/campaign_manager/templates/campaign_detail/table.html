@@ -22,7 +22,7 @@
 
     $.ajax({
     type: 'GET',
-    url: '/campaign/' + uuid + '/details/shop=supermarket',
+    url: '/campaign/' + uuid + '/details',
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
