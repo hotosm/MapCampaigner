@@ -1,5 +1,6 @@
 from campaign_manager.aws import S3Data
-import yaml, os
+import yaml
+import os
 from glob import glob
 
 
