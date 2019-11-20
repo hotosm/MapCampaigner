@@ -27,13 +27,13 @@
               {{ form.name }}
               <p class="help-block">A project name is required.</p>
             </div>
-            <div class="form-group">
-              <label for="start-date">Start Date</label> <span class="required">*</span></label>
+            <div class="form-group form-date">
+              <label for="start-date">Start Date <span class="required">*</span></label>
               {{ form.start_date }}
               <p class="help-block">A start date is required.</p>
             </div>
-            <div class="form-group">
-              <label for="end-date">End Date</label> <span class="required">*</span></label>
+            <div class="form-group form-date pull-right">
+              <label for="end-date">End Date <span class="required">*</span></label>
               {{ form.end_date }}
               <p class="help-block">An end date is required.</p>
             </div>
@@ -287,7 +287,7 @@
         const isValid = el.checkValidity();
         if (!isValid) {
           formGroup.classList.add('has-error');
-          tab.querySelector('.valid-icon').remove();
+          tab.parent().querySelector('.valid-icon').remove();
         }
       });
       el.addEventListener('focus', removeError);
@@ -301,14 +301,15 @@
     const currentFieldset = tabToValidate.querySelector('fieldset');
     if (!currentFieldset) return;
 
-    const hasValidIcon = !!tabLink.querySelector('.valid-icon');
+    const hasValidIcon = !!$(this).parent().find('.valid-icon')[0];
     const step = currentFieldset.dataset.fieldsetStep;
     const isStepValid = checkSteps(step);
     if (isStepValid) {
-      if (!hasValidIcon) $(this).append($("#_template-valid-icon").html());
+      const validIcon = $("#_template-valid-icon").html();
+      if (!hasValidIcon) $(this).parent().append(validIcon);
       return true;
     } else {
-      if (hasValidIcon) tabLink.querySelector('.valid-icon').remove();
+      if (hasValidIcon) $(this).parent().find('.valid-icon').remove();
       e.preventDefault();
       return false;
     }

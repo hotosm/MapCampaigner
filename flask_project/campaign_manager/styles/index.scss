@@ -33,6 +33,37 @@
 @import "pages/campaigns";
 
 form {
+  label {
+    font-size: 12px;
+    color: $blue-grey;
+    .required {
+      color: $red !important;
+    }
+  }
+  .form-control {
+    font-size: 14px !important;
+    padding: 9px 18px !important;
+    border: 1px $blue-light solid !important;
+    border-radius: 4px !important;
+    &:focus {
+      border-color: $blue-dark !important;
+      box-shadow: none;
+    }
+  }
+  .form-group {
+    margin-bottom: 24px !important;
+  }
+  input.form-control {
+    height: 40px !important;
+  }
+  textarea.form-control {
+    height: 85px;
+    resize: vertical;
+  }
+  .form-date {
+    width: 48%;
+    display: inline-block;
+  }
   .help-block {
     display: none;
   }
@@ -49,6 +80,55 @@ form {
     right: 0;
     background: white;
     text-align: right;
+  }
+}
+#page-create {
+  .page-content {
+    padding-top: 30px;
+  }
+}
+.step-tabs {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 35px;
+  margin-bottom: 60px;
+  border: none;
+  >li {
+    display: inline-block;
+    float: none;
+    margin-right: 16px;
+    .valid-icon {
+      display: inline-block;
+      vertical-align: bottom;
+      margin-right: -5px;
+    }
+    >a { 
+      color: $blue-light;
+      border: none;
+      padding: 8px 0;
+      display: inline-block;
+      border-bottom: 3px solid $blue-light;
+      &:hover, &:focus  {
+        font-weight: 600;
+        color: $blue-dark;
+        background: none;
+        border-bottom: 3px solid $blue-dark;
+      }
+    }
+    &.active>a {
+      color: $blue-dark;
+      background: none;
+      border: none;
+      border-bottom: 3px solid $blue-dark;
+      font-weight: 600;
+      &:hover, &:focus {
+        color: $blue-dark;
+        background: none;
+        border: none;
+        font-weight: 600;
+        border-bottom: 3px solid $blue-dark;
+      }
+    }
   }
 }
 #modal-template {
