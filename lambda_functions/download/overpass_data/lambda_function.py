@@ -48,6 +48,8 @@ def main(event, context):
         polygon=campaign.corrected_coordinates(),
         typee=typee)
 
+    logger.info(f"Overpass query for campaing {uuid}:\n{query}")
+
     save_query(
         path=build_query_path(uuid, type_id),
         query=query)

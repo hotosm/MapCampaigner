@@ -26,6 +26,7 @@
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
+        // console.log(d);
         var attrsFound = displayTags(d.attributes_found);
         var attrsNotFound = displayTags(d.attributes_not_found);
         var row = `

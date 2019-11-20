@@ -369,9 +369,9 @@ def get_overview_data(uuid):
     types = campaign.get_s3_types()
     feature_collected = []
     total_contributors = []
-    
-    # For easch feature type
+    # For each feature type
     for feature_type in types:
+        print(f"feature_type: {feature_type}")
         # Get feature_completeness.json
         feat_file = f'{feature_type}feature_completeness.json'
         json_feat = json.loads(S3Data().get_data(feat_file))
@@ -396,24 +396,24 @@ def get_details(uuid):
     campaign = Campaign.get(uuid)
     features_data = []
     feature_types = campaign.types
-    xml_file = f"campaigns/{uuid}/overpass/supermarket.xml"
-    print(xml_file)
-    xml_data = S3Data().get_data(xml_file)
-    data = campaign.parse_feature_data(xml_data)
-    # for k, v in .items():
-    #     type_id = v["type"].replace(" ", "_")
-    #     print(type_id)
-    #     # Get the full XML data on S3
-    #     xml_file = f"campaigns/{uuid}/overpass/{type_id}.xml"
-    #     print(xml_file)
-    #     xml_data = S3Data().get_data(xml_file)
-    #     # print(xml_data)
-    #     # Get nodes data in Python data structure
-    #     features_data += campaign.parse_feature_data(xml_data)
+    # xml_file = f"campaigns/{uuid}/overpass/supermarket.xml"
+    # print(xml_file)
+    # xml_data = S3Data().get_data(xml_file)
+    #data = campaign.parse_feature_data(xml_data)
+    for k, v in feature_types.items():
+        type_id = v["type"].replace(" ", "_")
+        print(type_id)
+        # Get the full XML data on S3
+        xml_file = f"campaigns/{uuid}/overpass/{type_id}.xml"
+        print(xml_file)
+        xml_data = S3Data().get_data(xml_file)
+        # print(xml_data)
+        # Get nodes data in Python data structure
+        features_data += campaign.parse_feature_data(xml_data)
     # print(features_data)
     # convert into json
-    json_data = jsonify(data)
-    # print(json_data)
+    json_data = jsonify(features_data)
+    #print(json_data)
     # serve it
     return json_data
         

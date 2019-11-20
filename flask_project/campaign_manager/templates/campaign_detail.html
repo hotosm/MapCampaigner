@@ -237,19 +237,23 @@
 
   function getOverviewData(uuid) {
     var uuid = '{{ uuid }}';
-    // console.log(uuid);
+    console.log(uuid);
     $.ajax({
       type: 'GET',
       url: '/campaign/' + uuid + '/overview',
       dataType: 'json',
+      error: function (err) {
+        console.log("Error: " + JSON.stringify(err, null, 2));
+      },
       success: function (data) {
-        // console.log("FOO");
+        console.log("FOO");
         features = data.feature_collected
+        console.log(features);
         $('#features-collected').html(features);
         mappers = data.total_contributors
         $('#contributors').html(mappers)
       }
-      })
+      });
   }
 
   function loadFeatureTypes(types) {

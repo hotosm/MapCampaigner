@@ -56,23 +56,29 @@ def main(event, context):
         type_id=type_id)
 
     download_overpass_file(uuid, type_id)
-
+    # logger.info("> Post Download overpass file")
     if 'element_type' in typee:
+        # logger.info("IF")
         element_type = typee['element_type']
     else:
+        # logger.info("ELSE")
         element_type = None
 
     xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
+    # logger.info(f"XML file: {xml_file}")
     parser = FeatureCompletenessParser(
         required_tags,
         render_data_path,
         element_type,
         type_name
         )
-
+    # logger.info(f"parser: {parser}")
+    # logger.info("> Calling the parse function")
     try:
+        # logger.info("> TRY")
         xml.sax.parse(xml_file, parser)
     except xml.sax.SAXParseException:
+        # logger.info("> XML PARSING FAILED!")
         print('FAIL')
         parser.endDocument()
 
@@ -89,7 +95,12 @@ def main(event, context):
         'errors_files_count': parser.errors_file_manager.count,
         'error_ids': parser.error_ids
     }
+    # logger.info(f"processed_data: {processed_data}")
     save_data(uuid, type_id, processed_data)
+    # logger.info("> Data saved")
     invoke_download_errors(uuid, type_name)
+    # logger.info("> Invoked Download Errors")
     invoke_render_feature(uuid, type_name)
+    # logger.info("> Invoked Render Feature")
     invoke_process_make_vector_tiles(uuid, type_name)
+    # logger.info("> Process make vector tiles")
