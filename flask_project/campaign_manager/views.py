@@ -473,9 +473,9 @@ def generate_gpx(json_data):
     xml_gpx = geojson_to_gpx(geojson)
 
     resp = Response(xml_gpx, mimetype='text/xml', status=200)
-
+    cors_host = 'https://www.openstreetmap.org'
     # Disable CORS.
-    resp.headers['Access-Control-Allow-Origin'] = 'https://www.openstreetmap.org'
+    resp.headers['Access-Control-Allow-Origin'] = cors_host
 
     return resp
 
