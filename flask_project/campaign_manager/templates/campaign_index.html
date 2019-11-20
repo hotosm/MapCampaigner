@@ -426,7 +426,6 @@
         hideLoading();
         if (data.length > 0) {
           data.map(function (campaign) {
-            console.log(campaign)
             try {
               addCampaign(campaign, user);
               setMarkerToMap(campaign, campaign.geojson);
