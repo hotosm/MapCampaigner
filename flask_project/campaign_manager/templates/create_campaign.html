@@ -91,7 +91,7 @@
             <div class="row">
               <div class="col-xs-12">
                 <select style="display:none;" id="types" multiple="" name="types"></select>
-                <div class="row">
+                <div style="display:none;" class="row">
                   <div class="form-body col-lg-4">
                     <div class="form-group">
                       <label for="types">Types</label><span class="help-block">Add at least one campaign type</span>
@@ -414,9 +414,9 @@
               <%=name%>
             </h4>
             <p><%=osmFeature%></p>
-            <a href="" class="panel-more-button btn-remove-type" onclick="removeTags(this, '<%=name%>')">
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M13.79 6.786a1.202 1.202 0 0 0-1.705 0l-.427.429-5.971 6.004.001.001-.188.19s-.6.607-1.955 5a56.6 56.6 0 0 0-.168.55l-.056.187-.13.441c-.098.332-.336 1.08-.067 1.35.259.262 1.012.032 1.341-.066.15-.044.294-.088.436-.131l.194-.059.205-.063.25-.078.074-.022c4.161-1.302 4.908-1.913 4.97-1.968l.001-.001.005-.004.192-.194.013.013 5.972-6.004.426-.429a1.218 1.218 0 0 0 0-1.715l-3.412-3.431zM9.914 17.77a.792.792 0 0 1-.05.032l-.017.01c-.199.12-.782.428-2.197.942-.165.06-.345.124-.534.19L5.104 16.92c.065-.19.129-.373.189-.54.511-1.427.818-2.014.936-2.214l.008-.013a2.448 2.448 0 0 1 .033-.053l.147-.148 3.646 3.666-.15.151zM20.616 6.786l-3.413-3.43a1.202 1.202 0 0 0-1.706 0l-.853.857a1.218 1.218 0 0 0 0 1.715l3.412 3.431a1.202 1.202 0 0 0 1.707 0l.853-.858a1.218 1.218 0 0 0 0-1.715z"></path>
+            <a href="#" class="panel-more-button btn-remove-type" onclick="removeTags(this, '<%=slug%>')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
+                <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z" />
               </svg>
             </a>
           </div>

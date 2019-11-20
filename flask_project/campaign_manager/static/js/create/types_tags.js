@@ -172,6 +172,7 @@ function addTagsToFeature(featureName) {
         const label = $('<span class="label label-default key-tags" title="' + tagName + '">' + tagName + '</span>');
         featureTags.append(label);
     });
+    $('#custom-types-tags').modal('hide');
 }
 
 function onTypesChange() {
@@ -263,7 +264,6 @@ function addTag(wrapper) {
     $('#warning-tag').html('');
     $('#insight-function .function-form').html('');
     var $tagWrapper = $(wrapper).closest('.row-tags-wrapper');
-    var tag = $(wrapper).text();
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
@@ -273,7 +273,8 @@ function addTag(wrapper) {
     }
 }
 function removeTags(event, type) {
-    $(event).parent().parent().remove();
+    event.preventDefault();
+    $('#' + type + '-feature-tile').remove();
     $('#insight-function .function-form').html('');
     if (types[type]['custom']) {
         delete types[type];
