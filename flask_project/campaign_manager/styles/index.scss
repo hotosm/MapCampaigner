@@ -134,6 +134,29 @@ form {
     }
   }
 }
+.panel-default {
+  >.panel-heading {
+    position: relative;
+    background: $white;
+    height: 68px;
+    a {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      text-decoration: none;
+      color: $black;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 25px 24px 21px 24px;
+      .toggle-switch {
+        position: absolute;
+        right: 20px;
+      }
+    }
+  }
+}
 #modal-template {
   column-count: 2;
 }

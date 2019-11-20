@@ -120,29 +120,18 @@
               </div>
               <div id="project-managers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="project-managers-heading">
                 <div class="panel-body">
-                  <!-- Managers -->
-                  <div class="row" style="margin-bottom: -12px;">
+                  <div class="row">
                     <div class="form-body">
                       <div class="form-group">
-                        <label for="campaign_managers">Managers</label><span class="help-block">&nbsp;&nbsp;&nbsp;You may add additional manager by searching their osm username in the box below.</span>
-                        <div class="error-form error-managers">This field is required</div>
-                        <div id="managers-list" class="manager-list">
-                        </div>
-                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
                         <input type="text" id="search-osm-user-text" placeholder="Search osm users" />
-                        <button type="button" class="btn btn-default" id="search-osm-user-button" style="margin-top: 10px;"><i class="fa fa-search" aria-hidden="true"></i> Search
-                        </button>
-                        <br />
-                        <br />
-                        <div id="users-not-found">
-                          No users found.
-                        </div>
+                        <div id="managers-list" class="manager-list"></div>
+                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
+                        <button type="button" class="btn btn-default" id="search-osm-user-button"> Search</button>
+                        <div id="users-not-found">No users found.</div>
                         <div id="users-found">
                           <p>Select osm users</p>
                           <select id="list-osm-users" multiple class="form-control"></select>
-                          <button type="button" class="btn btn-default" id="add-to-managers" style="margin-top: 10px;"><i class="fa fa-plus" aria-hidden="true"></i> Add to
-                            managers
-                          </button>
+                          <button type="button" class="btn btn-default" id="add-to-managers"> Add to managers</button>
                         </div>
                         <p class="helock"></p>
                       </div>
@@ -200,18 +189,12 @@
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="openmapkit-heading">
                 <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#openmapkit" aria-expanded="true" aria-controls="openmapkit">
-                    Integrate with OpenMapKit
+                  <a>Integrate with OpenMapKit
+                    <label class="toggle-switch" id="link-to-omk-form" for="link_to_omk">
+                      {{ form.link_to_omk(checked=link_to_omk) }}
+                    </label>
                   </a>
                 </h4>
-              </div>
-              <div id="openmapkit" class="panel-collapse collapse" role="tabpanel" aria-labelledby="openmapkit-heading">
-                <div class="panel-body">
-                  <div class="form-group" id="link-to-omk-form">
-                    {{ form.link_to_omk(checked=link_to_omk) }}
-                    {{ form.link_to_omk.label }}
-                  </div>
-                </div>
               </div>
             </div>
             <div class="panel panel-default">
@@ -347,6 +330,14 @@
   } else {
     $('#campaign-inactive').show();
   }
+
+  $('#link-to-omk-form').click(function () {
+    if ($(this).children(':checked')[0]) {
+      $(this).addClass('active');
+    } else {
+      $(this).removeClass('active');
+    }
+  });
 </script>
 
 <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
