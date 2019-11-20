@@ -78,8 +78,8 @@ def get_types():
     """
     surveys = {}
     path = os.path.join(
-        os.getcwd(),
-        'flask_project/campaign_manager/feature_templates',
+        os.path.dirname(__file__),
+        '../campaign_manager/feature_templates',
         '*.yml'
     )
     files = glob(path)
