@@ -52,7 +52,7 @@
           <div id="map-notification-holder"></div>
           <fieldset id="fieldset-2" data-fieldset-step="2">
             <div class="form-group">
-              <label>Option 1: Set your AOI by using the drawing tools on the map</label>
+              <p>Option 1: Set your AOI by using the drawing tools on the map</p>
               <a class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#map-draw-modal">
                 Draw on the map
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
               {% include 'modals/modal_draw_on_map.html' %}
             </div>
             <div class="form-group">
-              <label>Option 2: Upload files to define your AOI (.geojson or .zip containing .shp, .shx, .dbf)</label>
+              <p>Option 2: Upload files to define your AOI (.geojson or .zip containing .shp, .shx, .dbf)</p>
               {% include 'campaign_widget/ui/upload_file.html' %}
             </div>
             <div style="display:none;" class="area-table">
