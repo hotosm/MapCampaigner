@@ -7,7 +7,10 @@ from glob import glob
 class Survey():
 
     def __init__(self, file):
-        self.data = self.read_yaml_file(file)
+        try:
+            self.data = self.read_yaml_file(file)
+        except:
+            self.data = []
         self.do_tags()
         self.feature = self.feature()
 
