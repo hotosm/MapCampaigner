@@ -362,7 +362,7 @@ def campaign_boundary_upload_chunk(uuid):
         return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
         abort(404)
-
+import os.path
 @campaign_manager.route('/campaign/<uuid>/overview')
 def get_overview_data(uuid):
     campaign = Campaign.get(uuid)
@@ -373,16 +373,22 @@ def get_overview_data(uuid):
     for feature_type in types:
         print(f"feature_type: {feature_type}")
         # Get feature_completeness.json
-        feat_file = f'{feature_type}feature_completeness.json'
-        json_feat = json.loads(S3Data().get_data(feat_file))
-        collected = json_feat["features_collected"]
-        feature_collected.append(collected)
+        fc_file = os.path.realpath('test_data/feature_completeness.json')
+        with open(fc_file) as fc_data:
+        # feat_file = f'{feature_type}feature_completeness.json'
+        # json_feat = json.loads(S3Data().get_data(feat_file))
+            json_feat = json.load(fc_data)
+            collected = json_feat["features_collected"]
+            feature_collected.append(collected)
         # Get user_engagement.json
-        user_file = f'{feature_type}mapper_engagement.json'
-        json_mappers = json.loads(S3Data().get_data(user_file))
-        unique_mappers = set(list(map(lambda x:x["name"], json_mappers)))
-        num_mappers = len(unique_mappers)
-        total_contributors.append(num_mappers)
+        me_file = os.path.realpath('test_data/mapper_engagement.json')
+        with open(me_file) as me_data:
+        # user_file = f'{feature_type}mapper_engagement.json'
+        # json_mappers = json.loads(S3Data().get_data(user_file))
+            json_mappers = json.load(me_data)
+            unique_mappers = set(list(map(lambda x:x["name"], json_mappers)))
+            num_mappers = len(unique_mappers)
+            total_contributors.append(num_mappers)
     # Combine data into a json object
     json_data = { 
         "feature_collected": sum(feature_collected),
@@ -413,7 +419,7 @@ def get_details(uuid):
     # print(features_data)
     # convert into json
     json_data = jsonify(features_data)
-    #print(json_data)
+    print(json_data)
     # serve it
     return json_data
         

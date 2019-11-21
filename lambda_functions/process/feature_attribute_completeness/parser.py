@@ -1,6 +1,6 @@
 import xml.sax
 import json
-# import logging
+import logging
 from file_manager import (
     GeojsonFileManager,
     ErrorsFileManager,
@@ -8,14 +8,14 @@ from file_manager import (
 )
 
 
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def __init__(self, required_tags, render_data_path, element_type, type_name):
-        # logger.info("> Parse Handler | initiate")
+        logger.info("> Parse Handler | initiate")
         # logger.info(f"required_tags: {required_tags}")
         # logger.info(f"render_data_path: {render_data_path}")
         # logger.info(f"element_type: {element_type}")
@@ -100,9 +100,10 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
+            self.build_feature_details('node')
             if self.has_tags is True and self.element_type == 'Point':
                 self.build_feature('node')
-                self.build_feature_details('node')
+                # self.build_feature_details('node')
                 self.tags = {}
             elif self.has_tags is False:
                 # self.build_feature_details('node')
@@ -122,20 +123,21 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             set(self.tags.keys()))) == 0
 
     def build_element(self, name, attrs):
-        # logger.info("> Parse Handler | build_element")
+        logger.info("> Parse Handler | build_element")
         self.element = {
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
-            # 'edited_by': attrs.getValue("user"),
+            'edited_by': attrs.getValue("user"),
             'nodes': []
         }
+        logger.info(self.element)
         if name == 'node':
             self.element['lon'] = attrs.getValue("lon")
             self.element['lat'] = attrs.getValue("lat")
 
     def check_errors_in_tags(self):
-        # logger.info("> Parse Handler | check_errors_in_tags")
+        logger.info("> Parse Handler | check_errors_in_tags")
         errors = []
         self.errors_to_s = None
         for (key, values) in self.required_tags.items():
@@ -148,18 +150,21 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                         value=self.tags[key],
                         key=key)
                     errors.append(error)
-
+        logger.info(f"errors: {errors}")
         if len(errors) > 0:
             self.element_complete = False
             self.errors_to_s = ', '.join(errors)
             self.build_error_warning('error', self.errors_to_s)
+        if not errors:
+            # self.errors_to_s = ''
+            self.build_error_warning('error', '')
 
         self.completeness_pct = int(
             100 - (len(errors) / len(self.required_tags) * 100)
             )
 
     def check_warnings_in_tags(self):
-        # logger.info("> Parse Handler | check_warnings_in_tags")
+        logger.info("> Parse Handler | check_warnings_in_tags")
         warnings = []
         self.warnings_to_s = None
         if 'name' in self.tags:
@@ -177,35 +182,45 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                 warnings.append(warning)
             # else:
                 # mixed case
+        logger.info(f"warnings: {warnings}")
         if len(warnings) > 0:
             self.element_complete = False
             self.warnings_to_s = ', '.join(warnings)
             self.build_error_warning('warning', self.warnings_to_s)
+        if not warnings:
+            # self.warnings_to_s = ''
+            self.build_error_warning('warning', '')
+
 
     def build_error_warning(self, type, content):
-        # logger.info("> Parse Handler | build_error_warning")
-        payload = {
-            'status': type,
-            'type': self.element['type'],
-            'id': self.element['id'],
-            'date': self.element['timestamp'],
-            'comment': content
-        }
+        logger.info("> Parse Handler | build_error_warning")
+        if content:
+            payload = {
+                'status': type,
+                'type': self.element['type'],
+                'id': self.element['id'],
+                'date': self.element['timestamp'],
+                'comment': content
+            }
+        else:
+            payload = {}
+        logger.info(f"payload: {payload}")
         self.errors_file_manager.write(json.dumps(payload))
         self.errors_warnings += 1
 
     def build_feature_details(self, osm_type):
-        # logger.info("> Parse Handler | build_feature_details")
+        logger.info("> Parse Handler | build_feature_details")
         feature = {"osm_id": f"{osm_type}:{self.element['id']}",
                    "status": "status",
                    "edited_by": self.element["user"],
                    "edited_date": self.element["timestamp"],
                    "attributes_found": "attributes found",
                    "attributes_not_found": "attributes notfound"}
+        logger.info(f"feature: {feature}")
         self.feature_file_manager.write(json.dumps(feature))
 
     def build_feature(self, osm_type):
-        # logger.info("> Parse Handler | build_feature")
+        logger.info("> Parse Handler | build_feature")
         # geo_type = 'Polygon'
         if osm_type == 'node':
             geo_type = 'Point'
@@ -244,6 +259,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "id": self.element['id'],
         }
+        logger.info(feature)
         self.geojson_file_manager.write(json.dumps(feature))
 
     def set_color_completeness(self):

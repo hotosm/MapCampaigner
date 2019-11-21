@@ -10,30 +10,93 @@
     color: #565656;
 }
 
-.detail-tag {
-    color: #4794b2;
-    font-weight: lighter;
-    background: #ffffff;
-    border-radius: 3px;
-    display: inline-block;
-    height: 26px;
-    line-height: 26px;
-    padding: 0 20px 0 15px;
-    position: relative;
-    margin: 0 10px 10px 0;
-    text-decoration: none;
-    font-style: italic;
-    border:1px solid #e6e6e6 !important;
+table#table_id {
+  font-family: Archivo;
+  font-size: 14px;
+  font-style: normal;
+  line-height: normal;
+  font-stretch: normal;
+}
+table#table_id #table_id_length {
+  display: none;
+}
+table#table_id #table_id_filter {
+  display: none;
+}
+table#table_id .detail-tag {
+  border-radius: 2px;
+  display: inline-block;
+  height: 24px;
+  padding: 0 5px 0 5px;
+  position: relative;
+  margin: 5px 2px 5px 2px;
+  text-decoration: none;
+  font-weight: normal;
+  font-stretch: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2c3038;
+}
+table#table_id td.found .detail-tag {
+  border: solid 0.8px #10aa7a !important;
+}
+table#table_id td.not-found .detail-tag {
+  border: solid 0.8px #faa71e !important;
+}
+table#table_id td.osm-id {
+  font-weight: 500;
+  letter-spacing: 0.44px;
+  color: #929db3;
+}
+
+#campaign-feature-details .detail-panel-table {
+  border-radius: 2px;
+}
+#campaign-feature-details .detail-panel-table .panel-body {
+  padding: 1px;
 }
 
 .detail-panel-information {
   width: 100%;
 }
 .detail-panel-information h4.panel-name {
-  font-size: 17px;
+  width: 221px;
+  height: 44px;
+  font-family: Archivo;
+  font-size: 18px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: #2c3038;
+  float: left;
+}
+.detail-panel-information .panel-more-button {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  opacity: 0.8;
+}
+.detail-panel-information .panel-total {
+  font-family: Barlow;
+  font-size: 72px;
+  font-weight: 600;
+  font-stretch: condensed;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  /*text-align: center;*/
+  float: right;
+  color: #d73f3f;
 }
 .detail-panel-information, .detail-panel-insights {
     border-radius: 5px !important;
+}
+
+.detail-panel-information .col-sm-12.col-md-6 panel {
+  width: 269px;
+  height: 186px;
 }
 
 .detail-panel-insights>.panel-heading {
@@ -502,10 +565,6 @@
         font-size: 30pt !important;
         padding-bottom: 40px !important;
         padding-top: 20px !important;
-    }
-
-    .summary-stats .col-lg-4:nth-child(2), .summary-stats .col-lg-4:nth-child(3){
-        padding-left: 35px;
     }
 
     #user-engagement-wrapper {

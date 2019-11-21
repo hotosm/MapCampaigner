@@ -1,5 +1,5 @@
 <div id="features-details"></div>
-  <table id="table_id" class="display">
+  <table id="table_id" class="row-border" style="width:100%">
     <thead>
       <tr>
         <th>OSM ID</th>
@@ -31,13 +31,13 @@
         var attrsNotFound = displayTags(d.attributes_not_found);
         var row = `
       <tr>
-        <td>` + d.node_id + `</td>
+        <td class="osm-id">` + d.node_id + `</td>
         <td>` + 'supermarket' + `</td>
         <td>` + d.status + `</td>
         <td>` + d.edited_by + `</td>
         <td>` + d.edited_date + `</td>
-        <td>` + attrsFound + `</td>
-        <td>` + attrsNotFound + `</td>
+        <td class="found">` + attrsFound + `</td>
+        <td class="not-found">` + attrsNotFound + `</td>
       </tr>`;
       $('#table_id tbody').append(row);
       });
@@ -49,7 +49,7 @@
   function displayTags(tags) {
     var listTags = '';
     $.each(tags, function(i, t){
-      tag = '<span class="badge badge-light">' + t + '</span> '
+      tag = '<span class="detail-tag">' + t + '</span> '
       listTags = listTags + tag;
     });
     return listTags;

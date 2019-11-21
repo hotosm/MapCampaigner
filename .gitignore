@@ -21,3 +21,4 @@ dependencies/
 *.zip
 lambda_functions/out
 out
+test-data/*
