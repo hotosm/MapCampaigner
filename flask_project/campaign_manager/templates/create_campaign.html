@@ -125,22 +125,22 @@
                   </a>
                 </h4>
               </div>
-              <div id="project-managers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="project-managers-heading">
+              <div id="project-managers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="project-managers-heading">
                 <div class="panel-body">
-                  <div class="row">
-                    <div class="form-body">
-                      <div class="form-group">
-                        <input type="text" id="search-osm-user-text" placeholder="Search osm users" />
-                        <div id="managers-list" class="manager-list"></div>
-                        <select id="campaign_managers" multiple name="campaign_managers" style="visibility: hidden; margin-bottom: -85px !important;"></select>
-                        <button type="button" class="btn btn-default" id="search-osm-user-button"> Search</button>
-                        <div id="users-not-found">No users found.</div>
-                        <div id="users-found">
-                          <p>Select osm users</p>
-                          <select id="list-osm-users" multiple class="form-control"></select>
-                          <button type="button" class="btn btn-default" id="add-to-managers"> Add to managers</button>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="form-body">
+                        <div class="form-group">
+                          <input type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
+                          <div style="display: none;" id="users-not-found">No users found.</div>
+                          <div style="display: none;" id="users-found">
+                            <select id="list-osm-users" multiple class="form-control"></select>
+                            <button type="button" class="btn btn-default" id="add-to-managers">Add manager</button>
+                          </div>
+                          <div id="managers-list" class="manager-list"></div>
+                          <select id="campaign_managers" multiple name="campaign_managers" style="display: none;"></select>
+                          <p class="helock"></p>
                         </div>
-                        <p class="helock"></p>
                       </div>
                     </div>
                   </div>
@@ -473,7 +473,7 @@
           )
         } else {
           $('#managers-list').append(
-            '<span class="manager">' + '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true"></i>' + value + '</span>'
+            '<span class="manager">' + '<span class="remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true">x</span>' + value + '</span>'
           )
         }
       })
@@ -505,7 +505,7 @@
         managers_list.push(listOsmUsers[i]);
         $('#managers-list').append(
           '<span class="manager">' + listOsmUsers[i] +
-          '<i class="fa fa-times remove-manager" onclick="removeManager(this, \'' + listOsmUsers[i] + '\')" aria-hidden="true"></i></span>'
+          '<span class="remove-manager" onclick="removeManager(this, \'' + listOsmUsers[i] + '\')" aria-hidden="true">x</span></span>'
         )
       }
     }
@@ -524,7 +524,7 @@
 
   function searchOsmUser() {
     var textInput = $('#search-osm-user-text').val();
-    var url = '/search_osm/' + textInput;
+    var url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' + textInput;
     var $searchOsmButton = $('#search-osm-user-button');
     $searchOsmButton.attr('disabled', 'disabled');
     $searchOsmButton.LoadingOverlay("show", { image: "/static/resources/loading-spinner.gif" });
@@ -533,18 +533,18 @@
     $.ajax({
       url: url,
       success: function (data) {
+        const names = _.map(data, (user)=>user.names[0]);
         $searchOsmButton.removeAttr('disabled');
         $searchOsmButton.LoadingOverlay("hide");
         $('#list-osm-users').html('');
-        var dataObj = JSON.parse(data);
 
-        if (dataObj.length > 0) {
+        if (names.length > 0) {
           $('#users-found').show("slow");
         } else {
           $('#users-not-found').show("slow");
         }
 
-        $.each(dataObj, function (index, value) {
+        $.each(names, function (index, value) {
           $('#list-osm-users').append($('<option/>', {
             value: value,
             text: value
