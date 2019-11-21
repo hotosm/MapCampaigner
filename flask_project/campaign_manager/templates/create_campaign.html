@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-xs-12 col-sm-6">
       <div class="tab-content">
-        <div class="tab-pane active" id="general-information">
+        <div class="tab-pane" id="general-information">
           <fieldset id="fieldset-1" data-fieldset-step="1">
             <div class="form-group">
               <label for="project-name">Project Name <span class="required">*</span></label>
@@ -108,13 +108,20 @@
             </div>
           </fieldset>
         </div>
-        <div class="tab-pane" id="settings">
+        <div class="tab-pane active" id="settings">
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="project-managers-heading">
                 <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#project-managers" aria-expanded="true" aria-controls="project-managers">
+                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-managers" aria-expanded="true" aria-controls="project-managers">
                     Project managers
+                    <span class="expand-icon pull-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                        </g>
+                      </svg>
+                    </span>
                   </a>
                 </h4>
               </div>
@@ -143,8 +150,15 @@
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="project-viewers-heading">
                 <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#project-viewers" aria-expanded="true" aria-controls="project-viewers">
+                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-viewers" aria-expanded="true" aria-controls="project-viewers">
                     Project viewers
+                    <span class="expand-icon pull-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                        </g>
+                      </svg>
+                    </span>
                   </a>
                 </h4>
               </div>
@@ -159,8 +173,15 @@
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="contributors-heading">
                 <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#contributors" aria-expanded="true" aria-controls="contributors">
+                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#contributors" aria-expanded="true" aria-controls="contributors">
                     Contributors monitored
+                    <span class="expand-icon pull-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                        </g>
+                      </svg>
+                    </span>
                   </a>
                 </h4>
               </div>
@@ -169,20 +190,6 @@
                   <div class="form-group">
                     <input type="search" class="form-control" id="contributor-search" placeholder="Search OpenStreetMap Users">
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="tasking-manager-heading">
-                <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#tasking-manager" aria-expanded="true" aria-controls="tasking-manager">
-                    Integrate with Tasking Manager
-                  </a>
-                </h4>
-              </div>
-              <div id="tasking-manager" class="panel-collapse collapse" role="tabpanel" aria-labelledby="tasking-manager-heading">
-                <div class="panel-body">
-                  Tasking Manager content
                 </div>
               </div>
             </div>
@@ -200,8 +207,15 @@
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="custom-basemap-heading">
                 <h4 class="panel-title">
-                  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#custom-basemap" aria-expanded="true" aria-controls="custom-basemap">
+                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#custom-basemap" aria-expanded="true" aria-controls="custom-basemap">
                     Custom Basemap
+                    <span class="expand-icon pull-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                        </g>
+                      </svg>
+                    </span>
                   </a>
                 </h4>
               </div>

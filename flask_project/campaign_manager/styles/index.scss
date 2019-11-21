@@ -150,6 +150,16 @@ form {
       font-size: 18px;
       font-weight: bold;
       padding: 25px 24px 21px 24px;
+      .expand-icon {
+        transform: rotate(180deg);
+        margin-top: -5px;
+      }
+      &.collapsed {
+        .expand-icon {
+          transform: none;
+          margin: 0;
+        }
+      }
       .toggle-switch {
         position: absolute;
         right: 20px;
