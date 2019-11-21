@@ -120,6 +120,7 @@ function addTypes(featureName) {
     column.addClass("form-group");
     column.addClass("type-selection");
     row.append(column);
+    row.attr("id","old-dom-el-for-" + slugify(featureName))
     row.hide(); // Keeping `row` because the form depends on it, but hiding it because the user doesn't need to see it
 
     var select = $("<select />");
@@ -273,8 +274,8 @@ function addTag(wrapper) {
     }
 }
 function removeTags(event, type) {
-    event.preventDefault();
     $('#' + type + '-feature-tile').remove();
+    $('#old-dom-el-for-' + type).remove();
     $('#insight-function .function-form').html('');
     if (types[type]['custom']) {
         delete types[type];
