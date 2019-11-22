@@ -1,10 +1,8 @@
 import sys
 sys.path.insert(0, 'dependencies')
-from landez import MBTilesBuilder
 from os.path import join
 from shapely.affinity import scale
 from botocore.exceptions import ClientError
-import zlib
 import shutil
 import os
 import math
@@ -23,7 +21,10 @@ AXIS_OFFSET = MAXRESOLUTION * 256 / 2
 # Where to save and read files.
 PATH = '/tmp/'
 
-logging.basicConfig(level=logging.DEBUG)
+BUCKET = os.environ['S3_BUCKET']
+CLIENT = boto3.client("s3")
+
+logging.basicConfig(level=logging.INFO)
 
 
 def get_campaign(client):
@@ -144,9 +145,23 @@ def lambda_handler(event, context):
         main(event)
     except Exception as e:
         error_dict = {'function': 'process_make_mbtiles', 'failure': str(e)}
-        S3Data().create(
-            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
-            body=json.dumps(error_dict))
+        key = f'campaigns/{event["uuid"]}/failure.json'
+        CLIENT.put_object(
+            Bucket=BUCKET,
+            Key=key,
+            Body=json.dumps(error_dict),
+            ACL='public-read')
+
+
+def spawn_fetch_tiles(event):
+    aws_lambda = boto3.client('lambda')
+    func_name = '{0}_process_fetch_tiles'.format(os.environ['ENV'])
+
+    aws_lambda.invoke(
+        FunctionName=func_name,
+        InvocationType='Event',
+        Payload=json.dumps(event)
+    )
 
 
 def main(event):
@@ -155,8 +170,8 @@ def main(event):
     zoom_levels = event['zoom_levels']
 
     client = {
-        'obj': boto3.client("s3"),
-        'bucket': os.environ['S3_BUCKET'],
+        'obj': CLIENT,
+        'bucket': BUCKET,
         'uuid': uuid
     }
 
@@ -170,6 +185,7 @@ def main(event):
     campaign_aois = campaign_geojson['features']
 
     logging.info('Campaign has {0} geometries'.format(len(campaign_aois)))
+
     for index, poly in enumerate(campaign_aois):
         # Fix right-hand rule.
         polygon = sp.Polygon(poly['geometry']['coordinates'][0])
@@ -185,16 +201,14 @@ def main(event):
         )
 
         features.append(feature)
+        event = {'bbox': scaled_polygon.bounds,
+            'uuid': uuid,
+            'index': index,
+            'zoom_levels': zoom_levels
+        }
 
-        mbtiles_path = join(folder_path, '{0}.mbtiles'.format(index))
-        mb = MBTilesBuilder(
-            cache=False,
-            tiles_headers={'User-Agent': 'github.com/hotosm/mapcampaigner'},
-            filepath=mbtiles_path,
-            thread_number=10
-        )
-        mb.add_coverage(bbox=scaled_polygon.bounds, zoomlevels=zoom_levels)
-        mb.run()
+        # Run lambda function that fetches tiles.
+        spawn_fetch_tiles(event)
 
     # Save new geojson.
     tiles_file = 'tiles.geojson'
@@ -206,4 +220,3 @@ def main(event):
         gj.dump(feature_collection, f)
 
     save_to_s3(client, uuid)
-
