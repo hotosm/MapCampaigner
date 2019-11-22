@@ -134,6 +134,54 @@ form {
     }
   }
 }
+.manager-list {
+  margin-top: 20px;
+  .manager {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin-right: 19px;
+    .manager-icon {
+      display: block;
+      height: 40px;
+      width: 40px;
+      border-radius: 20px;
+      border: 1px solid $blue-light;
+      text-align: center;
+      line-height: 40px;
+      font-size: 18px;
+      color: $blue-dark;
+      margin: 6px auto;
+      background-color: rgb(237,239,242);
+      background-image:
+      radial-gradient(rgb(171,173,176) 0.63px, transparent 1.26px),
+      radial-gradient(rgb(171,173,176) 0.63px, transparent 1.26px);
+      background-size: 4.725px 4.725px;
+      background-position: 0 0, 2.3625px 2.3625px;
+      position: relative;
+    }
+    .manager-name {
+      font-size: 12px;
+      color: $blue-light;
+    }
+    .remove-manager {border-radius: 8px;
+      position: absolute;
+      background: $red;
+      color: $white;
+      font-size: 0;
+      line-height: 16px;
+      height: 16px;
+      width: 16px;
+      cursor: pointer;
+      top: -3px;
+      right: -3px;
+      &:after {
+        content: '\00D7';
+        font-size: 14px;
+      }
+    }
+  }
+}
 .panel-default {
   >.panel-heading {
     position: relative;
@@ -165,6 +213,10 @@ form {
         right: 20px;
       }
     }
+  }
+  .panel-body {
+    border: none !important;
+    padding-top: 0;
   }
 }
 #modal-template {

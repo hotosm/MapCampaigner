@@ -109,133 +109,135 @@
           </fieldset>
         </div>
         <div class="tab-pane active" id="settings">
-          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="project-managers-heading">
-                <h4 class="panel-title">
-                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-managers" aria-expanded="true" aria-controls="project-managers">
-                    Project managers
-                    <span class="expand-icon pull-right">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                        </g>
-                      </svg>
-                    </span>
-                  </a>
-                </h4>
-              </div>
-              <div id="project-managers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="project-managers-heading">
-                <div class="panel-body">
-                  <div class="container-fluid">
-                    <div class="row">
-                      <div class="form-body">
-                        <div class="form-group">
-                          <input type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
-                          <div style="display: none;" id="users-not-found">No users found.</div>
-                          <div style="display: none;" id="users-found">
-                            <select id="list-osm-users" multiple class="form-control"></select>
-                            <button type="button" class="btn btn-default" id="add-to-managers">Add manager</button>
+          <fieldset id="fieldset-4" data-fieldset-step="4">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="project-managers-heading">
+                  <h4 class="panel-title">
+                    <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-managers" aria-expanded="true" aria-controls="project-managers">
+                      Project managers
+                      <span class="expand-icon pull-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                          </g>
+                        </svg>
+                      </span>
+                    </a>
+                  </h4>
+                </div>
+                <div id="project-managers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="project-managers-heading">
+                  <div class="panel-body">
+                    <div class="container-fluid">
+                      <div class="row">
+                        <div class="form-body">
+                          <div class="form-group">
+                            <input type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
+                            <div style="display: none;" id="users-not-found">No users found.</div>
+                            <div style="display: none;" id="users-found">
+                              <select id="list-osm-users" multiple class="form-control"></select>
+                              <button type="button" class="btn btn-default" id="add-to-managers">Add manager</button>
+                            </div>
+                            <div id="managers-list" class="manager-list"></div>
+                            <select id="campaign_managers" multiple name="campaign_managers" style="display: none;"></select>
+                            <p class="helock"></p>
                           </div>
-                          <div id="managers-list" class="manager-list"></div>
-                          <select id="campaign_managers" multiple name="campaign_managers" style="display: none;"></select>
-                          <p class="helock"></p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="project-viewers-heading">
-                <h4 class="panel-title">
-                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-viewers" aria-expanded="true" aria-controls="project-viewers">
-                    Project viewers
-                    <span class="expand-icon pull-right">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                        </g>
-                      </svg>
-                    </span>
-                  </a>
-                </h4>
-              </div>
-              <div id="project-viewers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="project-viewers-heading">
-                <div class="panel-body">
-                  <div class="form-group">
-                    <input type="search" class="form-control" id="viewer-search" placeholder="Search OpenStreetMap Users">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="project-viewers-heading">
+                  <h4 class="panel-title">
+                    <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-viewers" aria-expanded="true" aria-controls="project-viewers">
+                      Project viewers
+                      <span class="expand-icon pull-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                          </g>
+                        </svg>
+                      </span>
+                    </a>
+                  </h4>
+                </div>
+                <div id="project-viewers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="project-viewers-heading">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <input type="search" class="form-control" id="viewer-search" placeholder="Search OpenStreetMap Users">
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="contributors-heading">
-                <h4 class="panel-title">
-                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#contributors" aria-expanded="true" aria-controls="contributors">
-                    Contributors monitored
-                    <span class="expand-icon pull-right">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                        </g>
-                      </svg>
-                    </span>
-                  </a>
-                </h4>
-              </div>
-              <div id="contributors" class="panel-collapse collapse" role="tabpanel" aria-labelledby="contributors-heading">
-                <div class="panel-body">
-                  <div class="form-group">
-                    <input type="search" class="form-control" id="contributor-search" placeholder="Search OpenStreetMap Users">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="contributors-heading">
+                  <h4 class="panel-title">
+                    <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#contributors" aria-expanded="true" aria-controls="contributors">
+                      Contributors monitored
+                      <span class="expand-icon pull-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                          </g>
+                        </svg>
+                      </span>
+                    </a>
+                  </h4>
+                </div>
+                <div id="contributors" class="panel-collapse collapse" role="tabpanel" aria-labelledby="contributors-heading">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <input type="search" class="form-control" id="contributor-search" placeholder="Search OpenStreetMap Users">
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="openmapkit-heading">
-                <h4 class="panel-title">
-                  <a>Integrate with OpenMapKit
-                    <label class="toggle-switch" id="link-to-omk-form" for="link_to_omk">
-                      {{ form.link_to_omk(checked=link_to_omk) }}
-                    </label>
-                  </a>
-                </h4>
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="openmapkit-heading">
+                  <h4 class="panel-title">
+                    <a>Integrate with OpenMapKit
+                      <label class="toggle-switch" id="link-to-omk-form" for="link_to_omk">
+                        {{ form.link_to_omk(checked=link_to_omk) }}
+                      </label>
+                    </a>
+                  </h4>
+                </div>
               </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading" role="tab" id="custom-basemap-heading">
-                <h4 class="panel-title">
-                  <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#custom-basemap" aria-expanded="true" aria-controls="custom-basemap">
-                    Custom Basemap
-                    <span class="expand-icon pull-right">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                          <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                        </g>
-                      </svg>
-                    </span>
-                  </a>
-                </h4>
-              </div>
-              <div id="custom-basemap" class="panel-collapse collapse" role="tabpanel" aria-labelledby="custom-basemap-heading">
-                <div class="panel-body">
-                  <div class="form-group map-input">
-                    {{ form.map_type }}
-                    {% if form['errors'] %}
-                    <p class="error-form">
-                      {% if form['errors'].map_type %}
-                      {{ form['errors'].map_type[0] }}
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="custom-basemap-heading">
+                  <h4 class="panel-title">
+                    <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#custom-basemap" aria-expanded="true" aria-controls="custom-basemap">
+                      Custom Basemap
+                      <span class="expand-icon pull-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
+                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
+                          </g>
+                        </svg>
+                      </span>
+                    </a>
+                  </h4>
+                </div>
+                <div id="custom-basemap" class="panel-collapse collapse" role="tabpanel" aria-labelledby="custom-basemap-heading">
+                  <div class="panel-body">
+                    <div class="form-group map-input">
+                      {{ form.map_type }}
+                      {% if form['errors'] %}
+                      <p class="error-form">
+                        {% if form['errors'].map_type %}
+                        {{ form['errors'].map_type[0] }}
+                        {% endif %}
+                      </p>
                       {% endif %}
-                    </p>
-                    {% endif %}
-                    <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display, leave blank to use default</p>
+                      <p class="help-block">Input <a data-toggle="tooltip" data-title="example: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">map url</a> to change map display, leave blank to use default</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </fieldset>
           <div class="form-footer">
             <a class="btn btn-previous btn-default">Back</a>
           <button id="submit" name="submit" type="submit" class="btn btn-primary pull-right submit-button">Submit</button>
@@ -437,6 +439,17 @@
 </div>
 </script>
 
+<script type='text/template' id='_template-manager'>
+  <span class="manager" data-manager="<%=name%>">
+    <span class="manager-icon" aria-hidden="true"><%=name[0]%>
+      <% if (!isManager) { %>
+        <span class="remove-manager" onclick="removeManager(this, '<%=name%>')">Remove</span>
+      <% } %>
+    </span>
+    <span class="manager-name"><%=name%></span>
+  </span>
+</script>
+
 <script type="text/javascript">
   typesOptions = '{{ form.types_options }}';
   var initialLoad = true;
@@ -467,15 +480,12 @@
     $('#managers-list').html('');
     if (managers_list.length > 0) {
       $.each(managers_list, function (index, value) {
-        if (typeof campaign_creator !== 'undefined' && value == campaign_creator) {
-          $('#managers-list').append(
-            '<span class="manager">' + value
-          )
-        } else {
-          $('#managers-list').append(
-            '<span class="manager">' + '<span class="remove-manager" onclick="removeManager(this, \'' + value + '\')" aria-hidden="true">x</span>' + value + '</span>'
-          )
-        }
+        const managerTemplate = _.template($("#_template-manager").html());
+        const managerEl = managerTemplate({
+          name: value,
+          isManager: typeof campaign_creator !== 'undefined' && value == campaign_creator
+        });
+        $('#managers-list').append(managerEl);
       })
     }
   }
@@ -489,7 +499,7 @@
     if (index > -1) {
       managers_list.splice(index, 1);
     }
-    $(e).parent().remove();
+    $('[data-manager=' + manager + ']').remove();
   }
 
   $("#add-to-managers").click(function () {
@@ -503,10 +513,12 @@
     for (var i = 0; i < listOsmUsers.length; i++) {
       if ($.inArray(listOsmUsers[i], managers_list) === -1) {
         managers_list.push(listOsmUsers[i]);
-        $('#managers-list').append(
-          '<span class="manager">' + listOsmUsers[i] +
-          '<span class="remove-manager" onclick="removeManager(this, \'' + listOsmUsers[i] + '\')" aria-hidden="true">x</span></span>'
-        )
+        const managerTemplate = _.template($("#_template-manager").html());
+        const managerEl = managerTemplate({
+          name: listOsmUsers[i],
+          isManager: false
+        });
+        $('#managers-list').append(managerEl)
       }
     }
 
@@ -593,9 +605,12 @@
     {% endif %}
     {% if action == 'create' %}
     managers_list.push(response.display_name);
-    $('#managers-list').append(
-      '<span class="manager">' + response.display_name
-    );
+    const managerTemplate = _.template($("#_template-manager").html());
+    const managerEl = managerTemplate({
+      name: response.display_name,
+      isManager: true
+    });
+    $('#managers-list').append(managerEl);
     $("#user_id").val(response.id);
     {% endif %}
   }
@@ -842,7 +857,7 @@
     $.each(managers_list, function (index, value) {
       $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
     });
-
+    
     $('#campaign_status').val('Start');
 
     // Processing selected function
