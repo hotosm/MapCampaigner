@@ -15,9 +15,9 @@ def mock_get_campaign():
     campaign.total_participants_count = 3
     campaign.campaign_creator = 'test_creator'
     campaign.campaign_managers = [
-        { 'name': 'test_manager1', 'osm_id': '12345' },
-        { 'name': 'test_manager2', 'osm_id': '54321' },
-        { 'name': 'test_creator', 'osm_id': '98765' }
+        {'name': 'test_manager1', 'osm_id': '12345'},
+        {'name': 'test_manager2', 'osm_id': '54321'},
+        {'name': 'test_creator', 'osm_id': '98765'}
     ]
     campaign._content_json = {
         'name': campaign.name,

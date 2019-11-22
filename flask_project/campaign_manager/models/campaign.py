@@ -627,7 +627,6 @@ class Campaign(JsonModel):
                 value['tags'] = json_tags
         return types
 
-
     @staticmethod
     def parse_managers_string(managers_string):
         managers = parse_json_string(managers_string)
