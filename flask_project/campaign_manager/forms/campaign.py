@@ -74,8 +74,8 @@ class CampaignForm(FlaskForm):
         validators=[InputRequired()],
         render_kw={'placeholder': 'End Date', 'type': 'date'}
     )
-    campaign_managers = ManagerSelectMultipleField(
-        u'Managers of campaign',
+    campaign_managers = HiddenField(
+        u'Project managers',
         validators=[InputRequired()])
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'

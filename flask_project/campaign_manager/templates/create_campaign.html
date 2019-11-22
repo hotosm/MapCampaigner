@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-xs-12 col-sm-6">
       <div class="tab-content">
-        <div class="tab-pane" id="general-information">
+        <div class="tab-pane active" id="general-information">
           <fieldset id="fieldset-1" data-fieldset-step="1">
             <div class="form-group">
               <label for="project-name">Project Name <span class="required">*</span></label>
@@ -108,7 +108,7 @@
             </div>
           </fieldset>
         </div>
-        <div class="tab-pane active" id="settings">
+        <div class="tab-pane" id="settings">
           <fieldset id="fieldset-4" data-fieldset-step="4">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
               <div class="panel panel-default">
@@ -139,7 +139,7 @@
                               <button type="button" class="btn btn-default" id="add-to-managers">Add manager</button>
                             </div>
                             <div id="managers-list" class="manager-list"></div>
-                            <select id="campaign_managers" multiple name="campaign_managers" style="display: none;"></select>
+                            <input id="campaign_managers" name="campaign_managers" type="hidden" />
                             <p class="helock"></p>
                           </div>
                         </div>
@@ -442,7 +442,7 @@
 <script type='text/template' id='_template-manager'>
   <span class="manager" data-manager="<%=name%>">
     <span class="manager-icon" aria-hidden="true"><%=name[0]%>
-      <% if (!isManager) { %>
+      <% if (!isCreator) { %>
         <span class="remove-manager" onclick="removeManager(this, '<%=name%>')">Remove</span>
       <% } %>
     </span>
@@ -471,6 +471,11 @@
   var managers_list = [];
   {% if form.campaign_managers.data %}
   managers_list = {{ form.campaign_managers.data | safe }};
+  managers_list = managers_list.map(manager=>{
+    const name = manager.name || manager;
+    const osm_id = manager.osm_id || '';
+    return { name, osm_id }
+  })
   {% endif %}
   {% if campaign_creator %}
   var campaign_creator = '{{ campaign_creator }}';
@@ -479,14 +484,16 @@
   function updateManagerList() {
     $('#managers-list').html('');
     if (managers_list.length > 0) {
-      $.each(managers_list, function (index, value) {
+      $.each(managers_list, function (index, manager) {
+        const name = manager.name || manager;
         const managerTemplate = _.template($("#_template-manager").html());
         const managerEl = managerTemplate({
-          name: value,
-          isManager: typeof campaign_creator !== 'undefined' && value == campaign_creator
+          name,
+          isCreator: typeof campaign_creator !== 'undefined' && name == campaign_creator
         });
         $('#managers-list').append(managerEl);
       })
+      $('#campaign-managers').val(JSON.stringify(managers_list));
     }
   }
   $('#form-panel').hide();
@@ -494,31 +501,29 @@
     updateManagerList();
   });
 
-  function removeManager(e, manager) {
-    var index = managers_list.indexOf(manager);
-    if (index > -1) {
-      managers_list.splice(index, 1);
-    }
-    $('[data-manager=' + manager + ']').remove();
+  function removeManager(e, name) {
+    managers_list = managers_list.filter(manager=>manager.name !== name);
+    $('[data-manager=' + name + ']').remove();
+  }
+
+  function addManager(manager, isCreator) {
+    const name = manager.name;
+    const managerTemplate = _.template($("#_template-manager").html());
+    $('#managers-list').append(managerTemplate({name, isCreator}));
+    managers_list.push(manager);
   }
 
   $("#add-to-managers").click(function () {
     var listOsmUsers = [];
     $('#list-osm-users :selected').each(function (i, selected) {
-      listOsmUsers[i] = $(selected).text();
+      listOsmUsers[i] = { name: $(selected).text(), osm_id: $(selected).data('osm-id').toString() };
     });
 
     $('.error-managers').hide();
 
     for (var i = 0; i < listOsmUsers.length; i++) {
       if ($.inArray(listOsmUsers[i], managers_list) === -1) {
-        managers_list.push(listOsmUsers[i]);
-        const managerTemplate = _.template($("#_template-manager").html());
-        const managerEl = managerTemplate({
-          name: listOsmUsers[i],
-          isManager: false
-        });
-        $('#managers-list').append(managerEl)
+        addManager(listOsmUsers[i]);
       }
     }
 
@@ -544,22 +549,23 @@
     $('#users-found').hide();
     $.ajax({
       url: url,
-      success: function (data) {
-        const names = _.map(data, (user)=>user.names[0]);
+      success: function (users) {
         $searchOsmButton.removeAttr('disabled');
         $searchOsmButton.LoadingOverlay("hide");
         $('#list-osm-users').html('');
 
-        if (names.length > 0) {
+        if (users.length > 0) {
           $('#users-found').show("slow");
         } else {
           $('#users-not-found').show("slow");
         }
 
-        $.each(names, function (index, value) {
+        $.each(users, function (index, user) {
+          const name = user.names[0];
           $('#list-osm-users').append($('<option/>', {
-            value: value,
-            text: value
+            value: name,
+            text: name,
+            'data-osm-id': user.id.toString()
           }));
         });
       }
@@ -590,7 +596,13 @@
 
   function updated(response) {
     {% if action == 'edit' %}
-    var is_manager = $.inArray(response.display_name, managers_list);
+    var managerNames = managers_list ? managers_list.map(manager=>{
+      if (manager.name) {
+        return manager.name;
+      }
+      return manager;
+    }) : [];
+    var is_manager = $.inArray(response.display_name, managerNames);
     if (is_manager == -1) {
       location.href = '/404';
     } else {
@@ -604,13 +616,7 @@
     $('#submit').show();
     {% endif %}
     {% if action == 'create' %}
-    managers_list.push(response.display_name);
-    const managerTemplate = _.template($("#_template-manager").html());
-    const managerEl = managerTemplate({
-      name: response.display_name,
-      isManager: true
-    });
-    $('#managers-list').append(managerEl);
+    addManager({ name: response.display_name, osm_id: response.id }, true);
     $("#user_id").val(response.id);
     {% endif %}
   }
@@ -853,11 +859,8 @@
   function preprocessSubmitForm() {
     $("#uploader").val($("#profile-name").html());
 
-    $('#campaign_managers').html('');
-    $.each(managers_list, function (index, value) {
-      $('#campaign_managers').append('<option selected="selected" value="' + value + '">' + value + '</option>')
-    });
-    
+    $('#campaign_managers').val(JSON.stringify(managers_list))
+
     $('#campaign_status').val('Start');
 
     // Processing selected function

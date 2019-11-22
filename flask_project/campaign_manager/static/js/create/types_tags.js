@@ -107,10 +107,11 @@ function slugify(string) {
 
 function addTypes(featureName) {
     var template = _.template($("#_template-feature-tile").html());
+    var osmFeature = types && types[featureName] ? types[featureName].feature : '';
     var html = template({
         name: featureName,
         slug: slugify(featureName),
-        osmFeature: types[featureName]['feature']
+        osmFeature
     });
     var row = $("<div/>");
     row.addClass("row");

@@ -382,9 +382,14 @@ def get_campaign(uuid):
         type[1]['type'],
         context['types'].items()))
 
+    campaign_manager_names = []
+    for manager in Campaign.parse_managers_string(campaign.campaign_managers):
+        campaign_manager_names.append(manager['name'])
+
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
+    context['campaign_manager_names'] = campaign_manager_names
     context['participants'] = len(campaign.campaign_managers)
 
     context['pct_covered_areas'] = campaign.calculate_areas_covered()
@@ -832,7 +837,7 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_managers.data = campaign.campaign_managers
+            form.campaign_managers.data = Campaign.parse_managers_string(campaign.campaign_managers)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description

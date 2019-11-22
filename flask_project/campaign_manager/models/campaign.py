@@ -627,6 +627,12 @@ class Campaign(JsonModel):
                 value['tags'] = json_tags
         return types
 
+
+    @staticmethod
+    def parse_managers_string(managers_string):
+        managers = parse_json_string(managers_string)
+        return managers
+
     def calculate_areas_covered(self):
         completed_areas = 0
         for area in self.geometry['features']:
