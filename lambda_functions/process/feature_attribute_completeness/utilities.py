@@ -1,12 +1,7 @@
 import os
 import json
 import boto3
-# import logging
 from aws import S3Data
-
-
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
 
 
 def fix_tags(broken_tags):
@@ -22,11 +17,10 @@ def fix_tags(broken_tags):
 
 
 def download_overpass_file(uuid, type_id):
-    # logger.info(f'Download {type_id} overpass for campaign {uuid}')
     key = build_raw_data_overpass_path(
         campaign_path=campaign_path(uuid),
         type_id=type_id)
-    # logger.info(f"key: {key}")
+
     S3Data().download_file(
         key=key,
         type_id=type_id,
@@ -90,7 +84,6 @@ def save_data(uuid, type_id, data):
     data_path = build_data_path(
         campaign_path=campaign_path(uuid),
         type_id=type_id)
-    # logger.info(f"Save data to: {data_path}")
 
     with open('/tmp/data.json', 'rb') as data:
         S3Data().upload_file(

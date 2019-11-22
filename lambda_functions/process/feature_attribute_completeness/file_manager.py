@@ -2,12 +2,7 @@ import os
 import boto3
 import gzip
 import shutil
-# import logging
 from tempfile import TemporaryFile
-
-
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
 
 
 class FileManager(object):
@@ -51,7 +46,6 @@ class FileManager(object):
         self.fd.seek(self.fd.tell() - 2, 0)  # go backwards 2 bytes
 
     def write(self, data):
-        logger.info("> File Manager | Write tmp file")
         if (self.size() + len(data)) >= self.SIZE_LIMIT:
             self.close()
             self.save()
@@ -63,7 +57,6 @@ class FileManager(object):
         self.fd.write(',\n')
 
     def save(self):
-        # logger.info("> File Manager | Save file on S3")
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
@@ -106,12 +99,11 @@ class GeojsonFileManager(FileManager):
         super(GeojsonFileManager, self).__init__(destination)
 
     def write_header(self):
-        self.fd.write('{"type": "FeatureCollection", "features": [ \n')
+        self.fd.write('{"type": "FeatureCollection","features": [ \n')
 
     def write_footer(self):
         self.remove_last_comma()
         self.fd.write(']}')
-
 
 class FeatureFileManager(FileManager):
     def __init__(self, destination):
@@ -124,5 +116,4 @@ class FeatureFileManager(FileManager):
 
     def write_footer(self):
         self.remove_last_comma()
-        self.fd.write(']}')
-
+        self.fd.write(']')
