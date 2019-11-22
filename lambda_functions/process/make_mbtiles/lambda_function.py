@@ -1,19 +1,18 @@
 import sys
 sys.path.insert(0, 'dependencies')
-import boto3
-import json
-import geojson as gj
-import logging
-import shapely.geometry as sp
-import math
-import os
-import shutil
-import zlib
-
-from botocore.exceptions import ClientError
-from os.path import join
-from uuid import uuid4
 from landez import MBTilesBuilder
+from os.path import join
+from shapely.affinity import scale
+from botocore.exceptions import ClientError
+import zlib
+import shutil
+import os
+import math
+import shapely.geometry as sp
+import logging
+import geojson as gj
+import json
+import boto3
 
 # Maximum resolution of OSM
 MAXRESOLUTION = 156543.0339
@@ -22,9 +21,9 @@ MAXRESOLUTION = 156543.0339
 AXIS_OFFSET = MAXRESOLUTION * 256 / 2
 
 # Where to save and read files.
-PATH='/tmp/'
+PATH = '/tmp/'
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def get_campaign(client):
@@ -102,37 +101,17 @@ def make_grid(bbox, zoom):
     return grid
 
 
-def get_bounds(poly):
-    polygon = sp.Polygon(poly['geometry']['coordinates'][0])
-    bounds = polygon.bounds
-
-    return bounds
-
-
-def create_grid_feature(box):
+def create_grid_feature(box, polygon_id):
     poly = sp.box(*box)
     list_polygon = list(poly.exterior.coords)
 
     # Create geojson.
     feature = gj.Feature(
         geometry=gj.Polygon([list_polygon]),
-        properties={"id": uuid4().hex}
+        properties={"parent": polygon_id}
     )
 
     return feature
-
-
-def generate_mbtiles(grid, mbtiles_path, zoom_levels):
-    mb = MBTilesBuilder(
-        cache=False,
-        tiles_headers={'User-Agent': 'github.com/hotosm/osm-export-tool'},
-        filepath=mbtiles_path
-    )
-
-    for item in grid:
-        mb.add_coverage(bbox=item, zoomlevels=zoom_levels)
-
-    mb.run()
 
 
 def create_folder(folder_path):
@@ -174,7 +153,6 @@ def main(event):
     # Get data.
     uuid = event['uuid']
     zoom_levels = event['zoom_levels']
-    grid_zoom_level = event['grid_zoom_level']
 
     client = {
         'obj': boto3.client("s3"),
@@ -192,29 +170,40 @@ def main(event):
     campaign_aois = campaign_geojson['features']
 
     logging.info('Campaign has {0} geometries'.format(len(campaign_aois)))
-    for poly in campaign_aois:
-        # Generate hex aoi for campaign and add it to features.
-        aoi_hash = uuid4().hex
-        poly['properties']['uuid'] = aoi_hash
-        features.append(poly)
+    for index, poly in enumerate(campaign_aois):
+        # Fix right-hand rule.
+        polygon = sp.Polygon(poly['geometry']['coordinates'][0])
+        polygon = sp.polygon.orient(polygon)
 
-        bounds = get_bounds(poly)
+        # To get just a small number of tiles around.
+        scaled_polygon = scale(polygon, 1.1, 1.1)
 
-        grid = make_grid(bounds, grid_zoom_level)
+        # Create geojson.
+        feature = gj.Feature(
+            geometry=gj.Polygon([list(polygon.exterior.coords)]),
+            properties={"id": index, "parent": None}
+        )
 
-        logging.info('Found {0} boxes...Generating tiles'.format(len(grid)))
+        features.append(feature)
 
-        for f in grid:
-            features.append(create_grid_feature(f))
-
-        mbtiles_path = join(folder_path, '{0}.mbtiles'.format(aoi_hash))
-        generate_mbtiles(grid, mbtiles_path, zoom_levels)
+        mbtiles_path = join(folder_path, '{0}.mbtiles'.format(index))
+        mb = MBTilesBuilder(
+            cache=False,
+            tiles_headers={'User-Agent': 'github.com/hotosm/mapcampaigner'},
+            filepath=mbtiles_path,
+            thread_number=10
+        )
+        mb.add_coverage(bbox=scaled_polygon.bounds, zoomlevels=zoom_levels)
+        mb.run()
 
     # Save new geojson.
-    logging.info('Saving hashes to tiles.geojson')
+    tiles_file = 'tiles.geojson'
+    logging.info('Saving hashes to {0}'.format(tiles_file))
     feature_collection = gj.FeatureCollection(features)
-    geojson_outfile = join(folder_path, 'tiles.geojson')
+
+    geojson_outfile = join(folder_path, '{0}'.format(tiles_file))
     with open(geojson_outfile, 'w') as f:
         gj.dump(feature_collection, f)
 
     save_to_s3(client, uuid)
+
