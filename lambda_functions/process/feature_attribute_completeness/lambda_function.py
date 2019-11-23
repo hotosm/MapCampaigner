@@ -47,9 +47,7 @@ def main(event, context):
         if campaign['types'][type_key]['type'] == type_name:
             typee = campaign['types'][type_key]
 
-    logger.info(typee['tags'])
     required_tags = fix_tags(typee['tags'])
-    logger.info(required_tags)
 
     render_data_path = build_render_data_path(
         campaign_path=campaign_path(uuid),

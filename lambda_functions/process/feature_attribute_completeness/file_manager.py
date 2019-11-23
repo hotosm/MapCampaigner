@@ -104,16 +104,3 @@ class GeojsonFileManager(FileManager):
     def write_footer(self):
         self.remove_last_comma()
         self.fd.write(']}')
-
-class FeatureFileManager(FileManager):
-    def __init__(self, destination):
-        self.filename = 'feature'
-        self.extension = 'json'
-        super(FeatureFileManager, self).__init__(destination)
-
-    def write_header(self):
-        self.fd.write('[ \n')
-
-    def write_footer(self):
-        self.remove_last_comma()
-        self.fd.write(']')

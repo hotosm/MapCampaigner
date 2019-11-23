@@ -2,8 +2,7 @@ import xml.sax
 import json
 from file_manager import (
     GeojsonFileManager,
-    ErrorsFileManager,
-    FeatureFileManager
+    ErrorsFileManager
 )
 
 
@@ -25,8 +24,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             destination=render_data_path)
         self.errors_file_manager = ErrorsFileManager(
             destination=render_data_path)
-        self.feature_file_manager = FeatureFileManager(
-            destination=render_data_path)
         self.error_ids = {
             'node': [],
             'way': [],
@@ -42,8 +39,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         self.geojson_file_manager.save()
         self.errors_file_manager.close()
         self.errors_file_manager.save()
-        self.feature_file_manager.close()
-        self.feature_file_manager.save()
 
     def startElement(self, name, attrs):
         if name in ['node', 'way']:
@@ -85,7 +80,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             if self.has_tags is True and self.element_type == 'Point':
                 self.build_feature('node')
                 self.tags = {}
-                self.build_feature_details('node')
             elif self.has_tags is False:
                 self.unused_nodes[self.element['id']] = [
                     float(self.element['lon']),
@@ -94,7 +88,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
         if name == 'way' and self.element_type in ['Polygon', 'Line']:
             self.build_feature('way')
             self.tags = {}
-            self.build_feature_details('node')
 
     def has_no_required_tags(self):
         return len(set.intersection(
@@ -200,6 +193,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "properties": {
                 "type": self.element['type'],
+                "required_tags": self.required_tags,
                 "tags": self.tags,
                 "errors": self.errors_to_s,
                 "warnings": self.warnings_to_s,
@@ -209,15 +203,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             "id": self.element['id'],
         }
         self.geojson_file_manager.write(json.dumps(feature))
-
-    def build_feature_details(self, osm_type):
-        feature = {"osm_id": f"{osm_type}:{self.element['id']}",
-                   "status": "status",
-                   "edited_by": self.element["user"],
-                   "edited_date": self.element["timestamp"],
-                   "attributes_found": "attributes found",
-                   "attributes_not_found": "attributes notfound"}
-        self.feature_file_manager.write(json.dumps(feature))
 
     def set_color_completeness(self):
         if self.completeness_pct == 100:
