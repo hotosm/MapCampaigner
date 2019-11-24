@@ -71,6 +71,18 @@
   .panel-subhead {
     margin-bottom: 26px;
   }
+  .panel-footer-row {
+    height: 32px;
+  }
+  .panel-footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: $grey-light3;
+    padding: 0;
+    border: 0;
+  }
   p {
     margin-bottom: 7px;
     margin-top: 0;

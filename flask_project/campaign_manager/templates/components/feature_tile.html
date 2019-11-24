@@ -19,7 +19,7 @@
                 {% endif %}
               {{ feature }}
             </h4>
-            <p>{{feature_templates[feature]['feature']}}</p>
+            <p class="panel-info">{{feature_templates[feature]['feature']}}</p>
           </div>
         </div>
         <div class="row">
@@ -34,9 +34,9 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-12">
-              <button class="btn btn-primary pull-right" onclick="addTypes('{{ feature }}')">Add</button>
+        <div class="row panel-footer-row">
+          <div class="panel-footer">
+            <button class="btn btn-sm btn-primary pull-right" onclick="addTypes('{{ feature }}')">Add</button>
           </div>
         </div>
       </div>
