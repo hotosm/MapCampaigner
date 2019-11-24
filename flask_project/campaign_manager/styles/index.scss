@@ -59,6 +59,10 @@ form {
   input.form-control {
     height: 40px !important;
   }
+  input.search-input {
+    background: url('../static/img/icon_search.png') no-repeat scroll 12px 12px;
+    padding-left:38px !important;
+  }
   textarea.form-control {
     height: 85px;
     resize: vertical;

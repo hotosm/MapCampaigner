@@ -1,3 +1,21 @@
+.panel {
+  .panel-search {
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+    ul {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    li {
+      height: 41px;
+      line-height: 41px;
+      font-size: 16px;
+      padding-left: 38px;
+      &:hover {
+        background-color: rgba($black, 0.1);
+      }
+    }
+  }
+}
 .panel.panel-tile {
   border: 1px solid $grey-light2;
   padding: 16px 1px;

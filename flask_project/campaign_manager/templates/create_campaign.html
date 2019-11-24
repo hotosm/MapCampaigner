@@ -132,11 +132,11 @@
                       <div class="row">
                         <div class="form-body">
                           <div class="form-group">
-                            <input type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
-                            <div style="display: none;" id="users-not-found">No users found.</div>
-                            <div style="display: none;" id="users-found">
-                              <select id="list-osm-users" multiple class="form-control"></select>
-                              <button type="button" class="btn btn-default" id="add-to-managers">Add manager</button>
+                            <input class="search-input" type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
+                            <div style="display: none;" id="users-loading" class="panel-search">Searching...</div>
+                            <div style="display: none;" id="users-not-found" class="panel-search">No users found.</div>
+                            <div style="display: none;" id="users-found" class="panel-search">
+                              <ul id="osm-users-list"></ul>
                             </div>
                             <div id="managers-list" class="manager-list"></div>
                             <input id="campaign_managers" name="campaign_managers" type="hidden" />
@@ -359,6 +359,7 @@
 <script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.0/js-yaml.min.js"></script>
+<script type="text/javascript" src="/static/libs/jquery.throttle-debounce.min.js"></script>
 <script type="text/javascript" src="/static/js/create/map.js"></script>
 
 <script type="text/javascript" src="/static/js/create/types_tags.js"></script>
@@ -440,10 +441,10 @@
 </script>
 
 <script type='text/template' id='_template-manager'>
-  <span class="manager" data-manager="<%=name%>">
+  <span class="manager" data-manager="<%=slugify(name)%>">
     <span class="manager-icon" aria-hidden="true"><%=name[0]%>
       <% if (!isCreator) { %>
-        <span class="remove-manager" onclick="removeManager(this, '<%=name%>')">Remove</span>
+        <span class="remove-manager" onclick="removeManager(this, '<%=slugify(name)%>')">Remove</span>
       <% } %>
     </span>
     <span class="manager-name"><%=name%></span>
@@ -502,72 +503,62 @@
   });
 
   function removeManager(e, name) {
-    managers_list = managers_list.filter(manager=>manager.name !== name);
+    managers_list = managers_list.filter(manager=>slugify(manager.name) !== slugify(name));
     $('[data-manager=' + name + ']').remove();
   }
 
   function addManager(manager, isCreator) {
+    $('#users-found').hide();
+    $('#search-osm-user-text').val('');
     const name = manager.name;
+    const managerNames = managers_list.map(manager=>manager.name);
+    if (managerNames.includes(name)) return;
     const managerTemplate = _.template($("#_template-manager").html());
+    managers_list
     $('#managers-list').append(managerTemplate({name, isCreator}));
     managers_list.push(manager);
   }
 
-  $("#add-to-managers").click(function () {
-    var listOsmUsers = [];
-    $('#list-osm-users :selected').each(function (i, selected) {
-      listOsmUsers[i] = { name: $(selected).text(), osm_id: $(selected).data('osm-id').toString() };
-    });
-
-    $('.error-managers').hide();
-
-    for (var i = 0; i < listOsmUsers.length; i++) {
-      if ($.inArray(listOsmUsers[i], managers_list) === -1) {
-        addManager(listOsmUsers[i]);
-      }
-    }
-
-  });
-
-  $("#search-osm-user-button").click(function () {
-    searchOsmUser();
-  });
-
-  $('#search-osm-user-text').keypress(function (e) {
-    if (e.which === 13) {
-      searchOsmUser();
+  $('#search-osm-user-text').keyup(function (e) {
+    const searchString = e.target.value;
+    if (searchString.length >= 2) {
+      debouncedOsmSearch(e.target.value);
     }
   });
 
-  function searchOsmUser() {
-    var textInput = $('#search-osm-user-text').val();
-    var url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' + textInput;
-    var $searchOsmButton = $('#search-osm-user-button');
-    $searchOsmButton.attr('disabled', 'disabled');
-    $searchOsmButton.LoadingOverlay("show", { image: "/static/resources/loading-spinner.gif" });
+  const debouncedOsmSearch = $.debounce(250, function(searchString) {
+    searchOsmUser(searchString);
+  })
+
+  function searchOsmUser(searchString) {
+    var url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' + searchString;
     $('#users-not-found').hide();
     $('#users-found').hide();
+    $('#users-loading').show();
     $.ajax({
       url: url,
       success: function (users) {
-        $searchOsmButton.removeAttr('disabled');
-        $searchOsmButton.LoadingOverlay("hide");
-        $('#list-osm-users').html('');
-
+        $('#osm-users-list').html('');
+        $('#users-loading').hide();
         if (users.length > 0) {
-          $('#users-found').show("slow");
+          $('#users-found').show();
         } else {
-          $('#users-not-found').show("slow");
+          $('#users-not-found').show();
         }
-
         $.each(users, function (index, user) {
           const name = user.names[0];
-          $('#list-osm-users').append($('<option/>', {
-            value: name,
-            text: name,
-            'data-osm-id': user.id.toString()
+          const searchRegEx = new RegExp(searchString, 'gi');
+          const matches = name.match(searchRegEx);
+          $('#osm-users-list').append($('<li/>', {
+            html: name.replace(searchRegEx, '<b>' + matches[0] + '</b>'),
+            'data-osm-id': user.id.toString(),
+            click: ()=>addManager({ name, osm_id: user.osm_id })
           }));
         });
+      },
+      error: function() {
+        $('#users-loading').hide();
+        $('#users-not-found').show();
       }
     });
   }
