@@ -386,10 +386,20 @@ def get_campaign(uuid):
     for manager in Campaign.parse_managers_string(campaign.campaign_managers):
         campaign_manager_names.append(manager['name'])
 
+    campaign_viewer_names = []
+    for viewer in Campaign.parse_managers_string(campaign.campaign_viewers):
+        campaign_viewer_names.append(viewer['name'])
+
+    campaign_contributor_names = []
+    for contributor in Campaign.parse_managers_string(campaign.campaign_contributors):
+        campaign_contributor_names.append(contributor['name'])
+
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
     context['campaign_manager_names'] = campaign_manager_names
+    context['campaign_viewer_names'] = campaign_viewer_names
+    context['campaign_contributor_names'] = campaign_contributor_names
     context['participants'] = len(campaign.campaign_managers)
 
     context['pct_covered_areas'] = campaign.calculate_areas_covered()
@@ -838,6 +848,8 @@ def edit_campaign(uuid):
             form = CampaignForm()
             form.name.data = campaign.name
             form.campaign_managers.data = Campaign.parse_managers_string(campaign.campaign_managers)
+            form.campaign_viewers.data = Campaign.parse_managers_string(campaign.campaign_viewers)
+            form.campaign_contributors.data = Campaign.parse_managers_string(campaign.campaign_contributors)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description

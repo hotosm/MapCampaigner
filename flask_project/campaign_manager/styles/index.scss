@@ -138,14 +138,14 @@ form {
     }
   }
 }
-.manager-list {
+.osm-user-list {
   margin-top: 20px;
-  .manager {
+  .osm-user {
     position: relative;
     display: inline-block;
     text-align: center;
     margin-right: 19px;
-    .manager-icon {
+    .osm-user-icon {
       display: block;
       height: 40px;
       width: 40px;
@@ -164,11 +164,11 @@ form {
       background-position: 0 0, 2.3625px 2.3625px;
       position: relative;
     }
-    .manager-name {
+    .osm-user-name {
       font-size: 12px;
       color: $blue-light;
     }
-    .remove-manager {border-radius: 8px;
+    .remove-osm-user {border-radius: 8px;
       position: absolute;
       background: $red;
       color: $white;

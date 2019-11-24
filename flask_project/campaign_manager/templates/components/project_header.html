@@ -63,7 +63,13 @@
             {% else %}
             -
             {% endif %}</i>
-          Viewers: <i>user2, user3</i></p>
+          Viewers: <i>{% if campaign_viewer_names %}
+              {% for campaign_viewer in campaign_viewer_names %}
+              <a href="https://www.openstreetmap.org/user/{{ campaign_viewer }}" target="_blank">{{ campaign_viewer }}</a>{% if campaign_viewer != campaign_viewer_names[-1] %},{% endif %}
+              {% endfor %}
+              {% else %}
+              -
+              {% endif %}</i></p>
       </div>
       <div class="col-xs-12 col-md-6">
         <p>

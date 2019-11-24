@@ -77,6 +77,12 @@ class CampaignForm(FlaskForm):
     campaign_managers = HiddenField(
         u'Project managers',
         validators=[InputRequired()])
+    campaign_viewers = HiddenField(
+        u'Project viewers'
+    )
+    campaign_contributors = HiddenField(
+        u'Project contributors'
+    )
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )

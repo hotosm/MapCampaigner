@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-xs-12 col-sm-6">
       <div class="tab-content">
-        <div class="tab-pane" id="general-information">
+        <div class="tab-pane active" id="general-information">
           <fieldset id="fieldset-1" data-fieldset-step="1">
             <div class="form-group">
               <label for="project-name">Project Name <span class="required">*</span></label>
@@ -108,7 +108,7 @@
             </div>
           </fieldset>
         </div>
-        <div class="tab-pane active" id="settings">
+        <div class="tab-pane" id="settings">
           <fieldset id="fieldset-4" data-fieldset-step="4">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
               <div class="panel panel-default">
@@ -132,13 +132,13 @@
                       <div class="row">
                         <div class="form-body">
                           <div class="form-group">
-                            <input class="search-input" type="text" id="search-osm-user-text" placeholder="Search OpenStreetMap Users" />
-                            <div style="display: none;" id="users-loading" class="panel-search">Searching...</div>
-                            <div style="display: none;" id="users-not-found" class="panel-search">No users found.</div>
-                            <div style="display: none;" id="users-found" class="panel-search">
-                              <ul id="osm-users-list"></ul>
+                            <input class="search-input" type="text" id="search-osm-manager" placeholder="Search OpenStreetMap Users" />
+                            <div style="display: none;" id="users-loading-manager" class="panel-search">Searching...</div>
+                            <div style="display: none;" id="users-not-found-manager" class="panel-search">No users found.</div>
+                            <div style="display: none;" id="users-found-manager" class="panel-search">
+                              <ul id="osm-users-list-manager"></ul>
                             </div>
-                            <div id="managers-list" class="manager-list"></div>
+                            <div id="managers-list" class="osm-user-list"></div>
                             <input id="campaign_managers" name="campaign_managers" type="hidden" />
                             <p class="helock"></p>
                           </div>
@@ -165,8 +165,22 @@
                 </div>
                 <div id="project-viewers" class="panel-collapse collapse" role="tabpanel" aria-labelledby="project-viewers-heading">
                   <div class="panel-body">
-                    <div class="form-group">
-                      <input type="search" class="form-control" id="viewer-search" placeholder="Search OpenStreetMap Users">
+                    <div class="container-fluid">
+                      <div class="row">
+                        <div class="form-body">
+                          <div class="form-group">
+                            <input class="search-input" type="text" id="search-osm-viewer" placeholder="Search OpenStreetMap Users" />
+                            <div style="display: none;" id="users-loading-viewer" class="panel-search">Searching...</div>
+                            <div style="display: none;" id="users-not-found-viewer" class="panel-search">No users found.</div>
+                            <div style="display: none;" id="users-found-viewer" class="panel-search">
+                              <ul id="osm-users-list-viewer"></ul>
+                            </div>
+                            <div id="viewers-list" class="osm-user-list"></div>
+                            <input id="campaign_viewers" name="campaign_viewers" type="hidden" />
+                            <p class="helock"></p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -188,10 +202,24 @@
                 </div>
                 <div id="contributors" class="panel-collapse collapse" role="tabpanel" aria-labelledby="contributors-heading">
                   <div class="panel-body">
-                    <div class="form-group">
-                      <input type="search" class="form-control" id="contributor-search" placeholder="Search OpenStreetMap Users">
+                    <div class="container-fluid">
+                      <div class="row">
+                        <div class="form-body">
+                          <div class="form-group">
+                            <input class="search-input" type="text" id="search-osm-contributor" placeholder="Search OpenStreetMap Users" />
+                            <div style="display: none;" id="users-loading-contributor" class="panel-search">Searching...</div>
+                            <div style="display: none;" id="users-not-found-contributor" class="panel-search">No users found.</div>
+                            <div style="display: none;" id="users-found-contributor" class="panel-search">
+                              <ul id="osm-users-list-contributor"></ul>
+                            </div>
+                            <div id="contributors-list" class="osm-user-list"></div>
+                            <input id="campaign_contributors" name="campaign_contributors" type="hidden" />
+                            <p class="helock"></p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </div><!-- -->
                 </div>
               </div>
               <div class="panel panel-default">
@@ -440,14 +468,14 @@
 </div>
 </script>
 
-<script type='text/template' id='_template-manager'>
-  <span class="manager" data-manager="<%=slugify(name)%>">
-    <span class="manager-icon" aria-hidden="true"><%=name[0]%>
+<script type='text/template' id='_template-osm-user'>
+  <span class="osm-user" data-user-type="<%=type%>" data-osm-user="<%=slugify(name)%>">
+    <span class="osm-user-icon" aria-hidden="true"><%=name[0]%>
       <% if (!isCreator) { %>
-        <span class="remove-manager" onclick="removeManager(this, '<%=slugify(name)%>')">Remove</span>
+        <span class="remove-osm-user" onclick="removeOsmUser(this, '<%=slugify(name)%>', '<%=type%>')">Remove</span>
       <% } %>
     </span>
-    <span class="manager-name"><%=name%></span>
+    <span class="osm-user-name"><%=name%></span>
   </span>
 </script>
 
@@ -468,7 +496,7 @@
   remote_projects_list = {{ form.remote_projects.data | safe }};
   {% endif %}
 
-  //------------------ CAMPAIGN MANAGERS ------------------//
+
   var managers_list = [];
   {% if form.campaign_managers.data %}
   managers_list = {{ form.campaign_managers.data | safe }};
@@ -478,6 +506,17 @@
     return { name, osm_id }
   })
   {% endif %}
+
+  var viewers_list = [];
+  {% if form.campaign_viewers.data %}
+  viewers_list = {{ form.campaign_viewers.data | safe }};
+  {% endif %}
+
+  var contributors_list = [];
+  {% if form.campaign_contributors.data %}
+  contributors_list = {{ form.campaign_contributors.data | safe }};
+  {% endif %}
+
   {% if campaign_creator %}
   var campaign_creator = '{{ campaign_creator }}';
   {% endif %}
@@ -487,76 +526,133 @@
     if (managers_list.length > 0) {
       $.each(managers_list, function (index, manager) {
         const name = manager.name || manager;
-        const managerTemplate = _.template($("#_template-manager").html());
+        const managerTemplate = _.template($("#_template-osm-user").html());
         const managerEl = managerTemplate({
           name,
-          isCreator: typeof campaign_creator !== 'undefined' && name == campaign_creator
+          isCreator: typeof campaign_creator !== 'undefined' && name == campaign_creator,
+          type: 'manager'
         });
         $('#managers-list').append(managerEl);
       })
       $('#campaign-managers').val(JSON.stringify(managers_list));
     }
   }
+  function updateViewerList() {
+    $('#viewers-list').html('');
+    if (viewers_list.length > 0) {
+      $.each(viewers_list, function (index, viewer) {
+        const name = viewer.name;
+        const viewerTemplate = _.template($("#_template-osm-user").html());
+        const viewerEl = viewerTemplate({name, type: 'viewer', isCreator: false});
+        $('#viewers-list').append(viewerEl);
+      })
+      $('#campaign-viewers').val(JSON.stringify(viewers_list));
+    }
+  }
+  function updateContributorList() {
+    $('#contributors-list').html('');
+    if (contributors_list.length > 0) {
+      $.each(contributors_list, function (index, contributor) {
+        const name = contributor.name;
+        const contributorTemplate = _.template($("#_template-osm-user").html());
+        const contributorEl = contributorTemplate({name, type: 'contributor', isCreator: false});
+        $('#contributors-list').append(contributorEl);
+      })
+      $('#campaign-viewers').val(JSON.stringify(contributors_list));
+    }
+  }
   $('#form-panel').hide();
   $(function () {
     updateManagerList();
+    updateViewerList();
+    updateContributorList();
   });
 
-  function removeManager(e, name) {
-    managers_list = managers_list.filter(manager=>slugify(manager.name) !== slugify(name));
-    $('[data-manager=' + name + ']').remove();
+  function removeOsmUser(e, name, type) {
+    if (type === 'manager') {
+      managers_list = managers_list.filter(manager=>slugify(manager.name) !== slugify(name));
+    } else if (type === 'viewer') {
+      viewers_list = viewers_list.filter(viewer=>slugify(viewer.name) !== slugify(name));
+    } else if (type === 'contributor') {
+      contributors_list = contributors_list.filter(contributor=>slugify(contributor.name) !== slugify(name));
+    }
+    $('[data-user-type=' + type + '][data-osm-user=' + name + ']').remove();
   }
 
-  function addManager(manager, isCreator) {
-    $('#users-found').hide();
-    $('#search-osm-user-text').val('');
-    const name = manager.name;
-    const managerNames = managers_list.map(manager=>manager.name);
-    if (managerNames.includes(name)) return;
-    const managerTemplate = _.template($("#_template-manager").html());
-    managers_list
-    $('#managers-list').append(managerTemplate({name, isCreator}));
-    managers_list.push(manager);
+  function addOsmUser(user, isCreator, type) {
+    $('#users-found-' + type).hide();
+    $('#search-osm-' + type).val('');
+    const name = user.name;
+    let userNames = [];
+    let listId = '';
+    if (type === 'manager') {
+      listId = '#managers-list';
+      userNames = managers_list.map(u=>u.name);
+      managers_list.push(user);
+    } else if (type === 'viewer') {
+      listId = '#viewers-list';
+      userNames = viewers_list.map(u=>u.name);
+      viewers_list.push(user);
+    } else if (type === 'contributor') {
+      listId = '#contributors-list';
+      userNames = contributors_list.map(u=>u.name);
+      contributors_list.push(user);
+    }
+    if (userNames.includes(name)) return;
+    const userTemplate = _.template($("#_template-osm-user").html());
+    $(listId).append(userTemplate({name, isCreator, type}));
   }
 
-  $('#search-osm-user-text').keyup(function (e) {
+  $('#search-osm-manager').keyup(function (e) {
     const searchString = e.target.value;
     if (searchString.length >= 2) {
-      debouncedOsmSearch(e.target.value);
+      debouncedOsmSearch(e.target.value, 'manager');
+    }
+  });
+  $('#search-osm-viewer').keyup(function (e) {
+    const searchString = e.target.value;
+    if (searchString.length >= 2) {
+      debouncedOsmSearch(e.target.value, 'viewer');
+    }
+  }); 
+  $('#search-osm-contributor').keyup(function (e) {
+    const searchString = e.target.value;
+    if (searchString.length >= 2) {
+      debouncedOsmSearch(e.target.value, 'contributor');
     }
   });
 
-  const debouncedOsmSearch = $.debounce(250, function(searchString) {
-    searchOsmUser(searchString);
+  const debouncedOsmSearch = $.debounce(250, function(searchString, type) {
+    searchOsmUser(searchString, type);
   })
 
   let searchRequest = {};
-  function searchOsmUser(searchString) {
+  function searchOsmUser(searchString, type) {
     var url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' + searchString;
-    $('#users-not-found').hide();
-    $('#users-found').hide();
-    $('#users-loading').show();
+    $('#users-not-found-' + type).hide();
+    $('#users-found-' + type).hide();
+    $('#users-loading-' + type).show();
     if(searchRequest && searchRequest.readyState != 4 && searchRequest.abort){
       searchRequest.abort(); // Cancel any previous search request first
     }
     searchRequest = $.ajax({
       url: url,
       success: function (users) {
-        $('#osm-users-list').html('');
-        $('#users-loading').hide();
+        $('#osm-users-list-' + type).html('');
+        $('#users-loading-' + type).hide();
         if (users.length > 0) {
-          $('#users-found').show();
+          $('#users-found-' + type).show();
         } else {
-          $('#users-not-found').show();
+          $('#users-not-found-' + type).show();
         }
         $.each(users, function (index, user) {
           const name = user.names[0];
           const searchRegEx = new RegExp(searchString, 'gi');
           const matches = name.match(searchRegEx);
-          $('#osm-users-list').append($('<li/>', {
+          $('#osm-users-list-' + type).append($('<li/>', {
             html: name.replace(searchRegEx, '<b>' + matches[0] + '</b>'),
             'data-osm-id': user.id.toString(),
-            click: ()=>addManager({ name, osm_id: user.osm_id })
+            click: ()=>addOsmUser({ name, osm_id: user.id }, false, type)
           }));
         });
       },
@@ -611,7 +707,7 @@
     $('#submit').show();
     {% endif %}
     {% if action == 'create' %}
-    addManager({ name: response.display_name, osm_id: response.id }, true);
+    addOsmUser({ name: response.display_name, osm_id: response.id }, true, 'manager');
     $("#user_id").val(response.id);
     {% endif %}
   }
@@ -855,6 +951,8 @@
     $("#uploader").val($("#profile-name").html());
 
     $('#campaign_managers').val(JSON.stringify(managers_list))
+    $('#campaign_viewers').val(JSON.stringify(viewers_list))
+    $('#campaign_contributors').val(JSON.stringify(contributors_list))
 
     $('#campaign_status').val('Start');
 
