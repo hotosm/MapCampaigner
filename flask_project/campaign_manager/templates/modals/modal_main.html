@@ -44,20 +44,20 @@
 </style>
 
 <div id="custom-types-tags" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add a feature</h4>
+        <h2 class="modal-title">Add a Feature</h2>
         <br />
         <p>Choose one of the following methods to add a feature and attributes.</p>
+        <ul class="nav nav-tabs">
+          <li id="li-template" class="active"><a data-toggle="tab" href="#modal-template">Templates</a></li>
+          <li id="li-custom"><a data-toggle="tab" href="#modal-custom">Custom Form</a></li>
+          <li id="li-yaml"><a data-toggle="tab" href="#modal-yaml">YAML Editor</a></li>
+        </ul>
       </div>
       <div class="modal-body">
-        <ul class="nav nav-tabs">
-          <li id="li-template" class="active"><a data-toggle="tab" href="#modal-template">Choose from template</a></li>
-          <li id="li-custom"><a data-toggle="tab" href="#modal-custom">Custom Form</a></li>
-          <li id="li-yaml"><a data-toggle="tab" href="#modal-yaml">Yaml editor</a></li>
-        </ul>
         <div class="tab-content">
           <div id="modal-template" class="tab-pane fade in active">
             <div class="container-fluid">

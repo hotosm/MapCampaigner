@@ -223,8 +223,40 @@ form {
     padding-top: 0;
   }
 }
+.modal {
+  &-xl {
+    min-width: 95%;
+    max-width: 100%;
+    min-height: 95%;
+    max-height: 100%;
+    position: relative;
+    .nav-tabs {
+      position: relative;
+      bottom: -16px;
+    }
+    #campaign-map {
+      min-height: 60vh;
+    }
+  }
+  .modal-content {
+    border-radius: 2px;
+    background: $white !important;
+  }
+  .modal-body {
+    background: $page-background;
+  }
+}
 #modal-template {
-  column-count: 2;
+  column-count: 1;
+  @include respond-above(md) {
+    column-count: 2;
+  }
+  @include respond-above(lg) {
+    column-count: 3;
+  }
+  .panel {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
 }
 #campaign-map-display {
   height: 600px;

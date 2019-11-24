@@ -286,14 +286,14 @@ function getAreaSize() {
     var kmSquare = parseFloat(totalAreaSize / 1000000);
     $('#campaign-map-area-size').html('Area size : ' + kmSquare.toFixed(2) + ' km<sup>2</sup>');
     if (totalAreaSize > maxAreaSize) {
-        showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
+        showNotifications('Area of the campaign is too big, please reduce the area.', 'danger', '#map-notification-holder');
         $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
         $('#campaign-map-area-size').removeClass('label-success');
-        $('#campaign-map-area-size').addClass('label-danger');
+        $('#campaign-map-area-size').addClass('label-warning');
     } else {
         clearNotification();
         $('.map-wrapper').data('error', '');
-        $('#campaign-map-area-size').removeClass('label-danger');
+        $('#campaign-map-area-size').removeClass('label-warning');
         $('#campaign-map-area-size').addClass('label-success');
     }
 }

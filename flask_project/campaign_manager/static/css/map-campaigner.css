@@ -375,11 +375,6 @@ body {
   }
 }
 
-#campaign-map {
-  height: 300px;
-  margin-top: 4px;
-}
-
 .sidebar-nav a, .navbar-top-links a {
   color: black !important;
 }

@@ -14,7 +14,7 @@
     </ul>
   </div>
 </div>
-
+<div id="create-notification-holder"></div>
 <form id="campaign-form" method="POST" action="{{ url }}" role="form">
   {{ form.hidden_tag() }}
   <div class="row">
@@ -49,7 +49,6 @@
           </div>
         </div>
         <div class="tab-pane" id="area-of-interest">
-          <div id="map-notification-holder"></div>
           <fieldset id="fieldset-2" data-fieldset-step="2">
             <div class="form-group">
               <p>Option 1: Set your AOI by using the drawing tools on the map</p>
@@ -78,7 +77,6 @@
           </div>
         </div>
         <div class="tab-pane" id="features-and-attributes">
-          <div id="features-notification-holder"></div>
           <fieldset id="fieldset-3" data-fieldset-step="3">
             <div class="form-group">
               <a id="btn-add" class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#custom-types-tags">
@@ -736,7 +734,7 @@
   updateMap(campaignDisplayMap);
 
   if (!isEmpty(errors)) {
-    showNotifications('Failed to create a campaign!', 'danger');
+    showNotifications('Failed to create a campaign!', 'danger', '#create-notification-holder');
   }
 
   function checkSteps(step) {
@@ -749,6 +747,9 @@
         break;
       case '3':
         return checkStep3();
+        break;
+      case '4':
+        return checkStep4();
         break;
       case '5':
         return checkStep5();
@@ -775,9 +776,6 @@
     const endValue = moment(document.querySelector('#end_date').value);
     const isStartBeforeEnd = startValue.isBefore(endValue);
 
-    if (managers_list.length === 0) {
-      reloadUser();
-    }
     return !hasInvalidFields && isStartBeforeEnd;
   }
 
@@ -786,11 +784,11 @@
     var mapErrorNotification = $('.map-wrapper').data('error');
     clearNotification();
     if (!!mapErrorNotification) {
-      showNotifications(mapErrorNotification, 'danger', '#map-notification-holder');
+      showNotifications(mapErrorNotification, 'danger', '#create-notification-holder');
       valid = false;
     }
     if (drawnItems.getLayers().length === 0) {
-      showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger', '#map-notification-holder');
+      showNotifications('Map is empty, please draw a layer or upload boundary.', 'danger', '#create-notification-holder');
       valid = false;
     }
     return valid;
@@ -803,9 +801,20 @@
     rerenderFunction();
     if (jQuery.isEmptyObject(types_value)) {
       valid = false;
-      showNotifications('You must add at least one feature to the project.', 'danger', '#features-notification-holder');
+      showNotifications('You must add at least one feature to the project.', 'danger', '#create-notification-holder');
     }
     return valid;
+  }
+
+  function checkStep4() {
+    if (managers_list.length === 0) {
+      reloadUser(); // This used to happen in step 1, but might belong at page level
+    }
+    if (managers_list < 1) return false;
+    $('#campaign_managers').val(JSON.stringify(managers_list))
+    $('#campaign_viewers').val(JSON.stringify(viewers_list))
+    $('#campaign_contributors').val(JSON.stringify(contributors_list))
+    return true;
   }
 
   function checkStep5() {
@@ -821,44 +830,13 @@
       $.each(rows, function (index, row) {
         if (!$(row).find('.function-selection').val()) {
           var function_name = campaignJson['selected_functions']['function-' + (index + 1)]['function'];
-          showNotifications(function_name + ' is not an insight function.', 'danger');
+          showNotifications(function_name + ' is not an insight function.', 'danger', '#create-notification-holder');
           valid = false;
         }
       });
     }
 
     return valid;
-  }
-
-  function nextStep(elm) {
-    var currentActiveStep = $('.cc-nav-steps').find('.cc-nav.active');
-    var progressLine = $(elm).parents('.cc').find('.cc-progress-line');
-    var parentFieldset = $(elm).parents('fieldset');
-    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
-
-    var currentStep = currentActiveStep.data('step');
-    var totalSteps = progressLine.data('number-of-steps');
-
-    if (currentStep === totalSteps) return;
-
-    var isNextStep = checkSteps(currentStep);
-    var nameDateValid = checkFormHeader();
-
-    if (isNextStep && nameDateValid) {
-      $(parentFieldset).children().find('button').attr('disabled', 'disabled');
-    }
-  }
-
-  function prevStep(elm) {
-    var currentActiveStep = $('.cc-nav-steps').find('.cc-nav.active');
-    var parentFieldset = $(elm).parents('fieldset');
-    var currentFieldsetNumber = parentFieldset.data('fieldset-step');
-
-    var currentStep = currentActiveStep.data('step');
-
-    if (currentStep === 1) return;
-
-    $(parentFieldset).children().find('button').attr('disabled', 'disabled');
   }
 
   function checkFormHeader() {
@@ -949,13 +927,7 @@
   }
   function preprocessSubmitForm() {
     $("#uploader").val($("#profile-name").html());
-
-    $('#campaign_managers').val(JSON.stringify(managers_list))
-    $('#campaign_viewers').val(JSON.stringify(viewers_list))
-    $('#campaign_contributors').val(JSON.stringify(contributors_list))
-
     $('#campaign_status').val('Start');
-
     // Processing selected function
     var selected_functions = {};
     selected_functions = $.extend({}, selected_functions, get_selected_functions());

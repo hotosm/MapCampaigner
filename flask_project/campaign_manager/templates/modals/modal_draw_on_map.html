@@ -1,22 +1,22 @@
-<div id="map-draw-modal" class="modal modal-full fade" role="dialog">
-  <div class="modal-dialog">
+<div id="map-draw-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">
+        <h2 class="modal-title">
           Draw On Map
-        </h4>
+        </h2>
       </div>
       <div class="modal-body">
         <p>Draw an area on the map to use for your campaign.</p>
         <div id="campaign-map"></div>
+        <br />
+        <br />
         <div class="label label-success" id="campaign-map-area-size">Area size : 0.0 km<sup>2</sup></div>
+        <div id="map-notification-holder"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">
-          Back
-        </button>
-        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="console.log('implement confirm')">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">
           Confirm
         </button>
       </div>
