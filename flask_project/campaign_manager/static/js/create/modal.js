@@ -323,5 +323,5 @@ function saveYamlCustomType() {
         types[key] = value;
         addTypes(key);
     });
-    $('#custom-types-tags').modal('toggle');
+    $('#custom-types-tags').modal('hide');
 }

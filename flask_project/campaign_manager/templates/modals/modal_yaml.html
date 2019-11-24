@@ -1,54 +1,74 @@
-<!-- Modal content-->
-<div>
-    <textarea id="yaml-input" rows="10" placeholder="put yaml types in here" type="text" class="form-control"></textarea>
-</div>
-<div class="modal-required-message">This field is required</div>
-<div class="modal-error-message"></div>
-<div class="help-block">
-    Edit templates in yaml above.
-</div><br>
-
-<div class="row">
-<div class="pull-right">
-    <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveYamlCustomType()">Add</button>
-    <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
-</div>
-</div>
-
-<div class="modal-required-message">Some names already registered, please choose other name.</div>
-
-<div class="help">
-    <b>GUIDE :</b>
-    <pre class="example">
-restaurant:
-    feature: amenity
-    tags:
-        - amenity:
-            - restaurant
-            - fast-food
-        - name
-        - cuisine
-    element_type: Point
-shop:
-    feature: amenity
-    tags:
-        - amenity:
-            - shop
-            - name
-        - opening_hours
-    element_type: Polygon
+<div class="container-fluid">
+  <div class="row">
+  <div class="col-sm-6">
+      <h4>Editor</h4>
+      <textarea id="yaml-input" rows="18" placeholder='"All Restaurants":
+  feature: amenity=restaurant
+  tags:
+    - name
+    - cuisine
+    - opening_hours
+  element_type: Point
+"Local Shops":
+  feature: shop
+  tags:
+    - name
+    - opening_hours
+    - shop:
+      - art
+      - bakery
+      - bicycle
+  element_type: Polygon' type="text" class="form-control"></textarea>
+      <div class="modal-required-message">This field is required</div>
+      <div class="modal-required-message">Some names are already registered, please choose different names.</div>
+      <div class="modal-error-message"></div>
+      <p class="help-block">
+        <h4>Notes</h4>
+        - YAML is white-space sensitive. Follow the indentation of the example exactly.<br>
+        - Values that contain spaces should be wrapped in double quotes, e.g. <code>"My Custom Feature Name"</code>.<br>
+        - The top-level parent is the <code>title</code> of the custom feature type.<br>
+        - The second-level should have two keys: <code>feature</code> and <code>tags</code>.<br>
+        - You can add more than one feature type at a time in the YAML editor.
+      </p>
+    </div>
+  <div class="col-sm-6">
+    <div class="help">
+        <h4>Example</h4>
+        <pre class="example">
+"All Restaurants":
+  feature: amenity=restaurant
+  tags:
+    - name
+    - cuisine
+    - opening_hours
+  element_type: Point
+"Local Shops":
+  feature: shop
+  tags:
+    - name
+    - opening_hours
+    - shop:
+      - art
+      - bakery
+      - bicycle
+  element_type: Polygon
         </pre>
-    Put types in yaml format. The formats are:<br>
-    - Whitespace is sensitive. Each child element must be indented below its parent element.<br>
-    - The first parent, put <b>title</b> of custom type.<br>
-    - The second one 2 key, which are feature and tags.<br>
-    - <b>Feature</b> : This is specific feature of data for this type. For example: building, amenity, etc.<br>
-    - To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.<br>
-    - <b>Tags</b> : The format is the list, put dash for every line.
-    - Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.
-    - For specific tag, add new child for that tags (for example amenity). It will check attributes is restaurant or fast-food.
-    - Can put second type (or more) by creating new parent<br />
-    - <b>Element type</b>: Point, Line, Polygon
+        <p class="help-block">
+        <h4>&nbsp;</h4>
+        - <code>feature</code>: The <a href="https://wiki.openstreetmap.org/wiki/Map_Features">OpenStreetMap feature</a> you want to track. For example: <code>building</code>, <code>amenity</code>, <code>building=school</code> or <code>building=school,university</code>.<br>
+        - <code>tags</code> : This is a list of <a href="https://wiki.openstreetmap.org/wiki/Category:Key_descriptions">OpenStreetMap keys</a> you want to track. Start every item with a dash (i.e. <code>-</code>). For example: <code>name</code>, <code>operator</code>, <code>opening_hours</code>.
+        - <code>element_type</code>: Can be <code>Point</code>, <code>Line</code>, or <code>Polygon</code>.
+        </p>
+      </div>
+  </div>
 </div>
 
+
+<div class="form-footer">
+  <div class="pull-right">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <button type="button" id="btn-add-custom-type" class="btn btn-primary" onclick="saveYamlCustomType()">Add</button>
+  </div>
+</div>
+</div>
 

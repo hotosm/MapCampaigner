@@ -250,8 +250,18 @@ form {
     padding-bottom: 80px;
     .form-footer {
       position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      right: 0;
+      background: white;
+      text-align: right;
     }
   }
+}
+#yaml-input, pre {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+  font-size: 14px;
 }
 #modal-template {
   column-count: 1;
