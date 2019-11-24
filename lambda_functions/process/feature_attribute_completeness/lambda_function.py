@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     try:
         main(event, context)
     except Exception as e:
+        logger.info(f"Error: {e}")
         S3Data().create(
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
             body=json.dumps({
@@ -43,6 +44,7 @@ def main(event, context):
     type_id = type_name.replace(' ', '_')
 
     campaign = fetch_campaign(campaign_path(uuid))
+    logger.info(campaign)
     for type_key in campaign['types']:
         if campaign['types'][type_key]['type'] == type_name:
             typee = campaign['types'][type_key]

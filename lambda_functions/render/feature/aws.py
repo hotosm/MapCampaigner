@@ -26,13 +26,17 @@ class S3Data(object):
         :rtype: dict
         """
         try:
+            print("> TRY")
             obj = self.s3.get_object(
                 Bucket=self.bucket,
                 Key=key)
         except:
             return []
 
-        raw_content = obj['Body'].read()
+        raw_content = obj['Body'].read() # binary string
+        # try: raw_content = obj['Body'].read().decode('utf-8')
+        print(f"key: {key}")
+        print(f"raw_content: {raw_content}")
         return self.load(raw_content, key)
 
     def load(self, raw_content, key):
@@ -49,8 +53,12 @@ class S3Data(object):
         :rype: dict
         """
         if self.is_json(key):
-            return json.loads(raw_content)
+            print("> IF")
+            content = json.loads(raw_content)
+            print(f"content: {content}")
+            return content
         else:
+            print("> ELSE")
             return yaml.load(raw_content)
 
     def is_json(self, key):
@@ -64,7 +72,9 @@ class S3Data(object):
         :rtype: boolean
         """
         if key.split('.')[-1] in ['json', 'geojson']:
+            print("TRUE")
             return True
+        print("FALSE")
         return False
 
     def create(self, key, body):

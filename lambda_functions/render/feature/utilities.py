@@ -3,6 +3,11 @@ import json
 import boto3
 from dependencies import jinja2
 from aws import S3Data
+import logging
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def build_feature_completeness_path(campaign_path, type_id):
@@ -57,6 +62,14 @@ def fetch_campaign_geometry(campaign_path):
         campaign_path=campaign_path))
 
 
+def fetch_feature_geojson(feature_path):
+    output_path = f'{feature_path}/geojson_1.json'
+    print(f"output_path: {output_path}")
+    result = S3Data().fetch(output_path)
+    print(f"result: {result}")
+    return result
+
+
 def build_template_path(campaign_path, type_id):
     return '/'.join([
         '{campaign_path}',
@@ -106,3 +119,18 @@ def build_processed_data_path(campaign_path, feature):
         'data.json']).format(
             campaign_path=campaign_path,
             feature=feature)
+
+
+def create_feature_details_json(feature_path):
+    print(f"feature_path: {feature_path}")
+    feature_data = fetch_feature_geojson(feature_path)
+    print(f"feature_data: {feature_data}")
+    geojson_data = feature_data["features"][0]
+    print(f"geojson_data: {geojson_data}")
+    data = {"feature_data": "FOO"}
+    data = json.dumps(data)
+    print(f"data: {data}")
+    save_to = f'{feature_path}/feature.json'
+    print(f"save_to: {save_to}")
+    save_to_s3(save_to, data)
+    
