@@ -29,7 +29,8 @@ from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
     get_types,
     map_provider,
-    get_allowed_managers
+    get_allowed_managers,
+    parse_json_string
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -383,15 +384,15 @@ def get_campaign(uuid):
         context['types'].items()))
 
     campaign_manager_names = []
-    for manager in Campaign.parse_managers_string(campaign.campaign_managers):
+    for manager in parse_json_string(campaign.campaign_managers):
         campaign_manager_names.append(manager['name'])
 
     campaign_viewer_names = []
-    for viewer in Campaign.parse_managers_string(campaign.campaign_viewers):
+    for viewer in parse_json_string(campaign.campaign_viewers):
         campaign_viewer_names.append(viewer['name'])
 
     campaign_contributor_names = []
-    for contributor in Campaign.parse_managers_string(campaign.campaign_contributors):
+    for contributor in parse_json_string(campaign.campaign_contributors):
         campaign_contributor_names.append(contributor['name'])
 
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
@@ -847,9 +848,9 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_managers.data = Campaign.parse_managers_string(campaign.campaign_managers)
-            form.campaign_viewers.data = Campaign.parse_managers_string(campaign.campaign_viewers)
-            form.campaign_contributors.data = Campaign.parse_managers_string(campaign.campaign_contributors)
+            form.campaign_managers.data = parse_json_string(campaign.campaign_managers)
+            form.campaign_viewers.data = parse_json_string(campaign.campaign_viewers)
+            form.campaign_contributors.data = parse_json_string(campaign.campaign_contributors)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description
