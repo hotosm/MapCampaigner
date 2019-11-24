@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-xs-12 col-sm-6">
       <div class="tab-content">
-        <div class="tab-pane active" id="general-information">
+        <div class="tab-pane" id="general-information">
           <fieldset id="fieldset-1" data-fieldset-step="1">
             <div class="form-group">
               <label for="project-name">Project Name <span class="required">*</span></label>
@@ -108,7 +108,7 @@
             </div>
           </fieldset>
         </div>
-        <div class="tab-pane" id="settings">
+        <div class="tab-pane active" id="settings">
           <fieldset id="fieldset-4" data-fieldset-step="4">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
               <div class="panel panel-default">
@@ -530,12 +530,16 @@
     searchOsmUser(searchString);
   })
 
+  let searchRequest = {};
   function searchOsmUser(searchString) {
     var url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' + searchString;
     $('#users-not-found').hide();
     $('#users-found').hide();
     $('#users-loading').show();
-    $.ajax({
+    if(searchRequest && searchRequest.readyState != 4 && searchRequest.abort){
+      searchRequest.abort(); // Cancel any previous search request first
+    }
+    searchRequest = $.ajax({
       url: url,
       success: function (users) {
         $('#osm-users-list').html('');
