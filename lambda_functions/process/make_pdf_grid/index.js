@@ -3,17 +3,16 @@ const intersect = require('@turf/boolean-intersects').default;
 const rectangleGrid = require('temp-turf-rectangle-grid').default;
 const featureCollection = require('@turf/helpers').featureCollection;
 const bboxPolygon = require('@turf/bbox-polygon').default;
-const fs = require('fs');
 const distance = require('@turf/distance').default;
 const centerOfMass = require('@turf/center-of-mass').default;
 const destination = require('@turf/destination').default;
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 
 
 async function getS3File(uuid) {
     const s3 = new AWS.S3();
     const params = {
-        Bucket: "russ-mc-testing", 
+        Bucket: process.env.S3_BUCKET,
         Key: `campaigns/${uuid}/campaign.geojson` 
     }
 
@@ -27,7 +26,6 @@ async function getS3File(uuid) {
 
 
 async function main(event) {
-
     const response = await getS3File(event.campaign_uuid);
     const f = JSON.parse(response).features
     const options = {units:"meters"}
@@ -51,7 +49,6 @@ async function main(event) {
                 features.push(cell)
             }
         }
-    
     }
     const fc = featureCollection(features)
     const s3 = new AWS.S3();
@@ -61,13 +58,10 @@ async function main(event) {
         Body: JSON.stringify(fc)
     }).promise();
     console.log(`finished... ${uploaded}`);
-
-
   }
   
   
   exports.handler = async (event) => {
-    var tiles = await main(event);
-    return tiles;
+     await main(event);
   };
   
