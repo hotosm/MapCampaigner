@@ -73,6 +73,9 @@ form {
   }
   .help-block {
     display: none;
+    &-visible {
+      display: block;
+    }
   }
   .has-error {
     .help-block {
@@ -244,6 +247,10 @@ form {
   }
   .modal-body {
     background: $page-background;
+    padding-bottom: 80px;
+    .form-footer {
+      position: absolute;
+    }
   }
 }
 #modal-template {
