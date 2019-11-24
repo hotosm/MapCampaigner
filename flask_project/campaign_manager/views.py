@@ -488,12 +488,12 @@ def generate_gpx(json_data):
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
 
-    resp = Response(xml_gpx, mimetype='text/xml', status=200)
+    r = Response(xml_gpx, mimetype='text/xml', status=200)
 
     # Disable CORS.
-    resp.headers['Access-Control-Allow-Origin'] = 'https://www.openstreetmap.org'
+    r.headers['Access-Control-Allow-Origin'] = 'https://www.openstreetmap.org'
 
-    return resp
+    return r
 
 
 @campaign_manager.route('/generate_josm', methods=['POST'])

@@ -22,7 +22,7 @@ class TestPep8(unittest.TestCase):
             root = '../deployment'
             command = ['make', 'pep8']
             output = Popen(command, stdout=PIPE, cwd=root).communicate()[0]
-            default_number_lines = 27
+            default_number_lines = 30
         elif sys.platform.startswith('win'):
             root = '../../'
             command = [
