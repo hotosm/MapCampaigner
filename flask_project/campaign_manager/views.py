@@ -848,9 +848,12 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_managers.data = parse_json_string(campaign.campaign_managers)
-            form.campaign_viewers.data = parse_json_string(campaign.campaign_viewers)
-            form.campaign_contributors.data = parse_json_string(campaign.campaign_contributors)
+            form.campaign_managers.data = parse_json_string(
+                campaign.campaign_managers)
+            form.campaign_viewers.data = parse_json_string(
+                campaign.campaign_viewers)
+            form.campaign_contributors.data = parse_json_string(
+                campaign.campaign_contributors)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description
