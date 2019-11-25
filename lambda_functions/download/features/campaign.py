@@ -12,6 +12,9 @@ class Campaign(JsonModel):
     geometry = None
     types = []
     _content_json = None
+    campaign_managers = None
+    campaign_contributors = None
+    campaign_viewers = None
 
     def __init__(self, uuid=None):
         if uuid:
