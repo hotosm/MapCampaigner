@@ -8,6 +8,7 @@ PATH = '/tmp/'
 
 client = boto3.client("s3")
 
+
 def lambda_handler(event, context):
     try:
         main(event)
