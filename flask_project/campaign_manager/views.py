@@ -370,7 +370,6 @@ def get_campaign(uuid):
     from campaign_manager.aws import S3Data
     """Get campaign details.
     """
-
     try:
         campaign = Campaign.get(uuid)
     except:
@@ -378,7 +377,6 @@ def get_campaign(uuid):
 
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
-
     context['types'] = list(map(lambda type:
         type[1]['type'],
         context['types'].items()))
@@ -488,12 +486,47 @@ def generate_gpx(json_data):
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
 
-    r = Response(xml_gpx, mimetype='text/xml', status=200)
 
+    resp = Response(xml_gpx, mimetype='text/xml', status=200)
+    cors_host = 'https://www.openstreetmap.org'
     # Disable CORS.
-    r.headers['Access-Control-Allow-Origin'] = 'https://www.openstreetmap.org'
+    resp.headers['Access-Control-Allow-Origin'] = cors_host
 
     return r
+
+
+@campaign_manager.route('/mbtiles', methods=['POST'])
+def get_mbtile():
+    # decoding to geojson
+    client = S3Data()
+
+    coords = json.loads(request.values.get('coordinates'))
+    polygon = shapely_geometry.Polygon(coords)
+
+    url = 'campaigns/{0}/mbtiles/'.format(request.values.get('uuid'))
+
+    mbtiles = client.fetch('{0}tiles.geojson'.format(url))
+
+    # Get all campaign polygons.
+    features = [f for f in mbtiles['features']
+        if f['properties']['parent'] is None]
+    polygons = [shapely_geometry.Polygon(f['geometry']['coordinates'][0])
+        for f in features]
+    polygons = [shapely_geometry.polygon.orient(p) for p in polygons]
+    centroids = [p.centroid for p in polygons]
+
+    distances = [polygon.centroid.distance(c) for c in centroids]
+    min_distance = distances.index(min(distances))
+
+    tiles_id = features[min_distance]['properties']['id']
+    tiles_file = '{0}.mbtiles'.format(tiles_id)
+
+    # Get file from s3
+    file_path = '{0}{1}'.format(url, tiles_file)
+    aws_url = 'https://s3-us-west-2.amazonaws.com'
+    file_url = '{0}/{1}/{2}'.format(aws_url, client.bucket, file_path)
+
+    return Response(json.dumps({'file_url': file_url}))
 
 
 @campaign_manager.route('/generate_josm', methods=['POST'])

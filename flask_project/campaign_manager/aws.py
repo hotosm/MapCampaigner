@@ -1,6 +1,7 @@
 import json
 import yaml
 import boto3
+from botocore.exceptions import ClientError
 
 
 class S3Data(object):
@@ -29,7 +30,7 @@ class S3Data(object):
             obj = self.s3.get_object(
                 Bucket=self.bucket,
                 Key=key)
-        except:
+        except ClientError:
             return []
 
         raw_content = obj['Body'].read()
