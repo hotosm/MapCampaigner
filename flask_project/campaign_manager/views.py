@@ -364,8 +364,7 @@ def campaign_boundary_upload_chunk(uuid):
         abort(404)
 
 
-@campaign_manager.route('/campaign/<uuid>')
-def get_campaign(uuid):
+def get_campaign_data(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.aws import S3Data
     """Get campaign details.
@@ -426,8 +425,31 @@ def get_campaign(uuid):
     except TypeError:
         context['end_date_date'] = '-'
         context['end_date_year'] = '-'
+    return context
 
+
+@campaign_manager.route('/campaign/<uuid>')
+def get_campaign(uuid):
+    context = get_campaign_data(uuid)
     return render_template('campaign_detail.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/features')
+def get_campaign_features(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_features.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/contributors')
+def get_campaign_contributors(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_contributors.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/area')
+def get_campaign_area(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_area.html', **context)
 
 
 @campaign_manager.route('/participate')
