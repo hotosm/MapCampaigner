@@ -59,12 +59,20 @@
         let strPolygon = JSON.stringify(e.features[0].toJSON());
         let gpx_url = encodeURIComponent(window.location.origin + '/gpx/' + btoa(strPolygon))
         let url = base + '&gpx=' + gpx_url
+        let coords = JSON.stringify(e.features[0].toJSON().geometry.coordinates[0])
+          .replace(/\"/g,"&quot;");
 
         var description = `
         <div>
           <h4>Area of Interest</h4>
           <a href="${url}" class="btn btn-success btn-xs" target="_blank"><span class="glyphicon glyphicon-search"></span>
             Edit</a>
+          <a onclick="getMbtiles('${coords}', '{{ uuid }}')"
+            class="btn btn-warning btn-xs"
+            target="_blank">
+            <span class="glyphicon glyphicon-download-alt"></span>
+            Mbtiles
+          </a>
         </div>
         `;
         popup.setLngLat(e.lngLat)
@@ -75,6 +83,23 @@
     map.fitBounds(extent({{ geometry | safe }}), {padding: 40});
   });
 
+  function getMbtiles(coords, uuid) {
+    const payload = {
+      coordinates: coords,
+      uuid: uuid
+    }
+
+    $.ajax({
+      url: '/mbtiles',
+      type: 'POST',
+      data: payload,
+      dataType: 'json',
+      success: data => {
+        window.open(data.file_url)
+      }
+    })
+
+  }
 
   ["campaign-polygons", "campaign-lines", "campaign-points"].forEach(
     layer => {

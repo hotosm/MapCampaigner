@@ -39,7 +39,7 @@ def overpass_resource_base_path(feature_type):
 
 
 def shapefile_resource_base_path(feature_type):
-    """Get shapefile resource base path according to the feature we extract
+    """Get the shapefile base path according to the feature we extract.
 
     :param feature_type: The type of feature :
         buildings, building-points, roads, potential-idp, boundary-[1,11]

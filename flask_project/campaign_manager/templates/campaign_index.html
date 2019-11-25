@@ -420,20 +420,23 @@
     });
   }
 
+
   function getCampaigns(user) {
     showLoading();
     var bucketUrl = "{{ bucket_url }}/campaigns/";
-
+    var pageURL = window.location.href;
+    var osm_id = pageURL.substr(pageURL.lastIndexOf('/') + 1);
     $.ajax({
-      url: "/campaigns",
+      url: `/user/${osm_id}/campaigns`,
       success: function (data) {
         hideLoading();
-        if (data.length > 1) {
+        if (data.length > 0) {
           data.map(function (campaign) {
             try {
               addCampaign(campaign, user);
               setMarkerToMap(campaign, campaign.geojson);
             } catch (e) {
+              console.log(e)
               console.log('error: ' + campaign.uuid);
             }
           });
