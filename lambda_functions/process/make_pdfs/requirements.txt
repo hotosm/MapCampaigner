@@ -1,0 +1,11 @@
+certifi==2019.9.11
+chardet==3.0.4
+geojson==2.5.0
+idna==2.8
+landez==2.5.0
+mbutil==0.3.0
+Pillow==6.2.1
+pyproj==2.4.1
+requests==2.22.0
+Shapely==1.6.4.post2
+urllib3==1.25.7
