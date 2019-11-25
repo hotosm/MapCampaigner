@@ -20,7 +20,7 @@ async function getS3File(uuid) {
       if (err) {
         throw err;
       }
-    }).promise();  
+    }).promise();
     return response.Body.toString(); 
 }
 
@@ -43,10 +43,12 @@ async function main(event) {
         const maxX = destination(c,(w + wDiff)/2, 90,options).geometry.coordinates[0];
         const minX = destination(c,(w + wDiff)/2, -90,options).geometry.coordinates[0];
         const grid = rectangleGrid([minX, minY, maxX, maxY], 1000, 706, {units:"meters"});
-        for (const cell of grid.features) {
-            const i = intersect(cell, feature);
-            if (i) {  
-                features.push(cell)
+        for (let i=0; i<grid.features.length; i++) {
+            const j = intersect(grid.features[i], feature);
+            
+            if (j) {
+                grid.features[i].properties.id = i
+                features.push(grid.features[i])
             }
         }
     }
