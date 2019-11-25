@@ -80,5 +80,5 @@ def main(event, context):
     render_templates(template_path, data)
     print(3)
     logger.info("> Calling create_feature_details_json")
-    create_feature_details_json(template_path)
+    create_feature_details_json(template_path, type_name)
     print(4)

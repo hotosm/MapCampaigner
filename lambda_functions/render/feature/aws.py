@@ -26,18 +26,14 @@ class S3Data(object):
         :rtype: dict
         """
         try:
-            print("> TRY")
             obj = self.s3.get_object(
                 Bucket=self.bucket,
                 Key=key)
         except:
             return []
-
-        raw_content = obj['Body'].read() # binary string
-        # try: raw_content = obj['Body'].read().decode('utf-8')
-        print(f"key: {key}")
-        print(f"raw_content: {raw_content}")
+        raw_content = obj['Body'].read()
         return self.load(raw_content, key)
+
 
     def load(self, raw_content, key):
         """
@@ -53,12 +49,8 @@ class S3Data(object):
         :rype: dict
         """
         if self.is_json(key):
-            print("> IF")
-            content = json.loads(raw_content)
-            print(f"content: {content}")
-            return content
+            return json.loads(raw_content)
         else:
-            print("> ELSE")
             return yaml.load(raw_content)
 
     def is_json(self, key):
@@ -89,6 +81,7 @@ class S3Data(object):
 
         :returns:
         """
+        print("> Calling save function")
         self.s3.put_object(
             Bucket=self.bucket,
             Key=key,
@@ -100,3 +93,57 @@ class S3Data(object):
             Bucket=self.bucket,
             Key=key)
         return obj['LastModified']
+
+    def list(self, prefix):
+        """
+        List S3 objects in bucket starting with prefix.
+
+        There aren't files or folders in a S3 bucket, only objects.
+        A key is the name of an object. The key is used to retrieve an object.
+
+        examples of keys:
+        - campaign/
+        - campaign/uuid.json
+        - campaign/uuid.geojson
+        - surveys/
+        - surveys/buildings
+        - kartoza.jpg
+
+        :param prefix: keys has to start with prefix.
+        :type prefix: string
+
+        :returns: list of keys starting with prefix in the bucket.
+        :rtype: list
+        """
+        prefix = '{}/'.format(prefix)
+        objects = []
+        req_kwargs = {'Bucket': self.bucket, 'Prefix': prefix}
+
+        # Loop to get all campaigns.
+        while True:
+            try:
+                resp = self.s3.list_objects_v2(**req_kwargs)
+                contents = resp['Contents']
+            except KeyError:
+                break
+
+            for obj in contents:
+                if obj['Key'] != prefix:
+                    key = obj['Key'].replace(prefix, '').split('/')[0]
+                    if key in [o['uuid'] for o in objects]:
+                        continue
+                    modified = obj['LastModified'].toordinal()
+
+                    # Include also last_modified to check cache.
+                    data_dict = {'uuid': key, 'modified': modified}
+                    objects.append(data_dict)
+
+            # Check that we are done getting data from s3.
+            if resp['IsTruncated'] is False:
+                break
+
+            # Update request with continuation token returned from response.
+            new_dict = {'ContinuationToken': resp['NextContinuationToken']}
+            req_kwargs.update(new_dict)
+
+        return objects
