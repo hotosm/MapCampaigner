@@ -1,0 +1,80 @@
+<div class="upload-file-wrapper">
+  <input id="file-input" type="file" name="filename" style="display: none;" />
+  <a class="btn btn-default btn-lg btn-expand" id="upload-file">
+    Upload file
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
+    </svg>
+  </a>
+
+</div>
+<script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+<script>
+  $('#upload-file').click(uploadFile);
+  $('#file-input').change(handleFileSelect);
+
+  function uploadFile(el) {
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+      return alert('The File APIs are not fully supported in this browser.');
+    }
+    $('#file-input').click();
+  }
+
+  function isnull(feature) {
+    const entries = Object.entries(feature);
+    for (let entry of entries) {
+      if (entry[1] === null) return true;
+      if (typeof entry[1] === 'object') {
+        if (isnull(entry[1])) return true;
+      }
+    }
+    return false
+  }
+
+  function invalidGeometry(features) {
+    let invalidGeom = false;
+    features.forEach((feature) => {
+      type = feature['geometry']['type']
+      if ((type === "MultiPolygon") || (type === "LineString"))
+        invalidGeom = true;
+    });
+    return invalidGeom;
+  }
+
+  function handleFileSelect(evt) {
+    const files = evt.target.files;
+    if (files.length <= 0) return;
+    const uploadedFile = files[0];
+    const fileName = uploadedFile.name;
+    const fileExtension = fileName.slice(fileName.lastIndexOf('.') + 1);
+    const reader = new FileReader();
+    switch(fileExtension) {
+      case 'geojson':
+        reader.onload = function(e) {
+          useJSON(JSON.parse(reader.result));
+        }
+        reader.readAsText(uploadedFile);
+        break;
+      case 'zip':
+        reader.onload = function(e) {
+          shp(reader.result).then(geojson => useJSON(geojson));
+        }
+        reader.readAsArrayBuffer(uploadedFile)
+        break;
+      default:
+        return showNotifications('Only .geojson and .zip files are supported.', 'danger', '#map-notification-holder');
+    }
+  }
+
+  function useJSON(json) {
+    geojsonFeature = json['features'];
+    if (invalidGeometry(geojsonFeature)) return showNotifications('Geometry type not supported', 'danger', '#map-notification-holder');
+    const hasNullElements = geojsonFeature.some(feature => isnull(feature));
+    if (hasNullElements) return showNotifications('GeoJson file has null values', 'danger', '#map-notification-holder');
+    drawnItems.clearLayers();
+    const geojsonLayer = drawGeometry(geojsonFeature, true);
+    updateMap(campaignMap);
+    updateMap(campaignDisplayMap);
+  }
+
+</script>

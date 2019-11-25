@@ -69,7 +69,9 @@
     {% if active_page == "home" %}
     {% include 'components/footer.html' %}
     {% else %}
-    {% include 'components/small_footer.html' %}
+      {% if active_page != "create" %}
+      {% include 'components/small_footer.html' %}
+      {% endif %}
     {% endif %}
 
     {% block before_base_js %}{% endblock %}

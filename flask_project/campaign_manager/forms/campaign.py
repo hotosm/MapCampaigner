@@ -13,7 +13,7 @@ from wtforms.fields import (
     RadioField,
     BooleanField
 )
-from wtforms.validators import DataRequired, Optional, ValidationError
+from wtforms.validators import InputRequired, Optional, ValidationError
 from urllib.parse import urlparse
 from campaign_manager.utilities import get_types
 from campaign_manager.views import valid_map_list
@@ -43,15 +43,15 @@ def validate_map(form, field):
 class CampaignForm(FlaskForm):
     name = StringField(
         u'Campaign name',
-        validators=[DataRequired('Campaign name is needed')],
+        validators=[InputRequired()],
         description='Name for the campaign',
-        render_kw={'placeholder': 'Campaign name'}
+        render_kw={'placeholder': 'Name of your project'}
     )
     description = TextAreaField(
         u'Campaign description',
         description='Description for the campaign',
         render_kw={'placeholder': 'Describe the type of features that ' +
-                   'are being collected and any other participation details.'}
+                   'are beng collected and any other participation details.'}
     )
     campaign_status = RadioField(
         u'Campaign status',
@@ -66,15 +66,23 @@ class CampaignForm(FlaskForm):
     )
     start_date = DateField(
         u'Start date of campaign',
-        render_kw={'placeholder': 'Start Date', 'readonly': 'true'}
+        validators=[InputRequired()],
+        render_kw={'placeholder': 'Start Date', 'type': 'date'}
     )
     end_date = DateField(
         u'End date of campaign',
-        render_kw={'placeholder': 'End Date', 'readonly': 'true'}
+        validators=[InputRequired()],
+        render_kw={'placeholder': 'End Date', 'type': 'date'}
     )
-    campaign_managers = ManagerSelectMultipleField(
-        u'Managers of campaign',
-        validators=[DataRequired('Campaign manager is needed')])
+    campaign_managers = HiddenField(
+        u'Project managers',
+        validators=[InputRequired()])
+    campaign_viewers = HiddenField(
+        u'Project viewers'
+    )
+    campaign_contributors = HiddenField(
+        u'Project contributors'
+    )
     remote_projects = ManagerSelectMultipleField(
         u'Remote Projects'
     )
@@ -88,7 +96,7 @@ class CampaignForm(FlaskForm):
     uploader = HiddenField(u'Uploader for this campaign')
     geometry = HiddenField(
         u'Map geometry for this campaign',
-        validators=[DataRequired('Geometry is needed')])
+        validators=[InputRequired()])
     map_type = StringField(
         u'Campaign Map',
         description='Campaign manager may change the map view',

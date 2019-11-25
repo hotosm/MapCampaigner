@@ -56,17 +56,20 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z" />
               <rect width="21" height="19" x=".5" y=".5" rx="4" />
             </g>
-          </svg>Managers: <i>{% if campaign_managers %}
-            {% for campaign_manager in campaign_managers %}
-            <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>
-            {% if campaign_manager != campaign_managers[-1] %}
-            ,
-            {% endif %}
+          </svg>Managers: <i>{% if campaign_manager_names %}
+            {% for campaign_manager in campaign_manager_names %}
+            <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>{% if campaign_manager != campaign_manager_names[-1] %},{% endif %}
             {% endfor %}
             {% else %}
             -
             {% endif %}</i>
-          Viewers: <i>user2, user3</i></p>
+          Viewers: <i>{% if campaign_viewer_names %}
+              {% for campaign_viewer in campaign_viewer_names %}
+              <a href="https://www.openstreetmap.org/user/{{ campaign_viewer }}" target="_blank">{{ campaign_viewer }}</a>{% if campaign_viewer != campaign_viewer_names[-1] %},{% endif %}
+              {% endfor %}
+              {% else %}
+              -
+              {% endif %}</i></p>
       </div>
       <div class="col-xs-12 col-md-6">
         <p>

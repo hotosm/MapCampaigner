@@ -1,0 +1,40 @@
+feature: shop
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+tags:
+    - name
+    - opening_hours
+    - shop:
+        - alcohol
+        - art
+        - bakery
+        - beauty
+        - beverages
+        - bicycle
+        - books
+        - butcher
+        - car
+        - car_parts
+        - car_repair
+        - charcoal
+        - chemist
+        - clothes
+        - convenience
+        - copyshop
+        - cosmetics
+        - electronics
+        - furniture
+        - greengrocer
+        - hairdresser
+        - houseware
+        - jewelry
+        - kiosk
+        - mobile_phone
+        - pastry
+        - shoes
+        - stationary
+        - supermarket
+        - tailor
+        - yes

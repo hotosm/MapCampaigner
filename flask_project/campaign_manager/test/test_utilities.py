@@ -3,6 +3,7 @@ from campaign_manager.utilities import (
     get_allowed_managers,
     get_types,
     get_survey_json)
+import os
 
 
 class TestUtilities(TestCase):
@@ -15,6 +16,10 @@ class TestUtilities(TestCase):
         self.assertEquals(len(surveys), 7)
 
     def test_get_survey_json(self):
-        survey_file = 'buildings'
-        survey_json = get_survey_json(survey_file)
-        self.assertEquals(survey_json['feature'], 'building')
+        surveyPath = os.path.join(
+            os.path.dirname(__file__),
+            '../feature_templates',
+            'buildings.yml'
+        )
+        survey_json = get_survey_json(surveyPath)
+        self.assertEquals(survey_json['feature'], 'building=yes')
