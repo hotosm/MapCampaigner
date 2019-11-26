@@ -188,8 +188,6 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
         feature = {
             "type": "Feature",
-            "last_edited_at": self.element['timestamp'],
-            "last_edited_by": self.element['user'],
             "geometry": {
                 "type": geo_type,
                 "coordinates": coordinates
@@ -197,6 +195,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             "properties": {
                 "type": self.element['type'],
                 "required_tags": self.required_tags,
+                "last_edited_at": self.element['timestamp'],
+                "last_edited_by": self.element['user'],
                 "tags": self.tags,
                 "errors": self.errors_to_s,
                 "warnings": self.warnings_to_s,
