@@ -279,3 +279,12 @@ form {
   height: 600px;
   z-index: 1;
 }
+#page-features {
+  #campaign-map {
+    height: 400px;
+  }
+  .toggle-switch {
+    position: relative;
+    top: 30px;
+  }
+}

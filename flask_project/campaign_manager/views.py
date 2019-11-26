@@ -376,9 +376,6 @@ def get_campaign_data(uuid):
 
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
-    context['types'] = list(map(lambda type:
-        type[1]['type'],
-        context['types'].items()))
 
     campaign_manager_names = []
     for manager in parse_json_string(campaign.campaign_managers):
@@ -431,6 +428,9 @@ def get_campaign_data(uuid):
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     context = get_campaign_data(uuid)
+    context['types'] = list(map(lambda type:
+      type[1]['type'],
+      context['types'].items()))
     return render_template('campaign_detail.html', **context)
 
 
