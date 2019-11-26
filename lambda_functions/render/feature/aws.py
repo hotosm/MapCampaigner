@@ -115,7 +115,6 @@ class S3Data(object):
         :returns: list of keys starting with prefix in the bucket.
         :rtype: list
         """
-        prefix = '{}/'.format(prefix)
         objects = []
         req_kwargs = {'Bucket': self.bucket, 'Prefix': prefix}
 

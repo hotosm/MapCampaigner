@@ -99,6 +99,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
+            'user': attrs.getValue("user"),
             'nodes': []
         }
         if name == 'node':
@@ -187,6 +188,8 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
         feature = {
             "type": "Feature",
+            "last_edited_at": self.element['timestamp'],
+            "last_edited_by": self.element['user'],
             "geometry": {
                 "type": geo_type,
                 "coordinates": coordinates

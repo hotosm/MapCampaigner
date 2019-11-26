@@ -66,10 +66,9 @@ def fetch_campaign_geometry(campaign_path):
         campaign_path=campaign_path))
 
 
-def fetch_feature_geojson(feature_path):
-    output_path = f'{feature_path}/geojson_1.json'
+def fetch_feature_geojson(feature_path, n):
+    output_path = f'{feature_path}/geojson_{n}.json'
     print(f"output_path: {output_path}")
-    # result = S3Data().fetch(output_path)
     print(f"bucket: {S3Data().bucket}")
     obj = S3Data().s3.get_object(
                 Bucket=S3Data().bucket,
@@ -131,43 +130,47 @@ def build_processed_data_path(campaign_path, feature):
 
 def create_feature_details_json(feature_path, feature_type):
     print(f"feature_path: {feature_path}")
-    try:
-        list_geojson_files = S3Data().list(f"{feature_path}/geojson_")
-        print(f"list_geojson_files: {list_geojson_files}")
-    except Exception as d:
-        print(d)
-    #num_geojson_files = len(list_geojson_files)
-    raw_data = fetch_feature_geojson(feature_path)
-    print(f"raw_data: {raw_data}")
-    print("B")
-    zip_file = BytesIO(raw_data)
-    print(f"zip_file: {zip_file}")
-    print("C")
-    try:
-        unzip_file = gzip.GzipFile(fileobj=zip_file)
-        print(f"unzip_file: {unzip_file}")
-    except Exception as e:
-        print(e)
-    print("D")
-    try:
-        unzip_file = unzip_file.read()
-        print(f"unzip_file2: {unzip_file}")
-    except Exception as f:
-        print(f)
-    print("E")
-    try:
-        json_data = json.loads(unzip_file)
-        print(f"json_data: {json_data}")
-    except Exception as g:
-        print(g)
-    print("F")
-    features_data = json_data["features"]
-    print(f"features_data: {features_data}")
-    for data in features_data:
-        data["feature_type"] = feature_type
-    print(f"features_data2: {features_data}")
-    data = json.dumps(features_data)
-    print(f"data: {data}")
-    save_to = f'{feature_path}/feature.json'
-    print(f"save_to: {save_to}")
-    save_to_s3(save_to, data)
+    list_geojson_files = S3Data().list(f"{feature_path}/geojson_")
+    print(f"list_geojson_files: {list_geojson_files}")
+    num_geojson_files = len(list_geojson_files)
+    for n in range(1, num_geojson_files + 1):
+        print(f"n = {n}")  
+        raw_data = fetch_feature_geojson(feature_path, n)
+        print(f"raw_data: {raw_data}")
+        print("B")
+        zip_file = BytesIO(raw_data)
+        print(f"zip_file: {zip_file}")
+        print("C")
+        try:
+            unzip_file = gzip.GzipFile(fileobj=zip_file)
+            print(f"unzip_file: {unzip_file}")
+        except Exception as e:
+            print(e)
+        print("D")
+        try:
+            unzip_file = unzip_file.read()
+            print(f"unzip_file2: {unzip_file}")
+        except Exception as f:
+            print(f)
+        print("E")
+        try:
+            json_data = json.loads(unzip_file)
+            print(f"json_data: {json_data}")
+        except Exception as g:
+            print(g)
+        print("F")
+        features_data = json_data["features"]
+        print(f"features_data: {features_data}")
+        for data in features_data:
+            data["feature_type"] = feature_type
+            tags = data["properties"]["tags"].keys()
+            required_tags = data["properties"]["required_tags"].keys()
+            data["attributes_found"] = list(set(tags) & set(required_tags))
+            data["attributes_not_found"] = list(set(required_tags) - set(tags))
+            data["status"] = "complete" if not data["attributes_not_found"] else "incomplete"
+        print(f"features_data2: {features_data}")
+        data = json.dumps(features_data)
+        print(f"data: {data}")
+        save_to = f'{feature_path}/feature_{n}.json'
+        print(f"save_to: {save_to}")
+        save_to_s3(save_to, data)
