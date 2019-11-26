@@ -20,6 +20,9 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     element_type = None
+    campaign_managers = None
+    campaign_contributors = None
+    campaign_viewers = None
 
     def __init__(self, uuid=None):
         if uuid:

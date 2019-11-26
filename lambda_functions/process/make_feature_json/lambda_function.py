@@ -1,19 +1,28 @@
-from collections import ChainMap
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import fromstring, ElementTree
 import json
 
-
 from aws import S3Data
 
-def calc_completeness(req_tags, tags):
-    status = "Incomplete"
-    result = all(k in tags for k in req_tags)
-    if result:
-        status = "Complete"
-    return status
 
 def lambda_handler(event, context):
+    try:
+        main(event, context)
+    except Exception as e:
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({
+                'function': 'process_make_feature_json',
+                'failure': str(e)
+                })
+            )
+
+
+def main(event, context):
+    """For a campaign, uses the Overpass data
+    to create JSON files (1 for all feature types,
+    and 1 for each feature type) for data inputs
+    on the project overview and feature pages."""
     uuid = event['campaign_uuid']
     campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
     types = campaign['types']
@@ -46,10 +55,11 @@ def lambda_handler(event, context):
                         if nds[0] == nds[-1]:
                             geometry = 'Polygon'
                 feature['geometry_type'] = geometry
-                feature['type'] = child.tag
-                feature['feature_type'] = feature_type['type']
+                feature['osm_type'] = child.tag
+                feature['type'] = feature_type['type']
+                feature['feature'] = feature_type['feature']
                 required_tags = [":".join(k.split(":", 2)[:2]) for k, _ in
-                                feature_type['tags'].items()]
+                                 feature_type['tags'].items()]
                 feature['status'] = calc_completeness(required_tags, tags)
                 feature['last_edited_by'] = child.attrib['user']
                 feature['last_edit_date'] = child.attrib['timestamp']
@@ -59,8 +69,20 @@ def lambda_handler(event, context):
                                                  if elem not in tags]
                 features.append(feature)
         all_features.append(features)
-        out_file = 'campaigns/{}/{}.json'.format(uuid,feature_type["type"])
+        out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
         S3Data().create(out_file, json.dumps(features))
     flat_list = [item for sublist in all_features for item in sublist]
     out_file = 'campaigns/{}/all_features.json'.format(uuid)
     S3Data().create(out_file, json.dumps(flat_list))
+
+
+def calc_completeness(req_tags, tags):
+    """Takes in a list of required tags and
+    tags found. Returns a string status of
+    completion depending if all required tags
+    were found."""
+    status = "Incomplete"
+    result = all(k in tags for k in req_tags)
+    if result:
+        status = "Complete"
+    return status

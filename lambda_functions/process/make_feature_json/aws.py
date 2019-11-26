@@ -29,7 +29,7 @@ class S3Data(object):
             obj = self.s3.get_object(
                 Bucket=self.bucket,
                 Key=key)
-        except:
+        except Exception as e:
             return []
 
         raw_content = obj['Body'].read()
