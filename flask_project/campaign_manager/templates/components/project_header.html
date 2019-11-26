@@ -6,57 +6,28 @@
       </div>
       <div class='col-sm-4 text-right'>
         <button class="btn btn-primary btn-xs button-manage" onclick="location.href='/edit/{{ uuid }}'">
-          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
-            <path fill="#D73F3F" fill-rule="nonzero" d="M13.79 6.786a1.202 1.202 0 0 0-1.705 0l-.427.429-5.971 6.004.001.001-.188.19s-.6.607-1.955 5a56.6 56.6 0 0 0-.168.55l-.056.187-.13.441c-.098.332-.336 1.08-.067 1.35.259.262 1.012.032 1.341-.066.15-.044.294-.088.436-.131l.194-.059.205-.063.25-.078.074-.022c4.161-1.302 4.908-1.913 4.97-1.968l.001-.001.005-.004.192-.194.013.013 5.972-6.004.426-.429a1.218 1.218 0 0 0 0-1.715l-3.412-3.431zM9.914 17.77a.792.792 0 0 1-.05.032l-.017.01c-.199.12-.782.428-2.197.942-.165.06-.345.124-.534.19L5.104 16.92c.065-.19.129-.373.189-.54.511-1.427.818-2.014.936-2.214l.008-.013a2.448 2.448 0 0 1 .033-.053l.147-.148 3.646 3.666-.15.151zM20.616 6.786l-3.413-3.43a1.202 1.202 0 0 0-1.706 0l-.853.857a1.218 1.218 0 0 0 0 1.715l3.412 3.431a1.202 1.202 0 0 0 1.707 0l.853-.858a1.218 1.218 0 0 0 0-1.715z" />
-          </svg>
+          {% include 'svgs/pencil.html' %}
           Edit</button>
         <button class="btn btn-primary btn-xs">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
-            <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z" />
-          </svg>
+          {% include 'svgs/delete.html' %}
           Delete</button>
       </div>
     </div>
     <div class="row details-list">
       <div class="col-xs-12 col-md-6">
         <p class="campaign-date">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <g fill="none" fill-rule="evenodd" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5.448 3.38H4.006A2.003 2.003 0 0 0 2 5.371v14.635C2 21.107 2.898 22 3.99 22h16.02c1.099 0 1.99-.898 1.99-1.993V5.372c0-1.1-.888-1.993-2.006-1.993h-1.442" />
-              <path d="M8.207 5.448H5.448V2h2.759zM18.552 5.448h-2.759V2h2.759zM8.207 3.38h7.586M2 8.207h20" />
-            </g>
-          </svg><span class="moment-date">{{ start_date }}</span>&mdash;<span class="moment-date">{{ end_date }}</span>
-          <span class="label label-danger">
-            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
-              <g fill="#2C3038" fill-rule="nonzero">
-                <path d="M0 6.533C0 3.723 2.174 1.415 4.944 1.2V.841h-.995a.416.416 0 0 1-.42-.42c0-.236.184-.421.42-.421h2.769c.236 0 .42.185.42.42 0 .236-.184.421-.42.421h-.933V1.2a5.298 5.298 0 0 1 2.738 1.015l.462-.461-.195-.195a.42.42 0 0 1 .595-.595l.974.974a.42.42 0 0 1-.595.595l-.195-.195-.42.421a5.335 5.335 0 0 1 1.559 3.774c0 2.954-2.4 5.354-5.354 5.354A5.358 5.358 0 0 1 0 6.533zm5.354-4.512A4.524 4.524 0 0 0 .83 6.544a4.53 4.53 0 0 0 4.523 4.523 4.53 4.53 0 0 0 4.523-4.523A4.53 4.53 0 0 0 5.354 2.02z" />
-                <path d="M5.354 6.882h1.795c.236 0 .42-.185.42-.42a.416.416 0 0 0-.42-.421H5.774V3.877a.416.416 0 0 0-.42-.42.416.416 0 0 0-.42.42v2.595c0 .225.184.41.42.41z" />
-              </g>
-            </svg> 2 days left!
-          </span>
+          {% include 'svgs/calendar.html' %}<span class="moment-date">{{ start_date }}</span>&mdash;<span class="moment-date">{{ end_date }}</span>
+          <span class="label label-danger">{% include 'svgs/timer.html' %} 2 days left!</span>
         </p>
       </div>
       <div class="col-xs-12 col-md-6">
-        <p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <g fill="none" fill-rule="evenodd" stroke="#929DB3" transform="translate(1 1)">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.381 16.25h5.238M9.254 9.326H11v6.538M11 6.67c0 .213-.196.385-.437.385s-.436-.172-.436-.385c0-.212.195-.384.436-.384.24 0 .437.172.437.384z" />
-              <rect width="21" height="21" x=".5" y=".5" rx="10.5" />
-            </g>
-          </svg>{% if description %}{{ description }}{% else %}No description{% endif %}
-        </p>
+        <p>{% include 'svgs/info.html' %}{% if description %}{{ description }}{% else %}No description{% endif %}</p>
       </div>
     </div>
     <div class="row details-list">
       <div class="col-xs-12 col-md-6">
         <p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <g fill="none" fill-rule="evenodd" stroke="#929DB3" transform="translate(1 2)">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.894 7.46a2.96 2.96 0 1 1-5.92 0 2.96 2.96 0 0 1 5.92 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z" />
-              <rect width="21" height="19" x=".5" y=".5" rx="4" />
-            </g>
-          </svg>Managers: <i>{% if campaign_manager_names %}
+          {% include 'svgs/person1.html' %}Managers: <i>{% if campaign_manager_names %}
             {% for campaign_manager in campaign_manager_names %}
             <a href="https://www.openstreetmap.org/user/{{ campaign_manager }}" target="_blank">{{ campaign_manager }}</a>{% if campaign_manager != campaign_manager_names[-1] %},{% endif %}
             {% endfor %}
@@ -73,19 +44,10 @@
       </div>
       <div class="col-xs-12 col-md-6">
         <p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <g fill="none" fill-rule="evenodd" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19.895 13.138H23v-3.035h-3.106a8.4 8.4 0 0 0-.96-2.332l2.197-2.197-2.706-2.705-2.197 2.196c-.709-.432-1.905-.877-2.331-.96V1h-3.794v3.106c-.492.106-1.624.527-2.332.96L5.574 2.868 2.868 5.574l2.197 2.197c-.433.709-.847 1.864-.96 2.332H1v3.035h3.104c.155 1.156.528 2.382.96 3.09l-2.196 2.198 2.706 2.705 2.196-2.197c.71.433 1.966.76 2.333.961V23h3.794v-3.105c.367-.2 1.623-.528 2.331-.96l2.198 2.196 2.705-2.705-2.196-2.197c.432-.709.759-1.206.96-3.091z" />
-              <path d="M16.172 12a4.172 4.172 0 1 1-8.345 0 4.172 4.172 0 0 1 8.345 0z" />
-            </g>
-          </svg><a href="#">Manage in Tasking Manager <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
-              <path fill="#D73F3F" fill-rule="nonzero" d="M12.444 12.444H1.556V1.556H7V0H1.556C.692 0 0 .7 0 1.556v10.888C0 13.3.692 14 1.556 14h10.888C13.3 14 14 13.3 14 12.444V7h-1.556v5.444zM8.556 0v1.556h2.792L3.702 9.2 4.8 10.298l7.645-7.646v2.792H14V0H8.556z" />
-            </svg>
-          </a>
-          <a href="#">Create PDF Maps <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
-              <path fill="#D73F3F" fill-rule="nonzero" d="M12.444 12.444H1.556V1.556H7V0H1.556C.692 0 0 .7 0 1.556v10.888C0 13.3.692 14 1.556 14h10.888C13.3 14 14 13.3 14 12.444V7h-1.556v5.444zM8.556 0v1.556h2.792L3.702 9.2 4.8 10.298l7.645-7.646v2.792H14V0H8.556z" />
-            </svg>
-          </a></p>
+          {% include 'svgs/gear.html' %}
+          <a href="#">Manage in Tasking Manager {% include 'svgs/link.html' %}</a>
+          <a href="#">Create PDF Maps {% include 'svgs/link.html' %}</a>
+        </p>
       </div>
     </div>
   </div>

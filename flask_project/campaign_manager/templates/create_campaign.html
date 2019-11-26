@@ -53,10 +53,7 @@
             <div class="form-group">
               <p>Option 1: Set your AOI by using the drawing tools on the map</p>
               <a class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#map-draw-modal">
-                Draw on the map
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-                </svg>
+                Draw on the map {% include 'svgs/right_arrow.html' %}
               </a>
               {% include 'modals/modal_draw_on_map.html' %}
             </div>
@@ -80,10 +77,7 @@
           <fieldset id="fieldset-3" data-fieldset-step="3">
             <div class="form-group">
               <a id="btn-add" class="btn btn-default btn-lg btn-expand" data-toggle="modal" data-target="#custom-types-tags">
-                Add a feature
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z" />
-                </svg>
+                Add a feature {% include 'svgs/right_arrow.html' %}
               </a>
             </div>
             <div class="row">
@@ -115,11 +109,7 @@
                     <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-managers" aria-expanded="true" aria-controls="project-managers">
                       Project managers
                       <span class="expand-icon pull-right">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                          </g>
-                        </svg>
+                        {% include 'svgs/down_arrow.html' %}
                       </span>
                     </a>
                   </h4>
@@ -151,13 +141,7 @@
                   <h4 class="panel-title">
                     <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#project-viewers" aria-expanded="true" aria-controls="project-viewers">
                       Project viewers
-                      <span class="expand-icon pull-right">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                          </g>
-                        </svg>
-                      </span>
+                      <span class="expand-icon pull-right">{% include 'svgs/down_arrow.html' %}</span>
                     </a>
                   </h4>
                 </div>
@@ -188,13 +172,7 @@
                   <h4 class="panel-title">
                     <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#contributors" aria-expanded="true" aria-controls="contributors">
                       Contributors monitored
-                      <span class="expand-icon pull-right">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                          </g>
-                        </svg>
-                      </span>
+                      <span class="expand-icon pull-right">{% include 'svgs/down_arrow.html' %}</span>
                     </a>
                   </h4>
                 </div>
@@ -225,13 +203,7 @@
                   <h4 class="panel-title">
                     <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#custom-basemap" aria-expanded="true" aria-controls="custom-basemap">
                       Custom Basemap
-                      <span class="expand-icon pull-right">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="square" stroke-width="2">
-                            <path d="M19.436 8.37l-7.425 7.425M4.471 8.37l7.425 7.424"/>
-                          </g>
-                        </svg>
-                      </span>
+                      <span class="expand-icon pull-right">{% include 'svgs/down_arrow.html' %}</span>
                     </a>
                   </h4>
                 </div>
@@ -428,19 +400,12 @@
         <div class="row">
           <div class="col-xs-12">
             <h4 class="panel-name">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4915 9.44916V18.6363" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M13.5271 17.4662C18.1481 17.6045 21.661 18.2994 21.661 19.1357C21.661 20.0719 17.26 20.8306 11.8305 20.8306C6.40102 20.8306 2 20.0719 2 19.1357C2 18.3418 5.16746 17.675 9.44271 17.4913" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.8815 6.05933C14.8815 7.93153 13.3635 9.44916 11.4916 9.44916C9.61977 9.44916 8.10181 7.93153 8.10181 6.05933C8.10181 4.18746 9.61977 2.66949 11.4916 2.66949C13.3635 2.66949 14.8815 4.18746 14.8815 6.05933V6.05933Z" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M11.4915 4.36438C12.4277 4.36438 13.1864 5.12336 13.1864 6.0593" stroke="#929DB3" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
+              {% include 'svgs/point.html' %}
               <%=name%>
             </h4>
             <p class="panel-info"><%=osmFeature%></p>
             <a href="#" class="panel-more-button btn-remove-type" onclick="removeTags(this, '<%=slug%>')">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
-                <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z" />
-              </svg>
+              {% include 'svgs/right_arrow.html' %}
             </a>
           </div>
         </div>
