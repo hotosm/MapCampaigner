@@ -4,6 +4,7 @@
       <div class='col-sm-8'>
         <h1>{{ name }}</h1>
       </div>
+      {% if user_id not in campaign_managers['osm_id'] %}
       <div class='col-sm-4 text-right'>
         <button class="btn btn-primary btn-xs button-manage" onclick="location.href='/edit/{{ uuid }}'">
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
@@ -45,6 +46,7 @@
           Delete</button>
       </div>
     </div>
+    {% endif %}
     <div class="row details-list">
       <div class="col-xs-12 col-md-6">
         <p class="campaign-date">
