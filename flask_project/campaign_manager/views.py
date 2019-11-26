@@ -949,6 +949,7 @@ def edit_campaign(uuid):
     context['types'] = {}
     context['campaign_creator'] = campaign.campaign_creator
     context['link_to_omk'] = campaign.link_to_omk
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
