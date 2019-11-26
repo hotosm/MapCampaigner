@@ -70,10 +70,11 @@ def main(event, context):
                 features.append(feature)
         all_features.append(features)
         out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
+        campaign['types'] = feature_stats(features, campaign['types'])
         S3Data().create(out_file, json.dumps(features))
-    flat_list = [item for sublist in all_features for item in sublist]
-    out_file = 'campaigns/{}/all_features.json'.format(uuid)
-    S3Data().create(out_file, json.dumps(flat_list))
+    all_f = [item for sublist in all_features for item in sublist]
+    S3Data().create(f'campaigns/{uuid}/all_features.json', json.dumps(all_f))
+    S3Data().create(f'campaigns/{uuid}/campaign.json', json.dumps(campaign))
 
 
 def calc_completeness(req_tags, tags):
@@ -86,3 +87,14 @@ def calc_completeness(req_tags, tags):
     if result:
         status = "Complete"
     return status
+
+def feature_stats(features, types):
+    feature_type = features[0]['type']
+    for k, v in types.items():
+        if v['type'] == feature_type:
+            types[k]["feature_count"] = len(features)
+            types[k]["complete"] = len([f for f in features if
+                                    f['status'] == "Complete"])
+            types[k]["incomplete"] = len([f for f in features if
+                                      f['status'] == "Incomplete"])
+    return types
