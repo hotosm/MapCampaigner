@@ -372,12 +372,12 @@
 
   function actionCampaignButton(uuid, isManager) {
     if (isManager) {
-      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right" onclick="openManageCampaign(event, this, '${uuid}')">
+      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right">
         {% include 'svgs/red_gear.html' %}
         Manage
       </button>`;
     } else {
-      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right" onclick="openCampaign(event, this, '${uuid}')">
+      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right">
         {% include 'svgs/eye.html' %}
         View
       </button>`;
