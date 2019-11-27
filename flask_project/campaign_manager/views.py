@@ -442,7 +442,7 @@ def get_campaign_features(uuid):
 
 def get_type_details(types, feature_name):
     for key, value in types.items():
-        if value['type'] == feature_name:
+        if value['type'].replace(" ", "_") == feature_name:
             return value
 
 
