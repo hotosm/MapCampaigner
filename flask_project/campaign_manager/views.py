@@ -363,8 +363,8 @@ def campaign_boundary_upload_chunk(uuid):
     except Campaign.DoesNotExist:
         abort(404)
 
-@campaign_manager.route('/campaign/<uuid>')
-def get_campaign(uuid):
+
+def get_campaign_data(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.aws import S3Data
     """Get campaign details.
@@ -432,10 +432,9 @@ def get_campaign(uuid):
       context['types'].items()))
 
     # Get data from campaign.json
-    url = f"campaigns/{uuid}/campaign.json"
-    print(f"url: {url}")
-    campaign_data = S3Data().fetch(url)
-    print(f"campaign_data: {campaign_data}")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    context['total_features'] = campaign_data['feature_count']
+    context['total_contributors'] = campaign_data['contributors']
 
     return render_template('campaign_detail.html', **context)
 
