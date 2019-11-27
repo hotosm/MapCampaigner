@@ -439,16 +439,20 @@ def get_campaign_features(uuid):
     context = get_campaign_data(uuid)
     return render_template('campaign_features.html', **context)
 
-def get_type_details(types, feature_name): 
-    for key, value in types.items(): 
-         if value['type'] == feature_name: 
-             return value
+
+def get_type_details(types, feature_name):
+    for key, value in types.items():
+        if value['type'] == feature_name:
+            return value
+
 
 @campaign_manager.route('/campaign/<uuid>/features/<feature_name>')
 def get_feature_details(uuid, feature_name):
     context = get_campaign_data(uuid)
     context['feature_name'] = feature_name
-    context['feature_details'] = get_type_details(context['types'],feature_name)
+    context['feature_details'] = get_type_details(
+        context['types'],
+        feature_name)
     return render_template('feature_details.html', **context)
 
 
@@ -519,7 +523,6 @@ def generate_gpx(json_data):
 
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
-
 
     resp = Response(xml_gpx, mimetype='text/xml', status=200)
     cors_host = 'https://www.openstreetmap.org'
