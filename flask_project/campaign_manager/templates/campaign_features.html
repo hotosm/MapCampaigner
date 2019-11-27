@@ -161,11 +161,11 @@
   campaignDisplayMap.addControl(drawControlDisplay);
   $('#check-show-map').click(function () {
     if ($(this).is(':checked')) {
-      $('#campaign-map').show();
+      $('#campaign-map-display').show();
       $('#features-list').addClass('col-md-6').removeClass('col-md-12')
       $(this).parents(".toggle-switch").addClass('active');
     } else {
-      $('#campaign-map').hide();
+      $('#campaign-map-display').hide();
       $('#features-list').addClass('col-md-12').removeClass('col-md-6')
       $(this).parents(".toggle-switch").removeClass('active');
     }
