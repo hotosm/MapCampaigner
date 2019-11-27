@@ -17,7 +17,23 @@
       <div class="col-xs-12 col-md-6">
         <p class="campaign-date">
           {% include 'svgs/calendar.html' %}<span class="moment-date">{{ start_date }}</span>&mdash;<span class="moment-date">{{ end_date }}</span>
-          <span class="label label-danger">{% include 'svgs/timer.html' %} 2 days left!</span>
+          <span class="label label-danger" id="days-left"></span>
+          <script>
+            $(document).ready(function () {
+              function getDaysLeft(end) {
+                var endDate = moment(end, 'YYYY-MM-DD', true);
+                var now = moment(new Date(), 'YYYY-MM-DD');
+                return endDate.diff(now, 'days');
+              }
+              const daysLeft = getDaysLeft('{{ end_date }}');
+              const warning = daysLeft > 0 ? `{% include 'svgs/timer.html' %} ${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : `{% include 'svgs/timer.html' %} Finished`;
+              if (daysLeft <= 10) {
+                $('#days-left').html(warning);
+              } else {
+                $('#days-left').hide();
+              }
+            });
+          </script>
         </p>
       </div>
       <div class="col-xs-12 col-md-6">
