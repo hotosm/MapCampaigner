@@ -17,8 +17,6 @@ from reporter import config
 api = Api(campaign_manager)
 
 
-
-
 class UserCampaigns(Resource):
     """Shows a list of all campaigns"""
     def get(self, osm_id):
@@ -193,6 +191,7 @@ class CampaignContributors(Resource):
 
         return {'contributors_total': contributors_total}
 
+
 class UserSearch(Resource):
     """ Proxy requests to whosthat """
 
@@ -203,6 +202,7 @@ class UserSearch(Resource):
         res = conn.getresponse()
         data = res.read()
         return json.loads(data.decode("utf-8"))
+
 
 # Setup the Api resource routing here
 api.add_resource(
