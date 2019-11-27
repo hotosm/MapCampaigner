@@ -33,7 +33,7 @@
                     {% for tag in feature_details['tags'] %}
                     <span class="label label-default key-tags" title="{{ tag }}">{{ tag }}</span>
                     {% endfor %}
-                    <h4 class="panel-name">Total changesets made</h4>
+                    <h4 class="panel-name">Total {{ feature_details['type'] }}</h4>
                     <strong class="panel-total text-left">{{ feature_details['feature_count'] }}</strong>
                     <h4 class="panel-name">Attribute completeness</h4>
                     {% set completeness = (feature_details['complete']/feature_details['feature_count']*100)|round|int %}
