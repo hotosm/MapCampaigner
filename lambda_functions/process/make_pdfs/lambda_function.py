@@ -1,5 +1,4 @@
 from io import BytesIO
-import json
 import math
 
 from shapely.geometry import box, Polygon, MultiPolygon
@@ -31,20 +30,18 @@ def create_task_feature(step, x, y):
     ymin = y * step - AXIS_OFFSET
     xmax = (x + 1) * step - AXIS_OFFSET
     ymax = (y + 1) * step - AXIS_OFFSET
-    
     minlnglat = meters_to_degrees(xmin, ymin)
     maxlnglat = meters_to_degrees(xmax, ymax)
-
     bbox = [minlnglat[0], minlnglat[1], maxlnglat[0], maxlnglat[1]]
-
     return bbox
 
 
 def create_grid(bbox, zoom):
-    xmin, ymin, xmax, ymax = math.ceil(bbox[0]), math.ceil(bbox[1]), math.floor(bbox[2]), math.floor(bbox[3])
-
+    xmin = math.ceil(bbox[0])
+    ymin = math.ceil(bbox[1])
+    xmax = math.floor(bbox[2])
+    ymax = math.floor(bbox[3])
     step = AXIS_OFFSET / (math.pow(2, (zoom - 1)))
-
     xminstep = int(math.floor((xmin + AXIS_OFFSET) / step))
     xmaxstep = int(math.ceil((xmax + AXIS_OFFSET) / step))
     yminstep = int(math.floor((ymin + AXIS_OFFSET) / step))
@@ -56,7 +53,6 @@ def create_grid(bbox, zoom):
             task_feature = create_task_feature(step, x, y)
             task_features.append(task_feature)
     return task_features
-  
 
 def make_grid(bbox, zoom):
     minxy = degrees_to_meters(bbox[0], bbox[1])
@@ -70,14 +66,6 @@ def get_bounds(poly):
     bounds = polygon.bounds
     return bounds
 
-def bbox(coord_list):
-    box = []
-    for i in (0,1):
-        res = sorted(coord_list, key=lambda x:x[i])
-        box.append((res[0][i],res[-1][i]))
-    ret = f"{box[0][0]},{box[1][0]},{box[0][1]},{box[1][1]}"
-    return ret
-
 def scale_coords(img, bounds, coords):
     transformer = Transformer.from_crs(4326, 3857)
     coords_transformed = []
@@ -85,8 +73,8 @@ def scale_coords(img, bounds, coords):
     transform_2 = transformer.transform(bounds[1], bounds[2])
     y = transform_2[0] - transform_1[0]
     x = transform_1[1] - transform_2[1]
-    x_scale = img.size[1]/x 
-    y_scale = img.size[0]/y 
+    x_scale = img.size[1]/x
+    y_scale = img.size[0]/y
     for coord in coords:
         a = transformer.transform(coord[1], coord[0])
         c = [abs(transform_1[0]) - abs(a[0]), abs(transform_1[1])- abs(a[1])]
@@ -114,28 +102,31 @@ def stitch_tiles(mbtiles, features, bounds):
     img.save("temp.png")
     return img
 
-def crop_pdf(img, bounds, feature, i):
+def crop_pdf(img, bounds, feature):
     coords = feature['geometry']['coordinates'][0]
     coords_transformed = scale_coords(img, bounds, coords)
-    cropped = img.crop((coords_transformed[0][0], coords_transformed[1][1], coords_transformed[2][0], coords_transformed[0][1])) 
+    cropped = img.crop((coords_transformed[0][0], coords_transformed[1][1],
+                        coords_transformed[2][0], coords_transformed[0][1]))
     resized = cropped.resize((770, 523), Image.ANTIALIAS)
-    rgb = Image.new('RGB', (842,595), (255, 255, 255)) 
-    rgb.paste(resized, box=(36,36),mask=resized.split()[3])     
-    rgb.save(f"./img/out_{i}.pdf", "PDF", resolution=100.0)
+    pdf = Image.new('RGB', (842, 595), (255, 255, 255))
+    pdf.paste(resized, box=(36, 36), mask=resized.split()[3])
+    return pdf
+
 
 def create_legend(img, bounds, grid):
     legend = Image.new('RGB', img.size, (255, 255, 255))
-    legend.paste(img,mask=img.split()[3])    
+    legend.paste(img, mask=img.split()[3])
     for feature in grid:
         draw = ImageDraw.Draw(legend)
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(legend, bounds, coords)
-        draw.line(coords_transformed, fill="#000", width=4)   
-    legend.save(f"./img/legend.pdf", "PDF", resolution=100.0)
+        draw.line(coords_transformed, fill="#000", width=4)
+    return legend
 
 def main(event):
-    geojson = S3Data().fetch(f'campaigns/{event.campaign_uuid}/campaign.geojson')
-    aois = json.load(geojson)['features']
+    uuid = event.campaign_uuid
+    geojson = S3Data().fetch(f'campaigns/{uuid}/campaign.geojson')
+    aois = geojson['features']
     for aoi in aois:
         bounds = get_bounds(aoi)
         grid = make_grid(bounds, 16)
@@ -147,11 +138,13 @@ def main(event):
         multi_poly = MultiPolygon(features)
         bounds = multi_poly.bounds
         img = stitch_tiles('test.mbtiles', aois, bounds)
-        g = S3Data().fetch(f'campaigns/{event.campaign_uuid}/pdf/grid.geojson')
-        foo = json.loads(g.read())['features']
-        create_legend(img, bounds, foo)
+        g = S3Data().fetch(f'campaigns/{uuid}/pdf/grid.geojson')
+        foo = g['features']
+        legend = create_legend(img, bounds, foo)
+        legend.save(f"./img/legend.pdf", "PDF", resolution=100.0)
         for i, b in enumerate(foo):
-            crop_pdf(img, bounds, b, i)
+            pdf = crop_pdf(img, bounds, b)
+            pdf.save(f"./img/out_{i}.pdf", "PDF", resolution=100.0)
 
 
 def lambda_handler(event, context):
