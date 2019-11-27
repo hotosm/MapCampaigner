@@ -41,7 +41,8 @@
                 {% endif %}
                 {{ types[type]['type'] }}
               </h4>
-              <a href="" class="panel-more-button">
+              {% set feature_name = types[type]['type'].replace(" ", "_") %}
+              <a href="{{ url_for('campaign_manager.get_feature_details', uuid=uuid, feature_name=feature_name ) }}" class="panel-more-button">
                 {% include 'svgs/right_arrow.html' %}
               </a>
             </div>
@@ -54,9 +55,10 @@
           </div>
           <div class="row">
             <div class="col-xs-12">
-              <p><b>{{ (types[type]['complete']/types[type]['feature_count']*100)|round|int }}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">{{ types[type]['complete'] }}/{{ types[type]['feature_count'] }}</span></p>
+              {% set completeness = (types[type]['complete']/types[type]['feature_count']*100)|round|int %}
+              <p><b>{{ completeness }}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">{{ types[type]['complete'] }}/{{ types[type]['feature_count'] }}</span></p>
               <div class="progress">
-                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="{{ (types[type]['complete']/types[type]['feature_count']*100)|round|int }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ (types[type]['complete']/types[type]['feature_count']*100)|round|int }}%">
+                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="{{ completeness }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ completeness }}%">
                 </div>
               </div>
             </div>

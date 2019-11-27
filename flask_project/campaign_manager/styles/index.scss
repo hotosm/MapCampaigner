@@ -283,6 +283,12 @@ form {
   #campaign-map {
     height: 400px;
   }
+  #campaign-map-detail {
+    top: 0;
+    right: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
   .toggle-switch {
     position: relative;
     top: 30px;
