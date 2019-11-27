@@ -430,6 +430,13 @@ def get_campaign(uuid):
     context['types'] = list(map(lambda type:
       type[1]['type'],
       context['types'].items()))
+
+    # Get data from campaign.json
+    url = f"campaigns/{uuid}/campaign.json"
+    print(f"url: {url}")
+    campaign_data = S3Data().fetch(url)
+    print(f"campaign_data: {campaign_data}")
+
     return render_template('campaign_detail.html', **context)
 
 
