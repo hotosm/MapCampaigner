@@ -318,7 +318,7 @@
     var startDate = moment(campaign.start_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var featureCount = Object.keys(campaign.types || {}).length;
-    var completeness = campaignProgress(campaign);
+    var totals = campaignProgress(campaign);
     var isActive = campaignStatus(campaign);
     var daysLeft = getDaysLeft(campaign);
     var warning = daysLeft > 0 ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
@@ -350,10 +350,10 @@
                   ${warning}
                 </span>`: ''}
             </p>
-            <p><b>${completeness}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">?/?</span></p>
+            <p><b>${totals.completeness}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">${totals.complete_features}/${totals.feature_total}</span></p>
             <div class="campaign-progress-bar">
               <div class="progress">
-                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="${completeness}" aria-valuemin="0" aria-valuemax="100" style="width:${completeness}%">
+                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="${totals.completeness}" aria-valuemin="0" aria-valuemax="100" style="width:${totals.completeness}%">
                 </div>
               </div>
             </div>
@@ -385,18 +385,19 @@
   }
 
   function campaignProgress(campaign) {
-    var startDate = moment(campaign.start_date, 'YYYY-MM-DD', true);
-    var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true);
-    var campaignRange = endDate.diff(startDate, 'days') + 1;
-    var remainingDays = endDate.diff(moment(), 'days') + 1;
-    var progress = 100 - (remainingDays / campaignRange * 100);
-    if (progress > 100) {
-      progress = 100;
-    }
-    else if (progress < 0) {
-      progress = 0;
-    }
-    return Math.round(progress);
+    var totals = Object.values(campaign.types).reduce((acc, curr)=>{
+      return {
+        feature_total: acc.feature_total + curr.feature_count,
+        complete_features: acc.complete_features + curr.complete,
+        incomplete_features: acc.incomplete_features + curr.incomplete
+      }
+    }, {
+      feature_total: 0,
+      complete_features: 0,
+      incomplete_features: 0
+    });
+    totals.completeness = Math.round(totals.complete_features/totals.feature_total*100)
+    return totals;
   }
 
   function buildRequests(response, bucketUrl, file) {
