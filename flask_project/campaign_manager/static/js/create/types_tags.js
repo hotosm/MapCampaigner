@@ -51,11 +51,11 @@ function rerenderFunction() {
     });
 }
 function getTypesSelectionValue() {
-    // GET SELECTED TYPES
     var types_value = {};
     $.each(getSelectedTypes(), function (index, addedType) {
         if (addedType) {
-            var $wrapper = $('#typesTagsContainer').children().eq(index);
+            const idString = '#' + slugify(addedType) + '-feature-tile';
+            const $wrapper = $(idString);
             var $tags = $wrapper.find('.row-tags-wrapper').find('.key-tags');
             var tags = [];
             $.each($tags, function (index, value) {
@@ -90,8 +90,29 @@ function addMultipleTypes(typeList) {
         addTypes(selected_type);
     });
 }
+function slugify(string) {
+    const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+    const p = new RegExp(a.split('').join('|'), 'g')
+  
+    return string.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, '-and-') // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start of text
+      .replace(/-+$/, '') // Trim - from end of text
+  }
 
-function addTypes(value) {
+function addTypes(featureName) {
+    var template = _.template($("#_template-feature-tile").html());
+    var osmFeature = types && types[featureName] ? types[featureName].feature : '';
+    var html = template({
+        name: featureName,
+        slug: slugify(featureName),
+        osmFeature
+    });
     var row = $("<div/>");
     row.addClass("row");
 
@@ -100,6 +121,8 @@ function addTypes(value) {
     column.addClass("form-group");
     column.addClass("type-selection");
     row.append(column);
+    row.attr("id","old-dom-el-for-" + slugify(featureName))
+    row.hide(); // Keeping `row` because the form depends on it, but hiding it because the user doesn't need to see it
 
     var select = $("<select />");
     select.addClass('select-types');
@@ -110,50 +133,62 @@ function addTypes(value) {
     column.append(select);
     select.change(onTypesChange);
 
-    if (value) {
+    if (featureName) {
         // Add empty value with no default selection
-        if (select.find('option[value="' + value + '"]').length === 0) {
+        if (select.find('option[value="' + featureName + '"]').length === 0) {
             column.append('' +
                 '<div class="edit-custom-type">' +
                 '<i class="fa fa-pencil-square-o" aria-hidden="true" data-toggle="modal" data-target="#custom-types-tags"></i>' +
                 '</div>');
-            select.prepend('<option value="' + value + '">' + value + '</option>');
+            select.prepend('<option value="' + featureName + '">' + featureName + '</option>');
             select.prop("disabled", true);
         }
         select.prepend('<option value="">Select type</option>');
         select.children().removeAttr('selected');
-        select.find('option[value="' + value + '"]').prop('selected', true);
+        select.find('option[value="' + featureName + '"]').prop('selected', true);
         select.trigger('change');
     } else {
         // Add empty value with default selection
         select.prepend('<option value="" selected="selected">Select type</option>');
     }
 
+    $("#typesTagsContainer").append(html);
     $("#typesTagsContainer").append(row);
+    addTagsToFeature(featureName);
+}
+
+function addTagsToFeature(featureName) {
+    if (typeof featureName !== 'string') return;
+    const hasTagsForFeature = types && types[featureName] && types[featureName]['tags'];
+    if (!hasTagsForFeature) return;
+    const idString = '#' + slugify(featureName) + '-feature-tile';
+    const featureTile = $(idString);
+    const featureTags = featureTile.find('.feature-tags');
+    const tags = types[featureName]['tags'];
+    const tagNames = Object.keys(tags);
+    featureTags.empty();
+    tagNames.forEach(name => {
+        const subtags = tags[name];
+        const subtagStr = subtags.length >=1 ? ": " + subtags.join(', ') : '';
+        const tagName = name + subtagStr;
+        const label = $('<span class="label label-default key-tags" title="' + tagName + '">' + tagName + '</span>');
+        featureTags.append(label);
+    });
+    $('#custom-types-tags').modal('hide');
 }
 
 function onTypesChange() {
     $('.types-required-message').hide();
-
     var selected_type = this.value;
-
     var row = $(this).parent().parent();
-
     var row_tags = row.children('.row-tags');
-
-    if (row_tags) {
-        row_tags.remove();
-    }
-
+    if (row_tags) row_tags.remove();
     var column = $("<div/>");
     column.addClass("row-tags");
     column.addClass("col-lg-6");
-
     row.append(column);
-
     var div = $("<div />");
     div.addClass("row-tags-wrapper");
-
     var selected_tags;
     if (typeof selected_types_data !== 'undefined') {
         $.each(selected_types_data, function (index, type) {
@@ -231,7 +266,6 @@ function addTag(wrapper) {
     $('#warning-tag').html('');
     $('#insight-function .function-form').html('');
     var $tagWrapper = $(wrapper).closest('.row-tags-wrapper');
-    var tag = $(wrapper).text();
     var spans = $tagWrapper.find("span:contains('" + $(wrapper).text() + "')");
     if (spans.length == 0) {
         $tagWrapper.find('.btn-add-tag').before('' +
@@ -241,7 +275,8 @@ function addTag(wrapper) {
     }
 }
 function removeTags(event, type) {
-    $(event).parent().parent().remove();
+    $('#' + type + '-feature-tile').remove();
+    $('#old-dom-el-for-' + type).remove();
     $('#insight-function .function-form').html('');
     if (types[type]['custom']) {
         delete types[type];

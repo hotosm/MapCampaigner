@@ -20,6 +20,9 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     element_type = None
+    campaign_managers = None
+    campaign_contributors = None
+    campaign_viewers = None
 
     def __init__(self, uuid=None):
         if uuid:
@@ -49,6 +52,9 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
         self.types = Campaign.parse_types_string(json.dumps(self.types))
+        self.campaign_managers = parse_json_string(json.dumps(self.campaign_managers))
+        self.campaign_contributors = parse_json_string(json.dumps(self.campaign_contributors))
+        self.campaign_viewers = parse_json_string(json.dumps(self.campaign_viewers))
 
         # geometry data
         if self.geojson_path:

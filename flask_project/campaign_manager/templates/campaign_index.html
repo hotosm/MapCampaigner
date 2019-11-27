@@ -322,7 +322,13 @@
     var isActive = campaignStatus(campaign);
     var daysLeft = getDaysLeft(campaign);
     var warning = daysLeft > 0 ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
-    var isManager = $.inArray(user, campaign.campaign_managers) > -1;
+    var managerNames = campaign.campaign_managers.map(manager=> {
+      if (manager && manager.name) {
+        return manager.name;
+      }
+      return manager;
+    })
+    var isManager = $.inArray(user, managerNames) > -1;
     return `
     <li class="campaign ${!isActive ? 'in' : ''}active-campaign ${isManager ? 'editable-campaign' : 'viewable-campaign'}">
       <div class="campaign-card panel panel-tile ${isActive ? 'active' : ''}" onclick="openCampaign(event, this, '${campaign.uuid}')">

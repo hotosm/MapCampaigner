@@ -91,22 +91,24 @@ function addCustomType(typeData) {
 
 function modalReset() {
     rowElements = {};
-    $('#custom-types-tags .modal-title').html('+ Add type');
+    $('#custom-types-tags .modal-title').html('Add a feature');
     $('#btn-add-custom-type').html('Add');
     $('#custom_type_name').val('');
     $('#custom_type_feature').val('');
     $('#custom_type_element_type').val('');
     $('#custom-tags').html('');
+    addNewCustomTags('', false, true); // Start with one empty tag field
     $('.modal-required-message').hide()
     $('#yaml-input').val($('#yaml-input').html());
     $('#switch-to-easy-format').show();
 }
 
-function addNewCustomTags(value, is_required) {
+function addNewCustomTags(value, is_required, is_first) {
     if (!is_required || $('#required-custom-tag-row').length == 0) {
         var template = _.template($("#_custom_new_tag").html());
         var html = template({
-            is_required: is_required
+            is_required,
+            is_first
         });
         $('#custom-tags').append(html);
         if (value) {
@@ -321,5 +323,5 @@ function saveYamlCustomType() {
         types[key] = value;
         addTypes(key);
     });
-    $('#custom-types-tags').modal('toggle');
+    $('#custom-types-tags').modal('hide');
 }

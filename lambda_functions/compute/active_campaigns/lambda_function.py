@@ -15,6 +15,44 @@ def compute_campaign(campaign_uuid):
         Payload=payload)
 
 
+def needs_merge(uuid):
+    # List all folders within the campaign one.
+    s3 = boto3.client('s3')
+    bucket = os.environ['S3_BUCKET']
+    folder_path = 'campaigns/{0}/'.format(uuid)
+
+    files = s3.list_objects_v2(Bucket=bucket,
+        Prefix=folder_path,
+        Delimiter='/'
+    )
+
+    mbtiles_folder = 'campaigns/{0}/mbtiles/'.format(uuid)
+    filter_folder = [f['Prefix'] for f in files['CommonPrefixes']
+        if f['Prefix'] == mbtiles_folder]
+
+    # No need to merge since there are no mbtiles folder.
+    # TODO: Run mbtiles generation here (?).
+    if len(filter_folder) == 0:
+        return False
+
+    # No campaign.mbtiles run merge command.
+    mbtiles_file = 'campaigns/{0}/campaign.mbtiles'.format(uuid)
+    filter_file = [f for f in files['Contents'] if f['Key'] == mbtiles_file]
+    if len(filter_file) == 0:
+        return True
+
+    return False
+
+
 def lambda_handler(event, context):
+    aws_lambda = boto3.client('lambda')
+    func_name = '{0}_process_merge_mbtiles'.format(os.environ['ENV'])
+
     for campaign in Campaign.active():
         compute_campaign(campaign)
+        if needs_merge(campaign) is True:
+            aws_lambda.invoke(
+                FunctionName=func_name,
+                InvocationType='Event',
+                Payload=json.dumps({'uuid': campaign})
+            )

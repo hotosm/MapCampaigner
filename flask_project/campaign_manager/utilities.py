@@ -77,9 +77,15 @@ def get_types():
     :rtype: dict
     """
     surveys = {}
-    for filename in S3Data().list('surveys'):
-        survey = get_survey_json(filename['uuid'])
-        surveys[filename['uuid']] = survey
+    path = os.path.join(
+        os.path.dirname(__file__),
+        '../campaign_manager/feature_templates',
+        '*.yml'
+    )
+    files = glob(path)
+    for file in files:
+        filename = os.path.splitext(os.path.split(file)[-1])[0]
+        surveys[filename] = get_survey_json(file)
     return surveys
 
 

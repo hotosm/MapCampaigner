@@ -29,7 +29,8 @@ from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
     get_types,
     map_provider,
-    get_allowed_managers
+    get_allowed_managers,
+    parse_json_string
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -380,9 +381,24 @@ def get_campaign(uuid):
         type[1]['type'],
         context['types'].items()))
 
+    campaign_manager_names = []
+    for manager in parse_json_string(campaign.campaign_managers):
+        campaign_manager_names.append(manager['name'])
+
+    campaign_viewer_names = []
+    for viewer in parse_json_string(campaign.campaign_viewers):
+        campaign_viewer_names.append(viewer['name'])
+
+    campaign_contributor_names = []
+    for contributor in parse_json_string(campaign.campaign_contributors):
+        campaign_contributor_names.append(contributor['name'])
+
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
+    context['campaign_manager_names'] = campaign_manager_names
+    context['campaign_viewer_names'] = campaign_viewer_names
+    context['campaign_contributor_names'] = campaign_contributor_names
     context['participants'] = len(campaign.campaign_managers)
 
     context['pct_covered_areas'] = campaign.calculate_areas_covered()
@@ -470,12 +486,13 @@ def generate_gpx(json_data):
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
 
+
     resp = Response(xml_gpx, mimetype='text/xml', status=200)
     cors_host = 'https://www.openstreetmap.org'
     # Disable CORS.
     resp.headers['Access-Control-Allow-Origin'] = cors_host
 
-    return resp
+    return r
 
 
 @campaign_manager.route('/mbtiles', methods=['POST'])
@@ -839,6 +856,7 @@ def create_campaign():
     context['uuid'] = uuid.uuid4().hex
     context['types'] = {}
     context['link_to_omk'] = False
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
@@ -863,7 +881,12 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_managers.data = campaign.campaign_managers
+            form.campaign_managers.data = parse_json_string(
+                campaign.campaign_managers)
+            form.campaign_viewers.data = parse_json_string(
+                campaign.campaign_viewers)
+            form.campaign_contributors.data = parse_json_string(
+                campaign.campaign_contributors)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description
@@ -938,45 +961,6 @@ def submit_campaign_data_to_json():
             print(e)
     else:
         return abort(500)
-
-
-@campaign_manager.route('/search_osm/<query_name>', methods=['GET'])
-def get_osm_names(query_name):
-    whosthat_url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' \
-                   + query_name.replace(" ", "%20")
-    whosthat_data = []
-    osm_usernames = []
-    found_exact = False
-
-    try:
-        whosthat_response = urllibrequest.urlopen(whosthat_url)
-        whosthat_data = json.loads(whosthat_response.read())
-    except (HTTPError, URLError):
-        print("connection error")
-
-    for whosthat_names in whosthat_data:
-        for whosthat_name in whosthat_names['names']:
-            if whosthat_name.lower() == query_name:
-                found_exact = True
-            osm_usernames.append(whosthat_name)
-
-    # If username not found in whosthat db, check directly to openstreetmap
-    osm_response = None
-    if not found_exact:
-        osm_url = 'https://www.openstreetmap.org/user/' + \
-                  query_name.replace(" ", "%20")
-        try:
-            osm_response = urllibrequest.urlopen(osm_url)
-        except (HTTPError, URLError):
-            print("connection error")
-
-    if osm_response:
-        osm_soup = BeautifulSoup(osm_response, 'html.parser')
-        osm_title = osm_soup.find('title').string
-        if query_name in osm_title:
-            osm_usernames.append(query_name)
-
-    return Response(json.dumps(osm_usernames))
 
 
 @campaign_manager.route('/osm_auth')

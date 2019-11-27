@@ -58,6 +58,8 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     campaign_managers = []
+    campaign_viewers = []
+    campaign_contributors = []
     selected_functions = []
     remote_projects = []
     types = []
@@ -244,6 +246,10 @@ class Campaign(JsonModel):
             setattr(self, key, value)
         self.geometry = parse_json_string(self.geometry)
         self.types = Campaign.parse_types_string(self.types.replace('\'', '"'))
+        self.campaign_managers = parse_json_string(self.campaign_managers)
+        self.campaign_viewers = parse_json_string(self.campaign_viewers)
+        self.campaign_contributors = parse_json_string(
+            self.campaign_contributors)
         self.selected_functions = parse_json_string(self.selected_functions)
         self.save(uploader)
 
@@ -293,6 +299,12 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
         self.types = Campaign.parse_types_string(json.dumps(self.types))
+        self.campaign_managers = parse_json_string(
+            json.dumps(self.campaign_managers))
+        self.campaign_contributors = parse_json_string(
+            json.dumps(self.campaign_contributors))
+        self.campaign_viewers = parse_json_string(
+            json.dumps(self.campaign_viewers))
 
         # geometry data
         if self.geojson_path:
@@ -604,6 +616,11 @@ class Campaign(JsonModel):
 
         uuid = data['uuid']
         data['types'] = Campaign.parse_types_string(data['types'])
+        data['campaign_managers'] = parse_json_string(
+            data['campaign_managers'])
+        data['campaign_contributors'] = parse_json_string(
+            data['campaign_contributors'])
+        data['campaign_viewers'] = parse_json_string(data['campaign_viewers'])
         data['selected_functions'] = parse_json_string(
             data['selected_functions'])
         Campaign.validate(data, uuid)

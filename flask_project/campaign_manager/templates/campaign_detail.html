@@ -234,7 +234,13 @@
     var managers = {{ campaign_managers | safe
   }};
   if (typeof (user) !== 'undefined') {
-    if ($.inArray(user.display_name, managers) > -1) {
+    const managerNames = managers.map(manager=> {
+      if (manager && manager.name) {
+        return manager.name;
+      }
+      return manager;
+    })
+    if ($.inArray(user.display_name, managerNames) > -1) {
       $('.button-manage').show();
     }
   }
