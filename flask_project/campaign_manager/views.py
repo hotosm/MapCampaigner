@@ -21,7 +21,10 @@ from flask import (
     Response,
     abort,
     send_file,
-    send_from_directory
+    send_from_directory,
+    url_for,
+    redirect,
+    flash
 )
 
 from app_config import Config
@@ -210,7 +213,6 @@ def check_geojson_is_polygon(geojson):
 def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
-    from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
     # validate boundary
@@ -303,7 +305,6 @@ def upload_chunk(_file, filename):
     '/campaign/<uuid>/coverage-upload-chunk',
     methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
-    from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
     """
     try:
@@ -336,7 +337,6 @@ def campaign_coverage_upload_chunk(uuid):
     '/campaign/<uuid>/boundary-upload-chunk',
     methods=['POST'])
 def campaign_boundary_upload_chunk(uuid):
-    from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
     """
     try:
@@ -466,6 +466,21 @@ def get_campaign_contributors(uuid):
 def get_campaign_area(uuid):
     context = get_campaign_data(uuid)
     return render_template('campaign_area.html', **context)
+
+@campaign_manager.route('/campaign/<uuid>/delete', methods=['POST'])
+def delete_campaign(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        context = campaign.to_dict()
+        # Get function from the model to delete S3 folders for the project
+        campaign.delete()
+        # Show a message to confirm the project is deleted
+        flash('You successfully deleted a project!')
+        # Return a status 200 to the frontend
+        response = Response(status=200)
+        return response
+    except Campaign.DoesNotExist:
+        abort(404)
 
 
 @campaign_manager.route('/participate')
@@ -852,7 +867,6 @@ def create_campaign():
     import uuid
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
 
@@ -908,7 +922,6 @@ def edit_campaign(uuid):
     import datetime
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
     try:
@@ -978,7 +991,6 @@ def edit_campaign(uuid):
 def submit_campaign_data_to_json():
     import uuid
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
 
