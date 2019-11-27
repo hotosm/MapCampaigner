@@ -504,8 +504,7 @@ def generate_gpx(json_data):
     cors_host = 'https://www.openstreetmap.org'
     # Disable CORS.
     resp.headers['Access-Control-Allow-Origin'] = cors_host
-
-    return r
+    return resp
 
 
 @campaign_manager.route('/mbtiles', methods=['POST'])
