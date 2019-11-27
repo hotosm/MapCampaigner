@@ -35,6 +35,13 @@
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
     {% block subhead %}{% endblock %}
+    {% if active_page == "home" %}
+    <div class="jumbotron page-header">
+      <div class="container container-fluid">
+        <h1>Monitor the progress and data quality of mapping projects.</h1>
+      </div>
+    </div>
+    {% endif %}
     <div class="page-content">
       <div class="container container-fluid">
         {% block header_content %}{% endblock %}
