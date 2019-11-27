@@ -364,8 +364,8 @@ def campaign_boundary_upload_chunk(uuid):
         abort(404)
 
 
-@campaign_manager.route('/campaign/<uuid>')
-def get_campaign(uuid):
+def get_campaign_data(uuid):
+    from campaign_manager.models.campaign import Campaign
     from campaign_manager.aws import S3Data
     """Get campaign details.
     """
@@ -376,9 +376,6 @@ def get_campaign(uuid):
 
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
-    context['types'] = list(map(lambda type:
-        type[1]['type'],
-        context['types'].items()))
 
     campaign_manager_names = []
     for manager in parse_json_string(campaign.campaign_managers):
@@ -425,9 +422,50 @@ def get_campaign(uuid):
     except TypeError:
         context['end_date_date'] = '-'
         context['end_date_year'] = '-'
+    return context
 
+
+@campaign_manager.route('/campaign/<uuid>')
+def get_campaign(uuid):
+    context = get_campaign_data(uuid)
+    context['types'] = list(map(lambda type:
+      type[1]['type'],
+      context['types'].items()))
     return render_template('campaign_detail.html', **context)
 
+
+@campaign_manager.route('/campaign/<uuid>/features')
+def get_campaign_features(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_features.html', **context)
+
+
+def get_type_details(types, feature_name):
+    for key, value in types.items():
+        if value['type'].replace(" ", "_") == feature_name:
+            return value
+
+
+@campaign_manager.route('/campaign/<uuid>/features/<feature_name>')
+def get_feature_details(uuid, feature_name):
+    context = get_campaign_data(uuid)
+    context['feature_name'] = feature_name
+    context['feature_details'] = get_type_details(
+        context['types'],
+        feature_name)
+    return render_template('feature_details.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/contributors')
+def get_campaign_contributors(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_contributors.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/area')
+def get_campaign_area(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_area.html', **context)
 
 @campaign_manager.route('/campaign/<uuid>/delete', methods=['POST'])
 def delete_campaign(uuid):
@@ -500,7 +538,6 @@ def generate_gpx(json_data):
 
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
-
 
     resp = Response(xml_gpx, mimetype='text/xml', status=200)
     cors_host = 'https://www.openstreetmap.org'
@@ -940,6 +977,7 @@ def edit_campaign(uuid):
     context['types'] = {}
     context['campaign_creator'] = campaign.campaign_creator
     context['link_to_omk'] = campaign.link_to_omk
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
