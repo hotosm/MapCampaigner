@@ -17,25 +17,22 @@
 
 <script type="text/javascript">
   function getDetails() {
-    var uuid = '{{ uuid }}';
-    var types = {{ types| tojson }};
-
+    var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
     $.ajax({
     type: 'GET',
-    url: '/campaign/' + uuid + '/details',
+    url: s3CampaignUrl + '/all_features.json',
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
-        // console.log(d);
-        var attrsFound = displayTags(d.attributes_found);
-        var attrsNotFound = displayTags(d.attributes_not_found);
+        var attrsFound = displayTags(d.attributes);
+        var attrsNotFound = displayTags(d.missing_attributes);
         var row = `
       <tr>
-        <td class="osm-id">` + d.node_id + `</td>
-        <td>` + 'supermarket' + `</td>
+        <td class="osm-id">` + d.id + `</td>
+        <td>` + d.feature_type + `</td>
         <td>` + d.status + `</td>
-        <td>` + d.edited_by + `</td>
-        <td>` + d.edited_date + `</td>
+        <td>` + d.last_edited_by + `</td>
+        <td>` + d.last_edited_date + `</td>
         <td class="found">` + attrsFound + `</td>
         <td class="not-found">` + attrsNotFound + `</td>
       </tr>`;

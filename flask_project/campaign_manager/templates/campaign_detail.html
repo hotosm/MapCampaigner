@@ -139,7 +139,7 @@
     $('#campaign-failure-error').html(data["failure"])
   }).fail(function () {
     loadFeatureTypes(types);
-    getOverviewData();
+    getOverviewData(types, s3CampaignUrl);
     $('#campaign-feature-details').show();
     $('#campaign-computing-status').hide();
 
@@ -235,24 +235,50 @@
     $('#campaign-map-detail').height(height + 3);
   }
 
-  function getOverviewData(uuid) {
-    var uuid = '{{ uuid }}';
-    console.log(uuid);
-    $.ajax({
-      type: 'GET',
-      url: '/campaign/' + uuid + '/overview',
-      dataType: 'json',
-      error: function (err) {
-        console.log("Error: " + JSON.stringify(err, null, 2));
-      },
-      success: function (data) {
-        console.log("FOO");
-        features = data.feature_collected
-        console.log(features);
-        $('#features-collected').html(features);
-        mappers = data.total_contributors
-        $('#contributors').html(mappers)
-      }
+  let featureCollected = [];
+  let totalContributors = [];
+  
+  function getOverviewData(types, url) {
+    console.log("Get Overview Data");
+    getFeaturesAndMappers(types, url);
+    // listFeatures = values.listFeatures;
+    // listMappers = values.listMappers;
+    console.log("Total features: " + featureCollected);
+    console.log("Total mappers: " + totalContributors);
+    $('#features-collected').html(featureCollected.reduce((a, b) => a + b, 0));
+    $('#contributors').html(totalContributors.reduce((a, b) => a + b, 0));
+  }
+
+  async function getFeaturesAndMappers(types, url) {
+      await $.each(types, function(n, type) {
+        $.ajax({
+          type: 'GET',
+          url: url + '/render/' + type + '/feature_completeness.json',
+          dataType: 'json',
+          error: function (err) {
+            console.log("Error: " + JSON.stringify(err, null, 2));
+          },
+          success: function (data) {
+            console.log("FOO");
+            features = data.features_collected
+            console.log(features);
+            featureCollected.push(features);
+          }
+        }),
+      await $.ajax({
+        type: 'GET',
+        url: url + '/render/' + type + '/mapper_engagement.json',
+        dataType: 'json',
+        error: function (err) {
+          console.log("Error: " + JSON.stringify(err, null, 2));
+        },
+        success: function (data) {
+          console.log("BAR");
+          mappers = new Set(data.map(x => x.name));
+          console.log(mappers.size);
+          totalContributors.push(mappers.size);
+        }
+      })
       });
   }
 

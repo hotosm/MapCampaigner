@@ -362,67 +362,6 @@ def campaign_boundary_upload_chunk(uuid):
         return upload_chunk(_file, filename)
     except Campaign.DoesNotExist:
         abort(404)
-import os.path
-@campaign_manager.route('/campaign/<uuid>/overview')
-def get_overview_data(uuid):
-    campaign = Campaign.get(uuid)
-    types = campaign.get_s3_types()
-    feature_collected = []
-    total_contributors = []
-    # For each feature type
-    for feature_type in types:
-        print(f"feature_type: {feature_type}")
-        # Get feature_completeness.json
-        fc_file = os.path.realpath('test_data/feature_completeness.json')
-        with open(fc_file) as fc_data:
-        # feat_file = f'{feature_type}feature_completeness.json'
-        # json_feat = json.loads(S3Data().get_data(feat_file))
-            json_feat = json.load(fc_data)
-            collected = json_feat["features_collected"]
-            feature_collected.append(collected)
-        # Get user_engagement.json
-        me_file = os.path.realpath('test_data/mapper_engagement.json')
-        with open(me_file) as me_data:
-        # user_file = f'{feature_type}mapper_engagement.json'
-        # json_mappers = json.loads(S3Data().get_data(user_file))
-            json_mappers = json.load(me_data)
-            unique_mappers = set(list(map(lambda x:x["name"], json_mappers)))
-            num_mappers = len(unique_mappers)
-            total_contributors.append(num_mappers)
-    # Combine data into a json object
-    json_data = { 
-        "feature_collected": sum(feature_collected),
-        "total_contributors": sum(total_contributors)
-    }
-    # Serve it
-    return json_data
-
-@campaign_manager.route('/campaign/<uuid>/details')
-def get_details(uuid):
-    campaign = Campaign.get(uuid)
-    features_data = []
-    feature_types = campaign.types
-    # xml_file = f"campaigns/{uuid}/overpass/supermarket.xml"
-    # print(xml_file)
-    # xml_data = S3Data().get_data(xml_file)
-    #data = campaign.parse_feature_data(xml_data)
-    for k, v in feature_types.items():
-        type_id = v["type"].replace(" ", "_")
-        print(type_id)
-        # Get the full XML data on S3
-        xml_file = f"campaigns/{uuid}/overpass/{type_id}.xml"
-        print(xml_file)
-        xml_data = S3Data().get_data(xml_file)
-        # print(xml_data)
-        # Get nodes data in Python data structure
-        features_data += campaign.parse_feature_data(xml_data)
-    # print(features_data)
-    # convert into json
-    json_data = jsonify(features_data)
-    print(json_data)
-    # serve it
-    return json_data
-        
 
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
