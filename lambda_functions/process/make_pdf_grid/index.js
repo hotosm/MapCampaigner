@@ -8,7 +8,6 @@ const centerOfMass = require('@turf/center-of-mass').default;
 const destination = require('@turf/destination').default;
 const AWS = require('aws-sdk');
 
-
 async function getS3File(uuid) {
     const s3 = new AWS.S3();
     const params = {
@@ -59,20 +58,22 @@ async function main(event) {
         Key: `campaigns/${event.campaign_uuid}/pdf/grid.geojson`,
         Body: JSON.stringify(fc)
     }).promise();
+
+    console.log(`Invoking lambda handler...`);
+
+    const lambda = new AWS.Lambda();
+    var params = {
+        FunctionName: `${process.env.ENV}_process_make_pdfs`,
+        InvocationType: 'Event',
+        Payload: `{"campaign_uuid": "${event.campaign_uuid}"}`
+    };
+
+    await lambda.invoke(params).promise()
+
     console.log(`finished... ${uploaded}`);
   }
   
   
   exports.handler = async (event) => {
      await main(event);
-     const lambda = new AWS.Lambda();
-     var params = {
-        FunctionName: `${process.env}_process_make_pdfs`,
-        InvocationType: 'RequestResponse',
-        Payload: `{"campaign_uuid:"${event.campaign_uuid}"}`
-      };
-
-      await lambda.invoke(params).promise()
-
   };
-  
