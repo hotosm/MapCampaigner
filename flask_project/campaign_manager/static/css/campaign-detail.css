@@ -10,77 +10,6 @@
     color: #565656;
 }
 
-table#table_id {
-  font-family: Archivo;
-  font-size: 14px;
-  font-style: normal;
-  line-height: normal;
-  font-stretch: normal;
-}
-table#table_id #table_id_length {
-  display: none;
-}
-table#table_id #table_id_filter {
-  display: none;
-}
-table#table_id .detail-tag {
-  border-radius: 2px;
-  display: inline-block;
-  height: 24px;
-  padding: 0 5px 0 5px;
-  position: relative;
-  margin: 5px 2px 5px 2px;
-  text-decoration: none;
-  font-weight: normal;
-  font-stretch: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: #2c3038;
-}
-table#table_id td.found .detail-tag {
-  border: solid 0.8px #10aa7a !important;
-}
-table#table_id td.not-found .detail-tag {
-  border: solid 0.8px #faa71e !important;
-}
-table#table_id td.osm-id, table#table_id td.osm-id a {
-  font-family: Archivo;
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: 0.44px;
-  color: #929db3;
-}
-table#table_id td.osm-id a:hover {
-    text-decoration: none;
-}
-
-table#table_id td.status span.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-}
-table#table_id td.status.complete .status-dot {
-  background-color: #10aa7a !important;
-}
-table#table_id td.status.incomplete .status-dot {
-  background-color: #faa71e !important;
-}
-
-#campaign-feature-details .detail-panel-table {
-  border-radius: 2px;
-}
-#campaign-feature-details .detail-panel-table .panel-body {
-  padding: 1px;
-}
-#campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_length,
-#campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_filter {
-  display: none;
-}
-#campaign-feature-details .detail-panel-table .panel-body #table_id tbody tr td:hover {
-    background-color: transparent;
 }
 
 .detail-panel-information {
@@ -919,6 +848,13 @@ tr {
     color: #4794b2;
     font-size: 40pt;
     font-weight: 100;
+}
+
+table#table_id tr td.cell-faded a {
+  color: #929db3;
+}
+table#table_id tr td.cell-faded a:hover {
+  text-decoration: none;
 }
 
 .remote-project-list {

@@ -1,18 +1,16 @@
-<div id="features-details"></div>
-  <table id="table_id" class="row-border" style="width:100%">
+  <table id="table_id" class="table table-responsive" style="width:100%">
     <thead>
       <tr>
         <th>OSM ID</th>
-        <th>Feature Type</th>
+        <th style="width: 130px;">Feature Type</th>
         <th>Status</th>
         <th>Last edited by</th>
         <th>Last edited date</th>
-        <th>Attributes found</th>
-        <th>Attributes not found</th>
+        <th style="width: 240px;">Attributes found</th>
+        <th style="width: 240px;">Attributes not found</th>
       </tr>
     </thead>
-    <tbody>
-    </tbody>
+    <tbody></tbody>
   </table>
 
 <script type="text/javascript">
@@ -24,30 +22,51 @@
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
-        var attrsFound = displayTags(d.attributes);
-        var attrsNotFound = displayTags(d.missing_attributes);
-        var statusClass = (d.status == "Complete") ? "complete" : "incomplete";
+        var attrsFound = displayTags(d.attributes, "found");
+        var attrsNotFound = displayTags(d.missing_attributes, "missing");
+        var statusClass = (d.status == "Complete") ? "status-success" : "status-warn";
         var row = `
       <tr>
-        <td class="osm-id"><a href="https://openstreetmap.org/` + d.feature_type + `/` + d.id + `">` + d.type + `:` + d.id + `</a></td>
+        <td class="cell-faded"><a href="https://openstreetmap.org/` + d.feature_type + `/` + d.id + `">` + d.type + `:` + d.id + `</a></td>
         <td>` + d.feature_type + `</td>
-        <td class="status ` + statusClass + `"><span class="status-dot"></span>` + d.status + `</td>
+        <td><span class="status ` + statusClass + `"></span>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
         <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>
-        <td class="found">` + attrsFound + `</td>
-        <td class="not-found">` + attrsNotFound + `</td>
+        <td>` + attrsFound + `</td>
+        <td>` + attrsNotFound + `</td>
       </tr>`;
       $('#table_id tbody').append(row);
       });
       $('#table_id').DataTable();
+      // Cleaning up the dataTable styling
+      $('.dataTables_length').css("display", "none");
+      $('.dataTables_filter').css("display", "none");
+      $('.dataTables_info').css("display", "none");
+      $('.dataTables_paginate').css("float", "left");
+      $('.dataTables_paginate #table_id_previous').css("display", "none");
+      $('.dataTables_paginate #table_id_next').css("display", "none");
+      $('.dataTables_paginate').css({"text-align": "center", "margin-top": "25px"});
+      $('.dataTables_paginate a.paginate_button').css({
+          "border-radius": "2px",
+          "box-shadow": "0 7px 64px 0 rgba(0, 0, 0, 0.07)",
+          "background-color": "#ffffff",
+      });
+      $('.dataTables_paginate a.paginate_button.current').css({
+          "background-color": "#2c3038 !important",
+          "color": "#ffffff !important"
+      });
     }  
    });
   }
 
-  function displayTags(tags) {
+  function displayTags(tags, state) {
     var listTags = '';
     $.each(tags, function(i, t){
-      tag = '<span class="detail-tag">' + t + '</span> '
+      if ( state == "found" ) {
+        tag = '<span class="label label-success">' + t + '</span> ';
+      } else {
+        tag = '<span class="label label-warning">' + t + '</span> ';
+      }
       listTags = listTags + tag;
     });
     return listTags;
