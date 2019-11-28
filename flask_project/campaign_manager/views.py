@@ -538,13 +538,11 @@ def generate_gpx(json_data):
 
     geojson = json.loads(decoded_json)
     xml_gpx = geojson_to_gpx(geojson)
-
     resp = Response(xml_gpx, mimetype='text/xml', status=200)
     cors_host = 'https://www.openstreetmap.org'
     # Disable CORS.
     resp.headers['Access-Control-Allow-Origin'] = cors_host
-
-    return r
+    return resp
 
 
 @campaign_manager.route('/mbtiles', methods=['POST'])
@@ -991,8 +989,7 @@ def edit_campaign(uuid):
 def submit_campaign_data_to_json():
     import uuid
     from campaign_manager.forms.campaign import CampaignForm
-    """Get campaign details.
-    """
+    """Get campaign details."""
 
     form = CampaignForm(request.form)
     if form.validate_on_submit():
@@ -1004,8 +1001,8 @@ def submit_campaign_data_to_json():
 
             data['uuid'] = uuid.uuid4().hex
             campaign_data = Campaign.parse_campaign_data(
-                    data,
-                    form.uploader.data)
+                data,
+                form.uploader.data)
             return Response(Campaign.serialize(campaign_data))
         except Exception as e:
             print(e)

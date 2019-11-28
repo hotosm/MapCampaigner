@@ -1,4 +1,6 @@
 import os
+import http.client
+import json
 from flask_restful import Resource, Api
 from flask import request, send_file
 
@@ -261,6 +263,18 @@ class PDFBundleById(Resource):
         return resp
 
 
+class UserSearch(Resource):
+    """ Proxy requests to whosthat """
+
+    def get(self, name):
+        """ get possible user profiles by name:str"""
+        conn = http.client.HTTPConnection("whosthat.osmz.ru")
+        conn.request("GET", f"/whosthat.php?action=names&q={name}")
+        res = conn.getresponse()
+        data = res.read()
+        return json.loads(data.decode("utf-8"))
+
+
 # Setup the Api resource routing here
 api.add_resource(
         CampaignList,
@@ -289,3 +303,6 @@ api.add_resource(
 api.add_resource(
         PDFBundleById,
         '/campaigns/<string:uuid>/pdfs/<string:grid_id>')
+api.add_resource(
+        UserSearch,
+        '/user-search/<string:name>')
