@@ -376,7 +376,6 @@ def get_campaign_data(uuid):
 
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
-
     campaign_manager_names = []
     for manager in parse_json_string(campaign.campaign_managers):
         campaign_manager_names.append(manager['name'])
@@ -437,6 +436,18 @@ def get_campaign(uuid):
 @campaign_manager.route('/campaign/<uuid>/features')
 def get_campaign_features(uuid):
     context = get_campaign_data(uuid)
+    for key, values in context['types'].items():
+        # Fetch the feature json file.
+        file_name = 'campaigns/{0}/{1}.json'.format(uuid, values['type'])
+        features = S3Data().fetch(file_name)
+
+        complete = [f for f in features if f['status'] == "Complete"]
+        incomplete = [f for f in features if f['status'] == "Incomplete"]
+
+        values["feature_count"] = len(features)
+        values["complete"] = len(complete)
+        values["incomplete"] = len(incomplete)
+
     return render_template('campaign_features.html', **context)
 
 
@@ -466,6 +477,7 @@ def get_campaign_contributors(uuid):
 def get_campaign_area(uuid):
     context = get_campaign_data(uuid)
     return render_template('campaign_area.html', **context)
+
 
 @campaign_manager.route('/campaign/<uuid>/delete', methods=['POST'])
 def delete_campaign(uuid):

@@ -12,6 +12,7 @@ from utilities import (
     invoke_process_feature_completeness,
     invoke_process_count_feature,
     invoke_process_mapper_engagement,
+    invoke_process_make_feature_json,
     clean_aoi
 )
 import logging
@@ -59,6 +60,8 @@ def main(event, context):
         path=build_path(uuid, type_id),
         type_id=type_id)
 
+    invoke_process_make_feature_json(uuid, type_name)
     invoke_process_feature_completeness(uuid, type_name)
     invoke_process_count_feature(uuid, type_name)
     invoke_process_mapper_engagement(uuid, type_name)
+
