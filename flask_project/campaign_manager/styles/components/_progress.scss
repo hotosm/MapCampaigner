@@ -6,16 +6,14 @@
   box-shadow: none;
   background-color: $grey-light3;
   .progress-bar {
-    background-color: $red !important;
+    background-color: $orange !important;
     border-radius: 6px;
+    box-shadow: none;
   }
   &-rank {
     height: 16px;
-    border-radius: 0;
     background-color: transparent;
-    .progress-bar {
-      border-radius: 0;
-    }
+    box-shadow: none;
   }
 }
 .progress-label {

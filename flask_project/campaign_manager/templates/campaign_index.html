@@ -55,7 +55,7 @@
 </div>
 <div class="row empty-ui">
   <div class="col-xs-12 text-center">
-    <img src="https://placehold.it/275x215/A8B7C1" alt="">
+    {% include 'svgs/project_placeholder.html' %}
     <h2>Create your first project</h2>
     <p>Looks like you dont have any projects yet. Our <a href="">quick start guide</a> will get you using the tool straight away!</p>
   </div>
@@ -318,7 +318,7 @@
     var startDate = moment(campaign.start_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true).format('YYYY.MM.DD');
     var featureCount = Object.keys(campaign.types || {}).length;
-    var completeness = campaignProgress(campaign);
+    var totals = campaignProgress(campaign);
     var isActive = campaignStatus(campaign);
     var daysLeft = getDaysLeft(campaign);
     var warning = daysLeft > 0 ? `${daysLeft} day${daysLeft > 1 ? 's' : ''} left!` : 'Finished'
@@ -346,19 +346,14 @@
           <div class="col-xs-7">
             <p class="campaign-date">${startDate}&mdash;${endDate}
               ${daysLeft <= 10 ? `<span class="label label-danger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12">
-                    <g fill="#2C3038" fill-rule="nonzero">
-                      <path d="M0 6.533C0 3.723 2.174 1.415 4.944 1.2V.841h-.995a.416.416 0 0 1-.42-.42c0-.236.184-.421.42-.421h2.769c.236 0 .42.185.42.42 0 .236-.184.421-.42.421h-.933V1.2a5.298 5.298 0 0 1 2.738 1.015l.462-.461-.195-.195a.42.42 0 0 1 .595-.595l.974.974a.42.42 0 0 1-.595.595l-.195-.195-.42.421a5.335 5.335 0 0 1 1.559 3.774c0 2.954-2.4 5.354-5.354 5.354A5.358 5.358 0 0 1 0 6.533zm5.354-4.512A4.524 4.524 0 0 0 .83 6.544a4.53 4.53 0 0 0 4.523 4.523 4.53 4.53 0 0 0 4.523-4.523A4.53 4.53 0 0 0 5.354 2.02z"/>
-                      <path d="M5.354 6.882h1.795c.236 0 .42-.185.42-.42a.416.416 0 0 0-.42-.421H5.774V3.877a.416.416 0 0 0-.42-.42.416.416 0 0 0-.42.42v2.595c0 .225.184.41.42.41z"/>
-                    </g>
-                  </svg>
+                  {% include 'svgs/timer.html' %}
                   ${warning}
                 </span>`: ''}
             </p>
-            <p><b>${completeness}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">?/?</span></p>
+            <p><b>${totals.completeness}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">${totals.complete_features}/${totals.feature_total}</span></p>
             <div class="campaign-progress-bar">
               <div class="progress">
-                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="${completeness}" aria-valuemin="0" aria-valuemax="100" style="width:${completeness}%">
+                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="${totals.completeness}" aria-valuemin="0" aria-valuemax="100" style="width:${totals.completeness}%">
                 </div>
               </div>
             </div>
@@ -377,38 +372,32 @@
 
   function actionCampaignButton(uuid, isManager) {
     if (isManager) {
-      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right" onclick="openManageCampaign(event, this, '${uuid}')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-          <g fill="none" fill-rule="nonzero" stroke="#D73F3F" stroke-width=".85">
-            <path d="M15.442 7.44c-.023-.204-.26-.357-.466-.357-.664 0-1.253-.39-1.5-.993a1.613 1.613 0 0 1 .405-1.791.402.402 0 0 0 .044-.546 7.168 7.168 0 0 0-1.147-1.16.403.403 0 0 0-.55.045c-.433.478-1.208.656-1.807.406a1.609 1.609 0 0 1-.979-1.573.402.402 0 0 0-.355-.423 7.232 7.232 0 0 0-1.63-.004.403.403 0 0 0-.359.414 1.612 1.612 0 0 1-.991 1.546c-.593.242-1.363.066-1.794-.408a.404.404 0 0 0-.546-.046c-.434.34-.83.73-1.172 1.158a.403.403 0 0 0 .043.55c.504.457.667 1.184.405 1.808-.25.596-.868.98-1.576.98a.394.394 0 0 0-.418.355 7.256 7.256 0 0 0-.004 1.647c.023.205.268.356.475.356a1.589 1.589 0 0 1 1.49.993 1.61 1.61 0 0 1-.404 1.791.403.403 0 0 0-.044.546c.336.429.723.819 1.146 1.16a.403.403 0 0 0 .551-.044c.433-.48 1.209-.657 1.806-.406.625.261 1.018.893.98 1.572a.402.402 0 0 0 .355.423 7.2 7.2 0 0 0 1.63.004.403.403 0 0 0 .359-.415 1.61 1.61 0 0 1 .99-1.544c.597-.244 1.364-.066 1.795.408.143.156.38.174.546.046.434-.34.828-.73 1.172-1.159a.402.402 0 0 0-.043-.55 1.605 1.605 0 0 1-.406-1.808 1.622 1.622 0 0 1 1.482-.982l.09.003a.403.403 0 0 0 .424-.355 7.25 7.25 0 0 0 .003-1.648z"/>
-            <path d="M8.255 10.675A2.419 2.419 0 0 1 5.84 8.26a2.419 2.419 0 0 1 2.416-2.416 2.419 2.419 0 0 1 2.416 2.416 2.419 2.419 0 0 1-2.416 2.416z"/>
-          </g>
-        </svg>
+      return `<button type="button" class="manage-campaign-button btn btn-primary btn-xs pull-right">
+        {% include 'svgs/red_gear.html' %}
         Manage
       </button>`;
     } else {
-      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right" onclick="openCampaign(event, this, '${uuid}')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="11" viewBox="0 0 15 11">
-          <path fill="#929DB3" fill-rule="nonzero" d="M7.5.5A8.033 8.033 0 0 0 0 5.614c1.16 3 4.09 5.113 7.5 5.113s6.34-2.113 7.5-5.113A8.033 8.033 0 0 0 7.5.5zm0 8.523c-1.91 0-3.41-1.5-3.41-3.41 0-1.908 1.5-3.408 3.41-3.408 1.91 0 3.41 1.5 3.41 3.409 0 1.909-1.5 3.409-3.41 3.409zm0-5.455c-1.16 0-2.045.887-2.045 2.046 0 1.159.886 2.045 2.045 2.045 1.16 0 2.045-.886 2.045-2.045 0-1.16-.886-2.046-2.045-2.046z" />
-        </svg>
+      return `<button type="button" class="view-campaign-button btn btn-default btn-xs pull-right">
+        {% include 'svgs/eye.html' %}
         View
       </button>`;
     }
   }
 
   function campaignProgress(campaign) {
-    var startDate = moment(campaign.start_date, 'YYYY-MM-DD', true);
-    var endDate = moment(campaign.end_date, 'YYYY-MM-DD', true);
-    var campaignRange = endDate.diff(startDate, 'days') + 1;
-    var remainingDays = endDate.diff(moment(), 'days') + 1;
-    var progress = 100 - (remainingDays / campaignRange * 100);
-    if (progress > 100) {
-      progress = 100;
-    }
-    else if (progress < 0) {
-      progress = 0;
-    }
-    return Math.round(progress);
+    var totals = Object.values(campaign.types).reduce((acc, curr)=>{
+      return {
+        feature_total: acc.feature_total + curr.feature_count,
+        complete_features: acc.complete_features + curr.complete,
+        incomplete_features: acc.incomplete_features + curr.incomplete
+      }
+    }, {
+      feature_total: 0,
+      complete_features: 0,
+      incomplete_features: 0
+    });
+    totals.completeness = Math.round(totals.complete_features/totals.feature_total*100)
+    return totals;
   }
 
   function buildRequests(response, bucketUrl, file) {

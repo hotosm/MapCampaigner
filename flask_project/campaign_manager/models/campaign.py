@@ -107,6 +107,25 @@ class Campaign(JsonModel):
 
         return True
 
+    def delete_from_user_campaigns(self, user_id, uuid):
+        s3_obj = S3Data()
+
+        user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
+        user_campaigns = s3_obj.fetch(user_file)
+        if user_campaigns:
+            projects = user_campaigns.get('projects', [])
+            if projects:
+                index = None
+                for i in range(len(projects)):
+                    if projects[i]['uuid'] == uuid:
+                        index = i
+                del projects[i]
+                user_campaigns['projects'] = projects
+                body = json.dumps(user_campaigns)
+                s3_obj.create(user_file, body)
+
+        return True
+
     def save(self, uploader=None, save_to_git=True):
         """Save current campaign
 
@@ -134,6 +153,27 @@ class Campaign(JsonModel):
         geocampaign_key = self.geojson_path
         geocampaign_body = json.dumps(geometry)
         S3Data().create(geocampaign_key, geocampaign_body)
+
+    def delete(self):
+        """Get a uuid and delete the S3 folder for this specific
+        campaign and delete from users (manager & viewers)
+        profiles on S3."""
+        uuid = self.uuid
+        folder_path = f"campaigns/{uuid}"
+        # Delete project in users json
+        content = S3Data().fetch(self.json_path)
+        content_json = parse_json_string(content)
+        project_managers = content_json.get('campaign_managers', [])
+        project_managers = list(map(lambda x: x["osm_id"], project_managers))
+        project_viewers = content_json.get('campaign_viewers', [])
+        project_viewers = list(map(lambda x: x["osm_id"], project_viewers))
+        project_users = project_managers + project_viewers
+        project_users = list(set(project_users))
+        if project_users:
+            for user_id in project_users:
+                self.delete_from_user_campaigns(user_id, uuid)
+        # Delete files on S3
+        S3Data().delete_folder(folder_path)
 
     def generate_static_map_url(self, simplify):
         """
