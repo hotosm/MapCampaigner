@@ -7,6 +7,21 @@
     max-width: 470px;
   }
   .page-header {
-    background: $red;
+    height: auto;
+    padding: 92px 0 78px 0;
+    background-image: linear-gradient(to bottom, $red-medium, $red);
+    background-size: 100%;
+    img {
+      max-width: 100%;
+    }
+    h1 {
+      display: block;
+      text-transform: none;
+      background: transparent;
+      position: static;
+      font-size: 48px;
+      padding: 0;
+      margin-bottom: 44px;
+    }
   }
 }
