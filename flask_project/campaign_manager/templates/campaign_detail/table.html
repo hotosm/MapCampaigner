@@ -28,7 +28,7 @@
         var attrsNotFound = displayTags(d.missing_attributes);
         var row = `
       <tr>
-        <td class="osm-id">` + d.id + `</td>
+        <td class="osm-id"><a href="https://openstreetmap.org/` + d.feature_type + `/` + d.id + `">` + d.type + `:` + d.id + `</a></td>
         <td>` + d.feature_type + `</td>
         <td>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
