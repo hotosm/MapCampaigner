@@ -1,10 +1,14 @@
 #page-home {
+  hr {
+    border: none;
+    height: 2px;
+    width: 100%;
+    background: $blue-light;
+    margin: 47px 0;
+  }
   background: $white;
   .btn-default {
     border: 1px solid $grey1;
-  }
-  .media-body-narrow {
-    max-width: 470px;
   }
   .page-header {
     height: auto;
