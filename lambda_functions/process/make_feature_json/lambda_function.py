@@ -24,57 +24,58 @@ def main(event, context):
     and 1 for each feature type) for data inputs
     on the project overview and feature pages."""
     uuid = event['campaign_uuid']
+    event_type = event['type']
+
     campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
-    types = campaign['types']
-    all_features = []
-    for _, feature_type in types.items():
-        features = []
-        key = f"campaigns/{uuid}/overpass/{feature_type['type']}.xml"
-        feature_xml = S3Data().fetch(key)
-        parser = ET.XMLParser(encoding="utf-8")
-        tree = ElementTree(fromstring(feature_xml, parser=parser))
-        root = tree.getroot()
-        for child in root:
-            if child.tag in ('way', 'node'):
-                tags = []
-                if len(child) == 0:
-                    continue
-                for tag in child:
-                    if tag.tag == 'tag':
-                        tags.append(tag.attrib['k'])
-                feature = {}
-                feature['id'] = child.attrib['id']
-                geometry = 'Point'
-                if child.tag == 'way':
-                    geometry = 'Line'
-                    nds = []
-                    for sub in child:
-                        if sub.tag == 'nd':
-                            nds.append(sub.tag)
-                    if len(nds) > 0:
-                        if nds[0] == nds[-1]:
-                            geometry = 'Polygon'
-                feature['geometry_type'] = geometry
-                feature['osm_type'] = child.tag
-                feature['type'] = feature_type['type']
-                feature['feature'] = feature_type['feature']
-                required_tags = [":".join(k.split(":", 2)[:2]) for k, _ in
-                                 feature_type['tags'].items()]
-                feature['status'] = calc_completeness(required_tags, tags)
-                feature['last_edited_by'] = child.attrib['user']
-                feature['last_edit_date'] = child.attrib['timestamp']
-                feature['attributes'] = [elem for elem in required_tags if
-                                         elem in tags]
-                feature['missing_attributes'] = [elem for elem in required_tags
-                                                 if elem not in tags]
-                features.append(feature)
-        all_features.append(features)
-        out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
-        campaign['types'] = feature_stats(features, campaign['types'])
-        S3Data().create(out_file, json.dumps(features))
-    all_f = [item for sublist in all_features for item in sublist]
-    S3Data().create(f'campaigns/{uuid}/all_features.json', json.dumps(all_f))
-    S3Data().create(f'campaigns/{uuid}/campaign.json', json.dumps(campaign))
+    filtered = [v for k, v in campaign['types'].items()
+        if v['type'] == event_type]
+    if len(filtered) == 0:
+        raise ValueError('Feature not found')
+
+    feature_type = filtered[0]
+    features = []
+
+    key = f"campaigns/{uuid}/overpass/{feature_type['type']}.xml"
+    feature_xml = S3Data().fetch(key)
+    parser = ET.XMLParser(encoding="utf-8")
+    tree = ElementTree(fromstring(feature_xml, parser=parser))
+    root = tree.getroot()
+    for child in root:
+        if child.tag in ('way', 'node'):
+            tags = []
+            if len(child) == 0:
+                continue
+            for tag in child:
+                if tag.tag == 'tag':
+                    tags.append(tag.attrib['k'])
+            feature = {}
+            feature['id'] = child.attrib['id']
+            geometry = 'Point'
+            if child.tag == 'way':
+                geometry = 'Line'
+                nds = []
+                for sub in child:
+                    if sub.tag == 'nd':
+                        nds.append(sub.tag)
+                if len(nds) > 0:
+                    if nds[0] == nds[-1]:
+                        geometry = 'Polygon'
+            feature['geometry_type'] = geometry
+            feature['osm_type'] = child.tag
+            feature['type'] = feature_type['type']
+            feature['feature'] = feature_type['feature']
+            required_tags = [":".join(k.split(":", 2)[:2]) for k, _ in
+                             feature_type['tags'].items()]
+            feature['status'] = calc_completeness(required_tags, tags)
+            feature['last_edited_by'] = child.attrib['user']
+            feature['last_edit_date'] = child.attrib['timestamp']
+            feature['attributes'] = [elem for elem in required_tags if
+                                     elem in tags]
+            feature['missing_attributes'] = [elem for elem in required_tags
+                                             if elem not in tags]
+            features.append(feature)
+    out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
+    S3Data().create(out_file, json.dumps(features))
 
 
 def calc_completeness(req_tags, tags):
@@ -87,6 +88,7 @@ def calc_completeness(req_tags, tags):
     if result:
         status = "Complete"
     return status
+
 
 def feature_stats(features, types):
     feature_type = features[0]['type']
