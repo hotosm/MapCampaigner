@@ -1,6 +1,6 @@
 from io import BytesIO
 import math
-import os 
+import os
 import json
 import sys
 import boto3
@@ -18,12 +18,14 @@ MAXRESOLUTION = 156543.0339
 
 AXIS_OFFSET = MAXRESOLUTION * 256 / 2
 
+
 def degrees_to_meters(lon, lat):
     x = lon * AXIS_OFFSET / 180
     y = math.log(math.tan((90 + lat) * math.pi / 360)) / (math.pi / 180)
     y = y * AXIS_OFFSET / 180
 
     return x, y
+
 
 def meters_to_degrees(x, y):
     lon = x * 180 / AXIS_OFFSET
@@ -51,7 +53,7 @@ def create_grid(bbox, zoom):
     xminstep = int(math.floor((xmin + AXIS_OFFSET) / step))
     xmaxstep = int(math.ceil((xmax + AXIS_OFFSET) / step))
     yminstep = int(math.floor((ymin + AXIS_OFFSET) / step))
-    ymaxstep = int(math.ceil((ymax + AXIS_OFFSET) / step))    
+    ymaxstep = int(math.ceil((ymax + AXIS_OFFSET) / step))
     task_features = []
 
     for x in range(xminstep, xmaxstep):
@@ -60,6 +62,7 @@ def create_grid(bbox, zoom):
             task_features.append(task_feature)
     return task_features
 
+
 def make_grid(bbox, zoom):
     minxy = degrees_to_meters(bbox[0], bbox[1])
     maxxy = degrees_to_meters(bbox[2], bbox[3])
@@ -67,10 +70,12 @@ def make_grid(bbox, zoom):
     grid = create_grid(bbox, zoom)
     return grid
 
+
 def get_bounds(poly):
     polygon = Polygon(poly['geometry']['coordinates'][0])
     bounds = polygon.bounds
     return bounds
+
 
 def scale_coords(img, bounds, coords):
     transformer = Transformer.from_crs(4326, 3857)
@@ -79,14 +84,15 @@ def scale_coords(img, bounds, coords):
     transform_2 = transformer.transform(bounds[1], bounds[2])
     y = transform_2[0] - transform_1[0]
     x = transform_1[1] - transform_2[1]
-    x_scale = img.size[1]/x
-    y_scale = img.size[0]/y
+    x_scale = img.size[1] / x
+    y_scale = img.size[0] / y
     for coord in coords:
         a = transformer.transform(coord[1], coord[0])
         c = [abs(transform_1[0]) - abs(a[0]), abs(transform_1[1])- abs(a[1])]
         c = [c[0] * x_scale, c[1] * y_scale]
         coords_transformed.append(tuple(c))
     return coords_transformed
+
 
 def stitch_tiles(mbtiles, features, bounds):
     ie = ImageExporter(mbtiles_file=mbtiles)
@@ -104,6 +110,7 @@ def stitch_tiles(mbtiles, features, bounds):
         coords_transformed = scale_coords(img, bounds, coords)
         draw.line(coords_transformed, fill="#FF00FF", width=5)
     return img
+
 
 def crop_pdf(img, bounds, feature, idx):
     coords = feature['geometry']['coordinates'][0]
@@ -127,7 +134,8 @@ def create_legend(img, bounds, grid):
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(legend, bounds, coords)
         draw.line(coords_transformed, fill="#000", width=4)
-        label_coord = (coords_transformed[2][0]/2, coords_transformed[0][1]/2)
+        label_coord = (coords_transformed[2][0] / 2,
+                       coords_transformed[0][1] / 2)
         draw.text(label_coord, f"{i}", fill=(0, 0, 0))
     return legend
 
@@ -167,6 +175,7 @@ def main(event, context):
             pdf_buffer.seek(0)
             pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/{i}.pdf'
             S3Data().create(pdf_key, pdf_buffer)
+
 
 def lambda_handler(event, context):
     try:
