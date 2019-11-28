@@ -4,26 +4,20 @@ import inspect
 import json
 import os
 import hashlib
-import requests
 import shutil
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
 from shapely import geometry as shapely_geometry
 
-from urllib import request as urllibrequest
-from urllib.error import HTTPError, URLError
-
-from bs4 import BeautifulSoup
 from flask import (
     request,
     render_template,
     Response,
+    redirect,
+    url_for,
     abort,
     send_file,
-    send_from_directory,
-    url_for,
-    redirect,
     flash
 )
 
@@ -32,13 +26,10 @@ from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
     get_types,
     map_provider,
-    get_allowed_managers,
     parse_json_string
 )
 import campaign_manager.insights_functions as insights_functions
-from campaign_manager.insights_functions._abstract_insights_function import (
-    AbstractInsightsFunction
-)
+
 from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
@@ -371,7 +362,7 @@ def get_campaign_data(uuid):
     """
     try:
         campaign = Campaign.get(uuid)
-    except:
+    except Exception:
         abort(404)
 
     context = campaign.to_dict()
@@ -428,8 +419,8 @@ def get_campaign_data(uuid):
 def get_campaign(uuid):
     context = get_campaign_data(uuid)
     context['types'] = list(map(lambda type:
-      type[1]['type'],
-      context['types'].items()))
+                                type[1]['type'],
+                                context['types'].items()))
 
     # Get data from campaign.json
     campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
@@ -489,7 +480,6 @@ def get_campaign_area(uuid):
 def delete_campaign(uuid):
     try:
         campaign = Campaign.get(uuid)
-        context = campaign.to_dict()
         # Get function from the model to delete S3 folders for the project
         campaign.delete()
         # Show a message to confirm the project is deleted
@@ -503,7 +493,6 @@ def delete_campaign(uuid):
 
 @campaign_manager.route('/participate')
 def participate():
-    from flask import url_for, redirect
     """Action from participate button, return nearest/recent/active campaign.
     """
     campaign_to_participate = None
@@ -577,9 +566,9 @@ def get_mbtile():
 
     # Get all campaign polygons.
     features = [f for f in mbtiles['features']
-        if f['properties']['parent'] is None]
+                if f['properties']['parent'] is None]
     polygons = [shapely_geometry.Polygon(f['geometry']['coordinates'][0])
-        for f in features]
+                for f in features]
     polygons = [shapely_geometry.polygon.orient(p) for p in polygons]
     centroids = [p.centroid for p in polygons]
 
@@ -714,7 +703,7 @@ def generate_kml():
     # For now, let's work only with points.
     # TODO: include polygons in the kml file.
     features = [[f for f in sublist if f['geometry']['type'] == 'Point']
-        for sublist in features]
+                for sublist in features]
     features = [item for sublist in features for item in sublist]
 
     for feature in features:
@@ -874,14 +863,13 @@ def find_attribution(map_url):
     try:
         # map_url is not valid
         return _valid_map[map_url]
-    except:
+    except Exception:
         return ""
 
 
 @campaign_manager.route('/create', methods=['GET', 'POST'])
 def create_campaign():
     import uuid
-    from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
     """Get campaign details.
     """
@@ -900,9 +888,8 @@ def create_campaign():
         campaign = Campaign(data['uuid'])
         campaign.save()
         campaign.save_to_user_campaigns(data['user_id'],
-            data['uuid'],
-            Permission.ADMIN.name
-        )
+                                        data['uuid'],
+                                        Permission.ADMIN.name)
 
         return redirect(
             url_for(
@@ -936,7 +923,6 @@ def create_campaign():
 @campaign_manager.route('/edit/<uuid>', methods=['GET', 'POST'])
 def edit_campaign(uuid):
     import datetime
-    from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
     """Get campaign details.
     """
