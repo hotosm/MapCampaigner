@@ -26,13 +26,14 @@
       $.each(data, function(i, d){
         var attrsFound = displayTags(d.attributes);
         var attrsNotFound = displayTags(d.missing_attributes);
+        var statusClass = (d.status == "Complete") ? "complete" : "incomplete";
         var row = `
       <tr>
         <td class="osm-id"><a href="https://openstreetmap.org/` + d.feature_type + `/` + d.id + `">` + d.type + `:` + d.id + `</a></td>
         <td>` + d.feature_type + `</td>
-        <td>` + d.status + `</td>
+        <td class="status ` + statusClass + `"><span class="status-dot"></span>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
-        <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY.MM.DD') + `</td>
+        <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>
         <td class="found">` + attrsFound + `</td>
         <td class="not-found">` + attrsNotFound + `</td>
       </tr>`;

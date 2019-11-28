@@ -43,10 +43,30 @@ table#table_id td.found .detail-tag {
 table#table_id td.not-found .detail-tag {
   border: solid 0.8px #faa71e !important;
 }
-table#table_id td.osm-id {
+table#table_id td.osm-id, table#table_id td.osm-id a {
+  font-family: Archivo;
+  font-size: 14px;
   font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
   letter-spacing: 0.44px;
   color: #929db3;
+}
+table#table_id td.osm-id a:hover {
+    text-decoration: none;
+}
+
+table#table_id td.status span.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+table#table_id td.status.complete .status-dot {
+  background-color: #10aa7a !important;
+}
+table#table_id td.status.incomplete .status-dot {
+  background-color: #faa71e !important;
 }
 
 #campaign-feature-details .detail-panel-table {
@@ -58,6 +78,9 @@ table#table_id td.osm-id {
 #campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_length,
 #campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_filter {
   display: none;
+}
+#campaign-feature-details .detail-panel-table .panel-body #table_id tbody tr td:hover {
+    background-color: transparent;
 }
 
 .detail-panel-information {
@@ -75,6 +98,7 @@ table#table_id td.osm-id {
   letter-spacing: normal;
   color: #2c3038;
   float: left;
+  text-align: left;
 }
 .detail-panel-information .panel-more-button {
   width: 24px;
@@ -833,20 +857,19 @@ div.side-action .fa-eye:hover, .fa-map-pin:hover {
 }
 
 td {
-    padding-top: 3px;
-    padding-bottom: 3px;
+  font-family: Archivo;
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.44px;
 }
 
 tr {
-    vertical-align: top;
-}
-
-tr.odd:hover, tr.even:hover {
-    background-color: rgba(59, 132, 172, 0.13) !important;
-}
-
-tr.odd {
-    background-color: rgba(223, 234, 242, 0.20) !important;
+  vertical-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .show-members:hover {
@@ -1000,20 +1023,6 @@ tr.odd {
     background-color: transparent !important;
     cursor: default !important;
     padding-left: 0 !important;
-}
-
-.sorting_1 a{
-  font-family: Archivo;
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: 0.44px;
-  color: #929db3;
-}
-.sorting_1 a:hover {
-    text-decoration: none;
 }
 
 .header-panel {
