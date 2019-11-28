@@ -55,6 +55,10 @@ table#table_id td.osm-id {
 #campaign-feature-details .detail-panel-table .panel-body {
   padding: 1px;
 }
+#campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_length,
+#campaign-feature-details .detail-panel-table .panel-body #table_id_wrapper #table_id_filter {
+  display: none;
+}
 
 .detail-panel-information {
   width: 100%;
@@ -370,7 +374,6 @@ table#table_id td.osm-id {
 .map-wrapper {
   width: 704px;
   height: 404px;
-  /*width: 120%;*/
   margin-top: -2px;
 }
 
