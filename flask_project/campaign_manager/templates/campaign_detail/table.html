@@ -32,7 +32,7 @@
         <td>` + d.feature_type + `</td>
         <td>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
-        <td>` + d.last_edited_date + `</td>
+        <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY.MM.DD') + `</td>
         <td class="found">` + attrsFound + `</td>
         <td class="not-found">` + attrsNotFound + `</td>
       </tr>`;
