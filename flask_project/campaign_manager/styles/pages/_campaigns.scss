@@ -93,12 +93,6 @@
   }
   .campaign-progress-bar {
     overflow: hidden;
-    .progress-bar {
-      background-color: $blue-light !important;
-    }
-  }
-  &.active .campaign-progress-bar .progress-bar {
-    background-color: $red !important;
   }
 }
 

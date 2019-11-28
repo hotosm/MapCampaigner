@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% set active_page = "contributors" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <h2>Contributor Details</h2>
+  </div>
+</div>
+{% endblock %}

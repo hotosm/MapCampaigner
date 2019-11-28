@@ -35,6 +35,21 @@
   <body id="page-{{active_page}}">
     {% include 'components/header.html' %}
     {% block subhead %}{% endblock %}
+    {% if active_page == "home" %}
+    <div class="jumbotron page-header">
+      <div class="container container-fluid">
+        <div class="row">
+          <div class="col-xs-12 col-sm-7">
+            <img src="/static/img/tv-dark.png" alty=""/>
+          </div>
+          <div class="col-xs-12 col-sm-5">
+            <h1>Monitor the progress and data quality of mapping projects.</h1>
+            <p><a href="" class="btn btn-default">Get started</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
     <div class="page-content">
       <div class="container container-fluid">
         {% block header_content %}{% endblock %}
