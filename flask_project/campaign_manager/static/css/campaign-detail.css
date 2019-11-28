@@ -5,6 +5,13 @@
     margin: 3% 0 3% 0;
 }
 
+#campaign-feature-details span.buttons-coll {
+    width: 18%;
+    margin: 4% -0.5% 3% 4%;
+    float: right;
+}
+
+
 .detail-campaign-name {
     font-weight: bold;
     color: #565656;
