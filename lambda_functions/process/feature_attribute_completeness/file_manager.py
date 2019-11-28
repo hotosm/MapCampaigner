@@ -60,7 +60,8 @@ class FileManager(object):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
-        with open(self.current_file(), 'rb') as json_file, TemporaryFile() as temp_file:
+        with open(self.current_file(), 'rb') as json_file, 
+        TemporaryFile() as temp_file:
             with gzip.GzipFile(fileobj=temp_file, mode='wb') as gz:
                 shutil.copyfileobj(json_file, gz)
             temp_file.seek(0)

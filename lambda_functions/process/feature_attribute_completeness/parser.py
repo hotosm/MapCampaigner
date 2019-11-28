@@ -8,7 +8,8 @@ from file_manager import (
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
-    def __init__(self, required_tags, render_data_path, element_type, type_name):
+    def __init__(self, required_tags, render_data_path, 
+                 element_type, type_name):
         xml.sax.ContentHandler.__init__(self)
         self.required_tags = required_tags
         self.element_type = element_type
@@ -66,7 +67,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             if self.has_tags is True:
 
                 if (self.has_no_required_tags() and
-                    self.type_name not in self.tags):
+                self.type_name not in self.tags):
                     return
                 self.features_collected += 1
                 self.check_errors_in_tags()

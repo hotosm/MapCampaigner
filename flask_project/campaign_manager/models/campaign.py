@@ -558,8 +558,8 @@ class Campaign(JsonModel):
         s3 = S3Data()
         # For each type we get first level data.
         response = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix=type,
-            Delimiter='/')
+                                      Prefix=type,
+                                      Delimiter='/')
         if 'Contents' not in list(response.keys()):
             return None
 
@@ -581,8 +581,8 @@ class Campaign(JsonModel):
     def get_s3_types(self):
         s3 = S3Data()
         objs = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix='campaigns/{}/render/'.format(self.uuid),
-            Delimiter='/')
+                                  Prefix=f'campaigns/{self.uuid}/render/',
+                                  Delimiter='/')
 
         if 'CommonPrefixes' not in objs:
             return None
