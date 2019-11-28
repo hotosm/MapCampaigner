@@ -38,10 +38,10 @@ async function main(event) {
         const hDiff = 706 - (h % 706);
         const poly = bboxPolygon(box);
         const c = centerOfMass(poly);
-        const maxY = destination(c,(h + hDiff)/2, 0, options).geometry.coordinates[1];
-        const minY = destination(c,(h + hDiff)/2, 180,options).geometry.coordinates[1];
-        const maxX = destination(c,(w + wDiff)/2, 90,options).geometry.coordinates[0];
-        const minX = destination(c,(w + wDiff)/2, -90,options).geometry.coordinates[0];
+        const maxY = destination(c,(50 + h + hDiff)/2, 0, options).geometry.coordinates[1];
+        const minY = destination(c,(50 +h + hDiff)/2, 180,options).geometry.coordinates[1];
+        const maxX = destination(c,(50 + w + wDiff)/2, 90,options).geometry.coordinates[0];
+        const minX = destination(c,(50 + w + wDiff)/2, -90,options).geometry.coordinates[0];
         const grid = rectangleGrid([minX, minY, maxX, maxY], 1000, 706, {units:"meters"});
         for (let i=0; i<grid.features.length; i++) {
             const j = intersect(grid.features[i], feature);
@@ -65,5 +65,14 @@ async function main(event) {
   
   exports.handler = async (event) => {
      await main(event);
+     const lambda = new AWS.Lambda();
+     var params = {
+        FunctionName: `${process.env}_process_make_pdfs`,
+        InvocationType: 'RequestResponse',
+        Payload: `{"campaign_uuid:"${event.campaign_uuid}"}`
+      };
+
+      await lambda.invoke(params).promise()
+
   };
   

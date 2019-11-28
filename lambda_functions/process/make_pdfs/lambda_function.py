@@ -1,12 +1,18 @@
 from io import BytesIO
 import math
+import os 
+import json
+import sys
+import boto3
+
+sys.path.insert(0, 'dependencies')
 
 from shapely.geometry import box, Polygon, MultiPolygon
+from aws import S3Data
 from landez import ImageExporter
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from pyproj import Transformer
 
-from aws import S3Data
 
 MAXRESOLUTION = 156543.0339
 
@@ -19,7 +25,7 @@ def degrees_to_meters(lon, lat):
 
     return x, y
 
-def meters_to_degrees(x,y):
+def meters_to_degrees(x, y):
     lon = x * 180 / AXIS_OFFSET
     lat = math.atan(math.exp(y * math.pi / AXIS_OFFSET)) * 360 / math.pi - 90
     return lon, lat
@@ -85,10 +91,10 @@ def scale_coords(img, bounds, coords):
 def stitch_tiles(mbtiles, features, bounds):
     ie = ImageExporter(mbtiles_file=mbtiles)
     f = BytesIO()
-    f.name = 'temp.png'
+    f.name = '/tmp/temp.png'
     ie.export_image(
-        bbox=bounds, 
-        zoomlevel=16, 
+        bbox=bounds,
+        zoomlevel=16,
         imagepath=f
     )
     img = Image.open(f)
@@ -97,12 +103,9 @@ def stitch_tiles(mbtiles, features, bounds):
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(img, bounds, coords)
         draw.line(coords_transformed, fill="#FF00FF", width=5)
-    stitch = BytesIO()
-    stitch.name = 'temp.png'
-    img.save("temp.png")
     return img
 
-def crop_pdf(img, bounds, feature):
+def crop_pdf(img, bounds, feature, idx):
     coords = feature['geometry']['coordinates'][0]
     coords_transformed = scale_coords(img, bounds, coords)
     cropped = img.crop((coords_transformed[0][0], coords_transformed[1][1],
@@ -110,24 +113,31 @@ def crop_pdf(img, bounds, feature):
     resized = cropped.resize((770, 523), Image.ANTIALIAS)
     pdf = Image.new('RGB', (842, 595), (255, 255, 255))
     pdf.paste(resized, box=(36, 36), mask=resized.split()[3])
+    draw = ImageDraw.Draw(pdf)
+    draw.rectangle([36, 36, 52, 52], fill=(255, 255, 255, 128))
+    draw.text((40, 40), f"{idx}", fill=(0, 0, 0))
     return pdf
 
 
 def create_legend(img, bounds, grid):
     legend = Image.new('RGB', img.size, (255, 255, 255))
     legend.paste(img, mask=img.split()[3])
-    for feature in grid:
+    for i, feature in enumerate(grid):
         draw = ImageDraw.Draw(legend)
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(legend, bounds, coords)
         draw.line(coords_transformed, fill="#000", width=4)
+        label_coord = (coords_transformed[2][0]/2, coords_transformed[0][1]/2)
+        draw.text(label_coord, f"{i}", fill=(0, 0, 0))
     return legend
 
-def main(event):
-    uuid = event.campaign_uuid
-    geojson = S3Data().fetch(f'campaigns/{uuid}/campaign.geojson')
+
+def main(event, context):
+    uuid = event['campaign_uuid']
+    geojson = S3Data().fetch(f'campaigns/{uuid}/mbtiles/tiles.geojson')
     aois = geojson['features']
     for aoi in aois:
+        aoi_id = aoi['properties']['id']
         bounds = get_bounds(aoi)
         grid = make_grid(bounds, 16)
         features = []
@@ -137,18 +147,35 @@ def main(event):
             features.append(polygon)
         multi_poly = MultiPolygon(features)
         bounds = multi_poly.bounds
-        img = stitch_tiles('test.mbtiles', aois, bounds)
+        mbtiles_key = f'campaigns/{uuid}/mbtiles/{aoi_id}.mbtiles'
+        with open(f'/tmp/{aoi_id}.mbtiles', 'wb') as f:
+            boto3.client('s3').download_fileobj(os.environ['S3_BUCKET'],
+                                                mbtiles_key, f)
+        img = stitch_tiles(f'/tmp/{aoi_id}.mbtiles', aois, bounds)
         g = S3Data().fetch(f'campaigns/{uuid}/pdf/grid.geojson')
-        foo = g['features']
-        legend = create_legend(img, bounds, foo)
-        legend.save(f"./img/legend.pdf", "PDF", resolution=100.0)
-        for i, b in enumerate(foo):
-            pdf = crop_pdf(img, bounds, b)
-            pdf.save(f"./img/out_{i}.pdf", "PDF", resolution=100.0)
-
+        grid_features = g['features']
+        legend = create_legend(img, bounds, grid_features)
+        legend_buffer = BytesIO()
+        legend.save(legend_buffer, "PDF", resolution=100.0)
+        legend_buffer.seek(0)
+        legend_pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/legend.pdf'
+        S3Data().create(legend_pdf_key, legend_buffer)
+        for i, b in enumerate(grid_features):
+            pdf = crop_pdf(img, bounds, b, i)
+            pdf_buffer = BytesIO()
+            pdf.save(pdf_buffer, "PDF", resolution=100.0)
+            pdf_buffer.seek(0)
+            pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/{i}.pdf'
+            S3Data().create(pdf_key, pdf_buffer)
 
 def lambda_handler(event, context):
     try:
-        main(event)
+        main(event, context)
     except Exception as e:
-        print(e)
+        S3Data().create(
+            key=f'campaigns/{event["campaign_uuid"]}/failure.json',
+            body=json.dumps({
+                'function': 'process_make_pdfs',
+                'failure': str(e)
+                })
+            )
