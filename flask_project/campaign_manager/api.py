@@ -213,7 +213,7 @@ class PDFBundle(Resource):
                           "Prefix": dir_path}
                 resp = s3.list_objects_v2(**kwargs)
                 try:
-                     pdfs = [obj['Key'] for obj in resp['Contents']]
+                    pdfs = [obj['Key'] for obj in resp['Contents']]
                 except KeyError:
                     continue
                 for pdf in pdfs:
@@ -222,13 +222,15 @@ class PDFBundle(Resource):
                     file_buffer = BytesIO()
                     file_buffer.write(pdf_file['Body'].read())
                     file_buffer.seek(0)
-                    zip_obj.writestr(f"{'/'.join(pdf.split('/')[-2:])}",file_buffer.getvalue())
+                    pdf_filename = f"{'/'.join(pdf.split('/')[-2:])}"
+                    zip_obj.writestr(pdf_filename, file_buffer.getvalue())
         bundle_buffer.seek(0)
         resp = send_file(bundle_buffer,
                     as_attachment=True,
                     attachment_filename=f'pdf_bundle.zip',
                     mimetype='application/zip')
         return resp
+
 
 class PDFBundleById(Resource):
     """ Download zipfile bundle of PDFs by grid id """
@@ -249,13 +251,15 @@ class PDFBundleById(Resource):
                 file_buffer = BytesIO()
                 file_buffer.write(pdf_file['Body'].read())
                 file_buffer.seek(0)
-                zip_obj.writestr(f"{pdf.split('/')[-1]}",file_buffer.getvalue())
+                pdf_filename = f"{pdf.split('/')[-1]}"
+                zip_obj.writestr(pdf_filename, file_buffer.getvalue())
         bundle_buffer.seek(0)
         resp = send_file(bundle_buffer,
                     as_attachment=True,
                     attachment_filename=f'{grid_id}.zip',
                     mimetype='application/zip')
         return resp
+
 
 # Setup the Api resource routing here
 api.add_resource(
