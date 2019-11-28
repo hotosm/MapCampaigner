@@ -11,136 +11,136 @@ from parser import FeatureCompletenessParser
 class TestParser(unittest.TestCase):
     def test_parser(self):
         feature = "amenity=kindergarten"
-        selected_functions = {"function-1": 
-                              {"function": "FeatureAttributeCompleteness", 
-                               "feature": "amenity=kindergarten", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "Kindergarten"}, 
-                              "function-2": 
-                              {"function": "CountFeature", 
-                               "feature": "amenity=kindergarten", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], "
-                                addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "Kindergarten"}, 
-                              "function-3": 
-                              {"function": "MapperEngagement", 
-                               "feature": "amenity=kindergarten", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "Kindergarten"}, 
-                              "function-4": 
-                              {"function": "FeatureAttributeCompleteness", 
-                               "feature": "amenity=school", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "School"}, 
-                              "function-5": 
-                              {"function": "CountFeature", 
-                               "feature": "amenity=school", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "School"}, 
-                              "function-6": 
-                              {"function": "MapperEngagement", 
-                               "feature": "amenity=school", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "School"}, 
-                              "function-7": 
-                              {"function": "FeatureAttributeCompleteness", 
-                               "feature": "amenity=university", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "University"}, 
-                              "function-8": 
-                              {"function": "CountFeature", 
-                               "feature": "amenity=university", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "University"}, 
-                              "function-9": 
-                              {"function": "MapperEngagement", 
-                               "feature": "amenity=university", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "University"}, 
-                              "function-10": 
-                              {"function": "FeatureAttributeCompleteness", 
-                               "feature": "amenity=college", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
-                               "type": "Non-university higher education"}, 
-                              "function-11": 
-                              {"function": "CountFeature", 
-                               "feature": "amenity=college", 
-                               "attributes": {"amenity": [], 
-                                              "name": [], 
-                                              "operator": [], 
-                                              "operator:type": [], 
-                                              "addr:full": [], 
-                                              "contact:phone": []}, 
-                               "type": "Non-university higher education"}, 
-                              "function-12": 
-                              {"function": "MapperEngagement", 
-                               "feature": "amenity=college", 
-                               "attributes": 
-                               {"amenity": [], 
-                                "name": [], 
-                                "operator": [], 
-                                "operator:type": [], 
-                                "addr:full": [], 
-                                "contact:phone": []}, 
+        selected_functions = {"function-1":
+                              {"function": "FeatureAttributeCompleteness",
+                               "feature": "amenity=kindergarten",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "Kindergarten"},
+                              "function-2":
+                              {"function": "CountFeature",
+                               "feature": "amenity=kindergarten",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "Kindergarten"},
+                              "function-3":
+                              {"function": "MapperEngagement",
+                               "feature": "amenity=kindergarten",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "Kindergarten"},
+                              "function-4":
+                              {"function": "FeatureAttributeCompleteness",
+                               "feature": "amenity=school",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "School"},
+                              "function-5":
+                              {"function": "CountFeature",
+                               "feature": "amenity=school",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "School"},
+                              "function-6":
+                              {"function": "MapperEngagement",
+                               "feature": "amenity=school",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "School"},
+                              "function-7":
+                              {"function": "FeatureAttributeCompleteness",
+                               "feature": "amenity=university",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "University"},
+                              "function-8":
+                              {"function": "CountFeature",
+                               "feature": "amenity=university",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "University"},
+                              "function-9":
+                              {"function": "MapperEngagement",
+                               "feature": "amenity=university",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "University"},
+                              "function-10":
+                              {"function": "FeatureAttributeCompleteness",
+                               "feature": "amenity=college",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
+                               "type": "Non-university higher education"},
+                              "function-11":
+                              {"function": "CountFeature",
+                               "feature": "amenity=college",
+                               "attributes": {"amenity": [],
+                                              "name": [],
+                                              "operator": [],
+                                              "operator:type" [],
+                                              "addr:full": [],
+                                              "contact:phone": []},
+                               "type": "Non-university higher education"},
+                              "function-12":
+                              {"function": "MapperEngagement",
+                               "feature": "amenity=college",
+                               "attributes":
+                               {"amenity": [],
+                                "name": [],
+                                "operator": [],
+                                "operator:type": [],
+                                "addr:full": [],
+                                "contact:phone": []},
                                "type": "Non-university higher education"}}
         required_tags = fetch_required_tags(feature, selected_functions)
         xml_file = open('test_data/{feature}.xml'.format(feature=feature), 'r')
@@ -246,52 +246,52 @@ class TestCase(unittest.TestCase):
         feature = 'amenity=cafe'
         functions = {
             "function-1": {
-            "function": "FeatureAttributeCompleteness",
-            "feature": "amenity=cafe",
-            "attributes": {"amenity": ["cafe"], 
-                           "name": [], 
-                           "cuisine": [], 
-                           "operator": [], 
-                           "opening_hours": []},
-            "type": "cafe"},
-        "function-2": {
-            "function": "CountFeature", 
-            "feature": "amenity=cafe",
-            "attributes": {"amenity": ["cafe"], 
-                           "name": [], 
-                           "cuisine": [], 
-                           "operator": [], 
-                           "opening_hours": []},
-            "type": "cafe"},
-        "function-3": {
-            "function": "MapperEngagement", 
-            "feature": "amenity=cafe",
-            "attributes": {"amenity": ["cafe"], 
-                           "name": [], 
-                           "cuisine": [], 
-                           "operator": [], 
-                           "opening_hours": []},
-            "type": "cafe"},
-        "function-4": {
-            "function": "FeatureAttributeCompleteness", 
-            "feature": "shop=supermarket",
-            "attributes": {"shop": ["supermarket"], "name": []},
-            "type": "supermarket"},
-        "function-5": {
-            "function": "CountFeature", "feature": "shop=supermarket",
-            "attributes": {"shop": ["supermarket"], "name": []},
-            "type": "supermarket"},
-        "function-6": {
-            "function": "MapperEngagement",
-            "feature": "shop=supermarket",
-            "attributes": {"shop": ["supermarket"], "name": []},
-            "type": "supermarket"}
+                "function": "FeatureAttributeCompleteness",
+                "feature": "amenity=cafe",
+                "attributes": {"amenity": ["cafe"],
+                               "name": [],
+                               "cuisine": [],
+                               "operator": [],
+                               "opening_hours": []},
+                "type": "cafe"},
+            "function-2": {
+                "function": "CountFeature",
+                "feature": "amenity=cafe",
+                "attributes": {"amenity": ["cafe"],
+                               "name": [],
+                               "cuisine": [],
+                               "operator": [],
+                               "opening_hours": []},
+                "type": "cafe"},
+            "function-3": {
+                "function": "MapperEngagement",
+                "feature": "amenity=cafe",
+                "attributes": {"amenity": ["cafe"],
+                               "name": [],
+                               "cuisine": [],
+                               "operator": [],
+                               "opening_hours": []},
+                "type": "cafe"},
+            "function-4": {
+                "function": "FeatureAttributeCompleteness",
+                "feature": "shop=supermarket",
+                "attributes": {"shop": ["supermarket"], "name": []},
+                "type": "supermarket"},
+            "function-5": {
+                "function": "CountFeature", "feature": "shop=supermarket",
+                "attributes": {"shop": ["supermarket"], "name": []},
+                "type": "supermarket"},
+            "function-6": {
+                "function": "MapperEngagement",
+                "feature": "shop=supermarket",
+                "attributes": {"shop": ["supermarket"], "name": []},
+                "type": "supermarket"}
         }
         required_tags = fetch_required_tags(feature, functions)
-        self.assertEqual(required_tags, {"amenity": ["cafe"], 
-                                         "name": [], 
-                                         "cuisine": [], 
-                                         "operator": [], 
+        self.assertEqual(required_tags, {"amenity": ["cafe"],
+                                         "name": [],
+                                         "cuisine": [],
+                                         "operator": [],
                                          "opening_hours": []})
 
 
