@@ -21,27 +21,34 @@ def needs_merge(uuid):
     bucket = os.environ['S3_BUCKET']
     folder_path = 'campaigns/{0}/'.format(uuid)
 
-    files = s3.list_objects_v2(Bucket=bucket,
-        Prefix=folder_path,
-        Delimiter='/'
-    )
-
+    # Verify that mbtiles folder exists.
     mbtiles_folder = 'campaigns/{0}/mbtiles/'.format(uuid)
-    filter_folder = [f['Prefix'] for f in files['CommonPrefixes']
-        if f['Prefix'] == mbtiles_folder]
+    mbtiles_files = s3.list_objects_v2(Bucket=bucket,
+        Prefix=mbtiles_folder,
+    )
+    key_count = mbtiles_files['KeyCount']
 
-    # No need to merge since there are no mbtiles folder.
-    # TODO: Run mbtiles generation here (?).
-    if len(filter_folder) == 0:
+    if key_count == 0:
+        return False
+
+    # Verify that all mbtiles tasks are completed.
+    campaign_geojson = 'campaigns/{0}/campaign.geojson'.format(uuid)
+    obj = s3.get_object(Bucket=bucket, Key=campaign_geojson)
+    campaign_geojson = json.loads(obj['Body'].read())
+
+    if key_count != len(campaign_geojson['features']) + 1:
         return False
 
     # No campaign.mbtiles run merge command.
-    mbtiles_file = 'campaigns/{0}/campaign.mbtiles'.format(uuid)
-    filter_file = [f for f in files['Contents'] if f['Key'] == mbtiles_file]
-    if len(filter_file) == 0:
-        return True
+    mbtiles_file_merged = 'campaigns/{0}/campaign.mbtiles'.format(uuid)
+    mbtiles_fetch = s3.list_objects_v2(Bucket=bucket,
+        Prefix=mbtiles_file_merged,
+    )
 
-    return False
+    if mbtiles_fetch['KeyCount'] == 1:
+        return False
+
+    return True
 
 
 def lambda_handler(event, context):

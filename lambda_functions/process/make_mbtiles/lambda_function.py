@@ -164,10 +164,23 @@ def spawn_fetch_tiles(event):
     )
 
 
+def remove_folder(uuid):
+    resource = boto3.resource('s3')
+    bucket = resource.Bucket(BUCKET)
+
+    prefix = 'campaigns/{0}/mbtiles'.format(uuid)
+
+    for key in bucket.objects.filter(Prefix=prefix):
+        key.delete()
+
+
 def main(event):
     # Get data.
     uuid = event['uuid']
     zoom_levels = event['zoom_levels']
+
+    # Remove previous data.
+    remove_folder(uuid)
 
     client = {
         'obj': CLIENT,

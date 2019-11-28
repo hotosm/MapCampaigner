@@ -914,9 +914,17 @@ class Campaign(JsonModel):
 
         function_name = "{env}_compute_campaign".format(
             env=osm_app.config['ENV'])
-
         payload = json.dumps({"campaign_uuid": campaign_uuid})
+        aws_lambda.invoke(
+            FunctionName=function_name,
+            InvocationType="Event",
+            Payload=payload)
 
+        # Invoke the mbtiles generation lambda.
+        function_name = "{env}_process_make_mbtiles".format(
+            env=osm_app.config['ENV'])
+        payload = json.dumps({"uuid": campaign_uuid,
+            "zoom_levels": [13, 14, 15, 16]})
         aws_lambda.invoke(
             FunctionName=function_name,
             InvocationType="Event",
