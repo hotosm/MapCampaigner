@@ -433,7 +433,13 @@ def get_campaign(uuid):
 
     # Get data from campaign.json
     campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
-    context['total_features'] = campaign_data['feature_count']
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
+                i, feature in enumerate(campaign_data['types'])]
+    all_features = []
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    context['total_features'] = len(all_features)
     context['total_contributors'] = len(campaign_data['campaign_contributors'])
 
     return render_template('campaign_detail.html', **context)
