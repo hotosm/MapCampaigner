@@ -29,8 +29,8 @@ async function main(event) {
     const f = JSON.parse(response).features
     const options = {units:"meters"}
     const features = []
-    for (const feature of f) {
-        const box = bbox(feature);
+    for (let i = 0; i < f.length; i++) {
+        const box = bbox(f[i]);
         const w = distance([box[0], box[1]],[box[2],box[1]],{units:"meters"})
         const h = distance([box[0], box[1]],[box[0],box[3]],{units:"meters"})
         const wDiff = 1000 - (w % 1000);
@@ -42,12 +42,12 @@ async function main(event) {
         const maxX = destination(c,(50 + w + wDiff)/2, 90,options).geometry.coordinates[0];
         const minX = destination(c,(50 + w + wDiff)/2, -90,options).geometry.coordinates[0];
         const grid = rectangleGrid([minX, minY, maxX, maxY], 1000, 706, {units:"meters"});
-        for (let i=0; i<grid.features.length; i++) {
-            const j = intersect(grid.features[i], feature);
+        for (let j=0; j<grid.features.length; j++) {
+            const k = intersect(grid.features[j], f[i]);
             
-            if (j) {
-                grid.features[i].properties.id = i
-                features.push(grid.features[i])
+            if (k) {
+                grid.features[j].properties.id = i
+                features.push(grid.features[j])
             }
         }
     }
