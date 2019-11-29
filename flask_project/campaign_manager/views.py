@@ -6,6 +6,7 @@ import os
 import hashlib
 import requests
 import shutil
+import operator
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
@@ -445,7 +446,6 @@ def get_campaign(uuid):
         if feature['last_edited_by'] not in contributors_data.keys():
             contributors_data[feature['last_edited_by']] = feature
     context['total_contributors'] = len(contributors_data)
-    print(contributors_data)
     return render_template('campaign_detail.html', **context)
 
 
@@ -486,6 +486,33 @@ def get_feature_details(uuid, feature_name):
 @campaign_manager.route('/campaign/<uuid>/contributors')
 def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
+    # Get data from campaign.json
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
+                i, feature in enumerate(campaign_data['types'])]
+    all_features = []
+    contributors_data = {}
+    monitored_contributors = [c['name'] for c in context['campaign_contributors']]
+    monitored_data = {}
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    context['total_features'] = len(all_features)
+    # print(all_features)
+    for feature in all_features:
+        if feature['last_edited_by'] not in contributors_data.keys():
+            contributors_data[feature['last_edited_by']] = 1
+            if feature['last_edited_by'] in monitored_contributors:
+                monitored_data[feature['last_edited_by']] = [feature]
+        else:
+            contributors_data[feature['last_edited_by']] += 1
+            if feature['last_edited_by'] in monitored_contributors:
+                monitored_data[feature['last_edited_by']].append(feature)
+    context['total_contributors'] = len(contributors_data.keys())
+    # print(contributors_data)
+    # Top contributors
+    ranking_contributors = sorted(contributors_data.items(), key=operator.itemgetter(1), reverse=True)
+    context['contributors_top_ranking'] = ranking_contributors[:5]
     return render_template('campaign_contributors.html', **context)
 
 
