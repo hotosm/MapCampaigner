@@ -432,7 +432,7 @@ def get_campaign(uuid):
                                 context['types'].items()))
 
     # Get data from campaign.json
-    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
     context['total_features'] = campaign_data['feature_count']
     context['total_contributors'] = len(campaign_data['campaign_contributors'])
 
