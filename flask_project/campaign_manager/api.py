@@ -2,7 +2,12 @@ import os
 import http.client
 import json
 from flask_restful import Resource, Api
-from flask import request
+from flask import request, send_file
+
+from io import BytesIO
+import boto3
+import json
+from zipfile import ZipFile
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
@@ -192,6 +197,72 @@ class CampaignContributors(Resource):
         return {'contributors_total': contributors_total}
 
 
+class PDFBundle(Resource):
+    """ download zipfile of project pdfs in single file """
+
+    def get(self, uuid):
+        s3_client = S3Data()
+        s3 = s3_client.s3
+        grid_file = s3.get_object(Bucket=s3_client.bucket,
+                            Key=f"campaigns/{uuid}/pdf/grid.geojson")
+        grid = json.loads(grid_file['Body'].read())
+        ids = [cell['properties']['id'] for cell in grid['features']]
+        bundle_buffer = BytesIO()
+        with ZipFile(bundle_buffer, 'w') as zip_obj:
+            for grid_id in ids:
+                dir_path = f'campaigns/{uuid}/pdf/{grid_id}/'
+                kwargs = {"Bucket": s3_client.bucket,
+                          "Prefix": dir_path}
+                resp = s3.list_objects_v2(**kwargs)
+                try:
+                    pdfs = [obj['Key'] for obj in resp['Contents']]
+                except KeyError:
+                    continue
+                for pdf in pdfs:
+                    pdf_file = s3.get_object(Bucket=s3_client.bucket,
+                            Key=pdf)
+                    file_buffer = BytesIO()
+                    file_buffer.write(pdf_file['Body'].read())
+                    file_buffer.seek(0)
+                    pdf_filename = f"{'/'.join(pdf.split('/')[-2:])}"
+                    zip_obj.writestr(pdf_filename, file_buffer.getvalue())
+        bundle_buffer.seek(0)
+        resp = send_file(bundle_buffer,
+                    as_attachment=True,
+                    attachment_filename=f'pdf_bundle.zip',
+                    mimetype='application/zip')
+        return resp
+
+
+class PDFBundleById(Resource):
+    """ Download zipfile bundle of PDFs by grid id """
+
+    def get(self, uuid, grid_id):
+        dir_path = f'campaigns/{uuid}/pdf/{grid_id}/'
+        s3_client = S3Data()
+        s3 = s3_client.s3
+        kwargs = {"Bucket": s3_client.bucket,
+                  "Prefix": dir_path}
+        resp = s3.list_objects_v2(**kwargs)
+        pdfs = [obj['Key'] for obj in resp['Contents']]
+        bundle_buffer = BytesIO()
+        with ZipFile(bundle_buffer, 'w') as zip_obj:
+            for pdf in pdfs:
+                pdf_file = s3.get_object(Bucket=s3_client.bucket,
+                        Key=pdf)
+                file_buffer = BytesIO()
+                file_buffer.write(pdf_file['Body'].read())
+                file_buffer.seek(0)
+                pdf_filename = f"{pdf.split('/')[-1]}"
+                zip_obj.writestr(pdf_filename, file_buffer.getvalue())
+        bundle_buffer.seek(0)
+        resp = send_file(bundle_buffer,
+                    as_attachment=True,
+                    attachment_filename=f'{grid_id}.zip',
+                    mimetype='application/zip')
+        return resp
+
+
 class UserSearch(Resource):
     """ Proxy requests to whosthat """
 
@@ -226,6 +297,12 @@ api.add_resource(
 api.add_resource(
         CampaignContributors,
         '/campaign/total_contributors/<string:uuid>/<string:feature>')
+api.add_resource(
+        PDFBundle,
+        '/campaigns/<string:uuid>/pdfs')
+api.add_resource(
+        PDFBundleById,
+        '/campaigns/<string:uuid>/pdfs/<string:grid_id>')
 api.add_resource(
         UserSearch,
         '/user-search/<string:name>')
