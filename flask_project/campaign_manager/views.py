@@ -432,7 +432,7 @@ def get_campaign(uuid):
                                 context['types'].items()))
 
     # Get data from campaign.json
-    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
     context['total_features'] = campaign_data['feature_count']
     context['total_contributors'] = len(campaign_data['campaign_contributors'])
 
@@ -476,6 +476,8 @@ def get_feature_details(uuid, feature_name):
 @campaign_manager.route('/campaign/<uuid>/contributors')
 def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
+    context['total_contributors'] = len(context['campaign_contributors'])
+    print(context)
     return render_template('campaign_contributors.html', **context)
 
 
