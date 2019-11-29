@@ -4,8 +4,7 @@
       <div class='col-sm-8'>
         <h1>{{ name }}</h1>
       </div>
-      {% if user_id not in campaign_managers['osm_id'] %}
-      <div class='col-sm-4 text-right'>
+      <div class='col-sm-4 text-right manager-area'>
         <button class="btn btn-primary btn-xs button-manage" onclick="location.href='/edit/{{ uuid }}'">
           {% include 'svgs/pencil.html' %}
           Edit</button>
@@ -35,7 +34,6 @@
                  
                 </div>
           </div>
-
         <button class="btn btn-primary btn-xs" onclick="deleteRequest()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 16 19">
             <path fill="#D73F3F" fill-rule="nonzero" d="M15.118 2.57h-3.704V.68a.68.68 0 0 0-.68-.68H5.292a.68.68 0 0 0-.68.68v1.89H.906a.907.907 0 0 0 0 1.815h.908v13.228c0 .626.507 1.133 1.134 1.133h10.128c.626 0 1.133-.507 1.133-1.133V4.385h.908a.907.907 0 0 0 0-1.814zM5.065 16.178a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm3.628 0a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524zm1.36-13.606H5.973V1.36h4.082v1.21zm2.268 13.606a.68.68 0 0 1-1.36 0V6.653a.68.68 0 0 1 1.36 0v9.524z" />
@@ -43,7 +41,6 @@
           Delete</button>
       </div>
     </div>
-    {% endif %}
     <div class="row details-list">
       <div class="col-xs-12 col-md-6">
         <p class="campaign-date">
@@ -91,9 +88,7 @@
       </div>
       <div class="col-xs-12 col-md-6">
         <p>
-          {% include 'svgs/gear.html' %}
-          <a href="#">Manage in Tasking Manager {% include 'svgs/link.html' %}</a>
-          <a href="#">Create PDF Maps {% include 'svgs/link.html' %}</a>
+          <a href="/campaigns/{{ uuid }}/pdfs">Download PDF Atlas {% include 'svgs/link.html' %}</a>
         </p>
       </div>
     </div>
@@ -103,8 +98,7 @@
 {% set project_navigation_items = [
   (url_for('campaign_manager.get_campaign', uuid=uuid), 'detail', 'Project Overview'),
   (url_for('campaign_manager.get_campaign_features', uuid=uuid), 'features', 'Feature Types'),
-  (url_for('campaign_manager.get_campaign_contributors', uuid=uuid), 'contributors', 'Contributor Details'),
-  (url_for('campaign_manager.get_campaign_area', uuid=uuid), 'area', 'Area Covered')
+  (url_for('campaign_manager.get_campaign_contributors', uuid=uuid), 'contributors', 'Contributor Details')
 ] -%}
 
 <div class="project-header-nav">
