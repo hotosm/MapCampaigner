@@ -18,7 +18,7 @@
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
     $.ajax({
     type: 'GET',
-    url: s3CampaignUrl + '/all_features.json',
+    url: '/campaigns/' + '{{ uuid }}' + '/feature-types',
     dataType: 'json',
     success: function (data) {
       $.each(data, function(i, d){
@@ -27,8 +27,8 @@
         var statusClass = (d.status == "Complete") ? "status-success" : "status-warn";
         var row = `
       <tr>
-        <td class="cell-faded"><a href="https://openstreetmap.org/` + d.feature_type + `/` + d.id + `">` + d.type + `:` + d.id + `</a></td>
-        <td>` + d.feature_type + `</td>
+        <td class="cell-faded"><a href="https://openstreetmap.org/` + d.osm_type + `/` + d.id + `">` + d.osm_type + `:` + d.id + `</a></td>
+        <td>` + d.osm_type + `</td>
         <td><span class="status ` + statusClass + `"></span>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
         <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>

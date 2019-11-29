@@ -275,6 +275,21 @@ class UserSearch(Resource):
         return json.loads(data.decode("utf-8"))
 
 
+class AllFeatures(Resource):
+    """ Merge feature jsons to one """
+
+    def get(self, uuid):
+        s3_client = S3Data()
+        campaign = s3_client.fetch(f'campaigns/{uuid}/campaign.json')
+        features = [campaign['types'][f'type-{i + 1}']['type'] for i, feature in enumerate(campaign['types'])]
+        all_features = []
+        s3 = s3_client.s3
+        for feature in features:
+            feature_json = s3_client.fetch(f'campaigns/{uuid}/{feature}.json')
+            all_features += feature_json
+        return all_features
+
+
 # Setup the Api resource routing here
 api.add_resource(
         CampaignList,
@@ -306,3 +321,6 @@ api.add_resource(
 api.add_resource(
         UserSearch,
         '/user-search/<string:name>')
+api.add_resource(
+        AllFeatures,
+        '/campaigns/<string:uuid>/feature-types')
