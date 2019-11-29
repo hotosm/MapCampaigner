@@ -24,7 +24,8 @@ def lambda_handler(event, context):
     except Exception as e:
         S3Data().create(
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
-            body=json.dumps({'function': 'process_count_feature', 'failure': str(e)}))
+            body=json.dumps({'function': 'process_count_feature', 
+                             'failure': str(e)}))
 
 
 def main(event, context):

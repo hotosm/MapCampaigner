@@ -13,6 +13,7 @@ import yaml
 from shapely import geometry as shapely_geometry
 from shapely.ops import cascaded_union
 from shapely.geometry.geo import mapping
+from functools import reduce
 
 from reporter.osm import fetch_osm, fetch_osm_with_post
 from app_config import Config
@@ -388,3 +389,47 @@ def geojson_to_gpx(geojson):
         root.append(wpt)
 
     return ET.tostring(root, encoding="utf8")
+
+
+def get_all_attributes(osm_elements):
+    """Takes in a list of OSM elements and returns a list
+    of the most attributes added by mappers"""
+    attrs = list(map(get_attributes, osm_elements))
+    attrs = [tag for tags in attrs for tag in tags]
+    all_attrs = list(set(attrs))
+    return all_attrs
+
+
+def get_attributes(osm_element):
+    """Takes in one OSM element and returns the attributes
+    added by the mapper."""
+    attributes_found = []
+    tags = [desc for desc in osm_element.descendants if desc != ' ']
+    if tags:
+        attr = [tag["k"] for tag in tags if tag and tag.has_attr("k")]
+        if attr:
+            attributes_found = attr
+    return attributes_found
+
+
+def parse_osm_element(element, element_type, all_attrs):
+    # Retrieve attributes
+    attributes_found = get_attributes(element)
+    # attributes_found.sort()
+    attributes_not_found = list(set(all_attrs) - set(attributes_found))
+    # attributes_not_found.sort()
+    limit_af = attributes_found if len(attributes_found) < 6 \
+        else attributes_found[:6]
+    limit_anf = attributes_not_found if len(attributes_not_found) < 6 \
+        else attributes_not_found[:6]
+    if not attributes_not_found:
+        status = "Complete"
+    else:
+        status = "Incomplete"
+    data = {"node_id": f'{element_type}:{element["id"]}',
+            "status": status,
+            "edited_by": element["user"],
+            "edited_date": element["timestamp"],
+            "attributes_found": sorted(limit_af),
+            "attributes_not_found": sorted(limit_anf)}
+    return data

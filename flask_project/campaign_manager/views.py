@@ -428,8 +428,14 @@ def get_campaign_data(uuid):
 def get_campaign(uuid):
     context = get_campaign_data(uuid)
     context['types'] = list(map(lambda type:
-      type[1]['type'],
-      context['types'].items()))
+                                type[1]['type'],
+                                context['types'].items()))
+
+    # Get data from campaign.json
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    context['total_features'] = campaign_data['feature_count']
+    context['total_contributors'] = len(campaign_data['campaign_contributors'])
+
     return render_template('campaign_detail.html', **context)
 
 
@@ -571,9 +577,9 @@ def get_mbtile():
 
     # Get all campaign polygons.
     features = [f for f in mbtiles['features']
-        if f['properties']['parent'] is None]
+                if f['properties']['parent'] is None]
     polygons = [shapely_geometry.Polygon(f['geometry']['coordinates'][0])
-        for f in features]
+                for f in features]
     polygons = [shapely_geometry.polygon.orient(p) for p in polygons]
     centroids = [p.centroid for p in polygons]
 
@@ -708,7 +714,7 @@ def generate_kml():
     # For now, let's work only with points.
     # TODO: include polygons in the kml file.
     features = [[f for f in sublist if f['geometry']['type'] == 'Point']
-        for sublist in features]
+                for sublist in features]
     features = [item for sublist in features for item in sublist]
 
     for feature in features:
@@ -894,8 +900,8 @@ def create_campaign():
         campaign = Campaign(data['uuid'])
         campaign.save()
         campaign.save_to_user_campaigns(data['user_id'],
-            data['uuid'],
-            Permission.ADMIN.name
+                                        data['uuid'],
+                                        Permission.ADMIN.name
         )
 
         return redirect(

@@ -19,3 +19,6 @@ flask_project/campaign_manager/static/dist
 !.elasticbeanstalk/*.global.yml
 dependencies/
 *.zip
+lambda_functions/out
+out
+test-data/*

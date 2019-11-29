@@ -31,9 +31,9 @@ class S3Data(object):
                 Key=key)
         except:
             return []
-
         raw_content = obj['Body'].read()
         return self.load(raw_content, key)
+
 
     def load(self, raw_content, key):
         """

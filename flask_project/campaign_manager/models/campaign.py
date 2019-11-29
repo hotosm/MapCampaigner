@@ -13,6 +13,7 @@ import os
 import pygeoj
 import time
 import zlib
+import string as str
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
@@ -27,7 +28,10 @@ from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
     get_survey_json,
     parse_json_string,
-    simplify_polygon
+    simplify_polygon,
+    get_attributes,
+    get_all_attributes,
+    parse_osm_element
 )
 from campaign_manager.aws import S3Data
 from enum import Enum
@@ -554,8 +558,8 @@ class Campaign(JsonModel):
         s3 = S3Data()
         # For each type we get first level data.
         response = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix=type,
-            Delimiter='/')
+                                      Prefix=type,
+                                      Delimiter='/')
         if 'Contents' not in list(response.keys()):
             return None
 
@@ -577,8 +581,8 @@ class Campaign(JsonModel):
     def get_s3_types(self):
         s3 = S3Data()
         objs = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix='campaigns/{}/render/'.format(self.uuid),
-            Delimiter='/')
+                                  Prefix=f'campaigns/{self.uuid}/render/',
+                                  Delimiter='/')
 
         if 'CommonPrefixes' not in objs:
             return None

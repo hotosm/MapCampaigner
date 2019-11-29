@@ -8,7 +8,8 @@ from file_manager import (
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
-    def __init__(self, required_tags, render_data_path, element_type, type_name):
+    def __init__(self, required_tags, render_data_path, 
+                 element_type, type_name):
         xml.sax.ContentHandler.__init__(self)
         self.required_tags = required_tags
         self.element_type = element_type
@@ -66,7 +67,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             if self.has_tags is True:
 
                 if (self.has_no_required_tags() and
-                    self.type_name not in self.tags):
+                self.type_name not in self.tags):
                     return
                 self.features_collected += 1
                 self.check_errors_in_tags()
@@ -99,6 +100,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
+            'user': attrs.getValue("user"),
             'nodes': []
         }
         if name == 'node':
@@ -193,6 +195,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "properties": {
                 "type": self.element['type'],
+                "required_tags": self.required_tags,
+                "last_edited_at": self.element['timestamp'],
+                "last_edited_by": self.element['user'],
                 "tags": self.tags,
                 "errors": self.errors_to_s,
                 "warnings": self.warnings_to_s,

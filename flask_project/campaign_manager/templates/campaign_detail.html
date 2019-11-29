@@ -23,60 +23,6 @@
 {% block content %}
 <div class="row header-panel">
   <div class="col-lg-12">
-    <div class='row'>
-      <div class='col-lg-2 text-right'>
-        <div class="detail-campaign-status {{ current_status }}">
-          <i class="fa fa-circle" aria-hidden="true"></i>
-          <label>{{ current_status }}</label>
-        </div>
-      </div>
-
-      <div class='col-lg-12'>
-        {% if types %}
-        {% for type in types %}
-        <label class="detail-tag"> {{ type }} </label>
-        {% endfor %}
-        {% endif %}
-      </div>
-      <div class='col-lg-12'>
-        <div class="detail-creator-info">
-          <p>
-            <span>Creator : </span>
-            <a href="https://www.openstreetmap.org/user/{{ campaign_creator }}" target="_blank">{{ campaign_creator }}</a>
-          </p>
-          <p>
-            <span>Map:</span>
-            {% if map_type != '' and map_type != 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' %}
-            <span id="map-default" style="display: none">
-              Default
-            </span>
-            <span id="map-custom">
-              Custom
-            </span>
-            {% else %}
-            <span id="map-default"></span>
-            Default
-            {% endif %}
-          </p>
-        </div>
-      </div>
-      <div class="col-lg-10 detail-button-wrapper participate-button" style="margin-top: 20px">
-        <span class="btn btn-label"><strong>Participate</strong></span>
-        <div class="btn-group btn-share-group" role="group" aria-label="...">
-          {% if link_to_omk %}
-          <button type="button" id="btn-omk-link" class="btn btn-default" onclick="openOtherDataCollectonForm(this, 'OpenMapKit')"><i class="fa fa-mobile" aria-hidden="true"></i> OpenMapKit</button>
-          {% endif %}
-          <button type="button" id="btn-mapsme-link" class="btn btn-default" onclick="openOtherDataCollectonForm('Maps.me')"><i class="fa fa-mobile" aria-hidden="true"></i> Maps.me</button>
-        </div>
-      </div>
-      <div class="col-lg-2 detail-button-wrapper" style="margin-top: 25px;">
-        <div class="btn-group btn-share-group" role="group" aria-label="..." style="float: right;">
-          <span class="btn btn-default unclickable">Share</span>
-          <button type="button" class="btn btn-default" onclick="shareTweet('{{ uuid }}')"> <i class="fa fa-twitter" aria-hidden="true"></i> </button>
-          <button type="button" class="btn btn-default" onclick="shareFacebook()"> <i class="fa fa-facebook" aria-hidden="true"></i> </button>
-        </div>
-      </div>
-    </div>
     <div id="download_div" class="col-lg-12 alert"></div>
   </div>
 </div>
@@ -99,117 +45,44 @@
   </div>
 </div>
 <div class='row' id="campaign-feature-details" style="display:none">
-  <div class='col-lg-12'>
-    <h2>Project Overview</h2>
-    <div class="panel panel-default detail-panel-information">
-      <div class="panel-body summary-stats">
-        <div class="row">
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Features Collected
-            </div>
-            <div class="summary-stat-desc">
-              <span id="features-collected"></span>
-            </div>
-          </div>
-
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Users Engaged
-            </div>
-            <div class="summary-stat-desc">
-              <span id="contributors"></span>
-            </div>
-          </div>
-
-          <div class="col-lg-4 single-summary-stat">
-            <div class="summary-stat-title">
-              Areas Covered
-            </div>
-            <div class="summary-stat-desc">
-              <span id="areas-covered">{{ pct_covered_areas }}%</span>
-            </div>
-          </div>
-        </div>
+ <h2 class='overview'>Project Overview</h2>
+ <div class='row'>
+  <div class='col-lg-6'>
+    
+      {% include 'campaign_detail/overview.html' %}
+  </div>
+  <div class='col-lg-6'>
+      <div class='map-wrapper'>
+        {% include 'campaign_detail/map.html' %}
+      </div>
+  </div>
+ </div>
+  
+ <div class='row'>
+  <h2 class='details col-lg-9'>Details</h2>
+  <span class='buttons-coll'>
+    <button class="btn btn-primary btn-xs">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.4 5H3l8 8.07V21l2.4-2.4v-5.53z"></path>
+      </svg>
+      Filter
+    </button>
+    <button class="btn btn-primary btn-xs">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <g fill="none" fill-rule="evenodd" stroke="#D73F3F" stroke-linecap="round" stroke-linejoin="round">
+          <path fill="#D73F3F" stroke-width=".5" d="M7.034 11.724l4.87 4.966 4.87-4.966h-2.387V4H9.42v7.724z"></path>
+          <path stroke-width="2" d="M20 16.414V20H4v-3.586"></path>
+        </g>
+      </svg>
+      Download File
+    </button>
+  </span>
+  </div>
+    <div class='row'>
+      <div class="col-xs-12">
+        {% include 'campaign_detail/table.html' %}
       </div>
     </div>
-  </div>
-  <div class='col-lg-12'>
-    <h2>Details</h2>
-    <div class='panel panel-default detail-panel-insights'>
-      <div class="panel-heading">
-        <i class="glyphicon glyphicon-info-sign"></i>
-        Feature details
-      </div>
-      <div class='panel-body'>
-        <div class='row side-panel-wrapper'>
-          <div class='col-lg-4 map-side-panel'>
-            <div class="btn-group feature-select">
-              <button type="button" class="btn btn-default active-type"></button>
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                {% for type in types %}
-                <li><a data-target="#">{{ type }}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="content-wrapper"></div>
-          </div>
-          <div class='col-lg-8'>
-            <div class='map-wrapper'>
-              {% include 'campaign_detail/map.html' %}
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-12">
-    <div class='panel panel-default detail-panel-insights'>
-      <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors</div>
-      <div class='panel-body'>
-        <div class="errors-wrapper"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class='col-lg-12'>
-    <div class='panel panel-default detail-panel-insights'>
-      <div class='panel-heading'>
-        <i class="fa fa-user" aria-hidden="true"></i>
-        Users Engagement
-        <div class="pull-right participate-button">
-          <div id="csv_div"></div>
-          <button type="button" onclick="DownloadCsv()" class="btn btn-default"><i class="fa fa-download" aria-hidden="true"></i> Download</button>
-        </div>
-      </div>
-      <div class='panel-body' style="padding-bottom: 0;padding-top: 0;">
-        <div class='row' id='user-engagement-wrapper'>
-          <div class='col-lg-4 type-1' style="min-height: 250px;">
-            <div class="insight-title" style="margin-bottom: 20px;">Users Engaged</div>
-            <div class="completeness">
-              <div class="type-insight-text" id="total-users-engaged"></div>
-            </div>
-          </div>
-          <div class='col-lg-4 type-2'>
-            <div class="insight-title" style="margin-bottom: 20px;">Contributions Frequency</div>
-            <div class='chart-legend' id='frequency-legend'></div>
-            <canvas id="user-frequency"></canvas>
-
-          </div>
-          <div class='col-lg-4'>
-            <div class="insight-title" style="margin-bottom: 20px;">Contributions Amount</div>
-            <div class='chart-legend' id='contribution-legend' style='margin-top:100px'></div>
-            <canvas id="contribution-amount"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 
@@ -268,8 +141,7 @@
   function main() {
     updated();
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
-    var types = {{ types| safe
-  }};
+    var types = {{ types| tojson }};
 
   $.get({
     url: s3CampaignUrl + '/failure.json',
@@ -281,24 +153,10 @@
     $('#campaign-failure-function').html(data["function"])
     $('#campaign-failure-error').html(data["failure"])
   }).fail(function () {
-    window.setTimeout(loadMapperEngagement(types, s3CampaignUrl), 200);
-    countFeaturesCollected(types, s3CampaignUrl);
-    var activeType = types[0];
-    $('.active-type').html(activeType);
+    loadFeatureTypes(types);
+    $('#campaign-feature-details').show();
+    $('#campaign-computing-status').hide();
 
-    loadType(activeType, s3CampaignUrl);
-
-
-    $('.feature-select a').on('click', function (e) {
-      e.stopPropagation();
-      activeType = $(this).html();
-
-      $('.active-type').html(activeType);
-      $('.dropdown-toggle').attr('aria-expanded', false);
-      $('.feature-select').removeClass('open');
-
-      loadType(activeType, s3CampaignUrl);
-    });
   });
   $('#download_div').hide();
   }
@@ -381,54 +239,6 @@
     });
   }
 
-  function loadType(activeType, s3CampaignUrl) {
-    activeType = activeType.replace(/ /g, '_')
-    var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
-
-    $.get({
-      url: typeUrl + 'content.html',
-      cache: false
-    }).then(function (data) {
-      $('#campaign-feature-details').show();
-      $('#campaign-computing-status').hide();
-
-      // Provisional fix to change bars to horizontal.
-      data = data.replace("type: 'bar'", "type: 'horizontalBar'")
-
-      // Adjust font size.
-      let str_token = "options: {"
-      let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
-      let index_split = data.match(str_token).index + str_token.length
-
-      data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
-      data = data.replace(", 'backgroundColor': ['#4286f4']", '')
-
-      $('.content-wrapper').html(data);
-    });
-
-    $.get({
-      url: typeUrl + 'errors.html',
-      cache: false
-    }).then(function (data) {
-      $('.errors-wrapper').html(data)
-    });
-
-    window.setTimeout(function () {
-      setMapHeight();
-    }, 2000);
-
-    // Load data into map.
-    let source = map.getSource('tiles');
-    if (source) {
-      map.removeLayer("campaign-polygons");
-      map.removeLayer("campaign-lines");
-      map.removeLayer("campaign-points");
-      map.removeSource('tiles');
-    }
-    addMapElements(activeType);
-
-  }
-
   function getTypeUrl(activeType, s3CampaignUrl) {
     return s3CampaignUrl + '/render/' + activeType + '/';
   }
@@ -439,50 +249,8 @@
     $('#campaign-map-detail').height(height + 3);
   }
 
-  function buildAjaxRequests(types, s3CampaignUrl, insight) {
-    var ajaxRequests = [];
-
-    for (var i = 0; i < types.length; i++) {
-      var type_id = types[i].replace(/ /g, '_');
-      var typeUrl = getTypeUrl(type_id, s3CampaignUrl);
-
-      ajaxRequests.push($.ajax({
-        url: typeUrl + insight + '.json',
-        dataType: 'json',
-        cache: false
-      }));
-    }
-    return ajaxRequests;
-  }
-
-  function countFeaturesCollected(types, s3CampaignUrl) {
-    var requests = buildAjaxRequests(types, s3CampaignUrl, 'feature_completeness');
-    $.when.apply($, requests).then(function () {
-      var total = 0;
-      if (requests.length == 1) {
-        total = arguments[0].features_collected
-      } else {
-
-        for (var i = 0; i < arguments.length; i++) {
-          total += arguments[i][0].features_collected;
-        }
-      }
-      $('#features-collected').html(total);
-    });
-  }
-  function loadMapperEngagement(types, s3CampaignUrl) {
-    var requests = buildAjaxRequests(types, s3CampaignUrl, 'mapper_engagement');
-    $.when.apply($, requests).then(function () {
-      var contributors = [];
-      if (requests.length == 1) {
-        contributors = arguments[0]
-      } else {
-        for (var i = 0; i < arguments.length; i++) {
-          contributors = contributors.concat(arguments[i][0]);
-        }
-      }
-      updateMapperEngagementTotal(contributors);
-    });
+  function loadFeatureTypes(types) {
+    $('#feature-types').html(types.length)
   }
 
   function openOtherDataCollectonForm(app) {
@@ -511,240 +279,6 @@
     });
 
   }
-
-
-  function updateMapperEngagementTotal(contributors) {
-    var start_date = "{{ start_date }}";
-    var end_date = "{{ end_date }}";
-
-    $('.user-engagement-loading').hide();
-    $('#user-engagement-wrapper').show();
-
-    if (contributors.length > 0) {
-      $('#total-users-engaged').html(contributors.length);
-      $('#contributors').html(contributors.length);
-    } else {
-      $('#user-engagement-wrapper').html('<div class="no-data" style="padding-top: 20px;"> No users contribution </div>');
-      $('#user-engagement-wrapper').css({
-        height: '80px'
-      });
-      $('#total-users-engaged').html(0);
-      $('#contributors').html(0);
-      return;
-    }
-
-    var chartDateOption = {
-      maintainAspectRatio: true,
-      elements: {
-        line: {
-          tension: 0.000001
-        }
-      },
-      scales: {
-        xAxes: [{
-          type: 'time',
-          time: {
-            displayFormats: {
-              'day': 'DD/MM',
-              'week': 'DD/MM',
-              'month': 'MM/YY',
-              'quarter': 'MM/YY',
-              'year': 'YY'
-            }
-          }
-        }]
-      },
-      plugins: {
-        filler: {
-          propagate: false
-        }
-      },
-      legend: {
-        display: false
-      },
-      legendCallback: function (chart) {
-        var text = [];
-        text.push('<div>');
-        text.push('<i style="background-color:' + chart.data.datasets[0].backgroundColor + '; border: 2px solid ' + chart.data.datasets[0].borderColor + '"></i><span>' + chart.data.datasets[0].label + '</span>');
-        text.push('</div>');
-        return text.join("");
-      }
-    };
-
-    var frequencyOption = {
-      maintainAspectRatio: true,
-      elements: {
-        line: {
-          tension: 0.000001
-        }
-      },
-      scales: {
-        xAxes: [{
-          type: 'time',
-          time: {
-            displayFormats: {
-              'day': 'DD/MM',
-              'week': 'DD/MM',
-              'month': 'MM/YY',
-              'quarter': 'MM/YY',
-              'year': 'YY'
-            }
-          }
-        }]
-      },
-      plugins: {
-        filler: {
-          propagate: false
-        }
-      },
-      legend: {
-        display: false
-      },
-      legendCallback: function (chart) {
-        var text = [];
-        text.push('<div>');
-        for (var i = 0; i < chart.data.datasets.length; i++) {
-          text.push('<i style="background-color:' + chart.data.datasets[i].backgroundColor + '; border: 2px solid ' + chart.data.datasets[i].borderColor + '"></i><span>' + chart.data.datasets[i].label + '</span>');
-        }
-        text.push('</div>');
-        return text.join("");
-      }
-    };
-
-    // Clean up data
-    var cleanedContributor = {};
-    var contributionsAmount = {};
-
-    $.each(contributors, function (index, contributor) {
-      var contributorId = contributor.name.replace(/\s+/g, '_');
-      if (contributorId in cleanedContributor) {
-        cleanedContributor[contributorId]['ways'] += contributor['ways'];
-        cleanedContributor[contributorId]['nodes'] += contributor['nodes'];
-        var timeline = JSON.parse(contributor.timeline);
-        cleanedContributor[contributorId]['timeline'].concat(cleanedContributor[contributorId]['timeline'], timeline);
-      } else {
-        cleanedContributor[contributorId] = contributor;
-        try {
-          cleanedContributor[contributorId]['timeline'] = JSON.parse(contributor.timeline);
-        } catch (e) {
-          cleanedContributor[contributorId]['timeline'] = contributor.timeline;
-        }
-      }
-    });
-
-    var allFrequencyDatasets = [];
-    var allLabels = [];
-    var color = Chart.helpers.color;
-
-    $.each(cleanedContributor, function (key, contributor) {
-
-      var frequencyDatasets = {
-        label: contributor.name,
-        borderColor: '#' + intToRGB(hashCode(contributor.name)),
-        backgroundColor: color('#' + intToRGB(hashCode(contributor.name))).alpha(0.1).rgbString(),
-        data: []
-      };
-
-      for (var i = 0; i < contributor.timeline.length; i++) {
-        var pair = contributor.timeline[i];
-        var dateString = pair[0];
-        var date = moment.utc(dateString, "YYYY-MM-DD");
-        pair[0] = date.valueOf();
-        contributor.timeline[i] = pair;
-
-        if ($.inArray(date, allLabels) === -1) {
-          allLabels.push(date);
-          frequencyDatasets.data.push({
-            x: date,
-            y: pair[1]
-          })
-        }
-
-        var timeStamp = (date.unix()).toString();
-        var isContributionDateExist = contributionsAmount[timeStamp] !== undefined;
-        if (isContributionDateExist) {
-          contributionsAmount[timeStamp] += pair[1];
-        } else {
-          contributionsAmount[timeStamp] = pair[1];
-        }
-      }
-
-      if ($.inArray(start_date, allLabels) === -1) {
-        allLabels.push(start_date);
-      }
-
-      if ($.inArray(end_date, allLabels) === -1) {
-        allLabels.push(end_date);
-      }
-
-      allFrequencyDatasets.push(frequencyDatasets);
-    });
-
-    allLabels = sortDate(allLabels);
-
-    var frequencyDatasets = new Chart($('#user-frequency'), {
-      type: 'line',
-      options: frequencyOption,
-      data: {
-        labels: allLabels,
-        datasets: allFrequencyDatasets
-      }
-    });
-
-    $('#frequency-legend').html(frequencyDatasets.generateLegend());
-
-    contributionsAmount = sortObject(contributionsAmount);
-    var contributionCtx = $('#contribution-amount');
-    var contributionDatasets = {
-      labels: allLabels,
-      datasets: [{
-        label: 'Contributors',
-        borderColor: '#82afb8',
-        backgroundColor: color('#82afb8').alpha(0.1).rgbString(),
-        data: []
-      }]
-    };
-
-    $.each(contributionsAmount, function (key, value) {
-      var date = moment.unix(key);
-      contributionDatasets.datasets[0].data.push({
-        x: date,
-        y: value
-      });
-    });
-
-    var contribution_chart = new Chart(contributionCtx, {
-      type: 'line',
-      data: contributionDatasets,
-      options: chartDateOption
-    });
-
-    $('#contribution-legend').html(contribution_chart.generateLegend());
-    $('#contribution-legend').css('margin-top', $('#frequency-legend').height() + 'px')
-
-  }
-
-  function sortDate(dateArray) {
-    if (dateArray.length <= 1) {
-      return dateArray;
-    }
-
-    var pivot = dateArray[0];
-
-    var left = [];
-    var right = [];
-
-    for (var i = 1; i < dateArray.length; i++) {
-      dateArray[i] < pivot ? left.push(dateArray[i]) : right.push(dateArray[i]);
-    }
-
-    return sortDate(left).concat(pivot, sortDate(right))
-  }
-
-  function sortObject(o) {
-    return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
-  }
-
 
   main();
 </script>
