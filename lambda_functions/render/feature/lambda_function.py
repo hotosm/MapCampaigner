@@ -61,7 +61,6 @@ def main(event, context):
     template_path = build_template_path(
         campaign_path=campaign_path(uuid),
         type_id=type_id)
-    print(1)
     # count feature
     count_feature_data_path = build_count_feature_path(
         campaign_path=campaign_path(uuid),
@@ -76,9 +75,5 @@ def main(event, context):
             bucket=os.environ['S3_BUCKET'],
             uuid=uuid,
             type_id=type_id)
-    print(2)
+
     render_templates(template_path, data)
-    print(3)
-    logger.info("> Calling create_feature_details_json")
-    create_feature_details_json(template_path, type_name)
-    print(4)
