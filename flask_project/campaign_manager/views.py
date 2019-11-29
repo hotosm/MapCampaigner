@@ -432,16 +432,20 @@ def get_campaign(uuid):
                                 context['types'].items()))
 
     # Get data from campaign.json
-    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
     features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
+    contributors_data = {}
     for feature in features:
         feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
         all_features += feature_json
     context['total_features'] = len(all_features)
-    context['total_contributors'] = len(campaign_data['campaign_contributors'])
-
+    for feature in all_features:
+        if feature['last_edited_by'] not in contributors_data.keys():
+            contributors_data[feature['last_edited_by']] = feature
+    context['total_contributors'] = len(contributors_data)
+    print(contributors_data)
     return render_template('campaign_detail.html', **context)
 
 

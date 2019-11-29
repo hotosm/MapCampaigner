@@ -13,10 +13,11 @@
 {% include 'components/project_header.html' %}
 {% endblock %}
 
+{% block content %}
 {% if True %}
 <div class="row">
   <div class="col-lg-9">
-    <h2>Total Contributors: {{ total_contributors }} </h2>
+    <h2>Contributors Monitored: {{ total_contributors }} </h2>
   </div>
   <div class="show-ranking">
     <label class="toggle-switch active">
@@ -134,5 +135,4 @@
 </div>
 
 {% endif %}
-
 {% endblock %}
