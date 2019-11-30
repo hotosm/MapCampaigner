@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO)
 
 def get_campaign(client):
     # Fetch geojson from s3.
-    file_path = join('campaigns', client['uuid'], 'pdf','grid_diss.geojson')
+    file_path = join('campaigns', client['uuid'], 'pdf', 'grid_diss.geojson')
     try:
         obj = client['obj'].get_object(Bucket=client['bucket'], Key=file_path)
     except ClientError as e:
@@ -90,6 +90,7 @@ def create_grid(bbox, zoom):
             task_feature = create_task_feature(step, x, y)
             task_features.append(task_feature)
     return task_features
+
 
 def create_grid_feature(box, polygon_id):
     poly = sp.box(*box)
