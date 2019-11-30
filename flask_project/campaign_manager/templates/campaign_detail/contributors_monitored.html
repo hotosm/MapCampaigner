@@ -3,7 +3,7 @@
 <div class="pagination" style="margin-top:0">
   <div class="page">
       {% for mapper in first_page %}
-      <div class="col-sm-6 side-ranking-inner">
+      <div class="col-md-6 side-ranking-inner">
         <div class="panel panel-tile">
           <div class="container-fluid">
             <div class="row">
@@ -58,9 +58,7 @@
   var currentPage = 1;
 
   function setCurrentPage( current ) {
-    console.log("currentPage: " + current);
     $('.pages-numbers').children('.page-num').each(function () {
-      //console.log("element: " + $(this).text());
       if ( $(this).text() == current ) {
         $(this).addClass('active');
       } else {
@@ -70,16 +68,14 @@
   }
 
   function renderPage(pageNum, all_data) {
-    console.log("Before: " + currentPage);
     currentPage = pageNum;
-    console.log("After: " + currentPage);
     $('.pagination .page').css("display", "none");
     var newPage = `<div class="page"></div>`;
     $('.pagination').append(newPage);
     var pageData = all_data[pageNum];
     $.each(pageData, function(i, data){
       var newMapper = `
-<div class="col-sm-6 side-ranking-inner">
+<div class="col-md-6 side-ranking-inner">
         <div class="panel panel-tile">
           <div class="container-fluid">
             <div class="row">
