@@ -487,7 +487,7 @@ def get_feature_details(uuid, feature_name):
 def get_contributor(uuid, osm_name):
    context = get_campaign_data(uuid)
    context['mapper'] = osm_name
-   # contributor_data = S3Data().fetch(f"campaigns/{uuid}/feature-types/{osm_name}")
+   # print(context)
    return render_template('contributor.html', **context)
 
 
@@ -547,10 +547,8 @@ def get_campaign_contributors(uuid):
     total_pages = int(len(monitored_contributors_info) / per_page)
     if len(monitored_contributors_info) % per_page != 0:
         total_pages += 1
-    print(f"total_pages: {total_pages}")
     pages = list(range(1, total_pages + 1))
     monitored = monitored_contributors_info
-    print(f"pages: {pages}")
     for page in pages:
         current, rest = monitored[:per_page], monitored[per_page:]
         paginated_data[page] = current
