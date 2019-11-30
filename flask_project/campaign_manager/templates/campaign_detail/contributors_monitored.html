@@ -1,4 +1,4 @@
-
+{% set current_page = 1 %}
 {% set first_page = monitored_contributors_paginated[1] %}
 <div class="pagination" style="margin-top:0">
   <div class="page">
@@ -55,8 +55,24 @@
 </div>
 
 <script type="text/javascript">
+  var currentPage = 1;
+
+  function setCurrentPage( current ) {
+    console.log("currentPage: " + current);
+    $('.pages-numbers').children('.page-num').each(function () {
+      //console.log("element: " + $(this).text());
+      if ( $(this).text() == current ) {
+        $(this).addClass('active');
+      } else {
+        $(this).removeClass('active');
+      }
+    });
+  }
 
   function renderPage(pageNum, all_data) {
+    console.log("Before: " + currentPage);
+    currentPage = pageNum;
+    console.log("After: " + currentPage);
     $('.pagination .page').css("display", "none");
     var newPage = `<div class="page"></div>`;
     $('.pagination').append(newPage);
@@ -106,6 +122,8 @@
     `;
     $('.pagination .page').append(newMapper);
     });
+    setCurrentPage(currentPage);
   }
 
+  setCurrentPage(currentPage);
 </script>

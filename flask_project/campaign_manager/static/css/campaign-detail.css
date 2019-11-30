@@ -1134,6 +1134,9 @@ table#table_id tr td.cell-faded a:hover {
  line-height: 1.43;
  letter-spacing: normal;
  text-align: center;
- color: #d73f3f;
+ color: #2c3038;
  margin-right: 5px;
+} 
+.page-num.active {
+ color: #d73f3f;
 }
