@@ -520,7 +520,7 @@ def get_campaign_contributors(uuid):
     ranking_contributors = sorted(contributors_data.items(), key=operator.itemgetter(1), reverse=True)
     context['contributors_top_ranking'] = ranking_contributors[:5]
     # Monitored contributors
-    monitored_contributers_info = []
+    monitored_contributors_info = []
     for name, data in monitored_data.items():
         attr_complete = data['attr_complete']
         attr_incomplete = data['attr_incomplete']
@@ -532,8 +532,23 @@ def get_campaign_contributors(uuid):
             "total_attr": attr_complete + attr_incomplete,
             "pct_complete": round(pct)
         }
-        monitored_contributers_info.append(mapper_data)
-    context['monitored_contributers_info'] = monitored_contributers_info
+        monitored_contributors_info.append(mapper_data)
+    context['monitored_contributors_info'] = monitored_contributors_info
+    # Pagination of monitored contributors
+    per_page, paginated_data = 4, {}
+    total_pages = int(len(monitored_contributors_info) / per_page)
+    if len(monitored_contributors_info) % per_page != 0:
+        total_pages += 1
+    print(f"total_pages: {total_pages}")
+    pages = list(range(1, total_pages + 1))
+    monitored = monitored_contributors_info
+    print(f"pages: {pages}")
+    for page in pages:
+        current, rest = monitored[:per_page], monitored[per_page:]
+        paginated_data[page] = current
+        monitored = rest
+    context['monitored_contributors_paginated'] = paginated_data
+    context['monitored_contributors_pages'] = pages 
     return render_template('campaign_contributors.html', **context)
 
 

@@ -1117,3 +1117,23 @@ table#table_id tr td.cell-faded a:hover {
   color: #d73f3f;
   margin-top: 5%;
 }
+
+.pages-numbers {
+  margin-top: -15px;
+  padding-left: 15px;
+}
+.page-num {
+ cursor: pointer;
+ width: 10px;
+ height: 20px;
+ font-family: Archivo;
+ font-size: 14px;
+ font-weight: 500;
+ font-stretch: normal;
+ font-style: normal;
+ line-height: 1.43;
+ letter-spacing: normal;
+ text-align: center;
+ color: #d73f3f;
+ margin-right: 5px;
+}

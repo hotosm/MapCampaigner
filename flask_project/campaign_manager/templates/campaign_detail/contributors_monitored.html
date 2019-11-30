@@ -1,5 +1,9 @@
-{% for data in monitored_contributers_info %}
-    <div class="col-sm-6 side-ranking-inner">
+
+{% set first_page = monitored_contributors_paginated[1] %}
+<div class="pagination" style="margin-top:0">
+  <div class="page">
+      {% for mapper in first_page %}
+      <div class="col-sm-6 side-ranking-inner">
         <div class="panel panel-tile">
           <div class="container-fluid">
             <div class="row">
@@ -12,7 +16,7 @@
 
                     </g>
                   </svg>
-                  {{ data.name }}
+                  {{ mapper.name }}
                 </h4>
                 <a href="" class="panel-more-button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -24,14 +28,14 @@
             <div class="row">
               <div class="col-xs-12">
                 <span class="panel-total-label">Total edits made</span>
-                <strong class="panel-total text-center">{{ data.total_edits }}</strong>
+                <strong class="panel-total text-center">{{ mapper.total_edits }}</strong>
               </div>
             </div>
             <div class="row">
               <div class="col-xs-12">
-                <p><b>{{ data.pct_complete }}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">{{ data.complete }}/{{ data.total_attr }}</span></p>
+                <p><b>{{ mapper.pct_complete }}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">{{ mapper.complete }}/{{ mapper.total_attr }}</span></p>
                 <div class="progress">
-                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:{{ data.pct_complete }}%">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:{{ mapper.pct_complete }}%">
                   </div>
                 </div>
               </div>
@@ -39,4 +43,69 @@
           </div>
         </div>
       </div>
+      {% endfor %}
+  </div>
+</div>
+<div class="pages-numbers">
+  {% for num in monitored_contributors_pages %}
+  <span class="page-num" onclick="renderPage({{ num }}, {{monitored_contributors_paginated}})"> 
+    {{ num }} 
+  </span>
   {% endfor %}
+</div>
+
+<script type="text/javascript">
+
+  function renderPage(pageNum, all_data) {
+    $('.pagination .page').css("display", "none");
+    var newPage = `<div class="page"></div>`;
+    $('.pagination').append(newPage);
+    var pageData = all_data[pageNum];
+    $.each(pageData, function(i, data){
+      var newMapper = `
+<div class="col-sm-6 side-ranking-inner">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name" style="font-weight: normal">
+                  <svg xmlns="http://www.w3.org/2000/svg" margin="0" width="36" height="36" viewBox="0 0 24 24">
+                    <g fill="none" fill-rule="evenodd" stroke="#929DB3" transform="translate(1 2)">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.894 7.46a2.96 2.96 0 1 1-5.92 0 2.96 2.96 0 0 1 5.92 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.867 15.354H6c0-2.577 2.184-4.934 4.934-4.934s4.933 2.357 4.933 4.934z"></path>
+
+                    </g>
+                  </svg>
+                 ` + data.name + `
+                </h4>
+                <a href="" class="panel-more-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z"></path>
+</svg>
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <span class="panel-total-label">Total edits made</span>
+                <strong class="panel-total text-center">` + data.total_edits + `</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p><b>` + data.pct_complete + `%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">` + data.complete + `/` + data.total_attr + `</span></p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:` + data.pct_complete + `%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    $('.pagination .page').append(newMapper);
+    });
+  }
+
+</script>
