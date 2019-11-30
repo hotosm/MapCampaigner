@@ -287,6 +287,20 @@ class AllFeatures(Resource):
             all_features += feature_json
         return all_features
 
+class ContributorFeatures(Resource):
+    """ get all features in a campaign by username"""
+
+    def get(self, uuid, username):
+        campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
+        features = [campaign['types'][f'type-{i + 1}']['type'] for i,
+                    feature in enumerate(campaign['types'])]
+        all_features = []
+        for feature in features:
+            feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+            all_features += feature_json
+        user_features = [f for f in all_features if f['last_edited_by'] == username]
+        return user_features
+
 
 # Setup the Api resource routing here
 api.add_resource(
@@ -322,3 +336,6 @@ api.add_resource(
 api.add_resource(
         AllFeatures,
         '/campaigns/<string:uuid>/feature-types')
+api.add_resource(
+        ContributorFeatures,
+        '/campaigns/<string:uuid>/feature-types/<string:username>')

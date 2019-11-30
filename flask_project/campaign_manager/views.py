@@ -433,7 +433,7 @@ def get_campaign(uuid):
                                 context['types'].items()))
 
     # Get data from campaign.json
-    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
     features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
@@ -487,7 +487,7 @@ def get_feature_details(uuid, feature_name):
 def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
     # Get data from campaign.json
-    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign_3.json")
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
     features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
