@@ -1138,5 +1138,24 @@ table#table_id tr td.cell-faded a:hover {
  margin-right: 5px;
 } 
 .page-num.active {
- color: #d73f3f;
+  color: #d73f3f;
+}
+
+.left-arrow-path {
+  width: 26.8px;
+  height: 16.5px;
+  object-fit: contain;
+}
+.contrib-name h2 {
+  width: 90%;
+  height: 32px;
+  font-family: Barlow;
+  font-size: 32px;
+  font-weight: bold;
+  font-stretch: condensed;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: #2c3038;
+  float: right;
 }

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% set active_page = "contributors" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block header_content %}
+<link href="/static/css/campaign-detail.css" rel="stylesheet">
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row" style="height:50px">
+  <div class="col-lg-12">
+    <a href="/campaign/{{uuid}}/contributors">
+      <img src="/static/img/arrow-left-path.svg" style="margin-top:0"  class="left-arrow-path">
+    </a>
+    <h2 class="contrib-name" style="float:right; width:97%; margin-top:-8px"> {{mapper}} </h2>
+  </div>
+</div>
+<div class="row">
+  {% include 'campaign_detail/features_ranking.html' %}
+  <div class="col-lg-6">
+    <div id="campaign-map"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+  <table id="table_id" class="table table-responsive" style="width:100%">
+    <thead>
+      <tr>
+        <th>OSM ID</th>
+        <th style="width: 130px;">Feature Type</th>
+        <th>Status</th>
+        <th>Last edited by</th>
+        <th>Last edited date</th>
+        <th style="width: 240px;">Attributes found</th>
+        <th style="width: 240px;">Attributes not found</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+ </div>
+</div>
+{% endblock %}
+<script type="text/javascript">
+  var map = L.map('campaign-map').setView([0, 0], 2);
+  L.tileLayer('{{ map_provider }}', {
+    maxZoom: 15
+  }).addTo(map);
+
+</script>
+
+<script type="text/javascript">
+
+  var mapLayers = new L.FeatureGroup();
+  var mapMarkers = new L.FeatureGroup();
+  var currentUrl = '';
+  var currentUser = '';
+  var initialLoad = true;
+  var userLocation = {};
+
+  map.addLayer(mapMarkers);
+  map.addLayer(mapLayers);
+
+  $(document).ready(function () {
+    $(document).tooltip({
+      selector: "[data-toggle=tooltip]",
+      container: "body"
+    });
+  });
+
+</script>

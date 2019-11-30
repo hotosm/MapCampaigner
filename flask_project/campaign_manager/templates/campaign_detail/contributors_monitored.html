@@ -4,7 +4,7 @@
   <div class="page">
       {% for mapper in first_page %}
       <div class="col-md-6 side-ranking-inner">
-        <div class="panel panel-tile">
+        <div class="panel panel-tile" onclick="linkRedirect('/campaign/{{uuid}}/contributor/{{mapper.name}}');">
           <div class="container-fluid">
             <div class="row">
               <div class="col-xs-12">
@@ -18,7 +18,7 @@
                   </svg>
                   {{ mapper.name }}
                 </h4>
-                <a href="" class="panel-more-button">
+                <a href="/campaign/{{uuid}}/contributor/{{mapper.name}}" class="panel-more-button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
   <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z"></path>
 </svg>
@@ -90,7 +90,7 @@
                   </svg>
                  ` + data.name + `
                 </h4>
-                <a href="" class="panel-more-button">
+                <a href="/campaign/` + `{{ uuid }}` + `/contributor/` + data.name + `" class="panel-more-button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
   <path fill="#D73F3F" fill-rule="nonzero" d="M15.375 7l-.97.97 3.837 3.843H3v1.374h15.242l-3.837 3.844.97.969 5.5-5.5z"></path>
 </svg>
@@ -122,4 +122,8 @@
   }
 
   setCurrentPage(currentPage);
+
+  function linkRedirect(link) {
+    window.location.href = link;
+  }
 </script>

@@ -483,6 +483,14 @@ def get_feature_details(uuid, feature_name):
     return render_template('feature_details.html', **context)
 
 
+@campaign_manager.route('/campaign/<uuid>/contributor/<osm_name>')
+def get_contributor(uuid, osm_name):
+   context = get_campaign_data(uuid)
+   context['mapper'] = osm_name
+   # contributor_data = S3Data().fetch(f"campaigns/{uuid}/feature-types/{osm_name}")
+   return render_template('contributor.html', **context)
+
+
 @campaign_manager.route('/campaign/<uuid>/contributors')
 def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
