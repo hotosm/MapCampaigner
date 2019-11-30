@@ -14,33 +14,60 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row" style="margin-bottom: 20px">
   <div class="col-lg-9">
     <h2>Contributors Monitored: {{ campaign_contributors | length }} </h2>
   </div>
-  <div class="show-ranking">
+  <div class="show-ranking" onclick="displayRanking()">
     <label class="toggle-switch active">
-      <input type="checkbox" checked=""> Showing ranking
+      <input class="switch-input" type="checkbox" checked="checked"> Showing ranking
     </label>
   </div>
 </div>
 
-{% if True %}
+{% if campaign_contributors|length > 0 %}
 <div class="row">
-  <div class="col-lg-6">
-    <a class="pull-left" href="#">
-      <img class="media-object" src="https://placehold.it/560x304/A8B7C1" alt="">
-    </a>
+  <div class="col-lg-6 ranking-side" style="padding: 0">
+    {% include 'campaign_detail/contributors_monitored.html' %}
   </div>
   {% include 'campaign_detail/contributors_ranking.html' %}
 </div>
 {% else %}
 <div class="row">
-  <div class="col-lg-6" style="padding: 0">
-    {% include 'campaign_detail/contributors_monitored.html' %}
+  <div class="col-lg-6 ranking-side">
+    <a class="pull-left" href='{{ url_for("edit_campaign", uuid=uuid) }}'>
+      <div class="panel panel-title select-contributors">
+        <img src="/static/img/group-9.svg" alt="mappers icon">
+        <div class="selection">Select contributors to monitor</div>
+      </div>
+    </a>
   </div>
   {% include 'campaign_detail/contributors_ranking.html' %}
 </div>
 {% endif %}
 
+<script type="text/javascript">
+  function displayRanking() {
+    console.log("Foo");
+    var rankingToggle = $('.show-ranking .toggle-switch');
+    var rankingInput = $('.show-ranking .toggle-switch .switch-input');
+    console.log(rankingInput.attr("checked"));
+    console.log(rankingInput.is(":checked"));
+    if( rankingInput.is(":checked") ) {
+      console.log("IF");
+      rankingToggle.removeClass("active");
+      rankingInput.attr("checked", "");
+      $('.ranking').css("display", "none");
+      $('.ranking-side').removeClass('col-lg-6').addClass('col-lg-12');
+      $('.ranking-side .side-ranking-inner').removeClass('col-sm-6').addClass('col-sm-3');
+    } else {
+      console.log("ELSE");
+      rankingToggle.addClass("active");
+      rankingInput.attr("checked", "checked");
+      $('.ranking').css("display", "block");
+      $('.ranking-side').removeClass('col-lg-12').addClass('col-lg-6');
+      $('.ranking-side .side-ranking-inner').removeClass('col-sm-3').addClass('col-sm-6');
+    }
+  }
+</script>
 {% endblock %}

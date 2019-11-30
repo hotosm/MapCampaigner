@@ -498,21 +498,42 @@ def get_campaign_contributors(uuid):
         feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
         all_features += feature_json
     context['total_features'] = len(all_features)
-    # print(all_features)
     for feature in all_features:
-        if feature['last_edited_by'] not in contributors_data.keys():
-            contributors_data[feature['last_edited_by']] = 1
-            if feature['last_edited_by'] in monitored_contributors:
-                monitored_data[feature['last_edited_by']] = [feature]
+        name = feature['last_edited_by']
+        if name not in contributors_data.keys():
+            contributors_data[name] = 1
+            if name in monitored_contributors:
+                monitored_data[name] = {}
+                monitored_data[name]['total_edits'] = 1
+                monitored_data[name]['attr_complete'] = 1 if not feature['missing_attributes'] else 0
+                monitored_data[name]['attr_incomplete'] = 0 if not feature['missing_attributes'] else 1
         else:
-            contributors_data[feature['last_edited_by']] += 1
-            if feature['last_edited_by'] in monitored_contributors:
-                monitored_data[feature['last_edited_by']].append(feature)
+            contributors_data[name] += 1
+            if name in monitored_contributors:
+                monitored_data[name]['total_edits'] += 1
+                if not feature['missing_attributes']:
+                    monitored_data[name]['attr_complete'] += 1
+                else:
+                    monitored_data[name]['attr_incomplete'] += 1
     context['total_contributors'] = len(contributors_data.keys())
-    # print(contributors_data)
     # Top contributors
     ranking_contributors = sorted(contributors_data.items(), key=operator.itemgetter(1), reverse=True)
     context['contributors_top_ranking'] = ranking_contributors[:5]
+    # Monitored contributors
+    monitored_contributers_info = []
+    for name, data in monitored_data.items():
+        attr_complete = data['attr_complete']
+        attr_incomplete = data['attr_incomplete']
+        pct = (attr_complete * 100) / (attr_complete + attr_incomplete)
+        mapper_data = {
+            "name": name,
+            "total_edits": data['total_edits'],
+            "complete": attr_complete,
+            "total_attr": attr_complete + attr_incomplete,
+            "pct_complete": round(pct)
+        }
+        monitored_contributers_info.append(mapper_data)
+    context['monitored_contributers_info'] = monitored_contributers_info
     return render_template('campaign_contributors.html', **context)
 
 

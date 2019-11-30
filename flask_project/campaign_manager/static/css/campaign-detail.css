@@ -1094,4 +1094,26 @@ table#table_id tr td.cell-faded a:hover {
   margin-top: 30px;
   width: 20%;
   float: right;
+} .toggle-switch {
+  cursor: pointer;
+}
+.select-contributors {
+  height: 304px;
+  text-align: center;
+  text-decoration: none;
+} img {
+  margin-top: 15%;
+} 
+.select-contributors .selection {
+  width: 573px;
+  height: 44.8px;
+  font-family: Archivo;
+  font-size: 22px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 2.04;
+  letter-spacing: normal;
+  color: #d73f3f;
+  margin-top: 5%;
 }

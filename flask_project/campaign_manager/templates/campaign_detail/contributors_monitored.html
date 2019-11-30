@@ -1,5 +1,5 @@
-{% for contributor in campaign_contributors %}
-    <div class="col-sm-6">
+{% for data in monitored_contributers_info %}
+    <div class="col-sm-6 side-ranking-inner">
         <div class="panel panel-tile">
           <div class="container-fluid">
             <div class="row">
@@ -12,7 +12,7 @@
 
                     </g>
                   </svg>
-                  {{ contributor.name }}
+                  {{ data.name }}
                 </h4>
                 <a href="" class="panel-more-button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -24,14 +24,14 @@
             <div class="row">
               <div class="col-xs-12">
                 <span class="panel-total-label">Total edits made</span>
-                <strong class="panel-total text-center">39</strong>
+                <strong class="panel-total text-center">{{ data.total_edits }}</strong>
               </div>
             </div>
             <div class="row">
               <div class="col-xs-12">
-                <p><b>45%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+                <p><b>{{ data.pct_complete }}%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">{{ data.complete }}/{{ data.total_attr }}</span></p>
                 <div class="progress">
-                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:42%">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:{{ data.pct_complete }}%">
                   </div>
                 </div>
               </div>
