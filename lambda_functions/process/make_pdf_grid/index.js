@@ -6,6 +6,7 @@ const bboxPolygon = require('@turf/bbox-polygon').default;
 const distance = require('@turf/distance').default;
 const centerOfMass = require('@turf/center-of-mass').default;
 const destination = require('@turf/destination').default;
+const dissolve = require('@turf/dissolve').default;
 const AWS = require('aws-sdk');
 
 async function getS3File(uuid) {
@@ -29,6 +30,7 @@ async function main(event) {
     const f = JSON.parse(response).features
     const options = {units:"meters"}
     const features = []
+    const dissFeatures = [];
     for (let i = 0; i < f.length; i++) {
         const box = bbox(f[i]);
         const w = distance([box[0], box[1]],[box[2],box[1]],{units:"meters"})
@@ -42,6 +44,8 @@ async function main(event) {
         const maxX = destination(c,(50 + w + wDiff)/2, 90,options).geometry.coordinates[0];
         const minX = destination(c,(50 + w + wDiff)/2, -90,options).geometry.coordinates[0];
         const grid = rectangleGrid([minX, minY, maxX, maxY], 1000, 706, {units:"meters"});
+        const diss = dissolve(grid).features[0]
+        dissFeatures.push(diss);
         for (let j=0; j<grid.features.length; j++) {
             const k = intersect(grid.features[j], f[i]);
             
@@ -51,6 +55,7 @@ async function main(event) {
             }
         }
     }
+    const dissFc = featureCollection(dissFeatures)
     const fc = featureCollection(features)
     const s3 = new AWS.S3();
     const uploaded = await s3.putObject({
@@ -58,9 +63,14 @@ async function main(event) {
         Key: `campaigns/${event.campaign_uuid}/pdf/grid.geojson`,
         Body: JSON.stringify(fc)
     }).promise();
+    await s3.putObject({
+        Bucket: process.env.S3_BUCKET,
+        Key: `campaigns/${event.campaign_uuid}/pdf/grid_diss.geojson`,
+        Body: JSON.stringify(dissFc)
+    }).promise();
 
     console.log(`Invoking lambda handler...`);
-
+    /*
     const lambda = new AWS.Lambda();
     var params = {
         FunctionName: `${process.env.ENV}_process_make_pdfs`,
@@ -69,7 +79,7 @@ async function main(event) {
     };
 
     await lambda.invoke(params).promise()
-
+    */
     console.log(`finished... ${uploaded}`);
   }
   

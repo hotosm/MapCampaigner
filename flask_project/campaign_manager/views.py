@@ -433,7 +433,7 @@ def get_campaign(uuid):
 
     # Get data from campaign.json
     campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
-    features = [campaign_data['types'][f'type-{i + 1}']['type'] for 
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
     for feature in features:

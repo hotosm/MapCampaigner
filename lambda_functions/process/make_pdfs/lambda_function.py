@@ -88,7 +88,8 @@ def scale_coords(img, bounds, coords):
     y_scale = img.size[0] / y
     for coord in coords:
         a = transformer.transform(coord[1], coord[0])
-        c = [abs(transform_1[0]) - abs(a[0]), abs(transform_1[1])- abs(a[1])]
+        c = [abs(abs(transform_1[0]) - abs(a[0])),
+             abs(abs(transform_1[1]) - abs(a[1]))]
         c = [c[0] * x_scale, c[1] * y_scale]
         coords_transformed.append(tuple(c))
     return coords_transformed
@@ -134,8 +135,10 @@ def create_legend(img, bounds, grid):
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(legend, bounds, coords)
         draw.line(coords_transformed, fill="#000", width=4)
-        label_coord = (coords_transformed[2][0] / 2,
-                       coords_transformed[0][1] / 2)
+        h = coords_transformed[2][0] - coords_transformed[0][0]
+        w = coords_transformed[0][1] - coords_transformed[1][1]
+        label_coord = (coords_transformed[2][0] - h / 2,
+                       coords_transformed[0][1] - w / 2)
         draw.text(label_coord, f"{i}", fill=(0, 0, 0))
     return legend
 
@@ -143,6 +146,7 @@ def create_legend(img, bounds, grid):
 def main(event, context):
     uuid = event['campaign_uuid']
     geojson = S3Data().fetch(f'campaigns/{uuid}/mbtiles/tiles.geojson')
+    campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.geojson')
     aois = geojson['features']
     for aoi in aois:
         aoi_id = aoi['properties']['id']
@@ -159,9 +163,11 @@ def main(event, context):
         with open(f'/tmp/{aoi_id}.mbtiles', 'wb') as f:
             boto3.client('s3').download_fileobj(os.environ['S3_BUCKET'],
                                                 mbtiles_key, f)
-        img = stitch_tiles(f'/tmp/{aoi_id}.mbtiles', aois, bounds)
+        img = stitch_tiles(f'/tmp/{aoi_id}.mbtiles', campaign['features'],
+                           bounds)
         g = S3Data().fetch(f'campaigns/{uuid}/pdf/grid.geojson')
-        grid_features = g['features']
+        grid_features = [cell for cell in g['features'] if
+                         cell['properties']['id'] == aoi['properties']['id']]
         legend = create_legend(img, bounds, grid_features)
         legend_buffer = BytesIO()
         legend.save(legend_buffer, "PDF", resolution=100.0)

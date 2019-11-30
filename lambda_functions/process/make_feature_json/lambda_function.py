@@ -36,7 +36,7 @@ def main(event, context):
     features = []
 
     key = f"campaigns/{uuid}/overpass/{feature_type['type']}.xml"
-    s3 =S3Data().s3
+    s3 = S3Data().s3
     feature_xml = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
     parser = ET.XMLParser(encoding="utf-8")
     tree = ElementTree(fromstring(feature_xml, parser=parser))
