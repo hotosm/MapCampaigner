@@ -306,7 +306,7 @@ def get_data_from_s3(uuid, modified):
     s3 = S3Data()
 
     # Make a request to get the campaign json and geojson.
-    campaign_json = s3.fetch('campaigns/{0}/campaign_3.json'.format(uuid))
+    campaign_json = s3.fetch('campaigns/{0}/campaign.json'.format(uuid))
     geojson = s3.fetch('campaigns/{0}/campaign.geojson'.format(uuid))
     campaign_json['geojson'] = geojson
     campaign_json['modified'] = modified

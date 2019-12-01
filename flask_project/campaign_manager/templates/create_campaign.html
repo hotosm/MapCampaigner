@@ -580,7 +580,7 @@
 
   let searchRequest = {};
   function searchOsmUser(searchString, type) {
-    var url = 'user-search/' + searchString;
+    var url = '/user-search/' + searchString;
     $('#users-not-found-' + type).hide();
     $('#users-found-' + type).hide();
     $('#users-loading-' + type).show();
