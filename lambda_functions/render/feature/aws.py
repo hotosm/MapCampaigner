@@ -34,7 +34,6 @@ class S3Data(object):
         raw_content = obj['Body'].read()
         return self.load(raw_content, key)
 
-
     def load(self, raw_content, key):
         """
         Load json or yaml content.
