@@ -485,10 +485,39 @@ def get_feature_details(uuid, feature_name):
 
 @campaign_manager.route('/campaign/<uuid>/contributor/<osm_name>')
 def get_contributor(uuid, osm_name):
-   context = get_campaign_data(uuid)
-   context['mapper'] = osm_name
-   # print(context)
-   return render_template('contributor.html', **context)
+    context = get_campaign_data(uuid)
+    context['mapper'] = osm_name
+    campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
+    features = [campaign['types'][f'type-{i + 1}']['type'] for i,
+                feature in enumerate(campaign['types'])]
+    # Data for ranking panel
+    all_features = []
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    user_features = [f for f in all_features if f['last_edited_by'] == osm_name]
+    context['total_edits'] = len(user_features)
+    all_attr_complete, all_attr_total = 0, len(user_features)
+    contrib_features = {}
+    for feature in user_features:
+        if not feature['missing_attributes']:
+            all_attr_complete += 1
+        if feature["type"] not in contrib_features.keys():
+            contrib_features[feature["type"]] = {}
+            contrib_features[feature["type"]]['total'] = 1            
+            contrib_features[feature["type"]]['complete'] = 1 if not feature['missing_attributes'] else 0
+        if feature["type"] in contrib_features.keys():
+            contrib_features[feature["type"]]['total'] += 1
+            if not feature['missing_attributes']:
+                contrib_features[feature["type"]]['complete'] += 1
+    context['all_attr_completeness'] = round((all_attr_complete * 100) / all_attr_total)
+    print(f"contrib_features: {contrib_features}")
+    contrib_features = {k: round((v['complete'] * 100)/v['total']) for k, v in contrib_features.items()}
+    print(f"contrib_features: {contrib_features}")
+    attr_ranking = sorted(contrib_features.items(), key=operator.itemgetter(1), reverse=True)
+    print(f"attr_ranking: {attr_ranking}")
+    context['attr_ranking'] = attr_ranking[:5]
+    return render_template('contributor.html', **context)
 
 
 @campaign_manager.route('/campaign/<uuid>/contributors')

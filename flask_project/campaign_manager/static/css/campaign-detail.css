@@ -1159,3 +1159,19 @@ table#table_id tr td.cell-faded a:hover {
   color: #2c3038;
   float: right;
 }
+
+.contrib-map {
+  height: 350px;
+}
+
+.features-ranking {
+  font-family: Barlow;
+  font-size: 72px;
+  font-weight: 600;
+  font-stretch: condensed;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2c3038;
+}

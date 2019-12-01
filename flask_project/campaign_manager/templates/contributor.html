@@ -24,8 +24,8 @@
 </div>
 <div class="row">
   {% include 'campaign_detail/features_ranking.html' %}
-  <div class="col-lg-6">
-    <div id="campaign-map"></div>
+  <div class="col-lg-6 contrib-map">
+    {% include 'campaign_detail/map.html' %}
   </div>
 </div>
 <div class="row">
@@ -48,32 +48,14 @@
 </div>
 
 <script type="text/javascript">
-  var map = L.map('campaign-map').setView([0, 0], 2);
-  L.tileLayer('{{ map_provider }}', {
-    maxZoom: 15
-  }).addTo(map);
-
-
-  var mapLayers = new L.FeatureGroup();
-  var mapMarkers = new L.FeatureGroup();
-  var currentUrl = '';
-  var currentUser = '';
-  var initialLoad = true;
-  var userLocation = {};
-
-  map.addLayer(mapMarkers);
-  map.addLayer(mapLayers);
-
 
   function getContributorData() {
-    console.log("Foo");
     $.ajax({
       type: 'GET',
       url: '/campaigns/' + '{{ uuid }}' + '/feature-types/' + '{{ mapper }}',
       dataType: 'json',
       success: function (data) {
         $.each(data, function(i, d){
-          console.log(d.last_edited_by);
           var attrsFound = displayTags(d.attributes, "found");
           var attrsNotFound = displayTags(d.missing_attributes, "missing");
           var statusClass = (d.status == "Complete") ? "status-success" : "status-warn";
