@@ -1,0 +1,29 @@
+<div class="col-lg-6">
+    <div class="panel panel-tile" style="height: 354px">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="row">
+                <div class="col-xs-6">
+                  <h4 class="panel-name">Total edits made</h4>
+                  <span class="features-ranking">{{ total_edits }}</span>
+                </div>
+                <div class="col-xs-6">
+                  <h4 class="panel-name">Attributes completeness</h4>
+                  <span class="features-ranking">{{ all_attr_completeness }}%</span>
+                </div>
+                </div>
+                <h4 class="panel-subhead">Feature types completeness ranking</h4>
+                {% for feature in attr_ranking %}
+                <span class="progress-label">{{ feature[0] }}</span>
+                <div class="progress progress-rank" style="background-color:transparent">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:{{ feature[1] }}%">
+                  </div>
+                  <span class="progress-value">&nbsp;{{ feature[1] }}%</span>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>

@@ -1088,3 +1088,90 @@ table#table_id tr td.cell-faded a:hover {
   opacity: 0.71;
   z-index: 100;
 }
+
+/* Contributors */
+.show-ranking {
+  margin-top: 30px;
+  width: 20%;
+  float: right;
+} .toggle-switch {
+  cursor: pointer;
+}
+.select-contributors {
+  height: 304px;
+  text-align: center;
+  text-decoration: none;
+} img {
+  margin-top: 15%;
+} 
+.select-contributors .selection {
+  width: 573px;
+  height: 44.8px;
+  font-family: Archivo;
+  font-size: 22px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 2.04;
+  letter-spacing: normal;
+  color: #d73f3f;
+  margin-top: 5%;
+}
+
+.pages-numbers {
+  margin-top: -15px;
+  padding-left: 15px;
+}
+.page-num {
+ cursor: pointer;
+ width: 10px;
+ height: 20px;
+ font-family: Archivo;
+ font-size: 14px;
+ font-weight: 500;
+ font-stretch: normal;
+ font-style: normal;
+ line-height: 1.43;
+ letter-spacing: normal;
+ text-align: center;
+ color: #2c3038;
+ margin-right: 5px;
+} 
+.page-num.active {
+  color: #d73f3f;
+}
+
+.left-arrow-path {
+  width: 26.8px;
+  height: 16.5px;
+  object-fit: contain;
+}
+.contrib-name h2 {
+  width: 90%;
+  height: 32px;
+  font-family: Barlow;
+  font-size: 32px;
+  font-weight: bold;
+  font-stretch: condensed;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: #2c3038;
+  float: right;
+}
+
+.contrib-map {
+  height: 350px;
+}
+
+.features-ranking {
+  font-family: Barlow;
+  font-size: 72px;
+  font-weight: 600;
+  font-stretch: condensed;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2c3038;
+}

@@ -28,7 +28,7 @@
         var row = `
       <tr>
         <td class="cell-faded"><a href="https://openstreetmap.org/` + d.osm_type + `/` + d.id + `">` + d.osm_type + `:` + d.id + `</a></td>
-        <td>` + d.osm_type + `</td>
+        <td>` + d.type + `</td>
         <td><span class="status ` + statusClass + `"></span>` + d.status + `</td>
         <td>` + d.last_edited_by + `</td>
         <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>

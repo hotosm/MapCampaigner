@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% set active_page = "contributors" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block header_content %}
+<link href="/static/css/campaign-detail.css" rel="stylesheet">
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row" style="height:50px">
+  <div class="col-lg-12">
+    <a href="/campaign/{{uuid}}/contributors">
+      <img src="/static/img/arrow-left-path.svg" style="margin-top:0"  class="left-arrow-path">
+    </a>
+    <h2 class="contrib-name" style="float:right; width:97%; margin-top:-8px"> {{mapper}} </h2>
+  </div>
+</div>
+<div class="row">
+  {% include 'campaign_detail/features_ranking.html' %}
+  <div class="col-lg-6 contrib-map">
+    {% include 'campaign_detail/map.html' %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+  <table id="table_id" class="table table-responsive" style="width:100%">
+    <thead>
+      <tr>
+        <th>OSM ID</th>
+        <th style="width: 130px;">Feature Type</th>
+        <th>Status</th>
+        <th>Last edited by</th>
+        <th>Last edited date</th>
+        <th style="width: 240px;">Attributes found</th>
+        <th style="width: 240px;">Attributes not found</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+ </div>
+</div>
+
+<script type="text/javascript">
+
+  function getContributorData() {
+    $.ajax({
+      type: 'GET',
+      url: '/campaigns/' + '{{ uuid }}' + '/feature-types/' + '{{ mapper }}',
+      dataType: 'json',
+      success: function (data) {
+        $.each(data, function(i, d){
+          var attrsFound = displayTags(d.attributes, "found");
+          var attrsNotFound = displayTags(d.missing_attributes, "missing");
+          var statusClass = (d.status == "Complete") ? "status-success" : "status-warn";
+          var row = `
+      <tr>
+        <td class="cell-faded"><a href="https://openstreetmap.org/` + d.osm_type + `/` + d.id + `">` + d.osm_type + `:` + d.id + `</a></td>
+        <td>` + d.type + `</td>
+        <td><span class="status ` + statusClass + `"></span>` + d.status + `</td>
+        <td>` + d.last_edited_by + `</td>
+        <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>
+        <td>` + attrsFound + `</td>
+        <td>` + attrsNotFound + `</td>
+      </tr>`;
+          $('#table_id tbody').append(row);
+        });
+        $('#table_id').DataTable();
+        // Cleaning up the dataTable styling
+        $('.dataTables_length').css("display", "none");
+        $('.dataTables_filter').css("display", "none");
+        $('.dataTables_info').css("display", "none");
+        $('.dataTables_paginate').css("float", "left");
+        $('.dataTables_paginate #table_id_previous').css("display", "none");
+        $('.dataTables_paginate #table_id_next').css("display", "none");
+        $('.dataTables_paginate').css({"text-align": "center", "margin-top": "25px"});
+        $('.dataTables_paginate a.paginate_button').css({
+          "border-radius": "2px",
+          "box-shadow": "0 7px 64px 0 rgba(0, 0, 0, 0.07)",
+          "background-color": "#ffffff",
+        });
+        $('.dataTables_paginate a.paginate_button.current').css({
+          "background-color": "#2c3038 !important",
+          "color": "#ffffff !important"
+        });
+        }
+      });      
+    }
+  
+  function displayTags(tags, state) {
+    var listTags = '';
+    $.each(tags, function(i, t){
+      if ( state == "found" ) {
+        tag = '<span class="label label-success">' + t + '</span> ';
+      } else {
+        tag = '<span class="label label-warning">' + t + '</span> ';
+      }
+      listTags = listTags + tag;
+    });
+    return listTags;
+  }
+
+  getContributorData();
+
+</script>
+{% endblock %}

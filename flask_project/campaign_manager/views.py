@@ -6,6 +6,7 @@ import os
 import hashlib
 import requests
 import shutil
+import operator
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
@@ -436,12 +437,15 @@ def get_campaign(uuid):
     features = [campaign_data['types'][f'type-{i + 1}']['type'] for
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
+    contributors_data = {}
     for feature in features:
         feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
         all_features += feature_json
     context['total_features'] = len(all_features)
-    context['total_contributors'] = len(campaign_data['campaign_contributors'])
-
+    for feature in all_features:
+        if feature['last_edited_by'] not in contributors_data.keys():
+            contributors_data[feature['last_edited_by']] = feature
+    context['total_contributors'] = len(contributors_data)
     return render_template('campaign_detail.html', **context)
 
 
@@ -479,9 +483,113 @@ def get_feature_details(uuid, feature_name):
     return render_template('feature_details.html', **context)
 
 
+@campaign_manager.route('/campaign/<uuid>/contributor/<osm_name>')
+def get_contributor(uuid, osm_name):
+    context = get_campaign_data(uuid)
+    context['mapper'] = osm_name
+    campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
+    features = [campaign['types'][f'type-{i + 1}']['type'] for i,
+                feature in enumerate(campaign['types'])]
+    # Data for ranking panel
+    all_features = []
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    user_features = [f for f in all_features
+                     if f['last_edited_by'] == osm_name]
+    context['total_edits'] = len(user_features)
+    all_attr_complete, all_attr_total = 0, len(user_features)
+    contrib_features = {}
+    for feature in user_features:
+        if not feature['missing_attributes']:
+            all_attr_complete += 1
+        if feature["type"] not in contrib_features.keys():
+            contrib_features[feature["type"]] = {}
+            contrib_features[feature["type"]]['total'] = 1
+            contrib_features[feature["type"]]['complete'] = 1 \
+                if not feature['missing_attributes'] else 0
+        if feature["type"] in contrib_features.keys():
+            contrib_features[feature["type"]]['total'] += 1
+            if not feature['missing_attributes']:
+                contrib_features[feature["type"]]['complete'] += 1
+    pct = (all_attr_complete * 100) / all_attr_total
+    context['all_attr_completeness'] = round(pct)
+    contrib_features = {k: round((v['complete'] * 100)/v['total']) for k,
+                        v in contrib_features.items()}
+    attr_ranking = sorted(contrib_features.items(),
+                          key=operator.itemgetter(1), reverse=True)
+    context['attr_ranking'] = attr_ranking[:5]
+    return render_template('contributor.html', **context)
+
+
 @campaign_manager.route('/campaign/<uuid>/contributors')
 def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
+    # Get data from campaign.json
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
+                i, feature in enumerate(campaign_data['types'])]
+    all_features = []
+    contributors_data = {}
+    monitored_contributors = [c['name'] for 
+                              c in context['campaign_contributors']]
+    monitored_data = {}
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    context['total_features'] = len(all_features)
+    for feature in all_features:
+        name = feature['last_edited_by']
+        if name not in contributors_data.keys():
+            contributors_data[name] = 1
+            if name in monitored_contributors:
+                monitored_data[name] = {}
+                monitored_data[name]['total_edits'] = 1
+                monitored_data[name]['attr_complete'] = 1 if not \
+                    feature['missing_attributes'] else 0
+                monitored_data[name]['attr_incomplete'] = 0 if not \
+                    feature['missing_attributes'] else 1
+        else:
+            contributors_data[name] += 1
+            if name in monitored_contributors:
+                monitored_data[name]['total_edits'] += 1
+                if not feature['missing_attributes']:
+                    monitored_data[name]['attr_complete'] += 1
+                else:
+                    monitored_data[name]['attr_incomplete'] += 1
+    context['total_contributors'] = len(contributors_data.keys())
+    # Top contributors
+    ranking_contributors = sorted(contributors_data.items(),
+                                  key=operator.itemgetter(1), reverse=True)
+    context['contributors_top_ranking'] = ranking_contributors[:5]
+    # Monitored contributors
+    monitored_contributors_info = []
+    for name, data in monitored_data.items():
+        attr_complete = data['attr_complete']
+        attr_incomplete = data['attr_incomplete']
+        pct = (attr_complete * 100) / (attr_complete + attr_incomplete)
+        mapper_data = {
+            "name": name,
+            "total_edits": data['total_edits'],
+            "complete": attr_complete,
+            "total_attr": attr_complete + attr_incomplete,
+            "pct_complete": round(pct)
+        }
+        monitored_contributors_info.append(mapper_data)
+    context['monitored_contributors_info'] = monitored_contributors_info
+    # Pagination of monitored contributors
+    per_page, paginated_data = 4, {}
+    total_pages = int(len(monitored_contributors_info) / per_page)
+    if len(monitored_contributors_info) % per_page != 0:
+        total_pages += 1
+    pages = list(range(1, total_pages + 1))
+    monitored = monitored_contributors_info
+    for page in pages:
+        current, rest = monitored[:per_page], monitored[per_page:]
+        paginated_data[page] = current
+        monitored = rest
+    context['monitored_contributors_paginated'] = paginated_data
+    context['monitored_contributors_pages'] = pages
     return render_template('campaign_contributors.html', **context)
 
 
