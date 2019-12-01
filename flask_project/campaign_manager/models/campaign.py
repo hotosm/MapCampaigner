@@ -874,7 +874,7 @@ class Campaign(JsonModel):
         :return: path of json or none if not found
         :rtype: str
         """
-        return 'campaigns/{}/campaign_3.json'.format(uuid)
+        return 'campaigns/{}/campaign.json'.format(uuid)
 
     @staticmethod
     def get_geojson_file(uuid):
