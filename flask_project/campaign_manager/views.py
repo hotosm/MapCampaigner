@@ -495,7 +495,8 @@ def get_contributor(uuid, osm_name):
     for feature in features:
         feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
         all_features += feature_json
-    user_features = [f for f in all_features if f['last_edited_by'] == osm_name]
+    user_features = [f for f in all_features 
+                     if f['last_edited_by'] == osm_name]
     context['total_edits'] = len(user_features)
     all_attr_complete, all_attr_total = 0, len(user_features)
     contrib_features = {}
@@ -505,17 +506,17 @@ def get_contributor(uuid, osm_name):
         if feature["type"] not in contrib_features.keys():
             contrib_features[feature["type"]] = {}
             contrib_features[feature["type"]]['total'] = 1            
-            contrib_features[feature["type"]]['complete'] = 1 if not feature['missing_attributes'] else 0
+            contrib_features[feature["type"]]['complete'] = 1 \
+                if not feature['missing_attributes'] else 0
         if feature["type"] in contrib_features.keys():
             contrib_features[feature["type"]]['total'] += 1
             if not feature['missing_attributes']:
                 contrib_features[feature["type"]]['complete'] += 1
     context['all_attr_completeness'] = round((all_attr_complete * 100) / all_attr_total)
-    print(f"contrib_features: {contrib_features}")
-    contrib_features = {k: round((v['complete'] * 100)/v['total']) for k, v in contrib_features.items()}
-    print(f"contrib_features: {contrib_features}")
-    attr_ranking = sorted(contrib_features.items(), key=operator.itemgetter(1), reverse=True)
-    print(f"attr_ranking: {attr_ranking}")
+    contrib_features = {k: round((v['complete'] * 100)/v['total']) for k, 
+                        v in contrib_features.items()}
+    attr_ranking = sorted(contrib_features.items(), 
+                          key=operator.itemgetter(1), reverse=True)
     context['attr_ranking'] = attr_ranking[:5]
     return render_template('contributor.html', **context)
 
@@ -542,8 +543,10 @@ def get_campaign_contributors(uuid):
             if name in monitored_contributors:
                 monitored_data[name] = {}
                 monitored_data[name]['total_edits'] = 1
-                monitored_data[name]['attr_complete'] = 1 if not feature['missing_attributes'] else 0
-                monitored_data[name]['attr_incomplete'] = 0 if not feature['missing_attributes'] else 1
+                monitored_data[name]['attr_complete'] = 1 if not \
+                    feature['missing_attributes'] else 0
+                monitored_data[name]['attr_incomplete'] = 0 if not \
+                    feature['missing_attributes'] else 1
         else:
             contributors_data[name] += 1
             if name in monitored_contributors:
@@ -554,7 +557,8 @@ def get_campaign_contributors(uuid):
                     monitored_data[name]['attr_incomplete'] += 1
     context['total_contributors'] = len(contributors_data.keys())
     # Top contributors
-    ranking_contributors = sorted(contributors_data.items(), key=operator.itemgetter(1), reverse=True)
+    ranking_contributors = sorted(contributors_data.items(), 
+                                  key=operator.itemgetter(1), reverse=True)
     context['contributors_top_ranking'] = ranking_contributors[:5]
     # Monitored contributors
     monitored_contributors_info = []
