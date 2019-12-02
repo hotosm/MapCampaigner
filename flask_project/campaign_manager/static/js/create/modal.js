@@ -280,7 +280,6 @@ function saveYamlCustomType() {
     }
 
     let fields = ['feature', 'tags'];
-    // TODO: Include geometry checker.
     // Iterate over fields to check.
     $.each(data, function (key, value) {
         fields.map(function(field) {
@@ -289,9 +288,8 @@ function saveYamlCustomType() {
             }
         });
 
-        // Create element type field with blank value.
         if (!value['element_type']) {
-            value['element_type'] = '';
+            message += '<p><b> element_type </b> field not found <p>'
         } else {
             message += checkGeom(value['element_type'], key);
         }
