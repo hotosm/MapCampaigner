@@ -25,9 +25,9 @@ api = Api(campaign_manager)
 class UserCampaigns(Resource):
     """Shows a list of all campaigns"""
     def get(self, osm_id):
-        print(osm_id)
         user = S3Data().fetch(f'user_campaigns/{osm_id}.json')
-        print(user)
+        if not user:
+            return []
         campaigns = [
             get_data_from_s3(campaign["uuid"], "")
             for campaign in user['projects']
