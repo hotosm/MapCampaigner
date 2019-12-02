@@ -281,6 +281,9 @@ class AllFeatures(Resource):
     """ Merge feature jsons to one """
 
     def get(self, uuid):
+        args = request.args
+        username = args.get('username', None)
+        print(username)
         campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
         features = [campaign['types'][f'type-{i + 1}']['type'] for i,
                     feature in enumerate(campaign['types'])]
@@ -288,23 +291,18 @@ class AllFeatures(Resource):
         for feature in features:
             feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
             all_features += feature_json
+        if username:
+            user_features = [f for f in all_features 
+                            if f['last_edited_by'] == username]
+            return user_features
         return all_features
 
+class GetFeature(Resource):
+    """ Merge feature jsons to one """
 
-class ContributorFeatures(Resource):
-    """ get all features in a campaign by username"""
-
-    def get(self, uuid, username):
-        campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
-        features = [campaign['types'][f'type-{i + 1}']['type'] for i,
-                    feature in enumerate(campaign['types'])]
-        all_features = []
-        for feature in features:
-            feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
-            all_features += feature_json
-        user_features = [f for f in all_features 
-                         if f['last_edited_by'] == username]
-        return user_features
+    def get(self, uuid, feature_name):
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
+        return feature_json
 
 
 # Setup the Api resource routing here
@@ -342,5 +340,5 @@ api.add_resource(
         AllFeatures,
         '/campaigns/<string:uuid>/feature-types')
 api.add_resource(
-        ContributorFeatures,
-        '/campaigns/<string:uuid>/feature-types/<string:username>')
+        GetFeature,
+        '/campaigns/<string:uuid>/feature-types/<string:feature_name>')

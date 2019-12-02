@@ -10,34 +10,53 @@
         <th style="width: 240px;">Attributes not found</th>
       </tr>
     </thead>
-    <tbody></tbody>
   </table>
 
 <script type="text/javascript">
   function getDetails() {
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
-    $.ajax({
-    type: 'GET',
-    url: '/campaigns/' + '{{ uuid }}' + '/feature-types',
-    dataType: 'json',
-    success: function (data) {
-      $.each(data, function(i, d){
-        var attrsFound = displayTags(d.attributes, "found");
-        var attrsNotFound = displayTags(d.missing_attributes, "missing");
-        var statusClass = (d.status == "Complete") ? "status-success" : "status-warn";
-        var row = `
-      <tr>
-        <td class="cell-faded"><a href="https://openstreetmap.org/` + d.osm_type + `/` + d.id + `">` + d.osm_type + `:` + d.id + `</a></td>
-        <td>` + d.type + `</td>
-        <td><span class="status ` + statusClass + `"></span>` + d.status + `</td>
-        <td>` + d.last_edited_by + `</td>
-        <td>` + moment(d.last_edit_date, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') + `</td>
-        <td>` + attrsFound + `</td>
-        <td>` + attrsNotFound + `</td>
-      </tr>`;
-      $('#table_id tbody').append(row);
-      });
-      $('#table_id').DataTable();
+      $('#table_id').DataTable({
+          "ajax": {
+            "url": '/campaigns/' + '{{ uuid }}' + '/feature-types',
+            "dataSrc":""
+          },
+            "columns": [
+            { data: "id" },
+            { data: "type" },
+            { data: "status" },
+            { data: "last_edited_by" },
+            { data: "last_edit_date" },
+            { data: "attributes" },
+            { data: "missing_attributes" }
+        ],
+        "columnDefs" : [
+          { targets: 0, "render": function ( data, type, row ) {
+            return `<a href="https://openstreetmap.org/${row.osm_type}/${data}">${row.osm_type }:${data}</a>`
+          }},
+          {targets: 2, render: function (data,type, row) {
+            var statusClass = (data == "Complete") ? "status-success" : "status-warn";
+            return `<span class="status ${statusClass}"></span>${data}`
+          }},
+          {targets: 4, render: function (data,type, row) {
+            return moment(data, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') 
+          }},
+          {targets: 5, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-success">${item}</span>`
+            }
+            return out
+          }},
+          {targets: 6, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-warning">${item}</span>`
+            }
+            return out
+          }},
+        ]
+        });
+
       // Cleaning up the dataTable styling
       $('.dataTables_length').css("display", "none");
       $('.dataTables_filter').css("display", "none");
@@ -56,21 +75,6 @@
           "color": "#ffffff !important"
       });
     }  
-   });
-  }
-
-  function displayTags(tags, state) {
-    var listTags = '';
-    $.each(tags, function(i, t){
-      if ( state == "found" ) {
-        tag = '<span class="label label-success">' + t + '</span> ';
-      } else {
-        tag = '<span class="label label-warning">' + t + '</span> ';
-      }
-      listTags = listTags + tag;
-    });
-    return listTags;
-  }
 
  getDetails();
  

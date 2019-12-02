@@ -456,14 +456,13 @@ def get_campaign_features(uuid):
         # Fetch the feature json file.
         file_name = 'campaigns/{0}/{1}.json'.format(uuid, values['type'])
         features = S3Data().fetch(file_name)
-
-        complete = [f for f in features if f['status'] == "Complete"]
-        incomplete = [f for f in features if f['status'] == "Incomplete"]
-
         values["feature_count"] = len(features)
-        values["complete"] = len(complete)
-        values["incomplete"] = len(incomplete)
-
+        values['complete'] = 0
+        values['incomplete'] = 0
+        values['element_type'] = features[-1]['geometry_type']
+        for f in features:
+            values['complete'] += len(f['attributes'])
+            values['incomplete'] += len(f['missing_attributes'])
     return render_template('campaign_features.html', **context)
 
 
@@ -472,14 +471,28 @@ def get_type_details(types, feature_name):
         if value['type'].replace(" ", "_") == feature_name:
             return value
 
+def get_feature_summary(uuid,feature_name):
+    feature = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
+    data = {'feature_count': 0, 'complete': 0, 'incomplete': 0,'tags':[]}
+    data['tags'] += feature[0]['attributes']
+    data['tags'] += feature[0]['missing_attributes']
+    for f in feature:
+        data['feature_count'] += 1
+        data['complete'] += len(f['attributes'])
+        data['incomplete'] += len(f['missing_attributes'])
+    return data
+
 
 @campaign_manager.route('/campaign/<uuid>/features/<feature_name>')
 def get_feature_details(uuid, feature_name):
     context = get_campaign_data(uuid)
     context['feature_name'] = feature_name
-    context['feature_details'] = get_type_details(
+    context['feature_details'] = get_feature_summary(uuid, feature_name)
+    """
+    #context['feature_details'] = get_type_details(
         context['types'],
         feature_name)
+    """
     return render_template('feature_details.html', **context)
 
 
