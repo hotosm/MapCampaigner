@@ -101,7 +101,7 @@ def stitch_tiles(mbtiles, features, bounds):
     f.name = '/tmp/temp.png'
     ie.export_image(
         bbox=bounds,
-        zoomlevel=16,
+        zoomlevel=17,
         imagepath=f
     )
     img = Image.open(f)
@@ -109,21 +109,29 @@ def stitch_tiles(mbtiles, features, bounds):
         draw = ImageDraw.Draw(img)
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(img, bounds, coords)
-        draw.line(coords_transformed, fill="#FF00FF", width=5)
+        draw.line(coords_transformed, fill="#FF00FF", width=1)
     return img
 
 
-def crop_pdf(img, bounds, feature, idx):
+def crop_pdf(img, bounds, feature, idx, aoi_id):
     coords = feature['geometry']['coordinates'][0]
+    poly = Polygon(coords)
     coords_transformed = scale_coords(img, bounds, coords)
+    center = f"{round(poly.centroid.y, 4)}, {round(poly.centroid.x, 4)}"
     cropped = img.crop((coords_transformed[0][0], coords_transformed[1][1],
                         coords_transformed[2][0], coords_transformed[0][1]))
-    resized = cropped.resize((770, 523), Image.ANTIALIAS)
+    resized = cropped.resize((523, 523), Image.ANTIALIAS)
     pdf = Image.new('RGB', (842, 595), (255, 255, 255))
     pdf.paste(resized, box=(36, 36), mask=resized.split()[3])
     draw = ImageDraw.Draw(pdf)
-    draw.rectangle([36, 36, 52, 52], fill=(255, 255, 255, 128))
-    draw.text((40, 40), f"{idx}", fill=(0, 0, 0))
+    fnt = ImageFont.truetype(font="./fonts/Archivo-Regular.ttf", size=16)
+    draw.text((560, 40), f"AOI {aoi_id} - page {idx}", font=fnt, fill=(0, 0, 0))
+    draw.text((560, 60), f"Lat, Long: {center}", font=fnt, fill=(0, 0, 0))
+    draw.text((560, 80), f"Notes:", font=fnt, fill=(0, 0, 0))
+    scale = Image.open('./assets/scale.png')
+    arrow = Image.open('./assets/arrow.png')
+    pdf.paste(scale, (560, 520), scale)
+    pdf.paste(arrow, (750, 520), arrow)
     return pdf
 
 
@@ -134,12 +142,13 @@ def create_legend(img, bounds, grid):
         draw = ImageDraw.Draw(legend)
         coords = feature['geometry']['coordinates'][0]
         coords_transformed = scale_coords(legend, bounds, coords)
-        draw.line(coords_transformed, fill="#000", width=4)
+        draw.line(coords_transformed, fill="#000", width=1)
         h = coords_transformed[2][0] - coords_transformed[0][0]
         w = coords_transformed[0][1] - coords_transformed[1][1]
         label_coord = (coords_transformed[2][0] - h / 2,
                        coords_transformed[0][1] - w / 2)
-        draw.text(label_coord, f"{i}", fill=(0, 0, 0))
+        fnt = ImageFont.truetype(font="./fonts/Archivo-Regular.ttf", size=24)
+        draw.text(label_coord, f"{i + 1}", fill=(0, 0, 0))
     return legend
 
 
@@ -151,7 +160,7 @@ def main(event, context):
     for aoi in aois:
         aoi_id = aoi['properties']['id']
         bounds = get_bounds(aoi)
-        grid = make_grid(bounds, 16)
+        grid = make_grid(bounds, 17)
         features = []
         for item in grid:
             poly = list(box(*item).exterior.coords)
@@ -175,7 +184,7 @@ def main(event, context):
         legend_pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/legend.pdf'
         S3Data().create(legend_pdf_key, legend_buffer)
         for i, b in enumerate(grid_features):
-            pdf = crop_pdf(img, bounds, b, i)
+            pdf = crop_pdf(img, bounds, b, i + 1, aoi_id)
             pdf_buffer = BytesIO()
             pdf.save(pdf_buffer, "PDF", resolution=100.0)
             pdf_buffer.seek(0)
@@ -184,8 +193,9 @@ def main(event, context):
 
 
 def lambda_handler(event, context):
-    try:
-        main(event, context)
+    #try:
+    main(event, context)
+    """
     except Exception as e:
         S3Data().create(
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
@@ -194,3 +204,4 @@ def lambda_handler(event, context):
                 'failure': str(e)
                 })
             )
+    """

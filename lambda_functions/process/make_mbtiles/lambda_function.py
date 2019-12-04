@@ -135,7 +135,7 @@ def lambda_handler(event, context):
         main(event)
     except Exception as e:
         error_dict = {'function': 'process_make_mbtiles', 'failure': str(e)}
-        key = f'campaigns/{event["uuid"]}/failure.json'
+        key = f'campaigns/{event["campaign_uuid"]}/failure.json'
         CLIENT.put_object(
             Bucket=BUCKET,
             Key=key,
@@ -166,7 +166,7 @@ def remove_folder(uuid):
 
 def main(event):
     # Get data.
-    uuid = event['uuid']
+    uuid = event['campaign_uuid']
     zoom_levels = event['zoom_levels']
 
     # Remove previous data.
