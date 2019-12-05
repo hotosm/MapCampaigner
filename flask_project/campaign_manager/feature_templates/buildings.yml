@@ -3,6 +3,7 @@ insights:
     - FeatureAttributeCompleteness
     - CountFeature
     - MapperEngagement
+element_type: Polygon
 tags:
     - name
     - building:levels
