@@ -291,10 +291,11 @@ class AllFeatures(Resource):
             feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
             all_features += feature_json
         if username:
-            user_features = [f for f in all_features 
+            user_features = [f for f in all_features
                             if f['last_edited_by'] == username]
             return user_features
         return all_features
+
 
 class GetFeature(Resource):
     """ Merge feature jsons to one """
