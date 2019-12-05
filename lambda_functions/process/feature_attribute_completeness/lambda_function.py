@@ -62,12 +62,13 @@ def main(event, context):
     else:
         element_type = None
 
+    feature_type = typee['feature'].split('=')[0]
     xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
     parser = FeatureCompletenessParser(
         required_tags,
         render_data_path,
         element_type,
-        type_name
+        feature_type
         )
 
     try:
