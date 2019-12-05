@@ -92,9 +92,6 @@
 {% block after_base_js %}
 
 <script type="text/javascript">
-  function loginSuccess(user) {
-    location.href = '/campaign/{{ uuid }}';
-  }
 
   function updated(user) {
     var managers = {{ campaign_managers | safe
@@ -110,25 +107,6 @@
       $('.button-manage').show();
     }
   }
-  }
-
-  function logout() {
-    auth.logout();
-    location.href = '/campaign/{{ uuid }}';
-  }
-
-  function login() {
-    auth.authenticate(function () {
-      location.href = '/campaign/{{ uuid }}';
-    });
-  }
-
-  function loginError() {
-    location.href = '/campaign/{{ uuid }}';
-  }
-
-  function logoutSuccess() {
-    location.href = '/campaign/{{ uuid }}';
   }
 
   function main() {
@@ -174,21 +152,6 @@
     }
   });
   }
-
-  var managers = {{ campaign_managers | safe }};
-  auth.xhr({
-      method: 'GET',
-      path: '/api/0.6/user/details'
-  }, function (err, res) {
-      var u = res.getElementsByTagName('user')[0];
-      var manager_ids = managers.map(function(item) {
-        return item['osm_id']
-      })
-
-      if (manager_ids.indexOf(u.getAttribute('id')) == -1) {
-        document.querySelector('.manager-area').remove();
-      }
-  })
 
   function addMapElements(activeType) {
     var url_vt =  "{{ s3_campaign_url | safe }}/render/" + activeType + "/tiles/{z}/{x}/{y}.pbf";

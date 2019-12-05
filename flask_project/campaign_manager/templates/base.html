@@ -126,15 +126,44 @@
         })
       });
 
+      function setSession(err, res) {
+        const u = res.getElementsByTagName('user')[0];
+        const userParams = {
+          display_name: u.getAttribute('display_name'),
+          id: u.getAttribute('id') 
+        }
+
+        $.ajax({
+          type: 'POST',
+          url: '/user/session',
+          dataType: 'json',
+          data: userParams
+        });
+
+        // Make a redirect.
+        const redirectUrl = window.location.href
+        window.location.replace(redirectUrl)
+      }
+
       function login() {
         loginProcess = true;
         auth.authenticate(function () {
+          const requestParams = { method: 'GET', path: '/api/0.6/user/details' }
+          auth.xhr(requestParams, setSession)
           update();
         })
       }
 
       function logout() {
         auth.logout();
+        $.ajax({
+          type: 'DELETE',
+          url: '/user/session'
+        });
+
+        // Make a redirect.
+        const redirectUrl = window.location.href
+        window.location.replace(redirectUrl)
         update();
       }
 

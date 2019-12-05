@@ -60,6 +60,7 @@ from campaign_manager.aws import S3Data
 
 from xml.sax.saxutils import escape
 
+from flask import session
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -425,6 +426,24 @@ def get_campaign_data(uuid):
     return context
 
 
+@campaign_manager.route('/user/session', methods=['POST'])
+def set_session():
+    user = request.values.get('display_name')
+    user_id = request.values.get('id')
+
+    session['user'] = (user_id, user)
+
+    return Response(json.dumps({'success': True}))
+
+
+@campaign_manager.route('/user/session', methods=['DELETE'])
+def unset_session():
+    if 'user' in session.keys():
+        session.pop('user', None)
+
+    return Response(json.dumps({'success': True}))
+
+
 @campaign_manager.route('/campaign/<uuid>')
 def get_campaign(uuid):
     context = get_campaign_data(uuid)
@@ -451,6 +470,16 @@ def get_campaign(uuid):
     context['incomplete'] = len([f for f in all_features
                                  if f['status'] == "Incomplete"])
     context['complete_pct'] = int(context['complete'] / context['incomplete'])
+
+    can_edit = False
+    if 'user' in session.keys():
+        user_id, _ = session['user']
+        ids = [m['osm_id'] for m in context['campaign_managers']]
+        if user_id in ids:
+            can_edit = True
+
+    context['can_edit'] = can_edit
+
     return render_template('campaign_detail.html', **context)
 
 
@@ -477,6 +506,7 @@ def get_type_details(types, feature_name):
     for key, value in types.items():
         if value['type'].replace(" ", "_") == feature_name:
             return value
+
 
 def get_feature_summary(uuid, feature_name):
     feature = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
