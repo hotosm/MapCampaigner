@@ -459,7 +459,7 @@ def get_campaign_features(uuid):
         values["feature_count"] = len(features)
         values['complete'] = 0
         values['incomplete'] = 0
-        values['element_type'] = features[-1]['geometry_type']
+        values['element_type'] = values['element_type']
         for f in features:
             values['complete'] += len(f['attributes'])
             values['incomplete'] += len(f['missing_attributes'])

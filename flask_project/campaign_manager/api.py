@@ -283,7 +283,6 @@ class AllFeatures(Resource):
     def get(self, uuid):
         args = request.args
         username = args.get('username', None)
-        print(username)
         campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
         features = [campaign['types'][f'type-{i + 1}']['type'] for i,
                     feature in enumerate(campaign['types'])]
