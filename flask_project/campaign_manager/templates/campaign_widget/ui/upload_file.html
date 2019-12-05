@@ -48,6 +48,7 @@
     const reader = new FileReader();
     switch(fileExtension) {
       case 'geojson':
+      case 'json':
         reader.onload = function(e) {
           useJSON(JSON.parse(reader.result));
         }
