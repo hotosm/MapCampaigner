@@ -446,6 +446,9 @@ def get_campaign(uuid):
         if feature['last_edited_by'] not in contributors_data.keys():
             contributors_data[feature['last_edited_by']] = feature
     context['total_contributors'] = len(contributors_data)
+    context['complete'] = len([f for f in all_features if f['status'] == "Complete"])
+    context['incomplete'] = len([f for f in all_features if f['status'] == "Incomplete"])
+    context['complete_pct'] = int(context['complete'] / context['incomplete'])
     return render_template('campaign_detail.html', **context)
 
 
@@ -461,8 +464,10 @@ def get_campaign_features(uuid):
         values['incomplete'] = 0
         values['element_type'] = values['element_type']
         for f in features:
-            values['complete'] += len(f['attributes'])
-            values['incomplete'] += len(f['missing_attributes'])
+            if len(f['missing_attributes']) > 0:
+                values['incomplete'] += 1
+            else:
+                values['complete'] += 1
     return render_template('campaign_features.html', **context)
 
 
@@ -478,8 +483,10 @@ def get_feature_summary(uuid,feature_name):
     data['tags'] += feature[0]['missing_attributes']
     for f in feature:
         data['feature_count'] += 1
-        data['complete'] += len(f['attributes'])
-        data['incomplete'] += len(f['missing_attributes'])
+        if len(f['missing_attributes']) > 0:
+            data['incomplete'] += 1
+        else:
+            data['complete'] += 1
     return data
 
 
@@ -488,11 +495,6 @@ def get_feature_details(uuid, feature_name):
     context = get_campaign_data(uuid)
     context['feature_name'] = feature_name
     context['feature_details'] = get_feature_summary(uuid, feature_name)
-    """
-    #context['feature_details'] = get_type_details(
-        context['types'],
-        feature_name)
-    """
     return render_template('feature_details.html', **context)
 
 

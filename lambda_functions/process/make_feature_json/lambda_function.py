@@ -61,8 +61,7 @@ def main(event, context):
                 if len(nds) > 0:
                     if nds[0] == nds[-1]:
                         geometry = 'Polygon'
-            campaign_feature_def = [v for k,v in campaign['types'].items()
-                                    if v['type'] == geometry][0]
+            campaign_feature_def = [v for k,v in campaign['types'].items()][0]
             feature['geometry_type'] = geometry
             feature['osm_type'] = child.tag
             feature['type'] = feature_type['type']
