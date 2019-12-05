@@ -446,6 +446,11 @@ def get_campaign(uuid):
         if feature['last_edited_by'] not in contributors_data.keys():
             contributors_data[feature['last_edited_by']] = feature
     context['total_contributors'] = len(contributors_data)
+    context['complete'] = len([f for f in all_features
+                               if f['status'] == "Complete"])
+    context['incomplete'] = len([f for f in all_features
+                                 if f['status'] == "Incomplete"])
+    context['complete_pct'] = int(context['complete'] / context['incomplete'])
     return render_template('campaign_detail.html', **context)
 
 
@@ -459,10 +464,12 @@ def get_campaign_features(uuid):
         values["feature_count"] = len(features)
         values['complete'] = 0
         values['incomplete'] = 0
-        values['element_type'] = features[-1]['geometry_type']
+        values['element_type'] = values['element_type']
         for f in features:
-            values['complete'] += len(f['attributes'])
-            values['incomplete'] += len(f['missing_attributes'])
+            if len(f['missing_attributes']) > 0:
+                values['incomplete'] += 1
+            else:
+                values['complete'] += 1
     return render_template('campaign_features.html', **context)
 
 
@@ -471,15 +478,17 @@ def get_type_details(types, feature_name):
         if value['type'].replace(" ", "_") == feature_name:
             return value
 
-def get_feature_summary(uuid,feature_name):
+def get_feature_summary(uuid, feature_name):
     feature = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
-    data = {'feature_count': 0, 'complete': 0, 'incomplete': 0,'tags':[]}
+    data = {'feature_count': 0, 'complete': 0, 'incomplete': 0, 'tags': []}
     data['tags'] += feature[0]['attributes']
     data['tags'] += feature[0]['missing_attributes']
     for f in feature:
         data['feature_count'] += 1
-        data['complete'] += len(f['attributes'])
-        data['incomplete'] += len(f['missing_attributes'])
+        if len(f['missing_attributes']) > 0:
+            data['incomplete'] += 1
+        else:
+            data['complete'] += 1
     return data
 
 
@@ -488,11 +497,6 @@ def get_feature_details(uuid, feature_name):
     context = get_campaign_data(uuid)
     context['feature_name'] = feature_name
     context['feature_details'] = get_feature_summary(uuid, feature_name)
-    """
-    #context['feature_details'] = get_type_details(
-        context['types'],
-        feature_name)
-    """
     return render_template('feature_details.html', **context)
 
 
@@ -527,7 +531,7 @@ def get_contributor(uuid, osm_name):
                 contrib_features[feature["type"]]['complete'] += 1
     pct = (all_attr_complete * 100) / all_attr_total
     context['all_attr_completeness'] = round(pct)
-    contrib_features = {k: round((v['complete'] * 100)/v['total']) for k,
+    contrib_features = {k: round((v['complete'] * 100) / v['total']) for k,
                         v in contrib_features.items()}
     attr_ranking = sorted(contrib_features.items(),
                           key=operator.itemgetter(1), reverse=True)
@@ -544,7 +548,7 @@ def get_campaign_contributors(uuid):
                 i, feature in enumerate(campaign_data['types'])]
     all_features = []
     contributors_data = {}
-    monitored_contributors = [c['name'] for 
+    monitored_contributors = [c['name'] for
                               c in context['campaign_contributors']]
     monitored_data = {}
     for feature in features:

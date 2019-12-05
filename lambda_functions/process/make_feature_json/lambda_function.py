@@ -61,6 +61,7 @@ def main(event, context):
                 if len(nds) > 0:
                     if nds[0] == nds[-1]:
                         geometry = 'Polygon'
+            campaign_feature_def = [v for k,v in campaign['types'].items()][0]
             feature['geometry_type'] = geometry
             feature['osm_type'] = child.tag
             feature['type'] = feature_type['type']
@@ -74,7 +75,8 @@ def main(event, context):
                                      elem in tags]
             feature['missing_attributes'] = [elem for elem in required_tags
                                              if elem not in tags]
-            features.append(feature)
+            if campaign_feature_def['element_type'] == geometry:
+                features.append(feature)
     out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
     S3Data().create(out_file, json.dumps(features))
 

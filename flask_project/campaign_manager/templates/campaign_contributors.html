@@ -35,12 +35,12 @@
 {% else %}
 <div class="row">
   <div class="col-md-6 ranking-side">
-    <a class="pull-left" href='{{ url_for("campaign_manager.edit_campaign", uuid=uuid) }}'>
+    <div class="pull-left">
       <div class="panel panel-title select-contributors">
         <img src="/static/img/group-9.svg" alt="mappers icon">
-        <div class="selection">Select contributors to monitor</div>
+        <div class="selection">No contributors monitored</div>
       </div>
-    </a>
+    </div>
   </div>
   {% include 'campaign_detail/contributors_ranking.html' %}
 </div>
