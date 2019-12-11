@@ -78,7 +78,7 @@ def main(event, context):
                                              if elem not in tags]
             if campaign_feature_def['element_type'] == geometry:
                 features.append(feature)
-    out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
+    out_file = 'campaigns/{}/{}.json'.format(uuid, feature_file)
     S3Data().create(out_file, json.dumps(features))
 
 
