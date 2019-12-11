@@ -33,9 +33,10 @@ def main(event, context):
         raise ValueError('Feature not found')
 
     feature_type = filtered[0]
+    feature_file = feature_type['type'].replace(' ', '_')
     features = []
 
-    key = f"campaigns/{uuid}/overpass/{feature_type['type']}.xml"
+    key = f"campaigns/{uuid}/overpass/{feature_file}.xml"
     s3 = S3Data().s3
     feature_xml = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
     parser = ET.XMLParser(encoding="utf-8")
