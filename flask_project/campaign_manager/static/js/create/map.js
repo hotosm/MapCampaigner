@@ -2,7 +2,6 @@ var campaignMap = L.map('campaign-map');
 var drawnItems = new L.geoJSON();
 var error_format_before = false;
 
-
 // Add search control
 var controlSearch = campaignMap.addControl( new L.Control.Search({
     url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
@@ -17,67 +16,64 @@ var controlSearch = campaignMap.addControl( new L.Control.Search({
 }));
 
 
-L.tileLayer(map_provider, {
+const mapTiles = L.tileLayer(map_provider, {
     attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
     'contributors',
     maxZoom: 18
-}).addTo(campaignMap);
+})
 
-function mapFitBound() {
-    var bounds = [
-        [-34.053726, 20.411482],
-        [-34.009483, 20.467358]
-    ];
-    campaignMap.fitBounds(bounds);
+mapTiles.addTo(campaignMap);
+
+function drawGeometry (json, isUpload) {
+  return L.geoJSON(json, {
+        style: function (feature) {
+            var status = 'unassigned';
+            if ('status' in feature.properties) {
+                status = feature.properties['status'];
+            } else if ('date' in feature.properties) {
+                var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
+                var remainingDays = layerDate.diff(moment(), 'days') + 1;
+                if (remainingDays <= 0) {
+                    status='complete';
+                } else {
+                    status='incomplete';
+                }
+                feature.properties['status'] = status;
+            }
+            if (typeof taskStatusFillColor[status] !== 'undefined') {
+                return {
+                    weight: 2,
+                    color: "#999",
+                    opacity: 1,
+                    fillColor: taskStatusFillColor[status],
+                    fillOpacity: 0.8
+                }
+            }
+            return feature.properties && feature.properties.style;
+        },
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(
+                '<div class="layer-popup">' +
+                    '<div class="layer-popup-area">' +
+                        'Area &nbsp;&nbsp;: ' + feature.properties.area +
+                    '</div>'+
+                    '<div class="layer-popup-team">' +
+                        'Team &nbsp;: ' + feature.properties.team +
+                    '</div>'+
+                    '<div class="layer-popup-team">' +
+                        'Status : ' + capitalizeFirstLetter(feature.properties.status) +
+                    '</div>'+
+                '</div>'
+            );
+            if (isUpload) drawnItems.addLayer(layer);
+        }
+    }
+  );
 }
 
 if ($("#geometry").val()) {
-    drawnItems = L.geoJSON(
-        $.parseJSON($("#geometry").val()), {
-            style: function (feature) {
-                var status = 'unassigned';
-
-                if ('status' in feature.properties) {
-                    status = feature.properties['status'];
-                } else if ('date' in feature.properties) {
-                    var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
-                    var remainingDays = layerDate.diff(moment(), 'days') + 1;
-                    if (remainingDays <= 0) {
-                        status='complete';
-                    } else {
-                        status='incomplete';
-                    }
-                    feature.properties['status'] = status;
-                }
-
-                if (typeof taskStatusFillColor[status] !== 'undefined') {
-                    return {
-                        weight: 2,
-                        color: "#999",
-                        opacity: 1,
-                        fillColor: taskStatusFillColor[status],
-                        fillOpacity: 0.8
-                    }
-                }
-                return feature.properties && feature.properties.style;
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(
-                    '<div class="layer-popup">' +
-                        '<div class="layer-popup-area">' +
-                            'Area &nbsp;&nbsp;: ' + feature.properties.area +
-                        '</div>'+
-                        '<div class="layer-popup-team">' +
-                            'Team &nbsp;: ' + feature.properties.team +
-                        '</div>'+
-                        '<div class="layer-popup-team">' +
-                            'Status : ' + capitalizeFirstLetter(feature.properties.status) +
-                        '</div>'+
-                    '</div>'
-                )
-            }
-        }
-    );
+    const geoJSON = $.parseJSON($("#geometry").val())
+    drawnItems = drawGeometry(geoJSON);
     campaignMap.fitBounds(drawnItems.getBounds());
 }
 campaignMap.addLayer(drawnItems);
@@ -168,6 +164,11 @@ function stopDraw(e) {
 function stringfyGeometry() {
     createCoverageTable();
     var geojson = drawnItems.toGeoJSON();
+    var layerCopy = drawGeometry(geojson);
+    campaignDisplayMap.eachLayer(function (layer) {
+      if (!layer._tiles) campaignDisplayMap.removeLayer(layer);
+    });
+    layerCopy.addTo(campaignDisplayMap);
     $("#geometry").val(JSON.stringify(geojson));
     error_format_before = false
 }
@@ -285,18 +286,38 @@ function getAreaSize() {
     var kmSquare = parseFloat(totalAreaSize / 1000000);
     $('#campaign-map-area-size').html('Area size : ' + kmSquare.toFixed(2) + ' km<sup>2</sup>');
     if (totalAreaSize > maxAreaSize) {
-        showNotifications('Area of the campaign is too big, please reduce the area.', 'danger');
+        showNotifications('Area of the campaign is too big, please reduce the area.', 'danger', '#map-notification-holder');
         $('.map-wrapper').data('error', 'Area of the campaign is too big, please reduce the area.');
         $('#campaign-map-area-size').removeClass('label-success');
-        $('#campaign-map-area-size').addClass('label-danger');
+        $('#campaign-map-area-size').addClass('label-warning');
     } else {
         clearNotification();
         $('.map-wrapper').data('error', '');
-        $('#campaign-map-area-size').removeClass('label-danger');
+        $('#campaign-map-area-size').removeClass('label-warning');
         $('#campaign-map-area-size').addClass('label-success');
     }
 }
 
-function getAOIMap() {
-    return campaignMap;
+var campaignDisplayMap = L.map('campaign-map-display');
+var drawnItemsDisplay = new L.geoJSON();
+const mapTilesDisplay = L.tileLayer(map_provider, {
+    attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
+    'contributors',
+    maxZoom: 18
+})
+mapTilesDisplay.addTo(campaignDisplayMap);
+if ($("#geometry").val()) {
+    const geoJSON = $.parseJSON($("#geometry").val())
+    drawnItemsDisplay = drawGeometry(geoJSON)
+    campaignDisplayMap.fitBounds(drawnItemsDisplay.getBounds());
 }
+campaignDisplayMap.addLayer(drawnItemsDisplay);
+var drawControlDisplay = new L.Control.Draw({
+    draw: false,
+    edit: {
+        featureGroup: drawnItemsDisplay,
+        edit: false,
+        remove: false
+    }
+}, this);
+campaignDisplayMap.addControl(drawControlDisplay);

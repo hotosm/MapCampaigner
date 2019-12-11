@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     try:
         main(event, context)
     except Exception as e:
+        logger.info(f"Error: {e}")
         S3Data().create(
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
             body=json.dumps({
@@ -43,13 +44,12 @@ def main(event, context):
     type_id = type_name.replace(' ', '_')
 
     campaign = fetch_campaign(campaign_path(uuid))
+    logger.info(campaign)
     for type_key in campaign['types']:
         if campaign['types'][type_key]['type'] == type_name:
             typee = campaign['types'][type_key]
 
-    logger.info(typee['tags'])
     required_tags = fix_tags(typee['tags'])
-    logger.info(required_tags)
 
     render_data_path = build_render_data_path(
         campaign_path=campaign_path(uuid),
@@ -62,11 +62,13 @@ def main(event, context):
     else:
         element_type = None
 
+    feature_type = typee['feature'].split('=')[0]
     xml_file = open('/tmp/{type_id}.xml'.format(type_id=type_id), 'r')
     parser = FeatureCompletenessParser(
         required_tags,
         render_data_path,
-        element_type
+        element_type,
+        feature_type
         )
 
     try:

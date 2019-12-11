@@ -1,8 +1,15 @@
 import os
 import json
 import boto3
+import logging
+import gzip
 from dependencies import jinja2
 from aws import S3Data
+from io import BytesIO
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def build_feature_completeness_path(campaign_path, type_id):

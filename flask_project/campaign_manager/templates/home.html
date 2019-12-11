@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% set active_page = "home" %}
+
+{% block content %}
+<div class="col-xs-12">
+  <div class="row">
+    <div class="media">
+      <a class="pull-right" href="#">
+        <img class="media-object" src="/static/img/map-attributes.png" alt="">
+      </a>
+      <div class="media-body">
+        <h3 class="media-heading">Monitor attributes completeness</h3>
+        <p>Map Campaigner monitors the mapping progress of how many objects have been mapped and the attributes completeness.</p>
+        <p>Project manager can arrange mapping activities with specific features and attributes according to their needs.</p>
+      </div>
+    </div>
+    <hr />
+  </div>
+  <div class="row">
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="/static/img/osm-user-engagement.png" alt="">
+      </a>
+      <div class="media-body">
+        <h3 class="media-heading">Keep OSM users engaged</h3>
+        <p>Map Campaigner tracks how many OpenStreetMap users are helping to participate in this mapping project, as well as the data quality they provided.</p>
+      </div>
+    </div>
+    <hr />
+  </div>
+  <div class="row">
+    <div class="media">
+      <a class="pull-right" href="#">
+        <img class="media-object" src="/static/img/osm-data-quality.png" alt="">
+      </a>
+      <div class="media-body">
+        <h3 class="media-heading">Ensure the quality of data collected</h3>
+        <p>Map Campaigner monitors the mapping progress of how many objects have been mapped and the attributes completeness.</p>
+        <p>Project manager can arrange mapping activities with specific features and attributes according to their needs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

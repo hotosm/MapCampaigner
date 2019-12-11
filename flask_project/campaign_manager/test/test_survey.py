@@ -1,5 +1,6 @@
 from unittest import TestCase
 from campaign_manager.models.survey import Survey
+import os
 
 
 class TestSurvey(TestCase):
@@ -8,8 +9,13 @@ class TestSurvey(TestCase):
         """
         It should initialize a 'buildings' Survey object.
         """
-        survey = Survey('buildings')
-        self.assertEqual(survey.data['tags']['building'], ['yes'])
+        surveyPath = os.path.join(
+            os.path.dirname(__file__),
+            '../feature_templates',
+            'buildings.yml'
+        )
+        survey = Survey(surveyPath)
+        self.assertEqual(survey.data['feature'], "building=yes")
 
     def test_all(self):
         """
@@ -30,5 +36,10 @@ class TestSurvey(TestCase):
         """
         It should return survey's features.
         """
-        survey = Survey.find_by_name('buildings')
-        self.assertEqual(survey.feature, 'building')
+        surveyPath = os.path.join(
+            os.path.dirname(__file__),
+            '../feature_templates',
+            'buildings.yml'
+        )
+        survey = Survey.find_by_name(surveyPath)
+        self.assertEqual(survey.feature, 'building=yes')

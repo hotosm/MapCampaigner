@@ -8,11 +8,12 @@ from file_manager import (
 
 class FeatureCompletenessParser(xml.sax.ContentHandler):
 
-    def __init__(self, required_tags, render_data_path, element_type):
+    def __init__(self, required_tags, render_data_path, 
+                 element_type, feature_type):
         xml.sax.ContentHandler.__init__(self)
         self.required_tags = required_tags
         self.element_type = element_type
-
+        self.feature_type = feature_type
         self.is_element = False
         self.has_tags = False
         self.tags = {}
@@ -62,11 +63,11 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
 
     def endElement(self, name):
         if name in ['node', 'way']:
+            # Remove different elements not related to the element_type.
             if self.has_tags is True:
-
-                if self.has_no_required_tags():
+                if (self.has_no_required_tags() and
+                self.feature_type not in self.tags.keys()):
                     return
-
                 self.features_collected += 1
                 self.check_errors_in_tags()
                 self.check_warnings_in_tags()
@@ -76,7 +77,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
-            if self.has_tags is True:
+            if self.has_tags is True and self.element_type == 'Point':
                 self.build_feature('node')
                 self.tags = {}
             elif self.has_tags is False:
@@ -84,7 +85,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     float(self.element['lon']),
                     float(self.element['lat'])
                 ]
-        if name == 'way':
+        if name == 'way' and self.element_type in ['Polygon', 'Line']:
             self.build_feature('way')
             self.tags = {}
 
@@ -98,6 +99,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             'id': attrs.getValue("id"),
             'type': name,
             'timestamp': attrs.getValue("timestamp"),
+            'user': attrs.getValue("user"),
             'nodes': []
         }
         if name == 'node':
@@ -192,6 +194,9 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
             },
             "properties": {
                 "type": self.element['type'],
+                "required_tags": self.required_tags,
+                "last_edited_at": self.element['timestamp'],
+                "last_edited_by": self.element['user'],
                 "tags": self.tags,
                 "errors": self.errors_to_s,
                 "warnings": self.warnings_to_s,

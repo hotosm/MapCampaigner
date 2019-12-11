@@ -1,0 +1,45 @@
+.footer {
+  background-color:$blue-dark;
+  color: $white;
+  width: 100%;
+  padding-top: 55px;
+  padding-bottom: 32px;
+  a {
+    color: $white;
+  }
+  .footer-text {
+    font-size: 24px;
+    line-height: 31px;
+  }
+  .list-unstyled {
+    margin: 40px 0;
+    li {
+      display: inline-block;
+      svg {
+        height: 20px;
+        width: 20px;
+      }
+    }
+  }
+  @include respond-below(md) {
+    .pull-right {
+      float: left !important;
+      clear: both;
+    }
+  }
+  #optout-form {
+    border-top: 1px solid $white;
+  }
+}
+.small-footer {
+  background: $red;
+  color: $white;
+  font-size: 12px;
+  a, a:hover, a:focus, a:active {
+    color: $white;
+    margin: 18px 0;
+    svg {
+      vertical-align: text-bottom;
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% set active_page = "learn" %}
+{% set page_title = "How it works" %}
+
+{% block content %}
+<div class="col-xs-12">
+  <div class="row">
+    <h2>For Campaign Managers</h2>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="add-campaing-heading">
+          <h3 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#add-campaign" aria-expanded="true" aria-controls="add-campaign">
+              Add Campaign
+            </a>
+          </h3>
+        </div>
+        <div id="add-campaign" class="panel-collapse collapse" role="tabpanel" aria-labelledby="add-campaign-heading">
+          <div class="panel-body">
+            <p>To add a campaign, click on <b>Start a Campaign</b> button on the home page. It will take you to the add campaign page. You need to login with your OSM account to do this.</p>
+            <p>There are 2 modes available here, <b>Basic</b> and <b>Advance</b>.</p>
+            <p>In <b>Basic</b> mode, you can use the default settings for the campaign; while in <b>Advance</b> mode, you can customise the insight functions to suit your needs.</p>
+            <h4>General Information</h4>
+            <p><b>Campaign Status</b> indicates the status of your campaign, since it is a new campaign so it is inactive.</p>
+            <p>Use the appropriate box to fill the information of your new campaign:
+              <ul>
+                <li>Your <b>campaign name</b></li>
+                <li><b>Start date</b> and <b>end date</b> of your campaign</li>
+                <li><b>Campaign status</b>: the status of your campaign</li>
+                <li><b>Types</b>: <br />You can select type of your campaign from a dropdown menu. Each type comes with a set of tags which you can customise in <b>Advance</b> mode. You can add more types using <b>+ Add type</b> button.</li>
+                <li><b>Managers</b>: <br />The creator of this campaign is chosen as manager of this campaign by default. You can add more managers by searching the OSM username of the person you want to add in the search box.</li>
+              </ul>
+              <h4>Create AOI</h4>
+              <p>You can create AOI by using map tools or by uploading the shape file.</p>
+              <h4>Quality Function (Advanced)</h4>
+              <p>The quality function is automatically populated according to which type did you chose on the first step. Though, you may customise the quality functions for your campaign in advance mode.</p>
+              <h4>Error Function (Advanced)</h4>
+              <p>This Function is customisable in the advanced mode. You may add error functions to your campaign.</p>
+              <h4>Engagement Function (Advanced)</h4>
+              <p>This Function is customisable in the advanced mode. You may add engagement functions to your campaign.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="edit-campaign-heading">
+          <h3 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#edit-campaign" aria-expanded="false" aria-controls="edit-campaign">
+              Edit Campaign
+            </a>
+          </h3>
+        </div>
+        <div id="edit-campaign" class="panel-collapse collapse" role="tabpanel" aria-labelledby="edit-campaign-heading">
+          <div class="panel-body">
+            <p>To edit the campaign, click on <b>Manage</b> button in your campaign details page to edit the campaign. It will take you to the edit campaign page.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="campaign-insights-heading">
+          <h3 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#campaign-insights" aria-expanded="false" aria-controls="campaign-insights">
+              Campaign Insights
+            </a>
+          </h3>
+        </div>
+        <div id="campaign-insights" class="panel-collapse collapse" role="tabpanel" aria-labelledby="campaign-insights-heading">
+          <div class="panel-body">
+            <p>The core goals of Campaign Managers are to communicate the desired data collection outcomes as well as draw insights from the ongoing mapping efforts.
+              The system needs to be able to respond to very different insights requirements. Some of these have been mapped and more may emerge as the project continues.
+              As such we are looking for a flexible extensible approach, which can cater a wide variety of Campaign Manager needs.</p>
+            <h4>Insight Functions</h4>
+            <p>During the Campaign creation process, Insight Functions are selected and configured to suit the needs of the Campaign.</p>
+            <p>The Insights Functions should be configurable, i.e. the underlying Insights Function might be: "Showing feature completeness" and the feature to extract might be "amenity=bank,banking_agent".</p>
+            <p>Insights Functions offer the insights gained in the following ways:
+              <li>As a graphic on the Campaign's Dashboard page.</li>
+              <li>On the Campaign Dashboard map.</li>
+              <li>As detailed text with links to where this can be viewed/fixed.</li>
+              <li>As rationale. (This might be useful for complex insights.)</li>
+            </p>
+            <h4>Data Provider</h4>
+            <p>
+              The Insights Function data is sourced from a Data Provider.
+              The purpose of the data provider is to aggregate queries to third party sources.
+              These queries will be cached for a reasonable amount of time (current thinking is 15 mins).
+              The insights functions then draw this data.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="insight-functions-heading">
+          <h3 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#insight-functions" aria-expanded="false" aria-controls="insight-functions">
+              Insight Functions
+            </a>
+          </h3>
+        </div>
+        <div id="insight-functions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="insight-functions-heading">
+          <div class="panel-body">
+            <p>Insights function is a specific function that handled data that will be shown.
+              During the Campaign creation process, Insight Functions are selected and configured to suit the needs of the Campaign.</p>
+            <p>Several insight functions those are available now are:</p>
+            <h4>1. Count Feature</h4>
+            <p>This insight function has purpose for showing pie chart and counting by feature type. For example, for building, it will count how many feature by it's type (hospital, school, etc).</p>
+            <h4>2. Feature Attribute Completeness</h4>
+            <p>
+              This function will show in percentage, showing what feature that has attributes that defined in form. On the form, fill attribute input with desired attributes that need to be looked. For example:
+              <li>
+                <code>name=</code>: it will check all of feature that has name in it, and count how many has name and how many doesn't.
+              </li>
+              <li>
+                <code>name=Center</code>: it will check all of feature that has name in it, and count how many has name is 'Center' and how many doesn't.
+              </li>
+              <li>
+                <code>name=Center;building=hospital</code>: it will check all of feature that has name and building in it, and count how many has name is Center and building is hospital and how many doesn't. This function will show in percentage of how many feature that fullfill the attributes and how many doesn't. And it also shows details of these features in table that directed to osm.
+              </li>
+            </p>
+            <h4>3. Upload Coverage</h4>
+            <p>This function is handling coverage for campaing. It will ask for uploading coverage in shapefile and also showing it on dashboard.</p>
+            <h4>4. OSMCHA error</h4>
+            <p>This function is showing changeset error from osmcha within geometry of campaing. But because osmcha needs bbox instead polygon, some of data can be out of campaign.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

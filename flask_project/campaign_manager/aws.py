@@ -1,6 +1,7 @@
 import json
 import yaml
 import boto3
+from botocore.exceptions import ClientError
 
 
 class S3Data(object):
@@ -29,7 +30,7 @@ class S3Data(object):
             obj = self.s3.get_object(
                 Bucket=self.bucket,
                 Key=key)
-        except:
+        except ClientError:
             return []
 
         raw_content = obj['Body'].read()
@@ -178,7 +179,7 @@ class S3Data(object):
         :returns:
         """
         for key in self.list(folder_key):
-            self.delete('{}/{}'.format(folder_key, key['uuid']))
+            self.delete(f"{folder_key}/{key['uuid']}")
 
     def get_last_modified_date(self, key):
         obj = self.s3.get_object(
@@ -197,3 +198,7 @@ class S3Data(object):
 
     def thumbnail_url(self, uuid):
         return "{url}/thumbnail.png".format(url=self.url(uuid))
+
+    def get_data(self, key):
+        file_content = self.s3.get_object(Bucket=self.bucket, Key=key)['Body']
+        return file_content.read()

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% set active_page = "contributors" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block header_content %}
+<link href="/static/css/campaign-detail.css" rel="stylesheet">
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row" style="height:50px">
+  <div class="col-lg-12">
+    <a href="/campaign/{{uuid}}/contributors">
+      <img src="/static/img/arrow-left-path.svg" style="margin-top:0"  class="left-arrow-path">
+    </a>
+    <h2 class="contrib-name" style="float:right; width:97%; margin-top:-8px"> {{mapper}} </h2>
+  </div>
+</div>
+<div class="row">
+  {% include 'campaign_detail/features_ranking.html' %}
+  <div class="col-lg-6 contrib-map">
+    {% include 'campaign_detail/map.html' %}
+  </div>
+</div>
+<div class="row">
+    <div class='col-sm-8'>
+      <h2>Details</h2>
+    </div>
+    <div class='col-sm-4 text-right'>
+      <br/>
+      <br/>
+      <button class="btn btn-primary btn-xs" style="display: none;">
+        {% include 'svgs/filter.html' %}
+        Filter</button>
+      <button class="btn btn-primary btn-xs">
+        {% include 'svgs/download.html' %}
+        Download File</button>
+    </div>
+  </div>
+<div class="row">
+  <div class="col-lg-12">
+  <table id="table_id" class="table table-responsive" style="width:100%">
+    <thead>
+      <tr>
+        <th>OSM ID</th>
+        <th style="width: 130px;">Feature Type</th>
+        <th>Status</th>
+        <th>Last edited by</th>
+        <th>Last edited date</th>
+        <th style="width: 240px;">Attributes found</th>
+        <th style="width: 240px;">Attributes not found</th>
+      </tr>
+    </thead>
+  </table>
+ </div>
+</div>
+
+<script type="text/javascript">
+  function getDetails() {
+    var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
+      $('#table_id').DataTable({
+          "ajax": {
+            "url": '/campaigns/' + '{{ uuid }}' + '/feature-types?username=' + '{{ mapper }}',
+            "dataSrc":""
+          },
+            "columns": [
+            { data: "id" },
+            { data: "type" },
+            { data: "status" },
+            { data: "last_edited_by" },
+            { data: "last_edit_date" },
+            { data: "attributes" },
+            { data: "missing_attributes" }
+        ],
+        "columnDefs" : [
+          { targets: 0, "render": function ( data, type, row ) {
+            return `<a href="https://openstreetmap.org/${row.osm_type}/${data}">${row.osm_type }:${data}</a>`
+          }},
+          {targets: 2, render: function (data,type, row) {
+            var statusClass = (data == "Complete") ? "status-success" : "status-warn";
+            return `<span class="status ${statusClass}"></span>${data}`
+          }},
+          {targets: 4, render: function (data,type, row) {
+            return moment(data, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') 
+          }},
+          {targets: 5, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-success">${item}</span>`
+            }
+            return out
+          }},
+          {targets: 6, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-warning">${item}</span>`
+            }
+            return out
+          }},
+        ]
+        });
+
+      // Cleaning up the dataTable styling
+      $('.dataTables_length').css("display", "none");
+      $('.dataTables_filter').css("display", "none");
+      $('.dataTables_info').css("display", "none");
+      $('.dataTables_paginate').css("float", "left");
+      $('.dataTables_paginate #table_id_previous').css("display", "none");
+      $('.dataTables_paginate #table_id_next').css("display", "none");
+      $('.dataTables_paginate').css({"text-align": "center", "margin-top": "25px"});
+      $('.dataTables_paginate a.paginate_button').css({
+          "border-radius": "2px",
+          "box-shadow": "0 7px 64px 0 rgba(0, 0, 0, 0.07)",
+          "background-color": "#ffffff",
+      });
+      $('.dataTables_paginate a.paginate_button.current').css({
+          "background-color": "#2c3038 !important",
+          "color": "#ffffff !important"
+      });
+    }  
+
+ getDetails();
+</script>
+{% endblock %}

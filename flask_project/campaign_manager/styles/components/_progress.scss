@@ -1,0 +1,32 @@
+
+.progress {
+  height: 11px;
+  border-radius: 6px;
+  margin-bottom: 13px;
+  box-shadow: none;
+  background-color: $grey-light3;
+  .progress-bar {
+    background-color: $orange !important;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+  &-rank {
+    height: 16px;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+.progress-label {
+  color: $blue-light;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  float: left;
+  font-weight: 14px;
+}
+.progress-value {
+  display: block;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: -4px;
+}

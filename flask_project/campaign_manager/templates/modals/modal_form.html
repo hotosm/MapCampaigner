@@ -1,65 +1,72 @@
-<br>
-<div>
-    <div>
-        <div id="modal-form">
-            <label>Type</label>
-            <div class="form-group">
-                <input id="custom_type_name" placeholder="Name" type="text" value="" class="form-control">
-                <div class="modal-required-message">This field is required</div>
-                <p class="help-block">
-                    This is name of this type. For example : Educational Facilities.
-                </p>
-            </div>
-            <div class="form-group">
-                <input id="custom_type_feature" placeholder="Feature" type="text" value="" class="form-control">
-                <div class="modal-required-message">This field is required</div>
-                <ul class="custom-help-block">
-                    <li>This is specific feature of data for this type. For example: building, amenity, etc.</li>
-                    <li>To make it more specific, add pairing key=value in here. For example: building=school or building=school,university.</li>
-                </ul>
-            </div>
-            <br>
-            <label>Geometry Type</label>
-            <div class="form-group">
-                <select id="custom_type_element_type" class="form-control">
-                    <option name=""></option>
-                    <option name="Point">Point</option>
-                    <option name="Line">Line</option>
-                    <option name="Polygon">Polygon</option>
-                </select>
-                <ul class="custom-help-block">
-                    <li>
-                        Geometry type defines the OSM elements you want to be included in your campaign.
-                    </li>
-                    <li>
-                        If no Geometry type is selected, then it will fetch Point, Line and Polygon type elements from OSM.
-                    </li>
-                    <li>
-                        Relations are not included.
-                    </li>
-                </ul>
-            </div>
-            <br />
-            <label>Tags</label>
-            <div id="tag-requirement-message" class="modal-required-message">Tag is required at least 1.</div>
-            <div id="custom-tags" class="form-group">
-            </div>
-            <div class="form-group">
-                <input id="btn-add" class="form-control" type="button" value="+ Add tag" onclick="addNewCustomTags()">
-                <ul class="custom-help-block">
-                    <li>Add new multiple tags for this type.</li>
-                    <li>Tag is the attribute that checked on the feature. For example : name. This will check "name" attribute is exist or not in the feature.</li>
-                    <li>For specific tag, add pairing key=value in here. For example: emergency=yes,no. This will check if 'yes' or 'no' is value for emergency attribute.</li>
-                </ul>
-            </div>
+<form>
+  <div class="container-fluid">
+    <div id="modal-form" class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Feature Name <span class="required">*</span></label>
+          <input id="custom_type_name" required placeholder='Feature name, e.g. "Educational Facilities"' type="text" value="" class="form-control">
+          <p class="help-block">A feature name is required.</p>
         </div>
-    </div>
-    <div class="row">
-        <div class="pull-right">
-            <button type="button" id="btn-add-custom-type" class="btn btn-default btn-orange" onclick="saveCustomType()">Add</button>
-            <button type="button" class="btn btn-default btn-orange" data-dismiss="modal">Close</button>
+        <div class="form-group">
+          <label>Feature <span class="required">*</span></label>
+          <input id="custom_type_feature" required placeholder='OpenStreetMap feature, e.g. "building=school"' type="text" value="" class="form-control">
+          <p class="help-block">This field is required.</p>
+          <p class="help-block help-block-visible">Enter the name of an <a href="https://wiki.openstreetmap.org/wiki/Map_Features">OpenStreetMap feature</a> you want to track.</p>
         </div>
-    <div class="modal-required-message">This name already registered, please choose other name.</div>
-
+        <label>Geometry Type <span class="required">*</span></label>
+        <div class="form-group">
+          <select id="custom_type_element_type" required class="form-control">
+            <option name=""></option>
+            <option name="Point">Point</option>
+            <option name="Line">Line</option>
+            <option name="Polygon">Polygon</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label>Tags <span class="required">*</span></label>
+        <div id="tag-requirement-message" class="modal-required-message">At least 1 tag is required.</div>
+        <div id="custom-tags"></div>
+        <div class="form-group">
+          <input class="btn btn-primary pull-right" type="button" value="Add tag" onclick="addNewCustomTags()">
+          <p class="help-block help-block-visible">Add the <a href="https://wiki.openstreetmap.org/wiki/Category:Key_descriptions">OpenStreetMap keys</a> you want to track.</p>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+  <div class="form-footer">
+    <div class="pull-right">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="button" id="btn-add-custom-type" class="btn btn-primary" onclick="saveCustomType()">Save</button>
+    </div>
+  </div>
+</form>
+<script type='text/template' id='_custom_new_tag'>
+  <% if (!is_required) { %>
+    <div class="custom-tag-row row">
+  <% }else{ %>
+    <div class="custom-tag-row row" id="required-custom-tag-row">
+  <% } %>
+  <% if (is_first) { %>
+  <div class="col-xs-12">
+    <% }else{ %>
+  <div class="col-xs-9">
+    <% } %>
+    <div class="form-group">
+      <% if (!is_required) { %>
+        <input placeholder='Tag name, e.g. "after_school=yes"' type="text" class="custom-tag-input form-control">
+      <% }else{ %>
+        <input placeholder='Tag name, e.g. "after_school=yes"' type="text" class="custom-tag-input form-control" disabled>
+      <% } %>
+      <div class="modal-required-message">This field is required</div>
+    </div>
+  </div>
+  <% if (!is_required) { %>
+    <% if (!is_first) { %>
+      <div class="col-xs-3">
+        <button class="btn btn-primary btn-sm pull-right" type="button" onclick="removeCustomTags(this)">Remove</button>
+      </div>
+        <% } %>
+  <% } %>
+  </div>
+</script>

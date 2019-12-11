@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% set active_page = "features" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block extra_head %}
+<script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+<link href="/static/css/campaign-detail.css" rel="stylesheet">
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row" style="margin-bottom: 32px;">
+  <div class="col-xs-12">
+    <h2 class="pull-left">{{ feature_details['type'] }}</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-4">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-tile">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <h4 class="panel-name">Attributes checked</h4>
+                    <br />
+                    {% for tag in feature_details['tags'] %}
+                    <span class="label label-default key-tags" title="{{ tag }}">{{ tag }}</span>
+                    {% endfor %}
+                    <h4 class="panel-name">Total {{ feature_details['type'] }}</h4>
+                    <strong class="panel-total text-left">{{ feature_details['feature_count'] }}</strong>
+                    <h4 class="panel-name">Complete</h4>
+                    {% set completeness = (feature_details['complete']/feature_details['feature_count']*100)|round|int %}
+                    <strong class="panel-total text-left">{{ completeness }}%</strong>
+                    <p class="pull-right">{{ feature_details['complete'] }}/{{ feature_details['feature_count'] }}</p>
+                    <div class="progress">
+                      <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="{{ completeness }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ completeness }}%">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-8">
+    {% include 'campaign_detail/map.html' %}
+  </div>
+</div>
+
+<div class="row">
+  <div class='col-sm-8'>
+    <h2>Details</h2>
+  </div>
+  <div class='col-sm-4 text-right'>
+    <br/>
+    <br/>
+    <button class="btn btn-primary btn-xs" style="display: none;">
+      {% include 'svgs/filter.html' %}
+      Filter</button>
+    <button class="btn btn-primary btn-xs">
+      {% include 'svgs/download.html' %}
+      Download File</button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <br/>
+    <table id= "table_id" class="table table-responsive">
+        <thead>
+            <tr>
+              <th>OSM ID</th>
+              <th style="width: 130px;">Feature Type</th>
+              <th>Status</th>
+              <th>Last edited by</th>
+              <th>Last edited date</th>
+              <th style="width: 240px;">Attributes found</th>
+              <th style="width: 240px;">Attributes not found</th>
+            </tr>
+          </thead>
+    </table>
+  </div>
+</div>
+<script type="text/javascript">
+  function getDetails() {
+    var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
+      $('#table_id').DataTable({
+          "ajax": {
+            "url": '/campaigns/' + '{{ uuid }}' + '/feature-types/' + '{{ feature_name }}',
+            "dataSrc":""
+          },
+            "columns": [
+            { data: "id" },
+            { data: "type" },
+            { data: "status" },
+            { data: "last_edited_by" },
+            { data: "last_edit_date" },
+            { data: "attributes" },
+            { data: "missing_attributes" }
+        ],
+        "columnDefs" : [
+          { targets: 0, "render": function ( data, type, row ) {
+            return `<a href="https://openstreetmap.org/${row.osm_type}/${data}">${row.osm_type }:${data}</a>`
+          }},
+          {targets: 2, render: function (data,type, row) {
+            var statusClass = (data == "Complete") ? "status-success" : "status-warn";
+            return `<span class="status ${statusClass}"></span>${data}`
+          }},
+          {targets: 4, render: function (data,type, row) {
+            return moment(data, 'YYYY-MM-DDTHH:mm:ssZ', true).format('YYYY-MM-DD') 
+          }},
+          {targets: 5, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-success">${item}</span>`
+            }
+            return out
+          }},
+          {targets: 6, render: function (data,type, row) {
+            var out = ''
+            for (var item of data) {
+              out += `<span class="label label-warning">${item}</span>`
+            }
+            return out
+          }},
+        ]
+        });
+
+      // Cleaning up the dataTable styling
+      $('.dataTables_length').css("display", "none");
+      $('.dataTables_filter').css("display", "none");
+      $('.dataTables_info').css("display", "none");
+      $('.dataTables_paginate').css("float", "left");
+      $('.dataTables_paginate #table_id_previous').css("display", "none");
+      $('.dataTables_paginate #table_id_next').css("display", "none");
+      $('.dataTables_paginate').css({"text-align": "center", "margin-top": "25px"});
+      $('.dataTables_paginate a.paginate_button').css({
+          "border-radius": "2px",
+          "box-shadow": "0 7px 64px 0 rgba(0, 0, 0, 0.07)",
+          "background-color": "#ffffff",
+      });
+      $('.dataTables_paginate a.paginate_button.current').css({
+          "background-color": "#2c3038 !important",
+          "color": "#ffffff !important"
+      });
+    }  
+
+ getDetails();
+</script>
+
+
+{% endblock %}
+
+{% block after_base_js %}
+<script type="text/javascript">
+
+  const activeType = "{{ feature_name | safe }}";
+  const s3CampaignUrl = "{{ s3_campaign_url | safe }}";
+
+  function getTypeUrl(activeType, s3CampaignUrl) {
+    return s3CampaignUrl + '/render/' + activeType + '/';
+  }
+
+  function addMapElements(activeType) {
+    var url_vt =  "{{ s3_campaign_url | safe }}/render/" + activeType + "/tiles/{z}/{x}/{y}.pbf";
+    map.on('load', function () {
+      map.addSource('tiles', {
+        "type": "vector",
+        "minzoom": 10,
+        "maxzoom": 17,
+        "tiles": [url_vt]
+      });
+      map.addLayer({
+        "id": "campaign-polygons",
+        "type": "fill",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["in", "$type", "Polygon"],
+        "paint": {
+          "fill-color": ['get', 'completeness_color'],
+          "fill-opacity": 1
+        }
+      });
+      map.addLayer({
+        "id": "campaign-lines",
+        "type": "line",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["in", "$type", "LineString"],
+        "paint": {
+          "line-color": ['get', 'completeness_color'],
+          "line-opacity": 0.7
+        }
+      });
+      map.addLayer({
+        "id": "campaign-points",
+        "type": "circle",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["in", "$type", "Point"],
+        "paint": {
+          "circle-color": ['get', 'completeness_color'],
+        }
+      });
+    })
+  }
+
+  function setMapHeight() {
+    var height = $('.map-side-panel').height();
+    $('.map-wrapper').height(height + 3);
+    $('#campaign-map-detail').height(height + 3);
+  }
+
+  function loadType(activeType, s3CampaignUrl) {
+    activeType = activeType.replace(/ /g, '_')
+    var typeUrl = getTypeUrl(activeType, s3CampaignUrl);
+    $.get({
+      url: typeUrl + 'content.html',
+      cache: false
+    }).then(function (data) {
+      $('#campaign-feature-details').show();
+      $('#campaign-computing-status').hide();
+      data = data.replace("type: 'bar'", "type: 'horizontalBar'")
+      let str_token = "options: {"
+      let scale_opt = '\n          maintainAspectRatio: false, scales: { yAxes: [{ticks: {fontSize: 13}}]},\n'
+      let index_split = data.match(str_token).index + str_token.length
+      data = data.substr(0, index_split) + scale_opt + data.substr(index_split + 1)
+      data = data.replace(", 'backgroundColor': ['#4286f4']", '')
+      $('.content-wrapper').html(data);
+    });
+    $.get({
+      url: typeUrl + 'errors.html',
+      cache: false
+    }).then(function (data) {
+      $('.errors-wrapper').html(data)
+    });
+    window.setTimeout(function () {
+      setMapHeight();
+    }, 2000);
+    let source = map.getSource('tiles');
+    if (source) {
+      map.removeLayer("campaign-polygons");
+      map.removeLayer("campaign-lines");
+      map.removeLayer("campaign-points");
+      map.removeSource('tiles');
+    }
+    addMapElements(activeType);
+  }
+  loadType(activeType, s3CampaignUrl)
+</script>
+{% endblock %}

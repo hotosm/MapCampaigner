@@ -1,0 +1,1 @@
+{"type_id": "Residential_areas", "type_name": "Residential areas", "percentage": "0.0", "features_collected": 0, "features_completed": 0, "checked_attributes": ["Building"], "geojson_files_count": 1, "errors_files_count": 1, "error_ids": {"node": [], "way": [], "relation": []}}

@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% set active_page = "styleguide" %}
+{% set page_title = "Styleguide" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <p>This page shows reusable component examples with the available CSS. The HTML can be copied and pasted to use a component elsewhere in the app. This page can also be used as a reference when making changes to the CSS to prevent regressions and help remove unused rules.</p>
+    <div class="row button-row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Headings</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <h1>H1 Example</h1>
+        <h2>H2 Example</h2>
+        <h3>H3 Example</h3>
+        <h4>H4 Example</h4>
+      </div>
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Buttons</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <a href="" class="btn btn-primary" role="button">Primary</a>
+        <a href="" class="btn btn-default" role="button">Secondary</a>
+        <a href="" class="btn btn-primary btn-sm" role="button">Primary Small</a>
+        <a href="" class="btn btn-info btn-sm" role="button">Secondary Small</a>
+        <h3>Disabled</h3>
+        <a href="" class="btn btn-primary" disabled role="button">Primary</a>
+        <a href="" class="btn btn-default" disabled role="button">Secondary</a>
+        <a href="" class="btn btn-primary btn-sm" disabled role="button">Primary Small</a>
+        <a href="" class="btn btn-info btn-sm" disabled role="button">Secondary Small</a>
+        <h3>Special</h3>
+        <button type="button" class="btn btn-primary btn-xs">
+          {% include 'svgs/red_gear.html' %}
+          Manage
+        </button>
+        <button type="button" class="btn btn-default btn-xs">
+          {% include 'svgs/eye.html' %}
+          View
+        </button>
+        <button class="btn btn-primary btn-xs">
+          {% include 'svgs/pencil.html' %}
+          Edit
+        </button>
+        <button class="btn btn-primary btn-xs">
+          {% include 'svgs/delete.html' %}
+          Delete
+        </button>
+        <button class="btn btn-primary btn-xs">
+          {% include 'svgs/filter.html' %}
+          Filter
+        </button>
+        <button class="btn btn-primary btn-xs">
+          {% include 'svgs/download.html' %}
+          Download File
+        </button>
+        <button class="btn btn-primary btn-xs">
+          {% include 'svgs/reset.html' %}
+          Reset Filters
+        </button>
+        <br />
+        <label class="toggle-switch active">
+          <input type="checkbox" checked> Switch on
+        </label>
+        <br />
+        <label class="toggle-switch">
+          <input type="checkbox"> Switch off
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">labels</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <span class="label label-danger">
+          {% include 'svgs/timer.html' %} x days left!
+        </span>
+        <span class="label label-success">school: type_idn</span>
+        <span class="label label-warning">school: type_idn</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Colors</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="swatch red"></div>
+        <div class="swatch red-light"></div>
+        <div class="swatch orange"></div>
+        <div class="swatch blue-dark"></div>
+        <div class="swatch blue-light"></div>
+        <div class="swatch blue-grey"></div>
+        <div class="swatch grey-light"></div>
+        <div class="swatch tan"></div>
+        <div class="swatch page-background"></div>
+        <div class="swatch grey1"></div>
+        <div class="swatch black"></div>
+        <div class="swatch white"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Lists</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="row details-list">
+          <div class="col-xs-12 col-md-6">
+            <p class="campaign-date">
+              {% include 'svgs/calendar.html' %} <span class="moment-date">2019-10-27</span>—<span class="moment-date">2019-12-31</span>
+            </p>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <p>{% include 'svgs/info.html' %} Information or description</p>
+          </div>
+        </div>
+        <div class="row details-list">
+          <div class="col-xs-12 col-md-6">
+            <p>{% include 'svgs/person1.html' %} Managers: <i><a href="https://www.openstreetmap.org/user/username">username</a></i></p>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <p>{% include 'svgs/gear.html' %} <a href="#">External Link {% include 'svgs/link.html' %}</a></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Media Components</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="media">
+          <a class="pull-right" href="#">
+            <img class="media-object" src="https://placehold.it/200x150/A8B7C1" alt="">
+          </a>
+          <div class="media-body">
+            <h3 class="media-heading">Media Component</h3>
+            <p>An example media component with an image on the right, and a button. Lorem ipsum dolor sit amet.</p>
+            <a class="btn btn-lg btn-primary" href="#" role="button">Button</a>
+          </div>
+        </div>
+        <div class="media">
+          <a class="pull-left" href="#">
+            <img class="media-object" src="https://placehold.it/200x150/A8B7C1" alt="">
+          </a>
+          <div class="media-body">
+            <h3 class="media-heading">Media Component</h3>
+            <p>An example media component with an image on the left. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Campaign Card</h2>
+      </div>
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="campaign-card panel panel-tile active">
+          <div class="row">
+            <div class="col-xs-9">
+              <a href="/campaign/496f2053be0f4c51bde56b0114a58ed4" data-toggle="tooltip" data-placement="top" data-container="body" title="" data-original-title="Campaign Title">
+                <div class="panel-name ellipsis multiline">Campaign Title</div>
+              </a>
+            </div>
+            <div class="col-xs-3">
+              <button type="button" class="btn btn-primary btn-xs pull-right">
+                {% include 'svgs/red_gear.html' %}
+                Manage
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-7">
+              <p class="campaign-date">2019.10.27—2019.12.31
+              </p>
+              <p><b>24%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+              <div class="campaign-progress-bar">
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                </div>
+              </div>
+              <p><b>2</b> Feature types monitored</p>
+              <div class="campaign-tags-list ellipsis multiline">
+                <span class="campaign-tags">Educational Facilities</span> <span class="campaign-tags">Roads</span>
+              </div>
+            </div>
+            <div class="col-xs-5 campaign-thumbnail"><img src="https://placehold.it/400">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Feature Tiles</h2>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  {% include 'svgs/point.html' %}
+                  building-point
+                </h4>
+                <a href="" class="panel-more-button">
+                  {% include 'svgs/right_arrow.html' %}
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <span class="panel-total-label">Total features checked</span>
+                <strong class="panel-total text-center">42%</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p><b>42%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:42%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  {% include 'svgs/polygon.html' %}
+                  building-polygon
+                </h4>
+                <a href="" class="panel-more-button">
+                  {% include 'svgs/right_arrow.html' %}
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <span class="panel-total-label">Total features checked</span>
+                <strong class="panel-total text-center">42%</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p><b>42%</b> <span class="panel-info">Attributes completeness</span> <span class="pull-right">42/100</span></p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:42%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  Attributes completeness
+                </h4>
+                <a href="" class="panel-more-button">
+                  {% include 'svgs/right_arrow.html' %}
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <strong class="panel-total panel-total-primary text-center">42%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">
+                  Total Contributors
+                </h4>
+                <a href="" class="panel-more-button">
+                  {% include 'svgs/right_arrow.html' %}
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <strong class="panel-total panel-total-primary text-center">12</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Info Panels</h2>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">Total changesets made</h4>
+                <strong class="panel-total text-left">
+                  356
+                </strong>
+                <h4 class="panel-name">Attribute completeness</h4>
+                <strong class="panel-total text-left">
+                  65%
+                </strong>
+                <p class="pull-right">12/156</p>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width:65%">
+                  </div>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width:80%">
+                  </div>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-6">
+        <div class="panel panel-tile">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-12">
+                <h4 class="panel-name">Contribution Ranking</h4>
+                <p class="panel-subhead">Based on total changesets made</p>
+                <span class="progress-label">user366</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:90%">
+                  </div>
+                  <span class="progress-value">&nbsp;134</span>
+                </div>
+                <span class="progress-label">user7365</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100" style="width:79%">
+                  </div>
+                  <span class="progress-value">&nbsp;121</span>
+                </div>
+                <span class="progress-label">user2</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" style="width:64%">
+                  </div>
+                  <span class="progress-value">&nbsp;107</span>
+                </div>
+                <span class="progress-label">user2848</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                  </div>
+                  <span class="progress-value">&nbsp;96</span>
+                </div>
+                <span class="progress-label">user23</span>
+                <div class="progress progress-rank">
+                  <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100" style="width:24%">
+                  </div>
+                  <span class="progress-value">&nbsp;82</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 class="styleguide-heading">Tables</h2>
+      </div>
+      <div class="col-xs-12">
+        <table class="table table-responsive">
+          <tr>
+            <th>OSM node ID</th>
+            <th style="width: 130px;">Feature Type</th>
+            <th>Status</th>
+            <th>Last edited by</th>
+            <th>Last edit date</th>
+            <th style="width: 250px;">Attributes found</th>
+            <th style="width: 230px;">Attributes not found</th>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 435476</td>
+            <td>Buildings</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user1</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">school: type_idn</span></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 46837</td>
+            <td>health-facilities</td>
+            <td><span class="status status-warn">Incomplete</span></td>
+            <td>user05348</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">name</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span> <span class="label label-success">addr: city</span> </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="cell-faded">node: 35745</td>
+            <td>schools</td>
+            <td><span class="status status-success">Complete</span></td>
+            <td>user546</td>
+            <td>2019-11-11</td>
+            <td><span class="label label-success">ammenity</span> <span class="label label-success">addr: full</span> <span class="label label-success">school: type_idn</span></td>
+            <td><span class="label label-warning">addr: city</span> <span class="label label-warning">name</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

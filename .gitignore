@@ -4,14 +4,21 @@ venv
 .idea
 apache/osm-reporter.apache.conf
 reporter/config/local.py
-components/
+./components/
 data
 *~
 secret.py
 .DS_STORE
+.vscode
+.env
+node_modules/
+flask_project/campaign_manager/static/dist
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 dependencies/
 *.zip
+lambda_functions/out
+out
+test-data/*

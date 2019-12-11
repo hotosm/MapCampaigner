@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#929db3" />
+
+    <meta name="description" content="MapCampaigner is aimed at managing and monitoring field data collection campaigns in OpenStreetMap. Campaign managers may use this tool to setup new and review ongoing and completed campaigns. Mappers can find nearby field campaigns to participate in. The result – improved data collection standards and project management.">
+    <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png" />
+    <link rel="manifest" href="/static/manifest.json" />
+    <meta property="og:image" content="/static/img/hot-logo-2.png" />
+
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link href="/static/dist/main.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Archivo|Barlow+Condensed:400,500&display=swap" rel="stylesheet">
+
+    <script type="text/javascript" src="/static/js/project.js"></script>
+
+    <script type="application/javascript">
+      var site_id = "10"; // site_id is for the HOTOSM tracking code below
+    </script>
+    <script src="https://cdn.hotosm.org/tracking-v1.js"></script>
+
+    <script src="/static/dist/vendor.js"></script>
+    <script src="/static/dist/legacy.js"></script>
+    <script src="/static/dist/main.js"></script>
+
+    {% block extra_head %}{% endblock %}
+
+    <title>Map Campaigner {% block extra_title %}{% endblock %}</title>
+  </head>
+
+  <body id="page-{{active_page}}">
+    {% include 'components/header.html' %}
+    {% block subhead %}{% endblock %}
+    {% if active_page == "home" %}
+    <div class="jumbotron page-header">
+      <div class="container container-fluid">
+        <div class="row">
+          <div class="col-xs-12 col-sm-7">
+            <img src="/static/img/tv-dark.png" alty=""/>
+          </div>
+          <div class="col-xs-12 col-sm-5">
+            <h1>Monitor the progress and data quality of mapping projects.</h1>
+            <p><a href="" class="btn btn-default">Get started</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="page-content">
+      <div class="container container-fluid">
+        {% block header_content %}{% endblock %}
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+
+    <div id="auth-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">
+              <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+              Login Required
+            </h4>
+          </div>
+          <div class="modal-body" style="padding-top: 25px; padding-bottom: 30px;">
+            <p>Sign in using an OpenStreetMap account is required to to create a campaign. Only authorized campaign managers are able to create and edit campaigns. Please review the Manager resources and register your OSM username to become a manager.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="login()">
+              Login
+            </button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    {% if active_page == "home" %}
+    {% include 'components/footer.html' %}
+    {% else %}
+      {% if active_page != "create" %}
+      {% include 'components/small_footer.html' %}
+      {% endif %}
+    {% endif %}
+
+    {% block before_base_js %}{% endblock %}
+
+    <script type="text/javascript">
+      var locationMarker = null;
+      var loginProcess = false;
+
+      var auth = osmAuth({
+        oauth_secret: '{{ oauth_secret }}',
+        oauth_consumer_key: '{{ oauth_consumer_key }}',
+        auto: true,
+        landing: window.location.origin + '/osm_auth',
+        loading: function () {
+          showLoading();
+        },
+        done: function () {
+          hideLoading();
+        },
+        url: 'https://www.openstreetmap.org'
+      });
+
+      $(document).ready(function () {
+        $('.login-button').click(function (e) {
+          e.preventDefault();
+          login();
+        });
+        $('#logout-button').click(function () {
+          logout();
+        });
+        var momentDates = $('.moment-date');
+        momentDates.each(function (el) {
+          var dateString = $(this).text();
+          $(this).text(moment(dateString, 'YYYY-MM-DD', true).format('YYYY.MM.DD'));
+        })
+      });
+
+      function setSession(err, res) {
+        const u = res.getElementsByTagName('user')[0];
+        const userParams = {
+          display_name: u.getAttribute('display_name'),
+          id: u.getAttribute('id') 
+        }
+
+        $.ajax({
+          type: 'POST',
+          url: '/user/session',
+          dataType: 'json',
+          data: userParams
+        });
+
+        // Make a redirect.
+        const redirectUrl = window.location.href
+        window.location.replace(redirectUrl)
+      }
+
+      function login() {
+        loginProcess = true;
+        auth.authenticate(function () {
+          const requestParams = { method: 'GET', path: '/api/0.6/user/details' }
+          auth.xhr(requestParams, setSession)
+          update();
+        })
+      }
+
+      function logout() {
+        auth.logout();
+        $.ajax({
+          type: 'DELETE',
+          url: '/user/session'
+        });
+
+        // Make a redirect.
+        const redirectUrl = window.location.href
+        window.location.replace(redirectUrl)
+        update();
+      }
+
+      function update() {
+        window.isAuthenticated = auth.authenticated();
+        if (auth.authenticated()) {
+          if (typeof this.map !== 'undefined') {
+            showDetails(map);
+          } else {
+            showDetails();
+          }
+        } else {
+          if (typeof this.map !== 'undefined') {
+            hideDetails(map);
+          } else {
+            hideDetails();
+          }
+        }
+      }
+
+      function showDetails(map) {
+        $('#login-button').hide();
+        $('#user-menu').show();
+
+        var that = this;
+        auth.xhr({ method: 'GET', path: '/api/0.6/user/details' }, function (err, res) {
+          if (err) {
+            $('#info').html('error! try clearing your browser cache');
+            hideLoading();
+            return;
+          }
+          var u = res.getElementsByTagName('user')[0];
+          var changesets = res.getElementsByTagName('changesets')[0];
+          var location = res.getElementsByTagName('home')[0];
+
+          var o = {
+            display_name: u.getAttribute('display_name'),
+            id: u.getAttribute('id'),
+            count: changesets.getAttribute('count'),
+          };
+
+          $('#profile-name').html(o.display_name);
+          $('#nav-projects').attr("href", "/user/" + o.id);
+          if (window.location.pathname === "/user/0") {
+            window.location = window.location.origin + "/user/" + o.id;
+          }
+
+          if (typeof location !== 'undefined') {
+            var long = location.getAttribute('lon');
+            var lat = location.getAttribute('lat');
+            var zoom = location.getAttribute('zoom');
+            o['lon'] = long;
+            o['lat'] = lat;
+            if (map) {
+              that.locationMarker = L.marker([lat, long], { icon: userIcon }).addTo(map);
+              map.setView([lat, long], 8);
+              that.locationMarker.bindPopup("Your location from osm");
+            }
+          }
+
+          if (loginProcess) {
+            loginProcess = false;
+          }
+          if ("updated" in window && typeof updated === 'function') updated(o)
+
+        }, this);
+      }
+      function hideDetails(map) {
+        $('#login-button').show();
+        $('#user-menu').hide();
+
+        $('#profile-name').html('');
+        $('#nav-projects').attr("href", "/user/0");
+        var osmId = parseInt("{{osm_id}}", 10);
+        if (osmId > 0 && window.location.pathname === "/user/" + osmId) {
+          window.location = window.location.origin + "/user/0";
+        }
+
+        if (map) {
+          if (this.locationMarker) {
+            map.removeLayer(this.locationMarker);
+            map.setView([0, 0], 1);
+          }
+        }
+      }
+
+      update();
+
+      $('.create-campaign-button').click(function (e) {
+        e.preventDefault()
+        if (auth.authenticated()) {
+          location.href = '/create';
+        } else {
+          showAuthAlert();
+        }
+      });
+
+      function showAuthAlert() {
+        $('#auth-modal').modal('show');
+      }
+    </script>
+
+    {% block after_base_js %}{% endblock %}
+
+  </body>
+
+</html>

@@ -13,6 +13,8 @@ compiler: clang
 
 python:
   - '3.6'
+node_js:
+  - "12.10.0" 
 
 services:
   - docker
@@ -38,19 +40,22 @@ git:
   depth: 30
 
 before_install:
+  - nvm install 12.10.0
 
 install:
   - pip install coveralls
   - pip install -r deployment/docker/requirements.txt
   - pip install -r deployment/docker/requirements-dev.txt
+  - npm install
 
 script:
   - bash ./.travis/pep8
   - bash ./.travis/run_tests
+  - npm run build
 
 deploy:
   - provider: elasticbeanstalk
-    skip_cleanup: true
+    edge: true # Enable v2 which uses .ebignore instead of .gitignore to exclude build assets
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     region: "us-west-2"
@@ -60,7 +65,7 @@ deploy:
     on:
       branch: develop
   - provider: elasticbeanstalk
-    skip_cleanup: true
+    edge: true # Enable v2 which uses .ebignore instead of .gitignore to exclude build assets
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     region: "us-west-2"

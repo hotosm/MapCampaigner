@@ -22,7 +22,7 @@ class TestPep8(unittest.TestCase):
             root = '../deployment'
             command = ['make', 'pep8']
             output = Popen(command, stdout=PIPE, cwd=root).communicate()[0]
-            default_number_lines = 25
+            default_number_lines = 33
         elif sys.platform.startswith('win'):
             root = '../../'
             command = [
@@ -44,14 +44,14 @@ class TestPep8(unittest.TestCase):
                 stdout=PIPE,
                 cwd=root,
                 executable=os.path.join(path, 'pep8.exe')).communicate()[0]
-            default_number_lines = 25
+            default_number_lines = 27
 
         else:
             # OSX and linux just delegate to make
             root = '../deployment'
             command = ['make', 'pep8']
             output = Popen(command, stdout=PIPE, cwd=root).communicate()[0]
-            default_number_lines = 25
+            default_number_lines = 27
 
         # make pep8 produces some extra lines by default.
         lines = len(output.splitlines())

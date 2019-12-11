@@ -1,0 +1,149 @@
+<div id="campaign-map-detail">
+  <div class="legend">
+    <span><b>Completeness</b></span><br/>
+    <i style="background-color:#00840d"></i> <span>100%</span><br/>
+    <i style="background-color:#faff00"></i> <span>75%</span><br/>
+    <i style="background-color:#ffe500"></i> <span>50%</span><br/>
+    <i style="background-color:#FD9A08"></i> <span>25%</span><br/>
+    <i style="background-color:#ff0000"></i> <span>0%</span><br/>
+  </div>
+</div>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsbGUiLCJhIjoicFNVWk5VWSJ9.hluCd0YGvYHNlFi_utWe2g';
+  map = new mapboxgl.Map({
+    container: 'campaign-map-detail',
+    style: 'mapbox://styles/mapbox/light-v10',
+    center: [0, 0],
+    zoom: 1
+  });
+  map.addControl(new mapboxgl.NavigationControl());
+
+  map.on('load', function() {
+    map.resize();
+
+    map.addSource('aoi', {
+      "type": "geojson",
+      "data": {{ geometry | safe }}
+    });
+    // load aoi geometry layer
+    map.addLayer({
+      "id": "aoi-geometry",
+      "type": "fill",
+      "source": "aoi",
+      "paint": {
+        "fill-color": "#3388ff",
+        "fill-opacity": 0.1
+      }
+    });
+    map.addLayer({
+      "id": "aoi-bounds",
+      "type": "line",
+      "source": "aoi",
+      "paint": {
+        "line-color": "#003278"
+      }
+    });
+
+    var popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: true
+    });
+    map.on('click', 'aoi-geometry', function(e) {
+      let layers = {layers: ['campaign-polygons', 'campaign-lines', 'campaign-points']}
+      let eventsTriggerd = map.queryRenderedFeatures(e.point, layers)
+      if (eventsTriggerd.length === 0) {
+        let base = 'http://www.openstreetmap.org/edit/#disable_features=boundaries';
+
+        // Encode geojson within backend endpoint.
+        let strPolygon = JSON.stringify(e.features[0].toJSON());
+        let gpx_url = encodeURIComponent(window.location.origin + '/gpx/' + btoa(strPolygon))
+        let url = base + '&gpx=' + gpx_url
+        let coords = JSON.stringify(e.features[0].toJSON().geometry.coordinates[0])
+          .replace(/\"/g,"&quot;");
+
+        var description = `
+        <div>
+          <h4>Area of Interest</h4>
+          <a href="${url}" class="btn btn-success btn-xs" target="_blank"><span class="glyphicon glyphicon-search"></span>
+            Edit</a>
+          <a onclick="getMbtiles('${coords}', '{{ uuid }}')"
+            class="btn btn-warning btn-xs"
+            target="_blank">
+            <span class="glyphicon glyphicon-download-alt"></span>
+            Mbtiles
+          </a>
+        </div>
+        `;
+        popup.setLngLat(e.lngLat)
+        .setHTML(description)
+        .addTo(map);
+      }
+    });
+    map.fitBounds(extent({{ geometry | safe }}), {padding: 40});
+  });
+
+  function getMbtiles(coords, uuid) {
+    const payload = {
+      coordinates: coords,
+      uuid: uuid
+    }
+
+    $.ajax({
+      url: '/mbtiles',
+      type: 'POST',
+      data: payload,
+      dataType: 'json',
+      success: data => {
+        window.open(data.file_url)
+      }
+    })
+
+  }
+
+  ["campaign-polygons", "campaign-lines", "campaign-points"].forEach(
+    layer => {
+      map.on('mouseenter', layer, () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', layer, () => {
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('click', layer, e => displayPopup(e));
+    }
+  );
+
+  function displayPopup(e) {
+    var feature = e.features[0];
+    var link = `
+      <a href="https://www.openstreetmap.org/${feature.properties.type}/${feature.properties.id}" target="_blank">
+        ${feature.properties.type} / ${feature.properties.id}
+      </a>
+    `;
+    var content = `${link}<br />`;
+
+    var percentage = `<b>Completeness</b>: ${feature.properties.completeness_pct}`;
+    content += percentage;
+
+    if (feature.properties.errors && feature.properties.errors !== "null") {
+      var errors = `<div style='color:red'><b>Errors</b>: ${feature.properties.errors}</div>`;
+      content += errors;
+    }
+
+    if (feature.properties.warnings && feature.properties.warnings !== "null") {
+      var warnings = `<div style='color:orange'><b>warnings</b>: ${feature.properties.warnings}</div>`
+      content += warnings;
+    }
+
+    var tags = Object.entries(JSON.parse(feature.properties.tags)).map(
+      i => `<b>${i[0]}</b>: ${i[1]}`
+    );
+    tags = tags.join('<br />')
+    content += `<p><i>${tags}</i></p>`;
+
+    new mapboxgl.Popup()
+      .setLngLat(e.lngLat)
+      .setHTML(content)
+      .addTo(map);
+  }
+</script>

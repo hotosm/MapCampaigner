@@ -1,0 +1,118 @@
+#page-projects {
+  .empty-ui {
+    h2 {
+      font-size: 32px;
+      font-weight: bold;
+      margin-top:40px;
+      margin-bottom: 24px;
+    }
+    p {
+      font-size: 18px;
+      width: 430px;
+      margin: 0 auto;
+    }
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .row {
+    .toggle-switch {
+      margin-bottom: 15px;
+      @include respond-above(md) {
+        margin-right: 135px;
+      }
+    }
+    .form-control-wrapper {
+      width: 100%;
+    }
+  }
+  #search-results.col-md-12 {
+    column-count: 2;
+  }
+  #campaign-map {
+    height: 600px;
+    z-index: 1;
+  }
+}
+
+#search-campaign {
+  margin-bottom: 24px;
+}
+
+.campaign-card, .campaign-card.panel-tile {
+  padding: 24px;
+  &.panel {
+    cursor: pointer;
+  }
+  .label {
+    margin: 0 12px;
+  }
+  a {
+    font-weight: bold;
+    color: $blue-dark;
+  }
+  .btn-xs {
+    margin-bottom: 7px;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+  }
+  .campaign-name, .campaign-date, .campaign-description, .campaign-tags {
+    margin-bottom: 5px;
+  }
+  .campaign-date {
+    color: $blue-light;
+    margin-bottom: 22px;
+  }
+  .campaign-tags-list, .campaign-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .campaign-thumbnail img {
+    max-height: 150px;
+    width: 180px;
+    max-width: 100%;
+    float: right;
+  }
+  .campaign-tags-list {
+    width: 95%;
+    font-size: 12px;
+    line-height: 15px;
+    .campaign-tags {
+      padding: 3px 6px;
+      background-color: $grey-light3;
+      color: $blue-dark;
+      border-radius: 2px;
+      margin: 0 10px 8px 0;
+      display: inline-block;
+    }
+  }
+  .campaign-progress-bar {
+    overflow: hidden;
+  }
+}
+
+#campaign-list ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.btn.campaign-list {
+  color: white;
+  border-radius: 3px;
+  margin-top: 10px;
+  padding: 5px 30px !important;
+  float: right;
+}
+
+.campaign-list.btn:hover {
+  background-color: #ff8440 !important;
+}
+
+.campaign-list-disabled {
+  display: none;
+}

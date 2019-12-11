@@ -1,3 +1,4 @@
+import base64
 import csv
 import inspect
 import json
@@ -5,6 +6,7 @@ import os
 import hashlib
 import requests
 import shutil
+import operator
 from simplekml import Kml, ExtendedData
 from datetime import datetime
 from flask import jsonify
@@ -20,7 +22,10 @@ from flask import (
     Response,
     abort,
     send_file,
-    send_from_directory
+    send_from_directory,
+    url_for,
+    redirect,
+    flash
 )
 
 from app_config import Config
@@ -28,7 +33,8 @@ from campaign_manager import campaign_manager
 from campaign_manager.utilities import (
     get_types,
     map_provider,
-    get_allowed_managers
+    get_allowed_managers,
+    parse_json_string
 )
 import campaign_manager.insights_functions as insights_functions
 from campaign_manager.insights_functions._abstract_insights_function import (
@@ -38,7 +44,7 @@ from campaign_manager.utilities import temporary_folder
 from campaign_manager.data_providers.tasking_manager import \
     TaskingManagerProvider
 from campaign_manager.api import CampaignNearestList, CampaignList
-from campaign_manager.models.campaign import Campaign
+from campaign_manager.models.campaign import Campaign, Permission
 from campaign_manager.models.survey import Survey
 from campaign_manager.insights_functions.osmcha_changesets import \
     OsmchaChangesets
@@ -46,13 +52,15 @@ from campaign_manager.insights_functions.osmcha_changesets import \
 from campaign_manager.data_providers.overpass_provider import OverpassProvider
 from reporter import config
 from campaign_manager.utilities import (
-    load_osm_document_cached, get_contribs
+    load_osm_document_cached, get_contribs, geojson_to_gpx
 )
 from reporter import LOGGER
 from reporter.static_files import static_file
 from campaign_manager.aws import S3Data
 
 from xml.sax.saxutils import escape
+
+from flask import session
 
 try:
     from secret import OAUTH_CONSUMER_KEY, OAUTH_SECRET
@@ -69,38 +77,69 @@ MAX_AREA_SIZE = 320000000
 
 @campaign_manager.route('/')
 def home():
-    """Home page view.
+    """Landing page
 
-    On this page a summary campaign manager view will shown.
+    The first page users land on when they use the app.
     """
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
-        map_provider=map_provider(),
-        bucket_url=S3Data().bucket_url()
+        map_provider=map_provider()
     )
 
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
+    return render_template('home.html', **context)
 
 
-@campaign_manager.route('/all')
-def home_all():
-    """Home page view.
+@campaign_manager.route('/learn')
+def learn():
+    """MapCampaigner Docs
 
-    On this page a summary campaign manager view will shown with all campaigns.
+    Information about to use MapCampaigner.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
+    )
+
+    return render_template('learn.html', **context)
+
+
+@campaign_manager.route('/styleguide')
+def styleguide():
+    """Styleguide
+
+    This page shows a library of UI components.
+    """
+
+    context = dict(
+        oauth_consumer_key=OAUTH_CONSUMER_KEY,
+        oauth_secret=OAUTH_SECRET,
+        map_provider=map_provider()
+    )
+
+    return render_template('styleguide.html', **context)
+
+
+@campaign_manager.route('/user/<osm_id>')
+def campaigns_list(osm_id):
+    """List the user's campaigns
+
+    A summary campaign manager view with all the users campaigns
     """
 
     context = dict(
         oauth_consumer_key=OAUTH_CONSUMER_KEY,
         oauth_secret=OAUTH_SECRET,
         all=True,
-        map_provider=map_provider()
+        map_provider=map_provider(),
+        bucket_url=S3Data().bucket_url(),
+        osm_id=osm_id
     )
 
-    # noinspection PyUnresolvedReferences
-    return render_template('index.html', **context)
+    return render_template('campaign_index.html', **context)
 
 
 def clean_argument(args):
@@ -127,15 +166,6 @@ def get_campaign_insight_function_data(uuid, insight_function_id):
     """Get campaign insight function data.
     """
     return Response("", 200)
-    # try:
-    #     campaign = Campaign.get(uuid)
-    #     rendered_html = campaign.render_insights_function(
-    #         insight_function_id,
-    #         additional_data=clean_argument(request.args)
-    #     )
-    #     return Response(rendered_html)
-    # except Campaign.DoesNotExist:
-    #     abort(404)
 
 
 @campaign_manager.route('/campaign/osmcha_errors/<uuid>')
@@ -185,7 +215,6 @@ def check_geojson_is_polygon(geojson):
 def campaign_boundary_upload_chunk_success(uuid):
     """Upload chunk handle success.
     """
-    from campaign_manager.models.campaign import Campaign
     from campaign_manager.data_providers.shapefile_provider import \
         ShapefileProvider
     # validate boundary
@@ -237,58 +266,6 @@ def campaign_boundary_upload_chunk_success(uuid):
         }))
 
 
-@campaign_manager.route('/campaign/<uuid>/coverage-upload-success')
-def campaign_coverage_upload_chunk_success(uuid):
-    """Upload chunk handle success.
-    """
-    from campaign_manager.models.campaign import Campaign
-    from campaign_manager.insights_functions.upload_coverage import (
-        UploadCoverage
-    )
-    # validate coverage
-    try:
-        campaign = Campaign.get(uuid)
-        coverage_function = UploadCoverage(campaign)
-        coverage = coverage_function.get_function_raw_data()
-        if not coverage:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Shapefile is not valid.'
-            }))
-        if not check_geojson_is_polygon(coverage):
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'It is not in polygon/multipolygon type.'
-            }))
-
-        try:
-            coverage['features'][0]['properties']['date']
-        except KeyError:
-            coverage_function.delete_coverage_files()
-            return Response(json.dumps({
-                'success': False,
-                'reason': 'Needs date attribute in shapefile.'
-            }))
-
-        campaign.coverage = {
-            'last_uploader': request.args.get('uploader', ''),
-            'last_uploaded': datetime.now().strftime('%Y-%m-%d'),
-            'geojson': coverage
-
-        }
-        coverage_uploader = request.args.get('uploader', '')
-        campaign.save(coverage_uploader)
-        return Response(json.dumps({
-            'success': True,
-            'data': campaign.coverage,
-            'files': coverage_function.get_coverage_files()
-        }))
-    except Campaign.DoesNotExist:
-        abort(404)
-
-
 def upload_chunk(_file, filename):
     """Upload chunk file for specific folder.
     :param _file: file to be saved
@@ -330,7 +307,6 @@ def upload_chunk(_file, filename):
     '/campaign/<uuid>/coverage-upload-chunk',
     methods=['POST'])
 def campaign_coverage_upload_chunk(uuid):
-    from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
     """
     try:
@@ -363,7 +339,6 @@ def campaign_coverage_upload_chunk(uuid):
     '/campaign/<uuid>/boundary-upload-chunk',
     methods=['POST'])
 def campaign_boundary_upload_chunk(uuid):
-    from campaign_manager.models.campaign import Campaign
     """Upload chunk handle.
     """
     try:
@@ -391,13 +366,11 @@ def campaign_boundary_upload_chunk(uuid):
         abort(404)
 
 
-@campaign_manager.route('/campaign/<uuid>')
-def get_campaign(uuid):
+def get_campaign_data(uuid):
     from campaign_manager.models.campaign import Campaign
     from campaign_manager.aws import S3Data
     """Get campaign details.
     """
-
     try:
         campaign = Campaign.get(uuid)
     except:
@@ -405,14 +378,24 @@ def get_campaign(uuid):
 
     context = campaign.to_dict()
     context['s3_campaign_url'] = S3Data().url(uuid)
+    campaign_manager_names = []
+    for manager in parse_json_string(campaign.campaign_managers):
+        campaign_manager_names.append(manager['name'])
 
-    context['types'] = list(map(lambda type:
-        type[1]['type'],
-        context['types'].items()))
+    campaign_viewer_names = []
+    for viewer in parse_json_string(campaign.campaign_viewers):
+        campaign_viewer_names.append(viewer['name'])
+
+    campaign_contributor_names = []
+    for contributor in parse_json_string(campaign.campaign_contributors):
+        campaign_contributor_names.append(contributor['name'])
 
     context['oauth_consumer_key'] = OAUTH_CONSUMER_KEY
     context['oauth_secret'] = OAUTH_SECRET
     context['map_provider'] = map_provider()
+    context['campaign_manager_names'] = campaign_manager_names
+    context['campaign_viewer_names'] = campaign_viewer_names
+    context['campaign_contributor_names'] = campaign_contributor_names
     context['participants'] = len(campaign.campaign_managers)
 
     context['pct_covered_areas'] = campaign.calculate_areas_covered()
@@ -440,8 +423,243 @@ def get_campaign(uuid):
     except TypeError:
         context['end_date_date'] = '-'
         context['end_date_year'] = '-'
+    return context
+
+
+@campaign_manager.route('/user/session', methods=['POST'])
+def set_session():
+    user = request.values.get('display_name')
+    user_id = request.values.get('id')
+
+    session['user'] = (user_id, user)
+
+    return Response(json.dumps({'success': True}))
+
+
+@campaign_manager.route('/user/session', methods=['DELETE'])
+def unset_session():
+    if 'user' in session.keys():
+        session.pop('user', None)
+
+    return Response(json.dumps({'success': True}))
+
+
+@campaign_manager.route('/campaign/<uuid>')
+def get_campaign(uuid):
+    context = get_campaign_data(uuid)
+    context['types'] = list(map(lambda type:
+                                type[1]['type'],
+                                context['types'].items()))
+
+    # Get data from campaign.json
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
+                i, feature in enumerate(campaign_data['types'])]
+    all_features = []
+    contributors_data = {}
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    context['total_features'] = len(all_features)
+    for feature in all_features:
+        if feature['last_edited_by'] not in contributors_data.keys():
+            contributors_data[feature['last_edited_by']] = feature
+    context['total_contributors'] = len(contributors_data)
+    context['complete'] = len([f for f in all_features
+                               if f['status'] == "Complete"])
+    context['incomplete'] = len([f for f in all_features
+                                 if f['status'] == "Incomplete"])
+    context['complete_pct'] = int(context['complete'] / context['incomplete'])
+
+    can_edit = False
+    if 'user' in session.keys():
+        user_id, _ = session['user']
+        ids = [m['osm_id'] for m in context['campaign_managers']]
+        if user_id in ids:
+            can_edit = True
+
+    context['can_edit'] = can_edit
 
     return render_template('campaign_detail.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/features')
+def get_campaign_features(uuid):
+    context = get_campaign_data(uuid)
+    for key, values in context['types'].items():
+        # Fetch the feature json file.
+        file_name = 'campaigns/{0}/{1}.json'.format(uuid, values['type'])
+        features = S3Data().fetch(file_name)
+        values["feature_count"] = len(features)
+        values['complete'] = 0
+        values['incomplete'] = 0
+        values['element_type'] = values['element_type']
+        for f in features:
+            if len(f['missing_attributes']) > 0:
+                values['incomplete'] += 1
+            else:
+                values['complete'] += 1
+    return render_template('campaign_features.html', **context)
+
+
+def get_type_details(types, feature_name):
+    for key, value in types.items():
+        if value['type'].replace(" ", "_") == feature_name:
+            return value
+
+
+def get_feature_summary(uuid, feature_name):
+    feature = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
+    data = {'feature_count': 0, 'complete': 0, 'incomplete': 0, 'tags': []}
+    data['tags'] += feature[0]['attributes']
+    data['tags'] += feature[0]['missing_attributes']
+    for f in feature:
+        data['feature_count'] += 1
+        if len(f['missing_attributes']) > 0:
+            data['incomplete'] += 1
+        else:
+            data['complete'] += 1
+    return data
+
+
+@campaign_manager.route('/campaign/<uuid>/features/<feature_name>')
+def get_feature_details(uuid, feature_name):
+    context = get_campaign_data(uuid)
+    context['feature_name'] = feature_name
+    context['feature_details'] = get_feature_summary(uuid, feature_name)
+    return render_template('feature_details.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/contributor/<osm_name>')
+def get_contributor(uuid, osm_name):
+    context = get_campaign_data(uuid)
+    context['mapper'] = osm_name
+    campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
+    features = [campaign['types'][f'type-{i + 1}']['type'] for i,
+                feature in enumerate(campaign['types'])]
+    # Data for ranking panel
+    all_features = []
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    user_features = [f for f in all_features
+                     if f['last_edited_by'] == osm_name]
+    context['total_edits'] = len(user_features)
+    all_attr_complete, all_attr_total = 0, len(user_features)
+    contrib_features = {}
+    for feature in user_features:
+        if not feature['missing_attributes']:
+            all_attr_complete += 1
+        if feature["type"] not in contrib_features.keys():
+            contrib_features[feature["type"]] = {}
+            contrib_features[feature["type"]]['total'] = 1
+            contrib_features[feature["type"]]['complete'] = 1 \
+                if not feature['missing_attributes'] else 0
+        if feature["type"] in contrib_features.keys():
+            contrib_features[feature["type"]]['total'] += 1
+            if not feature['missing_attributes']:
+                contrib_features[feature["type"]]['complete'] += 1
+    pct = (all_attr_complete * 100) / all_attr_total
+    context['all_attr_completeness'] = round(pct)
+    contrib_features = {k: round((v['complete'] * 100) / v['total']) for k,
+                        v in contrib_features.items()}
+    attr_ranking = sorted(contrib_features.items(),
+                          key=operator.itemgetter(1), reverse=True)
+    context['attr_ranking'] = attr_ranking[:5]
+    return render_template('contributor.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/contributors')
+def get_campaign_contributors(uuid):
+    context = get_campaign_data(uuid)
+    # Get data from campaign.json
+    campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
+    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
+                i, feature in enumerate(campaign_data['types'])]
+    all_features = []
+    contributors_data = {}
+    monitored_contributors = [c['name'] for
+                              c in context['campaign_contributors']]
+    monitored_data = {}
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    context['total_features'] = len(all_features)
+    for feature in all_features:
+        name = feature['last_edited_by']
+        if name not in contributors_data.keys():
+            contributors_data[name] = 1
+            if name in monitored_contributors:
+                monitored_data[name] = {}
+                monitored_data[name]['total_edits'] = 1
+                monitored_data[name]['attr_complete'] = 1 if not \
+                    feature['missing_attributes'] else 0
+                monitored_data[name]['attr_incomplete'] = 0 if not \
+                    feature['missing_attributes'] else 1
+        else:
+            contributors_data[name] += 1
+            if name in monitored_contributors:
+                monitored_data[name]['total_edits'] += 1
+                if not feature['missing_attributes']:
+                    monitored_data[name]['attr_complete'] += 1
+                else:
+                    monitored_data[name]['attr_incomplete'] += 1
+    context['total_contributors'] = len(contributors_data.keys())
+    # Top contributors
+    ranking_contributors = sorted(contributors_data.items(),
+                                  key=operator.itemgetter(1), reverse=True)
+    context['contributors_top_ranking'] = ranking_contributors[:5]
+    # Monitored contributors
+    monitored_contributors_info = []
+    for name, data in monitored_data.items():
+        attr_complete = data['attr_complete']
+        attr_incomplete = data['attr_incomplete']
+        pct = (attr_complete * 100) / (attr_complete + attr_incomplete)
+        mapper_data = {
+            "name": name,
+            "total_edits": data['total_edits'],
+            "complete": attr_complete,
+            "total_attr": attr_complete + attr_incomplete,
+            "pct_complete": round(pct)
+        }
+        monitored_contributors_info.append(mapper_data)
+    context['monitored_contributors_info'] = monitored_contributors_info
+    # Pagination of monitored contributors
+    per_page, paginated_data = 4, {}
+    total_pages = int(len(monitored_contributors_info) / per_page)
+    if len(monitored_contributors_info) % per_page != 0:
+        total_pages += 1
+    pages = list(range(1, total_pages + 1))
+    monitored = monitored_contributors_info
+    for page in pages:
+        current, rest = monitored[:per_page], monitored[per_page:]
+        paginated_data[page] = current
+        monitored = rest
+    context['monitored_contributors_paginated'] = paginated_data
+    context['monitored_contributors_pages'] = pages
+    return render_template('campaign_contributors.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/area')
+def get_campaign_area(uuid):
+    context = get_campaign_data(uuid)
+    return render_template('campaign_area.html', **context)
+
+
+@campaign_manager.route('/campaign/<uuid>/delete', methods=['POST'])
+def delete_campaign(uuid):
+    try:
+        campaign = Campaign.get(uuid)
+        context = campaign.to_dict()
+        # Get function from the model to delete S3 folders for the project
+        campaign.delete()
+        # Show a message to confirm the project is deleted
+        flash('You successfully deleted a project!')
+        # Return a status 200 to the frontend
+        response = Response(status=200)
+        return response
+    except Campaign.DoesNotExist:
+        abort(404)
 
 
 @campaign_manager.route('/participate')
@@ -487,6 +705,57 @@ def participate():
         )
     else:
         abort(404)
+
+
+@campaign_manager.route('/gpx/<json_data>', methods=['GET'])
+def generate_gpx(json_data):
+    # decoding to geojson
+    try:
+        decoded_json = base64.b64decode(json_data).decode('utf-8')
+    except UnicodeDecodeError:
+        abort(400)
+
+    geojson = json.loads(decoded_json)
+    xml_gpx = geojson_to_gpx(geojson)
+    resp = Response(xml_gpx, mimetype='text/xml', status=200)
+    cors_host = 'https://www.openstreetmap.org'
+    # Disable CORS.
+    resp.headers['Access-Control-Allow-Origin'] = cors_host
+    return resp
+
+
+@campaign_manager.route('/mbtiles', methods=['POST'])
+def get_mbtile():
+    # decoding to geojson
+    client = S3Data()
+
+    coords = json.loads(request.values.get('coordinates'))
+    polygon = shapely_geometry.Polygon(coords)
+
+    url = 'campaigns/{0}/mbtiles/'.format(request.values.get('uuid'))
+
+    mbtiles = client.fetch('{0}tiles.geojson'.format(url))
+
+    # Get all campaign polygons.
+    features = [f for f in mbtiles['features']
+                if f['properties']['parent'] is None]
+    polygons = [shapely_geometry.Polygon(f['geometry']['coordinates'][0])
+                for f in features]
+    polygons = [shapely_geometry.polygon.orient(p) for p in polygons]
+    centroids = [p.centroid for p in polygons]
+
+    distances = [polygon.centroid.distance(c) for c in centroids]
+    min_distance = distances.index(min(distances))
+
+    tiles_id = features[min_distance]['properties']['id']
+    tiles_file = '{0}.mbtiles'.format(tiles_id)
+
+    # Get file from s3
+    file_path = '{0}{1}'.format(url, tiles_file)
+    aws_url = 'https://s3-us-west-2.amazonaws.com'
+    file_url = '{0}/{1}/{2}'.format(aws_url, client.bucket, file_path)
+
+    return Response(json.dumps({'file_url': file_url}))
 
 
 @campaign_manager.route('/generate_josm', methods=['POST'])
@@ -606,7 +875,7 @@ def generate_kml():
     # For now, let's work only with points.
     # TODO: include polygons in the kml file.
     features = [[f for f in sublist if f['geometry']['type'] == 'Point']
-        for sublist in features]
+                for sublist in features]
     features = [item for sublist in features for item in sublist]
 
     for feature in features:
@@ -775,7 +1044,6 @@ def create_campaign():
     import uuid
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
 
@@ -792,6 +1060,10 @@ def create_campaign():
         Campaign.compute(data["uuid"])
         campaign = Campaign(data['uuid'])
         campaign.save()
+        campaign.save_to_user_campaigns(data['user_id'],
+                                        data['uuid'],
+                                        Permission.ADMIN.name
+        )
 
         return redirect(
             url_for(
@@ -812,6 +1084,7 @@ def create_campaign():
     context['uuid'] = uuid.uuid4().hex
     context['types'] = {}
     context['link_to_omk'] = False
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
@@ -826,7 +1099,6 @@ def edit_campaign(uuid):
     import datetime
     from flask import url_for, redirect
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
     """Get campaign details.
     """
     try:
@@ -836,7 +1108,12 @@ def edit_campaign(uuid):
         if request.method == 'GET':
             form = CampaignForm()
             form.name.data = campaign.name
-            form.campaign_managers.data = campaign.campaign_managers
+            form.campaign_managers.data = parse_json_string(
+                campaign.campaign_managers)
+            form.campaign_viewers.data = parse_json_string(
+                campaign.campaign_viewers)
+            form.campaign_contributors.data = parse_json_string(
+                campaign.campaign_contributors)
             form.remote_projects.data = campaign.remote_projects
             form.types.data = campaign.types
             form.description.data = campaign.description
@@ -877,6 +1154,7 @@ def edit_campaign(uuid):
     context['types'] = {}
     context['campaign_creator'] = campaign.campaign_creator
     context['link_to_omk'] = campaign.link_to_omk
+    context['feature_templates'] = get_types()
     try:
         context['types'] = json.dumps(
             get_types()).replace('True', 'true').replace('False', 'false')
@@ -890,9 +1168,7 @@ def edit_campaign(uuid):
 def submit_campaign_data_to_json():
     import uuid
     from campaign_manager.forms.campaign import CampaignForm
-    from campaign_manager.models.campaign import Campaign
-    """Get campaign details.
-    """
+    """Get campaign details."""
 
     form = CampaignForm(request.form)
     if form.validate_on_submit():
@@ -904,8 +1180,8 @@ def submit_campaign_data_to_json():
 
             data['uuid'] = uuid.uuid4().hex
             campaign_data = Campaign.parse_campaign_data(
-                    data,
-                    form.uploader.data)
+                data,
+                form.uploader.data)
             return Response(Campaign.serialize(campaign_data))
         except Exception as e:
             print(e)
@@ -913,57 +1189,11 @@ def submit_campaign_data_to_json():
         return abort(500)
 
 
-@campaign_manager.route('/search_osm/<query_name>', methods=['GET'])
-def get_osm_names(query_name):
-    whosthat_url = 'http://whosthat.osmz.ru/whosthat.php?action=names&q=' \
-                   + query_name.replace(" ", "%20")
-    whosthat_data = []
-    osm_usernames = []
-    found_exact = False
-
-    try:
-        whosthat_response = urllibrequest.urlopen(whosthat_url)
-        whosthat_data = json.loads(whosthat_response.read())
-    except (HTTPError, URLError):
-        print("connection error")
-
-    for whosthat_names in whosthat_data:
-        for whosthat_name in whosthat_names['names']:
-            if whosthat_name.lower() == query_name:
-                found_exact = True
-            osm_usernames.append(whosthat_name)
-
-    # If username not found in whosthat db, check directly to openstreetmap
-    osm_response = None
-    if not found_exact:
-        osm_url = 'https://www.openstreetmap.org/user/' + \
-                  query_name.replace(" ", "%20")
-        try:
-            osm_response = urllibrequest.urlopen(osm_url)
-        except (HTTPError, URLError):
-            print("connection error")
-
-    if osm_response:
-        osm_soup = BeautifulSoup(osm_response, 'html.parser')
-        osm_title = osm_soup.find('title').string
-        if query_name in osm_title:
-            osm_usernames.append(query_name)
-
-    return Response(json.dumps(osm_usernames))
-
-
-@campaign_manager.route('/land')
+@campaign_manager.route('/osm_auth')
 def landing_auth():
-    """OSM auth landing page.
+    """Redirect page used for OSM login
     """
-    return render_template('land.html')
-
-
-@campaign_manager.route('/not-logged-in.html')
-def not_logged_in():
-    """Not logged in page.
-    """
-    return render_template('not_authenticated.html')
+    return render_template('osm_auth.html')
 
 
 @campaign_manager.route('/search-remote')
@@ -1009,21 +1239,6 @@ if __name__ == '__main__':
     else:
         LOGGER.info('Running in production mode')
     campaign_manager.run()
-
-
-@campaign_manager.route('/about')
-def about():
-    return render_template('about.html')
-
-
-@campaign_manager.route('/resources')
-def resources():
-    return render_template('resources.html')
-
-
-@campaign_manager.route('/how-it-works')
-def how_it_works():
-    return render_template('how_it_works.html')
 
 
 @campaign_manager.route('/403')

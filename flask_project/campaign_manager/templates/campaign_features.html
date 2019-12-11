@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% set active_page = "features" %}
+
+{% block extra_title %}
+- {{ name }}
+{% endblock %}
+
+{% block extra_head %}
+<script type="text/javascript" src="/static/js/leaflet.draw-0.4.9/leaflet.draw.js"></script>
+{% endblock %}
+
+{% block subhead %}
+{% include 'components/project_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row" style="margin-bottom: 32px;">
+  <div class="col-xs-12">
+    <h2 class="pull-left">Feature Types</h2>
+    <label class="toggle-switch active pull-right">
+      <input type="checkbox" checked id="check-show-map"> Show map
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div id="features-list" class="col-xs-12 col-md-6">
+    <div class="row">
+    {% for type in types %}
+    <div class="col-xs-12 col-md-6">
+      <div class="panel panel-tile">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-xs-12">
+              <h4 class="panel-name">
+                {% if types[type]['element_type'] == 'Polygon' %}
+                {% include 'svgs/polygon.html' %}
+                {% elif types[type]['element_type'] == 'Point' %}
+                {% include 'svgs/point.html' %}
+                {% else %}
+                {% include 'svgs/line.html' %}
+                {% endif %}
+                {{ types[type]['type'] }}
+              </h4>
+              {% set feature_name = types[type]['type'].replace(" ", "_") %}
+              <a href="{{ url_for('campaign_manager.get_feature_details', uuid=uuid, feature_name=feature_name ) }}" class="panel-more-button">
+                {% include 'svgs/right_arrow.html' %}
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <span class="panel-total-label">Total features checked</span>
+              <strong class="panel-total text-center">{{ types[type]['feature_count'] }}</strong>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              {% set completeness = (types[type]['complete']/types[type]['feature_count']*100)|round|int %}
+              <p><b>{{ completeness }}%</b> <span class="panel-info">Complete Status</span> <span class="pull-right">{{ types[type]['complete'] }}/{{ types[type]['feature_count'] }}</span></p>
+              <div class="progress">
+                <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="{{ completeness }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ completeness }}%">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  </div>
+  <div class="col-xs-12 col-md-6">
+    <div id="campaign-map-display"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block after_base_js %}
+<script type="text/javascript">
+  const geoJSON = JSON.parse('{{ geometry|tojson }}');
+  const map_provider = "{{ map_provider }}";
+
+  var taskStatusFillColor = {
+    'READY': '#FFFFFF',
+    'unassigned': '#D3D3D3',
+    'MAPPED': '#FFE4B5',
+    'INVALIDATED': '#D3D3D3',
+    'VALIDATED': '#B0DE5C',
+    'complete': '#B0DE5C',
+    'incomplete': '#FFE4B5',
+    'BADIMAGERY': '#d2a29e'
+  };
+
+  function drawGeometry (json, isUpload) {
+    return L.geoJSON(json, {
+          style: function (feature) {
+              var status = 'unassigned';
+              if ('status' in feature.properties) {
+                  status = feature.properties['status'];
+              } else if ('date' in feature.properties) {
+                  var layerDate = moment(feature.properties['date'], 'YYYY-MM-DD', true);
+                  var remainingDays = layerDate.diff(moment(), 'days') + 1;
+                  if (remainingDays <= 0) {
+                      status='complete';
+                  } else {
+                      status='incomplete';
+                  }
+                  feature.properties['status'] = status;
+              }
+              if (typeof taskStatusFillColor[status] !== 'undefined') {
+                  return {
+                      weight: 2,
+                      color: "#999",
+                      opacity: 1,
+                      fillColor: taskStatusFillColor[status],
+                      fillOpacity: 0.8
+                  }
+              }
+              return feature.properties && feature.properties.style;
+          },
+          onEachFeature: function (feature, layer) {
+              layer.bindPopup(
+                  '<div class="layer-popup">' +
+                      '<div class="layer-popup-area">' +
+                          'Area &nbsp;&nbsp;: ' + feature.properties.area +
+                      '</div>'+
+                      '<div class="layer-popup-team">' +
+                          'Team &nbsp;: ' + feature.properties.team +
+                      '</div>'+
+                      '<div class="layer-popup-team">' +
+                          'Status : ' + capitalizeFirstLetter(feature.properties.status) +
+                      '</div>'+
+                  '</div>'
+              );
+              if (isUpload) drawnItems.addLayer(layer);
+          }
+      }
+    );
+  }
+  var campaignDisplayMap = L.map('campaign-map-display');
+  var drawnItemsDisplay = new L.geoJSON();
+  const mapTilesDisplay = L.tileLayer(map_provider, {
+      attribution: '© <a href="https://www.mapbox.com/about/maps/" target="_parent">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright" target="_parent">OpenStreetMap</a> ' +
+      'contributors',
+      maxZoom: 18
+  })
+  mapTilesDisplay.addTo(campaignDisplayMap);
+  if (geoJSON) {
+      drawnItemsDisplay = drawGeometry(geoJSON)
+      campaignDisplayMap.fitBounds(drawnItemsDisplay.getBounds());
+  }
+  campaignDisplayMap.addLayer(drawnItemsDisplay);
+  var drawControlDisplay = new L.Control.Draw({
+      draw: false,
+      edit: {
+          featureGroup: drawnItemsDisplay,
+          edit: false,
+          remove: false
+      }
+  }, this);
+  campaignDisplayMap.addControl(drawControlDisplay);
+  $('#check-show-map').click(function () {
+    if ($(this).is(':checked')) {
+      $('#campaign-map-display').show();
+      $('#features-list').addClass('col-md-6').removeClass('col-md-12')
+      $(this).parents(".toggle-switch").addClass('active');
+    } else {
+      $('#campaign-map-display').hide();
+      $('#features-list').addClass('col-md-12').removeClass('col-md-6')
+      $(this).parents(".toggle-switch").removeClass('active');
+    }
+  });
+</script>
+{% endblock %}

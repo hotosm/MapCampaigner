@@ -1,0 +1,70 @@
+{% set navigation_items = [
+  (url_for('campaign_manager.home'), 'home', 'Home'),
+  (url_for('campaign_manager.learn'), 'learn', 'Learn'),
+  (url_for('campaign_manager.campaigns_list', osm_id=0), 'projects', 'My Projects')
+] -%}
+
+{% set active_page = active_page|default('home') -%}
+{% from 'components/page_header.html' import page_header -%}
+
+<div class="panel panel-pagetop">
+  <div class="container container-fluid">
+    <div class="panel-body">
+      Mapping our world together
+      <a class="pull-right" href="https://hotosm.org">
+        hotosm.org
+        {% include 'svgs/link.html' %}
+      </a>
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-default">
+  <div class="container container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{url_for('campaign_manager.home')}}">
+        <img alt="HOTOSM Logo" height="27" src="/static/img/hot-logo.svg">
+      </a>
+      <p class="navbar-text">Map Campaigner</p>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar-collapse">
+      <ul class="nav navbar-nav navbar-left">
+        {% for href, id, text in navigation_items %}
+        <li {% if id == active_page %}class="active" {% endif %}>
+          <a href="{{ href|e }}" id="nav-{{id}}">{{ text|e }}</a>
+        </li>
+        {% endfor %}
+        {% if active_page == "styleguide" %}
+        <li class="active">
+          <a href="{{ url_for('campaign_manager.styleguide') }}">Styleguide</a>
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" class="create-campaign-button">Create</a></li>
+        <li id="login-button" class="login-button"><a class="btn btn-info btn-sm" href="#">Log In</a></li>
+        <li id="user-menu" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <span id="profile-name"></span> <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-user">
+            <li id="logout-button">
+              <a class="" href="#">
+                {% include 'svgs/door.html' %}
+                Log Out
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% if page_title is defined %}
+{{ page_header(page_title) }}
+{% endif %}

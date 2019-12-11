@@ -60,7 +60,8 @@ class FileManager(object):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
-        with open(self.current_file(), 'rb') as json_file, TemporaryFile() as temp_file:
+        with open(self.current_file(), 'rb') as json_file,\
+        TemporaryFile() as temp_file:
             with gzip.GzipFile(fileobj=temp_file, mode='wb') as gz:
                 shutil.copyfileobj(json_file, gz)
             temp_file.seek(0)
@@ -99,7 +100,7 @@ class GeojsonFileManager(FileManager):
         super(GeojsonFileManager, self).__init__(destination)
 
     def write_header(self):
-        self.fd.write('{"type": "FeatureCollection","features": [\n')
+        self.fd.write('{"type": "FeatureCollection","features": [ \n')
 
     def write_footer(self):
         self.remove_last_comma()

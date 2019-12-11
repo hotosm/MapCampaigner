@@ -1,0 +1,28 @@
+{
+    "name": "make_pdf_grid",
+    "version": "1.0.0",
+    "description": "Lambda function to generate geojson grid for pdf generation",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "gis",
+      "geojson"
+    ],
+    "author": "Humanitarian OpenStreetMap Team",
+    "license": "BSD-3-Clause",
+    "dependencies": {
+      "aws-sdk": "^2.439.0",
+      "@turf/bbox": "^6.0.1",
+      "@turf/bbox-polygon": "^6.0.1",
+      "@turf/boolean-intersects": "^6.0.2",
+      "@turf/center-of-mass": "^6.0.1",
+      "@turf/centroid": "^6.0.2",
+      "@turf/destination": "^6.0.1",
+      "@turf/distance": "^6.0.1",
+      "@turf/helpers": "^6.1.4",
+      "temp-turf-rectangle-grid": "^6.0.2"
+    }
+  }
+  

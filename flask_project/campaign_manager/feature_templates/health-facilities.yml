@@ -1,0 +1,27 @@
+feature: amenity=clinic,doctors,hospital
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+element_type: Point
+tags:
+    - name
+    - "medical_system:western":
+        - 'yes'
+    - operator
+    - "health_facility:bed"
+    - "health_facility:level"
+    - "health_facility:type"
+    - emergency:
+        - 'yes'
+        - 'no'
+    - "operator:type"
+    - "contact:phone"
+    - "addr:full"
+    - opening_hours
+    - status:
+        - operational
+        - nonoperational
+    - "staff_count:doctors"
+    - "staff_count:nurses"
+    - source

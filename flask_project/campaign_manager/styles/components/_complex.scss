@@ -1,0 +1,36 @@
+.media {
+  margin: 40px 0;
+  a {
+    cursor: auto;
+  }
+  .media-heading {
+    font-family: 'Archivo', sans-serif;
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+  h2.media-heading {
+    font-size: 40px;
+    text-transform: none;
+  }
+  h3.media-heading {
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-transform: none;
+  }
+  p {
+    font-size: 20px;
+    line-height: 28px;
+    color: $blue-dark;
+    max-width: 470px;
+  }
+  >.pull-right {
+    padding-left: 42px;
+  }
+  >.pull-left {
+    padding-right: 100px;
+  }
+  .btn {
+    margin-top: 24px;
+    margin-right: 30px;
+  }
+}

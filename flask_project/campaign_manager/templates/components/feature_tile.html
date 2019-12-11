@@ -1,0 +1,40 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="panel panel-tile">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-12">
+            <h4 class="panel-name">
+                {% if feature_templates[feature]['element_type'] and feature_templates[feature]['element_type'].lower() == 'polygon' %}
+                {% include 'svgs/polygon.html' %}
+                {% elif feature_templates[feature]['element_type'] and feature_templates[feature]['element_type'].lower() == 'point' %}
+                {% include 'svgs/point.html' %}
+                {% else %}
+                {% include 'svgs/point.html' %}
+                {% endif %}
+              {{ feature }}
+            </h4>
+            <p class="panel-info">{{feature_templates[feature]['feature']}}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 row-tags-wrapper">
+            <div class="row-tags">
+              {% for tag in feature_templates[feature]['tags'] %}
+              {% set subtags = feature_templates[feature]['tags'][tag] %}
+                <span class="label label-default" title="{{tag}}{% if subtags %}: {{ subtags|join(', ') }}{% endif %}">
+                  {{tag}}{% if subtags %}: {{ subtags|join(', ') }}{% endif %}
+                </span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="row panel-footer-row">
+          <div class="panel-footer">
+            <button class="btn btn-sm btn-primary pull-right" onclick="addTypes('{{ feature }}')">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

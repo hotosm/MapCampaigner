@@ -13,6 +13,7 @@ import os
 import pygeoj
 import time
 import zlib
+import string as str
 
 from flask import render_template
 from shapely import geometry as shapely_geometry
@@ -27,10 +28,24 @@ from campaign_manager.git_utilities import save_with_git
 from campaign_manager.utilities import (
     get_survey_json,
     parse_json_string,
-    simplify_polygon
+    simplify_polygon,
+    get_attributes,
+    get_all_attributes,
+    parse_osm_element
 )
 from campaign_manager.aws import S3Data
+from enum import Enum
+from os.path import join
 import visvalingamwyatt as vw
+
+
+USER_CAMPAIGNS = 'user_campaigns'
+
+
+class Permission(Enum):
+    ADMIN = 0
+    MANAGER = 1
+    VIEWER = 2
 
 
 class Campaign(JsonModel):
@@ -47,6 +62,8 @@ class Campaign(JsonModel):
     start_date = None
     end_date = None
     campaign_managers = []
+    campaign_viewers = []
+    campaign_contributors = []
     selected_functions = []
     remote_projects = []
     types = []
@@ -56,6 +73,7 @@ class Campaign(JsonModel):
     dashboard_settings = ''
     link_to_omk = False
     thumbnail = ''
+    user_id = None
 
     def __init__(self, uuid=None):
         if uuid:
@@ -64,6 +82,53 @@ class Campaign(JsonModel):
             self.geojson_path = Campaign.get_geojson_file(uuid)
             self.edited_at = S3Data().get_last_modified_date(self.json_path)
             self.parse_json_file()
+
+    @staticmethod
+    def save_to_user_campaigns(user_id, uuid, level):
+        s3_obj = S3Data()
+
+        # Validate that user file exists. If not create it.
+        user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
+        user_campaigns = s3_obj.fetch(user_file)
+        campaign = {
+            'uuid': uuid,
+            'permission': Permission[level].value
+        }
+
+        if len(user_campaigns) == 0:
+            user_campaigns = {
+                'projects': [campaign]
+            }
+        else:
+            # Validate that campaign does not exist.
+            uuids = [c['uuid'] for c in user_campaigns['projects']]
+            if uuid in uuids:
+                raise ValueError("Campaign already exists")
+            user_campaigns['projects'].append(campaign)
+
+        body = json.dumps(user_campaigns)
+        s3_obj.create(user_file, body)
+
+        return True
+
+    def delete_from_user_campaigns(self, user_id, uuid):
+        s3_obj = S3Data()
+
+        user_file = join(USER_CAMPAIGNS, f'{user_id}.json')
+        user_campaigns = s3_obj.fetch(user_file)
+        if user_campaigns:
+            projects = user_campaigns.get('projects', [])
+            if projects:
+                index = None
+                for i in range(len(projects)):
+                    if projects[i]['uuid'] == uuid:
+                        index = i
+                del projects[i]
+                user_campaigns['projects'] = projects
+                body = json.dumps(user_campaigns)
+                s3_obj.create(user_file, body)
+
+        return True
 
     def save(self, uploader=None, save_to_git=True):
         """Save current campaign
@@ -92,6 +157,27 @@ class Campaign(JsonModel):
         geocampaign_key = self.geojson_path
         geocampaign_body = json.dumps(geometry)
         S3Data().create(geocampaign_key, geocampaign_body)
+
+    def delete(self):
+        """Get a uuid and delete the S3 folder for this specific
+        campaign and delete from users (manager & viewers)
+        profiles on S3."""
+        uuid = self.uuid
+        folder_path = f"campaigns/{uuid}"
+        # Delete project in users json
+        content = S3Data().fetch(self.json_path)
+        content_json = parse_json_string(content)
+        project_managers = content_json.get('campaign_managers', [])
+        project_managers = list(map(lambda x: x["osm_id"], project_managers))
+        project_viewers = content_json.get('campaign_viewers', [])
+        project_viewers = list(map(lambda x: x["osm_id"], project_viewers))
+        project_users = project_managers + project_viewers
+        project_users = list(set(project_users))
+        if project_users:
+            for user_id in project_users:
+                self.delete_from_user_campaigns(user_id, uuid)
+        # Delete files on S3
+        S3Data().delete_folder(folder_path)
 
     def generate_static_map_url(self, simplify):
         """
@@ -204,6 +290,10 @@ class Campaign(JsonModel):
             setattr(self, key, value)
         self.geometry = parse_json_string(self.geometry)
         self.types = Campaign.parse_types_string(self.types.replace('\'', '"'))
+        self.campaign_managers = parse_json_string(self.campaign_managers)
+        self.campaign_viewers = parse_json_string(self.campaign_viewers)
+        self.campaign_contributors = parse_json_string(
+            self.campaign_contributors)
         self.selected_functions = parse_json_string(self.selected_functions)
         self.save(uploader)
 
@@ -253,6 +343,12 @@ class Campaign(JsonModel):
             except json.decoder.JSONDecodeError:
                 raise JsonModel.CorruptedFile
         self.types = Campaign.parse_types_string(json.dumps(self.types))
+        self.campaign_managers = parse_json_string(
+            json.dumps(self.campaign_managers))
+        self.campaign_contributors = parse_json_string(
+            json.dumps(self.campaign_contributors))
+        self.campaign_viewers = parse_json_string(
+            json.dumps(self.campaign_viewers))
 
         # geometry data
         if self.geojson_path:
@@ -462,8 +558,8 @@ class Campaign(JsonModel):
         s3 = S3Data()
         # For each type we get first level data.
         response = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix=type,
-            Delimiter='/')
+                                      Prefix=type,
+                                      Delimiter='/')
         if 'Contents' not in list(response.keys()):
             return None
 
@@ -485,8 +581,8 @@ class Campaign(JsonModel):
     def get_s3_types(self):
         s3 = S3Data()
         objs = s3.s3.list_objects(Bucket=s3.bucket,
-            Prefix='campaigns/{}/render/'.format(self.uuid),
-            Delimiter='/')
+                                  Prefix=f'campaigns/{self.uuid}/render/',
+                                  Delimiter='/')
 
         if 'CommonPrefixes' not in objs:
             return None
@@ -564,6 +660,11 @@ class Campaign(JsonModel):
 
         uuid = data['uuid']
         data['types'] = Campaign.parse_types_string(data['types'])
+        data['campaign_managers'] = parse_json_string(
+            data['campaign_managers'])
+        data['campaign_contributors'] = parse_json_string(
+            data['campaign_contributors'])
+        data['campaign_viewers'] = parse_json_string(data['campaign_viewers'])
         data['selected_functions'] = parse_json_string(
             data['selected_functions'])
         Campaign.validate(data, uuid)
@@ -817,9 +918,16 @@ class Campaign(JsonModel):
 
         function_name = "{env}_compute_campaign".format(
             env=osm_app.config['ENV'])
-
         payload = json.dumps({"campaign_uuid": campaign_uuid})
+        aws_lambda.invoke(
+            FunctionName=function_name,
+            InvocationType="Event",
+            Payload=payload)
 
+        # Invoke the mbtiles generation lambda.
+        function_name = "{env}_process_make_pdf_grid".format(
+            env=osm_app.config['ENV'])
+        payload = json.dumps({"campaign_uuid": campaign_uuid})
         aws_lambda.invoke(
             FunctionName=function_name,
             InvocationType="Event",

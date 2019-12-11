@@ -1,0 +1,29 @@
+feature: amenity=place_of_worship
+insights:
+    - FeatureAttributeCompleteness
+    - CountFeature
+    - MapperEngagement
+element_type: Point
+tags:
+    - name
+    - building:
+        - church
+        - cathedral
+        - mosque
+        - synagogue
+        - temple
+    - religion:
+        - buddhist
+        - christian
+        - jewish
+        - hindu
+        - muslim
+        - sikh
+        - taoist
+    - denomination:
+        - catholic
+        - orthodox
+        - protestant
+        - sunni
+        - shia
+        - sufi
