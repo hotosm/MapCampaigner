@@ -26,14 +26,14 @@ async function getS3File(uuid) {
 
 async function main(event) {
     const response = await getS3File(event.campaign_uuid);
-    const f = JSON.parse(response).features
-    const options = {units:"meters"}
-    const features = []
+    const f = JSON.parse(response).features;
+    const options = {units:"meters"};
+    const features = [];
     const dissFeatures = [];
     for (let i = 0; i < f.length; i++) {
         const box = bbox(f[i]);
-        const w = distance([box[0], box[1]],[box[2],box[1]],{units:"meters"})
-        const h = distance([box[0], box[1]],[box[0],box[3]],{units:"meters"})
+        const w = distance([box[0], box[1]],[box[2],box[1]],options);
+        const h = distance([box[0], box[1]],[box[0],box[3]],options);
         const wDiff = 700 - (w % 700);
         const hDiff = 700 - (h % 700);
         const poly = bboxPolygon(box);
@@ -42,21 +42,20 @@ async function main(event) {
         const minY = destination(c,(50 +h + hDiff)/2, 180,options).geometry.coordinates[1];
         const maxX = destination(c,(50 + w + wDiff)/2, 90,options).geometry.coordinates[0];
         const minX = destination(c,(50 + w + wDiff)/2, -90,options).geometry.coordinates[0];
-        const grid = rectangleGrid([minX, minY, maxX, maxY], 700, 700, {units:"meters"});
+        const grid = rectangleGrid([minX, minY, maxX, maxY], 700, 700, options);
         const diss = bboxPolygon(bbox(grid));
-        //const diss = dissolve(grid).features[0]
         dissFeatures.push(diss);
         for (let j=0; j<grid.features.length; j++) {
             const k = intersect(grid.features[j], f[i]);
             
             if (k) {
-                grid.features[j].properties.id = i
-                features.push(grid.features[j])
+                grid.features[j].properties.id = i;
+                features.push(grid.features[j]);
             }
         }
     }
-    const fc = featureCollection(features)
-    const dissFc = featureCollection(dissFeatures)
+    const fc = featureCollection(features);
+    const dissFc = featureCollection(dissFeatures);
     const s3 = new AWS.S3();
     const uploaded = await s3.putObject({
         Bucket: process.env.S3_BUCKET,
@@ -64,21 +63,6 @@ async function main(event) {
         ACL: 'public-read',
         Body: JSON.stringify(fc)
     }).promise();
-    /*
-    for (const bounds of dissFeatures) {
-        const lambda = new AWS.Lambda();
-        var params = {
-            FunctionName: `${process.env.ENV}_process_fetch_tiles`,
-            InvocationType: 'Event',
-            Payload: `{"campaign_uuid": "${event.campaign_uuid}",
-                       "bbox":[${bounds}],
-                       "zoom_levels": [10,11,12,13,14,15,16,17]}`
-        };
-    
-        await lambda.invoke(params).promise()
-    }
-    */
-    
     await s3.putObject({
         Bucket: process.env.S3_BUCKET,
         Key: `campaigns/${event.campaign_uuid}/pdf/grid_diss.geojson`,
@@ -89,25 +73,16 @@ async function main(event) {
     console.log(`Invoking lambda handler...`);
 
     const lambda = new AWS.Lambda();
+    const payload = `{"campaign_uuid": "${event.campaign_uuid}",
+    "zoom_levels": [10,11,12,13,14,15,16,17]}`;
     var params = {
         FunctionName: `${process.env.ENV}_process_make_mbtiles`,
         InvocationType: 'Event',
-        Payload: `{"campaign_uuid": "${event.campaign_uuid}"},
-                    "zoom_levels": [10,11,12,13,14,15,16,17]}`
+        Payload: payload
     };
 
-    await lambda.invoke(params).promise()
-    /*
-    const lambda = new AWS.Lambda();
-    var params = {
-        FunctionName: `${process.env.ENV}_process_make_pdfs`,
-        InvocationType: 'Event',
-        Payload: `{"campaign_uuid": "${event.campaign_uuid}"}`
-    };
-
-    await lambda.invoke(params).promise()
-    */
-    console.log(`finished... ${uploaded}`);
+    await lambda.invoke(params).promise();
+    console.log(`finished... ${JSON.stringify(uploaded)}`);
   }
   
   

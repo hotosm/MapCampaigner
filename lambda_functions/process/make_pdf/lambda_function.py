@@ -154,48 +154,44 @@ def create_legend(img, bounds, grid):
 
 def main(event, context):
     uuid = event['campaign_uuid']
-    geojson = S3Data().fetch(f'campaigns/{uuid}/mbtiles/tiles.geojson')
     campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.geojson')
-    aois = geojson['features']
-    for aoi in aois:
-        aoi_id = aoi['properties']['id']
-        bounds = get_bounds(aoi)
-        grid = make_grid(bounds, 17)
-        features = []
-        for item in grid:
-            poly = list(box(*item).exterior.coords)
-            polygon = Polygon(poly)
-            features.append(polygon)
-        multi_poly = MultiPolygon(features)
-        bounds = multi_poly.bounds
-        mbtiles_key = f'campaigns/{uuid}/mbtiles/{aoi_id}.mbtiles'
-        with open(f'/tmp/{aoi_id}.mbtiles', 'wb') as f:
-            boto3.client('s3').download_fileobj(os.environ['S3_BUCKET'],
-                                                mbtiles_key, f)
-        img = stitch_tiles(f'/tmp/{aoi_id}.mbtiles', campaign['features'],
-                           bounds)
-        g = S3Data().fetch(f'campaigns/{uuid}/pdf/grid.geojson')
-        grid_features = [cell for cell in g['features'] if
-                         cell['properties']['id'] == aoi['properties']['id']]
-        legend = create_legend(img, bounds, grid_features)
-        legend_buffer = BytesIO()
-        legend.save(legend_buffer, "PDF", resolution=100.0)
-        legend_buffer.seek(0)
-        legend_pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/legend.pdf'
-        S3Data().create(legend_pdf_key, legend_buffer)
-        for i, b in enumerate(grid_features):
-            pdf = crop_pdf(img, bounds, b, i + 1, aoi_id)
-            pdf_buffer = BytesIO()
-            pdf.save(pdf_buffer, "PDF", resolution=100.0)
-            pdf_buffer.seek(0)
-            pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/{i}.pdf'
-            S3Data().create(pdf_key, pdf_buffer)
+    aoi_id = event['index']
+    bounds = event['bbox']
+    grid = make_grid(bounds, 17)
+    features = []
+    for item in grid:
+        poly = list(box(*item).exterior.coords)
+        polygon = Polygon(poly)
+        features.append(polygon)
+    multi_poly = MultiPolygon(features)
+    bounds = multi_poly.bounds
+    mbtiles_key = f'campaigns/{uuid}/mbtiles/{aoi_id}.mbtiles'
+    with open(f'/tmp/{aoi_id}.mbtiles', 'wb') as f:
+        boto3.client('s3').download_fileobj(os.environ['S3_BUCKET'],
+                                            mbtiles_key, f)
+    img = stitch_tiles(f'/tmp/{aoi_id}.mbtiles', campaign['features'],
+                        bounds)
+    g = S3Data().fetch(f'campaigns/{uuid}/pdf/grid.geojson')
+    grid_features = [cell for cell in g['features'] if
+                        cell['properties']['id'] == aoi_id]
+    legend = create_legend(img, bounds, grid_features)
+    legend_buffer = BytesIO()
+    legend.save(legend_buffer, "PDF", resolution=100.0)
+    legend_buffer.seek(0)
+    legend_pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/legend.pdf'
+    S3Data().create(legend_pdf_key, legend_buffer)
+    for i, b in enumerate(grid_features):
+        pdf = crop_pdf(img, bounds, b, i + 1, aoi_id)
+        pdf_buffer = BytesIO()
+        pdf.save(pdf_buffer, "PDF", resolution=100.0)
+        pdf_buffer.seek(0)
+        pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/{i}.pdf'
+        S3Data().create(pdf_key, pdf_buffer)
 
 
 def lambda_handler(event, context):
-    #try:
-    main(event, context)
-    """
+    try:
+        main(event, context)
     except Exception as e:
         S3Data().create(
             key=f'campaigns/{event["campaign_uuid"]}/failure.json',
@@ -204,4 +200,3 @@ def lambda_handler(event, context):
                 'failure': str(e)
                 })
             )
-    """

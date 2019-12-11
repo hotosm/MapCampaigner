@@ -165,6 +165,7 @@ def remove_folder(uuid):
 
 
 def main(event):
+    logging.info(event)
     # Get data.
     uuid = event['campaign_uuid']
     zoom_levels = event['zoom_levels']
@@ -205,7 +206,7 @@ def main(event):
 
         features.append(feature)
         event = {'bbox': scaled_polygon.bounds,
-            'uuid': uuid,
+            'campaign_uuid': uuid,
             'index': index,
             'zoom_levels': zoom_levels
         }
