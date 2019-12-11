@@ -54,7 +54,6 @@ def needs_merge(uuid):
 def lambda_handler(event, context):
     aws_lambda = boto3.client('lambda')
     merge_func_name = '{0}_process_merge_mbtiles'.format(os.environ['ENV'])
-    pdf_func_name = '{0}_process_make_pdf_grid'.format(os.environ['ENV'])
 
     for campaign in Campaign.active():
         compute_campaign(campaign)
@@ -63,10 +62,4 @@ def lambda_handler(event, context):
                 FunctionName=merge_func_name,
                 InvocationType='Event',
                 Payload=json.dumps({'uuid': campaign})
-            )
-
-            aws_lambda.invoke(
-                FunctionName=pdf_func_name,
-                InvocationType='Event',
-                Payload=json.dumps({'campaign_uuid': campaign})
             )
