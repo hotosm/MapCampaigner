@@ -55,8 +55,7 @@
           </div>
           <div class="row">
             <div class="col-xs-12">
-              {% set completeness = (types[type]['complete']/types[type]['feature_count']*100)|round|int %}
-              <p><b>{{ completeness }}%</b> <span class="panel-info">Complete Status</span> <span class="pull-right">{{ types[type]['complete'] }}/{{ types[type]['feature_count'] }}</span></p>
+              <p><b>{{ completeness }}%</b> <span class="panel-info">Complete Status</span> <span class="pull-right">{{ complete_status }}</span></p>
               <div class="progress">
                 <div class="progress-bar" id="campaign-progress" role="progressbar" aria-valuenow="{{ completeness }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ completeness }}%">
                 </div>

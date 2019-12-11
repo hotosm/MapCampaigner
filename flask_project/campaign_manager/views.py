@@ -499,6 +499,13 @@ def get_campaign_features(uuid):
                 values['incomplete'] += 1
             else:
                 values['complete'] += 1
+        completeness = 0
+        if values['feature_count'] > 0:
+            completeness = values['complete']/values['feature_count']
+
+        values['completeness'] = round(completeness*100)
+        values['complete_status'] = completeness
+
     return render_template('campaign_features.html', **context)
 
 
