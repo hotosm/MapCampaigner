@@ -30,19 +30,21 @@ async function main(event) {
     const options = {units:"meters"};
     const features = [];
     const dissFeatures = [];
+    const gridWidth = 500;
+    const gridHeight = 500;
     for (let i = 0; i < f.length; i++) {
         const box = bbox(f[i]);
         const w = distance([box[0], box[1]],[box[2],box[1]],options);
         const h = distance([box[0], box[1]],[box[0],box[3]],options);
-        const wDiff = 700 - (w % 700);
-        const hDiff = 700 - (h % 700);
+        const wDiff = gridWidth - (w % gridWidth);
+        const hDiff = gridHeight - (h % gridHeight);
         const poly = bboxPolygon(box);
         const c = centerOfMass(poly);
         const maxY = destination(c,(50 + h + hDiff)/2, 0, options).geometry.coordinates[1];
         const minY = destination(c,(50 +h + hDiff)/2, 180,options).geometry.coordinates[1];
         const maxX = destination(c,(50 + w + wDiff)/2, 90,options).geometry.coordinates[0];
         const minX = destination(c,(50 + w + wDiff)/2, -90,options).geometry.coordinates[0];
-        const grid = rectangleGrid([minX, minY, maxX, maxY], 700, 700, options);
+        const grid = rectangleGrid([minX, minY, maxX, maxY], gridWidth, gridHeight, options);
         const diss = bboxPolygon(bbox(grid));
         dissFeatures.push(diss);
         for (let j=0; j<grid.features.length; j++) {

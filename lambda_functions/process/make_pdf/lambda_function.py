@@ -113,11 +113,11 @@ def stitch_tiles(mbtiles, features, bounds):
     return img
 
 
-def crop_pdf(img, bounds, feature, idx, aoi_id):
+def crop_pdf(img, bounds, feature, page_num, total_pages, aoi_id):
     coords = feature['geometry']['coordinates'][0]
     poly = Polygon(coords)
     coords_transformed = scale_coords(img, bounds, coords)
-    center = f"{round(poly.centroid.y, 4)}, {round(poly.centroid.x, 4)}"
+    center = f"{round(poly.centroid.y, 4)}°, {round(poly.centroid.x, 4)}°"
     cropped = img.crop((coords_transformed[0][0], coords_transformed[1][1],
                         coords_transformed[2][0], coords_transformed[0][1]))
     resized = cropped.resize((523, 523), Image.ANTIALIAS)
@@ -125,12 +125,13 @@ def crop_pdf(img, bounds, feature, idx, aoi_id):
     pdf.paste(resized, box=(36, 36), mask=resized.split()[3])
     draw = ImageDraw.Draw(pdf)
     fnt = ImageFont.truetype(font="./fonts/Archivo-Regular.ttf", size=16)
-    draw.text((560, 40), f"AOI {aoi_id} - page {idx}", font=fnt, fill=(0, 0, 0))
-    draw.text((560, 60), f"Lat, Long: {center}", font=fnt, fill=(0, 0, 0))
-    draw.text((560, 80), f"Notes:", font=fnt, fill=(0, 0, 0))
+    draw.text((565, 40), f"AOI {aoi_id} - page {page_num}/{total_pages}", 
+              font=fnt, fill=(0, 0, 0))
+    draw.text((565, 60), f"Page center: {center}", font=fnt, fill=(0, 0, 0))
+    draw.text((565, 80), f"Notes:", font=fnt, fill=(0, 0, 0))
     scale = Image.open('./assets/scale.png')
     arrow = Image.open('./assets/arrow.png')
-    pdf.paste(scale, (560, 520), scale)
+    pdf.paste(scale, (565, 515), scale)
     pdf.paste(arrow, (750, 520), arrow)
     return pdf
 
@@ -148,7 +149,7 @@ def create_legend(img, bounds, grid):
         label_coord = (coords_transformed[2][0] - h / 2,
                        coords_transformed[0][1] - w / 2)
         fnt = ImageFont.truetype(font="./fonts/Archivo-Regular.ttf", size=24)
-        draw.text(label_coord, f"{i + 1}", fill=(0, 0, 0))
+        draw.text(label_coord, f"{i + 1}", font=fnt, fill=(0, 0, 0))
     return legend
 
 
@@ -180,8 +181,9 @@ def main(event, context):
     legend_buffer.seek(0)
     legend_pdf_key = f'campaigns/{uuid}/pdf/{aoi_id}/legend.pdf'
     S3Data().create(legend_pdf_key, legend_buffer)
+    grid_count = len(grid_features)
     for i, b in enumerate(grid_features):
-        pdf = crop_pdf(img, bounds, b, i + 1, aoi_id)
+        pdf = crop_pdf(img, bounds, b, i + 1, grid_count, aoi_id)
         pdf_buffer = BytesIO()
         pdf.save(pdf_buffer, "PDF", resolution=100.0)
         pdf_buffer.seek(0)

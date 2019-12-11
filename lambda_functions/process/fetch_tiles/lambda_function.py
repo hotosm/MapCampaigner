@@ -3,6 +3,7 @@ sys.path.insert(0, 'dependencies')
 import boto3
 import os
 import json
+import logging
 from landez import MBTilesBuilder
 
 PATH = '/tmp/'
@@ -36,6 +37,7 @@ def spawn_make_pdf(event):
 
 def main(event):
     uuid = event['campaign_uuid']
+    logging.info(uuid)
     tiles_file = '{0}.mbtiles'.format(event['index'])
     local_mbtiles_path = os.path.join(PATH, tiles_file)
 
