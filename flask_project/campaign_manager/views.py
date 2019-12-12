@@ -615,7 +615,17 @@ def get_campaign_contributors(uuid):
     # Top contributors
     ranking_contributors = sorted(contributors_data.items(),
                                   key=operator.itemgetter(1), reverse=True)
-    context['contributors_top_ranking'] = ranking_contributors[:5]
+    widths = (80, 65, 50, 35, 20)
+    aria_values = (90, 79, 64, 50, 24)
+
+    zip_items = zip(ranking_contributors[:5], widths, aria_values)
+
+    contribs = [{'name': t[0][0],
+        'count': t[0][1],
+        'width': t[1],
+        'aria': t[2]}
+        for t in zip_items]
+    context['contributors_top_ranking'] = contribs
     # Monitored contributors
     monitored_contributors_info = []
     for name, data in monitored_data.items():
