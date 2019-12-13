@@ -65,9 +65,12 @@
     <button class="btn btn-primary btn-xs" style="display: none;">
       {% include 'svgs/filter.html' %}
       Filter</button>
-    <button class="btn btn-primary btn-xs">
+    <button class="btn btn-primary btn-xs download-osm-btn">
       {% include 'svgs/download.html' %}
-      Download File</button>
+      Download Features .osm</button>
+    <button class="btn btn-primary btn-xs download-xls-btn">
+      {% include 'svgs/download.html' %}
+      Download Features .xls</button>
   </div>
 </div>
 <div class="row">
@@ -89,6 +92,30 @@
   </div>
 </div>
 <script type="text/javascript">
+
+
+  $(".download-xls-btn").on('click', function() {
+    $.ajax({
+      type: "POST",
+      url: "/campaigns/{{uuid}}/download",
+      data: {"featureName": "{{ feature_name }}", "fileFormat":"xls"},
+      success: function (res, status, xhr) {
+        var blob = new Blob([res.],{type:xhr.getResponseHeader('content-type')});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        var filename = xhr.getResponseHeader('content-disposition').split('; filename=')[1];
+        link.download = filename;
+        link.click();
+      }
+    });
+    });
+
+
+  $(".download-osm-btn").on('click', function() {
+    console.log("clicked")
+  });
+
+
   function getDetails() {
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
       $('#table_id').DataTable({

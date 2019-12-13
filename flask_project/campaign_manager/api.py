@@ -1,13 +1,16 @@
 import os
 import http.client
 import json
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask import request, send_file
+import tablib
+import logging
 
 from io import BytesIO
 import boto3
 import json
 from zipfile import ZipFile
+import xml.etree.ElementTree as xee
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
@@ -307,6 +310,75 @@ class GetFeature(Resource):
         return feature_json
 
 
+def filter_json(json_data, filters):
+    if not filters:
+        return json_data
+    for k,v in filters.items():
+        json_data = [item for item in json_data if item[k] == v]
+    return json_data
+
+def filter_xml(xml_data, filters):
+    if not filters:
+        return xml_data
+    doc = xee.fromstring(xml_data)
+    for k,v in filters.items():
+        for tag in doc.findall('node'):
+            if tag.attrib[k] != v:
+                doc.remove(tag)
+        for tag in doc.findall('way'):
+            if tag.attrib[k] != v:
+                doc.remove(tag)
+    return xee.tostring(doc)
+
+
+class DownloadFeature(Resource):
+    """ download feature list """
+
+    def post(self, uuid):
+        parser = reqparse.RequestParser()
+        parser.add_argument('fileFormat', type=str)
+        parser.add_argument('featureName', type=str)
+        parser.add_argument('filter', type=dict)
+        args = parser.parse_args()
+        file_format = args.get('fileFormat', None)
+        feature_name = args.get('featureName', None)
+        filters = args.get('filter', {})
+        file_buffer = BytesIO()
+        if file_format == "xls":
+            data = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
+            headers = list(data[0].keys())
+            data = filter_json(data, filters)
+            if len(data) > 0:
+                for item in data[0]['attributes']:
+                    headers.append(item)
+                for item in data[0]['missing_attributes']:
+                    headers.append(item)
+                for row in data:
+                    for item in row['attributes']:
+                        row[item] = 1
+                    for item in row['missing_attributes']:
+                        row[item] = 0
+            headers.remove('missing_attributes')
+            headers.remove('attributes')
+            download_file = tablib.Dataset(headers=headers)
+            download_file.json = json.dumps(data)
+            file_buffer.write(download_file.xls)
+        if file_format == "osm":
+            s3 = S3Data().s3
+            key = f'campaigns/{uuid}/overpass/{feature_name}.xml'
+            data = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
+            data = filter_xml(data, filters)
+            file_buffer.write(data)
+        if file_format == None:
+            return
+        file_buffer.seek(0)
+        resp = send_file(file_buffer,
+                    as_attachment=True,
+                    attachment_filename=f'{feature_name}.{file_format}',
+                    mimetype='application/octet-stream')
+        return resp
+
+
 # Setup the Api resource routing here
 api.add_resource(
         CampaignList,
@@ -344,3 +416,6 @@ api.add_resource(
 api.add_resource(
         GetFeature,
         '/campaigns/<string:uuid>/feature-types/<string:feature_name>')
+api.add_resource(
+        DownloadFeature,
+        '/campaigns/<string:uuid>/download')
