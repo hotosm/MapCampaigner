@@ -284,8 +284,10 @@ class AllFeatures(Resource):
         args = request.args
         username = args.get('username', None)
         campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
-        features = [campaign['types'][f'type-{i + 1}']['type'] for i,
-                    feature in enumerate(campaign['types'])]
+
+        features = [f['type'].replace(' ', '_') for _, f
+            in campaign['types'].items()]
+
         all_features = []
         for feature in features:
             feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
