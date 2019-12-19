@@ -33,9 +33,11 @@ def main(event, context):
         raise ValueError('Feature not found')
 
     feature_type = filtered[0]
+    feature_file = feature_type['type'].replace(' ', '_')
     features = []
 
-    key = f"campaigns/{uuid}/overpass/{feature_type['type']}.xml"
+    key = f"campaigns/{uuid}/overpass/{feature_file}.xml"
+
     s3 = S3Data().s3
     feature_xml = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
     parser = ET.XMLParser(encoding="utf-8")
@@ -77,7 +79,11 @@ def main(event, context):
                                              if elem not in tags]
             if campaign_feature_def['element_type'] == geometry:
                 features.append(feature)
+<<<<<<< HEAD
     out_file = 'campaigns/{}/{}.json'.format(uuid, feature_type["type"])
+=======
+    out_file = 'campaigns/{}/{}.json'.format(uuid, feature_file)
+>>>>>>> master
     S3Data().create(out_file, json.dumps(features))
 
 

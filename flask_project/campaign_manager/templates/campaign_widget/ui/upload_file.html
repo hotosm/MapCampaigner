@@ -61,15 +61,16 @@
         reader.readAsArrayBuffer(uploadedFile)
         break;
       default:
-        return showNotifications('Only .geojson and .zip files are supported.', 'danger', '#map-notification-holder');
+        return showNotifications('Only .geojson and .zip files are supported.', 'danger', '#create-notification-holder');
+
     }
   }
 
   function useJSON(json) {
     geojsonFeature = json['features'];
-    if (invalidGeometry(geojsonFeature)) return showNotifications('Geometry type not supported', 'danger', '#map-notification-holder');
+    if (invalidGeometry(geojsonFeature)) return showNotifications('Geometry type not supported', 'danger', '#create-notification-holder');
     const hasNullElements = geojsonFeature.some(feature => isnull(feature));
-    if (hasNullElements) return showNotifications('GeoJson file has null values', 'danger', '#map-notification-holder');
+    if (hasNullElements) return showNotifications('GeoJson file has null values', 'danger', '#create-notification-holder');
     drawnItems.clearLayers();
     const geojsonLayer = drawGeometry(geojsonFeature, true);
     updateMap(campaignMap);
