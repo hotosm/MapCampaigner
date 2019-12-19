@@ -574,6 +574,12 @@ def get_contributor(uuid, osm_name):
     attr_ranking = sorted(contrib_features.items(),
                           key=operator.itemgetter(1), reverse=True)
     context['attr_ranking'] = attr_ranking[:5]
+
+    # Map all features from user.
+    context['types'] = [c['type'].replace(' ', '_') for _, c
+        in context['types'].items()]
+    context['s3_campaign_url'] = S3Data().url(uuid)
+
     return render_template('contributor.html', **context)
 
 

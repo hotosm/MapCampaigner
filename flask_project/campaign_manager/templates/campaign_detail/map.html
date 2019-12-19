@@ -45,6 +45,54 @@
       }
     });
 
+    // Add all features from user.
+    {% if mapper %}
+      let types = {{ types | safe }}
+      types.forEach(t => {
+        let url = url_vt =  "{{ s3_campaign_url | safe }}/render/" + t + "/tiles/{z}/{x}/{y}.pbf";
+
+      map.addSource('tiles', {
+        "type": "vector",
+        "minzoom": 10,
+        "maxzoom": 17,
+        "tiles": [url_vt]
+      });
+      map.addLayer({
+        "id": "campaign-polygons-".concat(t),
+        "type": "fill",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["all", ["in", "$type", "Polygon"], ["in", "last_edited_by", "{{ mapper }}"]],
+        "paint": {
+          "fill-color": ['get', 'completeness_color'],
+          "fill-opacity": 1
+        }
+      });
+
+      map.addLayer({
+        "id": "campaign-lines-".concat(t),
+        "type": "line",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["all", ["in", "$type", "LineString"], ["in", "last_edited_by", "{{ mapper }}"]],
+        "paint": {
+          "line-color": ['get', 'completeness_color'],
+          "line-opacity": 0.7
+        }
+      });
+      map.addLayer({
+        "id": "campaign-points-".concat(t),
+        "type": "circle",
+        "source": "tiles",
+        "source-layer": "campaign",
+        "filter": ["all", ["in", "$type", "Point"], ["in", "last_edited_by", "{{ mapper }}"]],
+        "paint": {
+          "circle-color": ['get', 'completeness_color'],
+        }
+      });
+      })
+    {% endif %}
+
     var popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: true
