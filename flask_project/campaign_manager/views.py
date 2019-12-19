@@ -542,8 +542,9 @@ def get_contributor(uuid, osm_name):
     context = get_campaign_data(uuid)
     context['mapper'] = osm_name
     campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
-    features = [campaign['types'][f'type-{i + 1}']['type'] for i,
-                feature in enumerate(campaign['types'])]
+    features = [f['type'].replace(' ', '_') for _, f
+        in context['types'].items()]
+
     # Data for ranking panel
     all_features = []
     for feature in features:
