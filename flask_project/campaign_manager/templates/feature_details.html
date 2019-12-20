@@ -97,8 +97,8 @@
   $(".download-csv-btn").on('click', function() {
     $.ajax({
       type: "POST",
-      url: "/campaigns/{{uuid}}/download",
-      data: {"featureName": "{{ feature_name }}", "fileFormat":"csv"},
+      url: "/campaigns/{{uuid}}/download/{{ feature_name }}",
+      data: {"fileFormat":"csv"},
       success: function (res, status, xhr) {
         var blob = new Blob([res],{type:'text/csv'});
         var link = document.createElement('a');
@@ -113,8 +113,8 @@
   $(".download-osm-btn").on('click', function() {
     $.ajax({
       type: "POST",
-      url: "/campaigns/{{uuid}}/download",
-      data: {"featureName": "{{ feature_name }}", "fileFormat":"osm"},
+      url: "/campaigns/{{uuid}}/download/{{ feature_name }}",
+      data: {"fileFormat":"osm"},
       success: function (res, status, xhr) {
         var blob = new Blob([res],{type:'text/xml'});
         var link = document.createElement('a');

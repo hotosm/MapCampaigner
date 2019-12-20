@@ -396,7 +396,6 @@ class DownloadFeatures(Resource):
                 del d['attributes']
             for d in data:
                 del d['missing_attributes']
-            return data
             writer = csv.DictWriter(file_buffer,fieldnames=headers)
             writer.writeheader()
             writer.writerows(data)
