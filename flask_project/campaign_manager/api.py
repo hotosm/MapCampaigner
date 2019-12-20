@@ -315,7 +315,7 @@ def filter_json(json_data, filters):
     """ apply filter on json """
     if not filters:
         return json_data
-    for k,v in filters.items():
+    for k, v in filters.items():
         json_data = [item for item in json_data if item[k] == v]
     return json_data
 
@@ -370,10 +370,10 @@ class DownloadFeatures(Resource):
             file_buffer = StringIO()
             data = []
             for feature in features:
-                feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
-                data += feature_json
+                f_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+                data += f_json
             if username:
-                data = [item for item in data if 
+                data = [item for item in data if
                         item['last_edited_by'] == username]
             headers = list(data[0].keys())
             for row in data:
@@ -427,7 +427,6 @@ class DownloadFeatures(Resource):
         feature_name = "all_features"
         if username:
             feature_name = username
-
         resp = send_file(response_file,
                     as_attachment=True,
                     attachment_filename=f'{feature_name}.{file_format}',
@@ -466,7 +465,7 @@ class DownloadFeature(Resource):
                 del d['attributes']
             for d in data:
                 del d['missing_attributes']
-            writer = csv.DictWriter(file_buffer,fieldnames=headers)
+            writer = csv.DictWriter(file_buffer, fieldnames=headers)
             writer.writeheader()
             writer.writerows(data)
             mimetype = 'text/csv'
@@ -479,12 +478,13 @@ class DownloadFeature(Resource):
             mimetype = 'text/xml'
             s3 = S3Data().s3
             key = f'campaigns/{uuid}/overpass/{feature_name}.xml'
-            data = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
+            bucket = S3Data().bucket
+            data = s3.get_object(Bucket=bucket, Key=key)['Body'].read()
             data = filter_xml(data, filters)
             file_buffer.write(data)
             file_buffer.seek(0)
             response_file = file_buffer
-        if file_format == None:
+        if file_format is None:
             return
         resp = send_file(response_file,
                     as_attachment=True,
@@ -536,4 +536,3 @@ api.add_resource(
 api.add_resource(
         DownloadFeature,
         '/campaigns/<string:uuid>/download/<string:feature_name>')
-
