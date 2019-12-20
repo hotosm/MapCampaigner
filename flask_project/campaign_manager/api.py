@@ -312,6 +312,7 @@ class GetFeature(Resource):
 
 
 def filter_json(json_data, filters):
+    """ apply filter on json """
     if not filters:
         return json_data
     for k,v in filters.items():
@@ -320,10 +321,11 @@ def filter_json(json_data, filters):
 
 
 def filter_xml(xml_data, filters):
+    """ apply filter on osm xml """
     if not filters:
         return xml_data
     doc = xee.fromstring(xml_data)
-    for k,v in filters.items():
+    for k, v in filters.items():
         for tag in doc.findall('node'):
             if tag.attrib[k] != v:
                 doc.remove(tag)
@@ -334,6 +336,7 @@ def filter_xml(xml_data, filters):
 
 
 def merge_xml(xml_files):
+    """ merge list of xml string into on xml doc """
     node = None
     parser = XMLParser(encoding="utf-8")
     for xml_file in xml_files:
@@ -341,7 +344,7 @@ def merge_xml(xml_files):
         root = tree.getroot()
         if node is None:
             node = root
-        else:          
+        else:
             for child in root:
                 if child.tag in ('way', 'node'):
                     node.append(child)
@@ -349,7 +352,7 @@ def merge_xml(xml_files):
 
 
 class DownloadFeatures(Resource):
-    """ download feature list """
+    """ download all features as xml or csv """
 
     def post(self, uuid):
         parser = reqparse.RequestParser()
@@ -370,7 +373,8 @@ class DownloadFeatures(Resource):
                 feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
                 data += feature_json
             if username:
-                data = [item for item in data if item['last_edited_by'] == username]
+                data = [item for item in data if 
+                        item['last_edited_by'] == username]
             headers = list(data[0].keys())
             for row in data:
                 for item in row['attributes']:
@@ -396,7 +400,7 @@ class DownloadFeatures(Resource):
                 del d['attributes']
             for d in data:
                 del d['missing_attributes']
-            writer = csv.DictWriter(file_buffer,fieldnames=headers)
+            writer = csv.DictWriter(file_buffer, fieldnames=headers)
             writer.writeheader()
             writer.writerows(data)
             mimetype = 'text/csv'
@@ -432,7 +436,7 @@ class DownloadFeatures(Resource):
 
 
 class DownloadFeature(Resource):
-    """ download feature list """
+    """ download features by feature type """
 
     def post(self, uuid, feature_name):
         parser = reqparse.RequestParser()
