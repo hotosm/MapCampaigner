@@ -468,7 +468,10 @@ def get_campaign(uuid):
                                if f['status'] == "Complete"])
     context['incomplete'] = len([f for f in all_features
                                  if f['status'] == "Incomplete"])
-    context['complete_pct'] = int(context['complete'] / context['incomplete'])
+    complete_pct = 0
+    if context['incomplete'] > 0:
+        complete_pct = int(context['complete'] / context['incomplete'])
+    context['complete_pct'] = complete_pct
 
     can_edit = False
     if 'user' in session.keys():
