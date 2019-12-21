@@ -1,13 +1,17 @@
 import os
 import http.client
+import csv
 import json
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask import request, send_file
+import logging
 
-from io import BytesIO
+from io import BytesIO, StringIO
 import boto3
 import json
 from zipfile import ZipFile
+import xml.etree.ElementTree as xee
+from xml.etree.ElementTree import fromstring, ElementTree, XMLParser, tostring
 
 from campaign_manager import campaign_manager
 from campaign_manager.models.campaign import Campaign
@@ -307,6 +311,188 @@ class GetFeature(Resource):
         return feature_json
 
 
+def filter_json(json_data, filters):
+    """ apply filter on json """
+    if not filters:
+        return json_data
+    for k, v in filters.items():
+        json_data = [item for item in json_data if item[k] == v]
+    return json_data
+
+
+def filter_xml(xml_data, filters):
+    """ apply filter on osm xml """
+    if not filters:
+        return xml_data
+    doc = xee.fromstring(xml_data)
+    for k, v in filters.items():
+        for tag in doc.findall('node'):
+            if tag.attrib[k] != v:
+                doc.remove(tag)
+        for tag in doc.findall('way'):
+            if tag.attrib[k] != v:
+                doc.remove(tag)
+    return xee.tostring(doc)
+
+
+def merge_xml(xml_files):
+    """ merge list of xml string into on xml doc """
+    node = None
+    parser = XMLParser(encoding="utf-8")
+    for xml_file in xml_files:
+        tree = ElementTree(fromstring(xml_file))
+        root = tree.getroot()
+        if node is None:
+            node = root
+        else:
+            for child in root:
+                if child.tag in ('way', 'node'):
+                    node.append(child)
+    return tostring(node)
+
+
+class DownloadFeatures(Resource):
+    """ download all features as xml or csv """
+
+    def post(self, uuid):
+        parser = reqparse.RequestParser()
+        parser.add_argument('fileFormat', type=str)
+        parser.add_argument('username', type=str)
+        parser.add_argument('filter', type=dict)
+        args = parser.parse_args()
+        file_format = args.get('fileFormat', None)
+        username = args.get('username', None)
+        filters = args.get('filter', {})
+        campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
+        features = [f['type'].replace(' ', '_') for _, f
+                in campaign['types'].items()]
+        if file_format == "csv":
+            file_buffer = StringIO()
+            data = []
+            for feature in features:
+                f_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+                data += f_json
+            if username:
+                data = [item for item in data if
+                        item['last_edited_by'] == username]
+            headers = list(data[0].keys())
+            for row in data:
+                for item in row['attributes']:
+                    if item not in headers:
+                        headers.append(item)
+                for item in row['missing_attributes']:
+                    if item not in headers:
+                        headers.append(item)
+            data = filter_json(data, filters)
+            if len(data) > 0:
+                for row in data:
+                    for item in row['attributes']:
+                        row[item] = 1
+                    for item in row['missing_attributes']:
+                        row[item] = 0
+            headers.remove('missing_attributes')
+            headers.remove('attributes')
+            for col in headers:
+                for row in data:
+                    if col not in row:
+                        row[col] = ''
+            for d in data:
+                del d['attributes']
+            for d in data:
+                del d['missing_attributes']
+            writer = csv.DictWriter(file_buffer, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(data)
+            mimetype = 'text/csv'
+            response_file = BytesIO()
+            file_buffer.seek(0)
+            response_file.write(file_buffer.getvalue().encode('utf-8'))
+            response_file.seek(0)
+        if file_format == "osm":
+            file_buffer = BytesIO()
+            mimetype = 'text/xml'
+            s3 = S3Data().s3
+            xmls = []
+            for feature in features:
+                key = f'campaigns/{uuid}/overpass/{feature}.xml'
+                data = s3.get_object(Bucket=S3Data().bucket, Key=key)['Body'].read()
+                data = filter_xml(data, filters)
+                xmls.append(data)
+            data = merge_xml(xmls)
+            file_buffer.write(data)
+            file_buffer.seek(0)
+            response_file = file_buffer
+        if file_format == None:
+            return
+        feature_name = "all_features"
+        if username:
+            feature_name = username
+        resp = send_file(response_file,
+                    as_attachment=True,
+                    attachment_filename=f'{feature_name}.{file_format}',
+                    mimetype=mimetype)
+        return resp
+
+
+class DownloadFeature(Resource):
+    """ download features by feature type """
+
+    def post(self, uuid, feature_name):
+        parser = reqparse.RequestParser()
+        parser.add_argument('fileFormat', type=str)
+        parser.add_argument('filter', type=dict)
+        args = parser.parse_args()
+        file_format = args.get('fileFormat', None)
+        filters = args.get('filter', {})
+        if file_format == "csv":
+            file_buffer = StringIO()
+            data = S3Data().fetch(f'campaigns/{uuid}/{feature_name}.json')
+            headers = list(data[0].keys())
+            data = filter_json(data, filters)
+            if len(data) > 0:
+                for item in data[0]['attributes']:
+                    headers.append(item)
+                for item in data[0]['missing_attributes']:
+                    headers.append(item)
+                for row in data:
+                    for item in row['attributes']:
+                        row[item] = 1
+                    for item in row['missing_attributes']:
+                        row[item] = 0
+            headers.remove('missing_attributes')
+            headers.remove('attributes')
+            for d in data:
+                del d['attributes']
+            for d in data:
+                del d['missing_attributes']
+            writer = csv.DictWriter(file_buffer, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(data)
+            mimetype = 'text/csv'
+            response_file = BytesIO()
+            file_buffer.seek(0)
+            response_file.write(file_buffer.getvalue().encode('utf-8'))
+            response_file.seek(0)
+        if file_format == "osm":
+            file_buffer = BytesIO()
+            mimetype = 'text/xml'
+            s3 = S3Data().s3
+            key = f'campaigns/{uuid}/overpass/{feature_name}.xml'
+            bucket = S3Data().bucket
+            data = s3.get_object(Bucket=bucket, Key=key)['Body'].read()
+            data = filter_xml(data, filters)
+            file_buffer.write(data)
+            file_buffer.seek(0)
+            response_file = file_buffer
+        if file_format is None:
+            return
+        resp = send_file(response_file,
+                    as_attachment=True,
+                    attachment_filename=f'{feature_name}.{file_format}',
+                    mimetype=mimetype)
+        return resp
+
+
 # Setup the Api resource routing here
 api.add_resource(
         CampaignList,
@@ -344,3 +530,9 @@ api.add_resource(
 api.add_resource(
         GetFeature,
         '/campaigns/<string:uuid>/feature-types/<string:feature_name>')
+api.add_resource(
+        DownloadFeatures,
+        '/campaigns/<string:uuid>/download')
+api.add_resource(
+        DownloadFeature,
+        '/campaigns/<string:uuid>/download/<string:feature_name>')

@@ -504,9 +504,9 @@ def get_campaign_features(uuid):
 
         completeness = 0
         if values['feature_count'] > 0:
-            completeness = values['complete']/values['feature_count']
+            completeness = values['complete'] / values['feature_count']
 
-        values['completeness'] = round(completeness*100)
+        values['completeness'] = round(completeness * 100)
         values['complete_status'] = completeness
 
     return render_template('campaign_features.html', **context)
@@ -809,67 +809,6 @@ def generate_josm():
             file_path, server_url, element_query, False)
     if osm_data:
         return Response(json.dumps({'file_name': safe_name}))
-
-
-@campaign_manager.route('/download_josm/<uuid>/<file_name>')
-def download_josm(uuid, file_name):
-    """Download josm file."""
-    campaign = Campaign.get(uuid)
-    campaign_name = campaign.name + '.osm'
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-    if not os.path.exists(file_path):
-        abort(404)
-    return send_file(
-            file_path,
-            as_attachment=True,
-            attachment_filename=campaign_name)
-
-
-@campaign_manager.route('/generate_csv', methods=['GET'])
-def generate_csv():
-    types = request.values.get('types').split(',')
-    url = request.values.get('campaign_url')
-    uuid = request.values.get('uuid')
-
-    csv_data = [get_contribs(url, t) for t in types]
-
-    # Remove None values.
-    csv_data = [t for t in csv_data if t is not None]
-
-    # Flatten again to create only a single list.
-    csv_data = [item for sublist in csv_data for item in sublist]
-
-    file_name = '{0}.csv'.format(uuid)
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-
-    # Remove repeated rows.
-    csv_data = list(set([tuple(d) for d in csv_data]))
-    csv_data.sort()
-
-    # Append headers.
-    headers = ('user', 'type', 'date', 'no_contribs')
-    csv_data = [headers] + csv_data
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerows(csv_data)
-
-    resp_dict = {'file_name': file_name, 'uuid': uuid}
-
-    return Response(json.dumps(resp_dict))
-
-
-@campaign_manager.route('/download_csv/<uuid>/<file_name>')
-def download_csv(uuid, file_name):
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-    if not os.path.exists(file_path):
-        abort(404)
-
-    return send_file(
-        file_path,
-        as_attachment=True,
-        attachment_filename=file_name
-    )
 
 
 @campaign_manager.route('/generate_kml', methods=['POST'])
