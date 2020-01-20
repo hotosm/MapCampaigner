@@ -490,7 +490,8 @@ def get_campaign_features(uuid):
     context = get_campaign_data(uuid)
     for key, values in context['types'].items():
         # Fetch the feature json file.
-        file_name = 'campaigns/{0}/{1}.json'.format(uuid, values['type'])
+        file_name = 'campaigns/{0}/{1}.json'.format(uuid,
+            values['type'].replace(' ', '_'))
         features = S3Data().fetch(file_name)
         values["feature_count"] = len(features)
         values['complete'] = 0
@@ -501,7 +502,6 @@ def get_campaign_features(uuid):
                 values['incomplete'] += 1
             else:
                 values['complete'] += 1
-
         completeness = 0
         if values['feature_count'] > 0:
             completeness = values['complete'] / values['feature_count']
