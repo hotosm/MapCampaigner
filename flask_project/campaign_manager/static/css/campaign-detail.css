@@ -47,7 +47,7 @@
 }
 .detail-panel-information .panel-total {
   height: 86px;
-  font-family: Barlow;
+  font-family: 'Barlow Condensed';
   font-size: 72px;
   font-weight: 600;
   font-stretch: condensed;
@@ -1070,7 +1070,7 @@ table#table_id tr td.cell-faded a:hover {
   text-align: center;
 }
 #delete-pop .delete-btns .btn.del {
-  
+
 }
 #delete-pop .delete-btns .btn.cancel-del {
   margin-left: 9%;
@@ -1103,7 +1103,7 @@ table#table_id tr td.cell-faded a:hover {
   text-decoration: none;
 } img {
   margin-top: 15%;
-} 
+}
 .select-contributors .selection {
   width: 573px;
   height: 44.8px;
@@ -1136,7 +1136,7 @@ table#table_id tr td.cell-faded a:hover {
  text-align: center;
  color: #2c3038;
  margin-right: 5px;
-} 
+}
 .page-num.active {
   color: #d73f3f;
 }
@@ -1149,7 +1149,7 @@ table#table_id tr td.cell-faded a:hover {
 .contrib-name h2 {
   width: 90%;
   height: 32px;
-  font-family: Barlow;
+  font-family: 'Barlow Condensed';
   font-size: 32px;
   font-weight: bold;
   font-stretch: condensed;
@@ -1165,7 +1165,7 @@ table#table_id tr td.cell-faded a:hover {
 }
 
 .features-ranking {
-  font-family: Barlow;
+  font-family: 'Barlow Condensed';
   font-size: 72px;
   font-weight: 600;
   font-stretch: condensed;
