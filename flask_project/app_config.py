@@ -21,9 +21,9 @@ class Config(object):
     SECRET_KEY = THE_SECRET_KEY
 
     # OSMCHA ATTRIBUTES
-    _OSMCHA_DOMAIN = 'https://osmcha.mapbox.com/'
+    _OSMCHA_DOMAIN = 'https://osmcha.org/'
     OSMCHA_API = _OSMCHA_DOMAIN + 'api/v1/'
-    OSMCHA_FRONTEND_URL = 'https://osmcha.mapbox.com/'
+    OSMCHA_FRONTEND_URL = 'https://osmcha.org/'
 
     # CAMPAIGN DATA
     campaigner_data_folder = DATA_FOLDER
