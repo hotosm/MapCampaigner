@@ -42,7 +42,7 @@
     "datatables.net-responsive-dt": "^2.2.3",
     "datatables.net-rowreorder-dt": "^1.2.6",
     "gasparesganga-jquery-loading-overlay": "^1.5.3",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "leaflet": "^1.0.3",
     "mapbox-gl": "^0.53.1",
     "metismenu": "1.1.3",
