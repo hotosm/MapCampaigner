@@ -54,7 +54,7 @@ def format_query(parameters):
 def post_request(query, feature):
     data = requests.post(
         # url='http://overpass-api.de/api/interpreter',
-        url='http://overpass.hotosm.org/api/interpreter',
+        url='https://overpass-export.hotosm.org/api/interpreter',
         data={'data': query},
         headers={'User-Agent': 'HotOSM'},
         stream=True)
