@@ -20,9 +20,6 @@
   .row {
     .toggle-switch {
       margin-bottom: 15px;
-      @include respond-above(md) {
-        margin-right: 135px;
-      }
     }
     .form-control-wrapper {
       width: 100%;

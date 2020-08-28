@@ -1,12 +1,12 @@
 .panel-pagetop, .navbar-default {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   @include respond-above(md) {
     .container {
       margin: 0;
       width: 100%;
-    }  
+    }
   }
 }
 
@@ -22,7 +22,7 @@
     margin-left: 5px;
   }
   .panel-body {
-    padding: 13px 0;
+    padding: 12px 0;
     vertical-align: middle;
   }
 }
