@@ -26,7 +26,7 @@
   <div id="features-list" class="col-xs-12 col-md-6">
     <div class="row">
     {% for type in types %}
-    <a href="{{ url_for('campaign_manager.get_feature_details', uuid=uuid, feature_name=feature_name ) }}" class="panel-more-button">
+    <a href="{{ url_for('campaign_manager.get_feature_details', uuid=uuid, feature_name=types[type]['type'].replace(' ', '_') ) }}" class="panel-more-button">
       <div class="col-xs-12 col-md-6">
         <div class="panel panel-tile">
           <div class="container-fluid">
