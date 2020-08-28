@@ -304,9 +304,22 @@ def get_uuids_from_cache(folder_path):
 
 def get_data_from_s3(uuid, modified):
     s3 = S3Data()
-
     # Make a request to get the campaign json and geojson.
     campaign_json = s3.fetch('campaigns/{0}/campaign.json'.format(uuid))
+    features = [f['type'].replace(' ', '_') for _, f
+        in campaign_json['types'].items()]
+    all_features = []
+    for feature in features:
+        feature_json = S3Data().fetch(f'campaigns/{uuid}/{feature}.json')
+        all_features += feature_json
+    complete = [f for f in all_features if f['status'] == 'Complete']
+    campaign_json['complete_features'] = len(complete)
+    campaign_json['feature_total'] = len(all_features)
+    try:
+        completeness = round(len(complete)/len(all_features), 0)
+    except ZeroDivisionError:
+        completeness = 0
+    campaign_json['completeness'] = completeness
     geojson = s3.fetch('campaigns/{0}/campaign.geojson'.format(uuid))
     campaign_json['geojson'] = geojson
     campaign_json['modified'] = modified

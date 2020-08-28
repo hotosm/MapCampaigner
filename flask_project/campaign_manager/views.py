@@ -453,8 +453,7 @@ def get_campaign(uuid):
 
     # Get data from campaign.json
     campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
-    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
-                i, feature in enumerate(campaign_data['types'])]
+    features = [f.replace(' ', '_') for f in context['types']]
     all_features = []
     contributors_data = {}
     for feature in features:
@@ -469,7 +468,10 @@ def get_campaign(uuid):
                                if f['status'] == "Complete"])
     context['incomplete'] = len([f for f in all_features
                                  if f['status'] == "Incomplete"])
-    context['complete_pct'] = int(context['complete'] / context['incomplete'])
+    complete_pct = 0
+    if context['incomplete'] > 0:
+        complete_pct = int(context['complete'] / context['incomplete'])
+    context['complete_pct'] = complete_pct
 
     can_edit = False
     if 'user' in session.keys():
@@ -488,7 +490,8 @@ def get_campaign_features(uuid):
     context = get_campaign_data(uuid)
     for key, values in context['types'].items():
         # Fetch the feature json file.
-        file_name = 'campaigns/{0}/{1}.json'.format(uuid, values['type'])
+        file_name = 'campaigns/{0}/{1}.json'.format(uuid,
+            values['type'].replace(' ', '_'))
         features = S3Data().fetch(file_name)
         values["feature_count"] = len(features)
         values['complete'] = 0
@@ -499,12 +502,11 @@ def get_campaign_features(uuid):
                 values['incomplete'] += 1
             else:
                 values['complete'] += 1
-
         completeness = 0
         if values['feature_count'] > 0:
-            completeness = values['complete']/values['feature_count']
+            completeness = values['complete'] / values['feature_count']
 
-        values['completeness'] = round(completeness*100)
+        values['completeness'] = round(completeness * 100)
         values['complete_status'] = completeness
 
     return render_template('campaign_features.html', **context)
@@ -543,8 +545,9 @@ def get_contributor(uuid, osm_name):
     context = get_campaign_data(uuid)
     context['mapper'] = osm_name
     campaign = S3Data().fetch(f'campaigns/{uuid}/campaign.json')
-    features = [campaign['types'][f'type-{i + 1}']['type'] for i,
-                feature in enumerate(campaign['types'])]
+    features = [f['type'].replace(' ', '_') for _, f
+        in context['types'].items()]
+
     # Data for ranking panel
     all_features = []
     for feature in features:
@@ -574,6 +577,12 @@ def get_contributor(uuid, osm_name):
     attr_ranking = sorted(contrib_features.items(),
                           key=operator.itemgetter(1), reverse=True)
     context['attr_ranking'] = attr_ranking[:5]
+
+    # Map all features from user.
+    context['types'] = [c['type'].replace(' ', '_') for _, c
+        in context['types'].items()]
+    context['s3_campaign_url'] = S3Data().url(uuid)
+
     return render_template('contributor.html', **context)
 
 
@@ -582,8 +591,10 @@ def get_campaign_contributors(uuid):
     context = get_campaign_data(uuid)
     # Get data from campaign.json
     campaign_data = S3Data().fetch(f"campaigns/{uuid}/campaign.json")
-    features = [campaign_data['types'][f'type-{i + 1}']['type'] for
-                i, feature in enumerate(campaign_data['types'])]
+
+    features = [f['type'].replace(' ', '_') for _, f
+        in campaign_data['types'].items()]
+
     all_features = []
     contributors_data = {}
     monitored_contributors = [c['name'] for
@@ -798,67 +809,6 @@ def generate_josm():
             file_path, server_url, element_query, False)
     if osm_data:
         return Response(json.dumps({'file_name': safe_name}))
-
-
-@campaign_manager.route('/download_josm/<uuid>/<file_name>')
-def download_josm(uuid, file_name):
-    """Download josm file."""
-    campaign = Campaign.get(uuid)
-    campaign_name = campaign.name + '.osm'
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-    if not os.path.exists(file_path):
-        abort(404)
-    return send_file(
-            file_path,
-            as_attachment=True,
-            attachment_filename=campaign_name)
-
-
-@campaign_manager.route('/generate_csv', methods=['GET'])
-def generate_csv():
-    types = request.values.get('types').split(',')
-    url = request.values.get('campaign_url')
-    uuid = request.values.get('uuid')
-
-    csv_data = [get_contribs(url, t) for t in types]
-
-    # Remove None values.
-    csv_data = [t for t in csv_data if t is not None]
-
-    # Flatten again to create only a single list.
-    csv_data = [item for sublist in csv_data for item in sublist]
-
-    file_name = '{0}.csv'.format(uuid)
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-
-    # Remove repeated rows.
-    csv_data = list(set([tuple(d) for d in csv_data]))
-    csv_data.sort()
-
-    # Append headers.
-    headers = ('user', 'type', 'date', 'no_contribs')
-    csv_data = [headers] + csv_data
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerows(csv_data)
-
-    resp_dict = {'file_name': file_name, 'uuid': uuid}
-
-    return Response(json.dumps(resp_dict))
-
-
-@campaign_manager.route('/download_csv/<uuid>/<file_name>')
-def download_csv(uuid, file_name):
-    file_path = os.path.join(config.CACHE_DIR, file_name)
-    if not os.path.exists(file_path):
-        abort(404)
-
-    return send_file(
-        file_path,
-        as_attachment=True,
-        attachment_filename=file_name
-    )
 
 
 @campaign_manager.route('/generate_kml', methods=['POST'])

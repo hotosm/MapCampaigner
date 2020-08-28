@@ -38,9 +38,12 @@
       <button class="btn btn-primary btn-xs" style="display: none;">
         {% include 'svgs/filter.html' %}
         Filter</button>
-      <button class="btn btn-primary btn-xs">
-        {% include 'svgs/download.html' %}
-        Download File</button>
+        <button class="btn btn-primary btn-xs download-osm-btn">
+          {% include 'svgs/download.html' %}
+          .osm</button>
+        <button class="btn btn-primary btn-xs download-csv-btn">
+          {% include 'svgs/download.html' %}
+          .csv</button>
     </div>
   </div>
 <div class="row">
@@ -62,6 +65,40 @@
 </div>
 
 <script type="text/javascript">
+
+$(".download-csv-btn").on('click', function() {
+    $.ajax({
+      type: "POST",
+      url: "/campaigns/{{uuid}}/download",
+      data: {"username": "{{ mapper }}", "fileFormat":"csv"},
+      success: function (res, status, xhr) {
+        var blob = new Blob([res],{type:'text/csv'});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        console.log(xhr.getResponseHeader('content-disposition'))
+        var filename = xhr.getResponseHeader('content-disposition').split('; filename=')[1];
+        link.download = filename;
+        link.click();
+      }
+    });
+  });
+
+  $(".download-osm-btn").on('click', function() {
+    $.ajax({
+      type: "POST",
+      url: "/campaigns/{{uuid}}/download",
+      data: {"username": "{{ mapper }}", "fileFormat":"osm"},
+      success: function (res, status, xhr) {
+        var blob = new Blob([res],{type:'text/xml'});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        var filename = xhr.getResponseHeader('content-disposition').split('; filename=')[1];
+        link.download = filename;
+        link.click();
+      }
+    });
+  });
+
   function getDetails() {
     var s3CampaignUrl = '{{ s3_campaign_url | safe }}';
       $('#table_id').DataTable({
@@ -76,7 +113,7 @@
             { data: "last_edited_by" },
             { data: "last_edit_date" },
             { data: "attributes" },
-            { data: "missing_attributes" }
+            { data: "missing_attributes"}
         ],
         "columnDefs" : [
           { targets: 0, "render": function ( data, type, row ) {

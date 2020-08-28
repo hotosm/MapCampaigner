@@ -198,6 +198,11 @@ def main(event):
         # To get just a small number of tiles around.
         scaled_polygon = scale(polygon, 1.1, 1.1)
 
+        try:
+            index = poly['properties']['id']
+        except KeyError:
+            pass
+
         # Create geojson.
         feature = gj.Feature(
             geometry=gj.Polygon([list(polygon.exterior.coords)]),

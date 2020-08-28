@@ -77,7 +77,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     self.error_ids[name].append(self.element['id'])
 
         if name == 'node':
-            if self.has_tags is True and self.element_type == 'Point':
+            if self.has_tags is True:
                 self.build_feature('node')
                 self.tags = {}
             elif self.has_tags is False:
@@ -85,7 +85,7 @@ class FeatureCompletenessParser(xml.sax.ContentHandler):
                     float(self.element['lon']),
                     float(self.element['lat'])
                 ]
-        if name == 'way' and self.element_type in ['Polygon', 'Line']:
+        if name == 'way':
             self.build_feature('way')
             self.tags = {}
 

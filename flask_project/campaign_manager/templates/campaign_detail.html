@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block header_content %}
-<script src="http://connect.facebook.net/en_US/all.js" async=""></script>
 <link href="/static/css/campaign-detail.css" rel="stylesheet">
 {% endblock %}
 
@@ -65,10 +64,12 @@
         {% include 'svgs/filter.html' %}
       Filter
     </button>
-    <button class="btn btn-primary btn-xs">
-        {% include 'svgs/download.html' %}
-      Download File
-    </button>
+    <button class="btn btn-primary btn-xs download-osm-btn">
+      {% include 'svgs/download.html' %}
+      .osm</button>
+    <button class="btn btn-primary btn-xs download-csv-btn">
+      {% include 'svgs/download.html' %}
+      .csv</button>
   </span>
   </div>
     <div class='row'>
@@ -132,26 +133,38 @@
   $('#download_div').hide();
   }
 
-  function DownloadCsv() {
-    let types = {{ types| safe
-  }};
-  let params = {
-    'uuid': '{{ uuid }}',
-    'campaign_url': '{{ s3_campaign_url | safe }}',
-    'types': types.toString()
-  }
-  $.ajax({
-    type: 'GET',
-    url: '/generate_csv',
-    data: params,
-    dataType: 'json',
-    success: function (csv_data) {
-      let url = '/download_csv/' + csv_data.uuid + '/' + csv_data.file_name;
-      $('#csv_div').html('<a id="download_csv" href="' + url + '"></a>');
-      $('#download_csv').get(0).click();
-    }
+  $(".download-csv-btn").on('click', function() {
+    $.ajax({
+      type: "POST",
+      url: "/campaigns/{{uuid}}/download",
+      data: {"fileFormat":"csv"},
+      success: function (res, status, xhr) {
+        var blob = new Blob([res],{type:'text/csv'});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        console.log(xhr.getResponseHeader('content-disposition'))
+        var filename = xhr.getResponseHeader('content-disposition').split('; filename=')[1];
+        link.download = filename;
+        link.click();
+      }
+    });
   });
-  }
+
+  $(".download-osm-btn").on('click', function() {
+    $.ajax({
+      type: "POST",
+      url: "/campaigns/{{uuid}}/download",
+      data: {"fileFormat":"osm"},
+      success: function (res, status, xhr) {
+        var blob = new Blob([res],{type:'text/xml'});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        var filename = xhr.getResponseHeader('content-disposition').split('; filename=')[1];
+        link.download = filename;
+        link.click();
+      }
+    });
+  });
 
   function addMapElements(activeType) {
     var url_vt =  "{{ s3_campaign_url | safe }}/render/" + activeType + "/tiles/{z}/{x}/{y}.pbf";
