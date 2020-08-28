@@ -94,19 +94,22 @@
     display: none;
   }
   &:before {
+    cursor: pointer;
     content: '';
     height: 20px;
     width: 40px;
-    background: $blue-light; 
+    background: $blue-light;
     position: absolute;
     top: 0;
     right: 0;
     border-radius: 10px;
   }
   &.active:before {
+    cursor: pointer;
     background: $red;
   }
   &:after {
+    cursor: pointer;
     border-radius: 50%;
     content: '';
     height: 16px;
@@ -117,6 +120,7 @@
     right: 22px;
   }
   &.active:after {
+    cursor: pointer;
     right: 2px;
     left: auto;
   }
